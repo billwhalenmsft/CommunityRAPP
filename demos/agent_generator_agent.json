@@ -1,0 +1,164 @@
+{
+  "agent": {
+    "id": "agent_generator",
+    "name": "Agent Generator",
+    "version": "1.0.0",
+    "category": "meta",
+    "icon": "fa-wand-magic-sparkles",
+    "description": "A meta-agent that creates other agents. Describe what you need and it will generate a complete agent configuration with actions, parameters, and demo conversations.",
+    "tokens": 1200,
+    "author": "RAPP Community",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "AgentGenerator",
+    "description": "Generates complete agent configurations from natural language descriptions. Creates JSON configs and optional Python implementations.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["generate_agent", "list_templates", "enhance_agent", "generate_code", "validate_agent"],
+          "description": "The agent generation action to perform"
+        },
+        "agent_description": {
+          "type": "string",
+          "description": "Natural language description of the agent to create"
+        },
+        "agent_name": {
+          "type": "string",
+          "description": "Name for the new agent"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category for the agent (e.g., productivity, sales, support, data, automation)"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of specific capabilities the agent should have"
+        },
+        "integrations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "External systems to integrate with (e.g., SharePoint, Salesforce, APIs)"
+        },
+        "generate_python": {
+          "type": "boolean",
+          "description": "Whether to also generate Python implementation code"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "generate_agent",
+      "description": "Generate a complete agent configuration from a description",
+      "parameters": ["agent_description", "agent_name", "category", "capabilities"],
+      "example": {
+        "input": {
+          "action": "generate_agent",
+          "agent_description": "An agent that helps manage and track customer feedback across multiple channels",
+          "agent_name": "Customer Feedback Manager",
+          "category": "customer-success",
+          "capabilities": ["collect_feedback", "analyze_sentiment", "route_to_team", "generate_reports"]
+        },
+        "output": "✅ Generated: customer_feedback_manager_agent.json\n\n**Agent: Customer Feedback Manager**\n- 4 actions configured\n- Demo conversation included\n- System prompt optimized\n\nReady to deploy!"
+      }
+    },
+    {
+      "name": "list_templates",
+      "description": "List available agent templates and patterns",
+      "parameters": [],
+      "example": {
+        "input": { "action": "list_templates" },
+        "output": "**Available Agent Templates:**\n\n1. **CRUD Agent** - Create/Read/Update/Delete operations\n2. **Integration Agent** - Connect to external APIs\n3. **Analysis Agent** - Process and analyze data\n4. **Workflow Agent** - Multi-step process automation\n5. **Conversational Agent** - Natural dialogue interactions"
+      }
+    },
+    {
+      "name": "enhance_agent",
+      "description": "Add capabilities to an existing agent",
+      "parameters": ["agent_name", "capabilities"],
+      "example": {
+        "input": {
+          "action": "enhance_agent",
+          "agent_name": "it_ticket_agent",
+          "capabilities": ["sentiment_analysis", "auto_prioritize"]
+        },
+        "output": "✅ Enhanced: it_ticket_agent\n\n**Added Actions:**\n- sentiment_analysis: Analyze ticket tone\n- auto_prioritize: ML-based priority scoring\n\nUpdated configuration saved."
+      }
+    },
+    {
+      "name": "generate_code",
+      "description": "Generate Python implementation for an agent",
+      "parameters": ["agent_name"],
+      "example": {
+        "input": {
+          "action": "generate_code",
+          "agent_name": "customer_feedback_manager"
+        },
+        "output": "✅ Generated: agents/customer_feedback_manager_agent.py\n\n**Implementation includes:**\n- BasicAgent inheritance\n- All 4 action methods\n- Error handling\n- Logging\n- Type hints"
+      }
+    },
+    {
+      "name": "validate_agent",
+      "description": "Validate an agent configuration for completeness",
+      "parameters": ["agent_name"],
+      "example": {
+        "input": { "action": "validate_agent", "agent_name": "my_agent" },
+        "output": "**Validation Results:**\n\n✅ Metadata complete\n✅ Actions defined (5)\n✅ Parameters valid\n⚠️ Missing: demoConversation\n⚠️ Missing: useCases\n\n**Score: 85/100**"
+      }
+    }
+  ],
+  "templates": {
+    "crud": {
+      "description": "Create, Read, Update, Delete operations pattern",
+      "actions": ["create", "read", "update", "delete", "list", "search"]
+    },
+    "integration": {
+      "description": "External API integration pattern",
+      "actions": ["connect", "fetch", "sync", "push", "authenticate", "health_check"]
+    },
+    "analysis": {
+      "description": "Data analysis and reporting pattern",
+      "actions": ["analyze", "summarize", "compare", "trend", "forecast", "report"]
+    },
+    "workflow": {
+      "description": "Multi-step process automation pattern",
+      "actions": ["start", "next_step", "approve", "reject", "complete", "rollback"]
+    },
+    "conversational": {
+      "description": "Natural dialogue interaction pattern",
+      "actions": ["greet", "clarify", "suggest", "confirm", "help", "escalate"]
+    }
+  },
+  "useCases": [
+    "Rapidly prototype new agent ideas",
+    "Generate boilerplate agent configurations",
+    "Standardize agent patterns across teams",
+    "Auto-generate documentation",
+    "Create agents from natural language",
+    "Extend existing agents with new capabilities"
+  ],
+  "demoConversation": [
+    {
+      "role": "user",
+      "content": "Create an agent that monitors Azure costs and alerts when spending exceeds thresholds"
+    },
+    {
+      "role": "agent",
+      "content": "🪄 **Generating Agent: Azure Cost Monitor**\n\nAnalyzing requirements...\n\n**Detected Capabilities:**\n- Monitor Azure subscription costs\n- Set and track spending thresholds\n- Send alerts on anomalies\n- Generate cost reports\n- Recommend optimizations\n\n**Generating Configuration...**\n\n✅ **Created: azure_cost_monitor_agent.json**\n\n```json\n{\n  \"agent\": {\n    \"id\": \"azure_cost_monitor\",\n    \"name\": \"Azure Cost Monitor\",\n    \"category\": \"finops\",\n    \"icon\": \"fa-chart-line\"\n  },\n  \"actions\": [\n    \"get_current_spend\",\n    \"set_threshold\",\n    \"get_cost_breakdown\",\n    \"check_anomalies\",\n    \"generate_report\",\n    \"suggest_savings\"\n  ]\n}\n```\n\n**Next Steps:**\n1. Review the generated config\n2. Say 'generate code' for Python implementation\n3. Say 'add capability: forecast' to extend\n\nWould you like me to generate the Python code as well?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, generate the Python code"
+    },
+    {
+      "role": "agent",
+      "content": "🐍 **Generating Python Implementation...**\n\n✅ **Created: agents/azure_cost_monitor_agent.py**\n\n```python\nclass AzureCostMonitorAgent(BasicAgent):\n    def __init__(self):\n        self.name = 'AzureCostMonitor'\n        # ... full implementation\n    \n    def get_current_spend(self, subscription_id):\n        \"\"\"Fetch current month spend\"\"\"\n        \n    def set_threshold(self, amount, alert_email):\n        \"\"\"Configure spending threshold\"\"\"\n        \n    def check_anomalies(self, days=7):\n        \"\"\"Detect unusual spending patterns\"\"\"\n```\n\n**Implementation includes:**\n- ✅ Azure SDK integration\n- ✅ Cost Management API calls\n- ✅ Threshold storage in memory\n- ✅ Email alerting hooks\n- ✅ Anomaly detection logic\n\n**To activate:**\n1. Add to `agents/` folder\n2. Restart function app\n3. The agent will auto-register\n\nReady to use! 🚀"
+    }
+  ],
+  "systemPrompt": "You are the Agent Generator - a meta-agent capable of creating other agents for the RAPP platform.\n\n**Your Capabilities:**\n1. Generate complete agent JSON configurations\n2. Create Python implementation code\n3. Suggest appropriate actions and parameters\n4. Design demo conversations\n5. Write optimized system prompts\n\n**Agent Structure You Generate:**\n```json\n{\n  \"agent\": { \"id\", \"name\", \"version\", \"category\", \"icon\", \"description\" },\n  \"metadata\": { \"name\", \"description\", \"parameters\" },\n  \"actions\": [ { \"name\", \"description\", \"parameters\", \"example\" } ],\n  \"useCases\": [],\n  \"demoConversation\": [],\n  \"systemPrompt\": \"\"\n}\n```\n\n**Python Agent Structure:**\n```python\nclass {AgentName}Agent(BasicAgent):\n    def __init__(self):\n        self.name = '{AgentName}'\n        self.metadata = { ... }\n        super().__init__(name=self.name, metadata=self.metadata)\n    \n    def perform(self, **kwargs):\n        action = kwargs.get('action')\n        # Route to appropriate method\n```\n\n**Guidelines:**\n- Choose descriptive action names (verb_noun format)\n- Include realistic example inputs/outputs\n- Design for extensibility\n- Follow RAPP naming conventions\n- Generate FontAwesome icons that match the purpose\n- Create engaging demo conversations\n\n**Categories:** productivity, sales, support, data, automation, integration, finops, devops, hr, legal, marketing, customer-success, meta"
+}

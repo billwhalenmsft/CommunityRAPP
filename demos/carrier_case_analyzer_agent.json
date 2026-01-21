@@ -1,0 +1,78 @@
+{
+  "agent_name": "CarrierCaseAnalyzer",
+  "description": "AI-powered case text analysis using GPT-4. Extracts issue type, urgency, products, symptoms, and customer sentiment. Part of the Carrier Case Triage Agent Swarm.",
+  "customer": "Carrier",
+  "use_case": "MVP Use Case 1 - Customer Service Case Triage",
+  "demo_scenarios": [
+    {
+      "name": "Full Analysis",
+      "description": "Complete AI analysis of case text",
+      "request": {
+        "action": "full_analysis",
+        "case_id": "500xx000000JKL1AAA",
+        "case_text": "Our rooftop unit 50XC (serial 2419G12345) stopped cooling this morning. Display shows E47 error. Temperature in building is 82F and climbing. We have a corporate event tonight - URGENT!"
+      },
+      "expected_output": {
+        "issue_type": "Equipment Failure - Cooling System",
+        "urgency": "Critical",
+        "urgency_reasons": ["Business event deadline", "Rising temperature", "Error code present"],
+        "product_references": ["50XC"],
+        "serial_number": "2419G12345",
+        "symptoms": ["Not cooling", "E47 error code", "High temperature 82F"],
+        "customer_sentiment": "Stressed/Urgent",
+        "confidence_score": 0.95
+      }
+    },
+    {
+      "name": "Classify Issue Type",
+      "description": "Determine the type of issue from case text",
+      "request": {
+        "action": "classify_issue_type",
+        "case_text": "Need to schedule quarterly maintenance for our chiller. Due next month."
+      },
+      "expected_output": {
+        "issue_type": "Preventive Maintenance",
+        "confidence": 0.92
+      }
+    },
+    {
+      "name": "Detect Urgency",
+      "description": "Assess urgency level of case",
+      "request": {
+        "action": "detect_urgency",
+        "case_text": "AC making loud noise. Building is still cool but concerned about failure."
+      },
+      "expected_output": {
+        "urgency": "Medium",
+        "urgency_score": 0.55,
+        "reasons": ["Symptom reported", "No immediate failure", "Customer proactively reporting"]
+      }
+    },
+    {
+      "name": "Extract Product References",
+      "description": "Find Carrier product models and serials in text",
+      "request": {
+        "action": "extract_product_references",
+        "case_text": "We have three 30RB chillers (30RB-080, 30RB-100, and 30RB-120) that need service. Also have an i-Vu control system."
+      },
+      "expected_output": {
+        "products_found": ["30RB-080", "30RB-100", "30RB-120", "i-Vu"],
+        "product_count": 4
+      }
+    }
+  ],
+  "ai_model": {
+    "provider": "Azure OpenAI",
+    "model": "gpt-4o",
+    "temperature": 0.3,
+    "purpose": "Structured data extraction with high accuracy"
+  },
+  "product_patterns": [
+    "50XC - Rooftop Units",
+    "30RB - Chillers",
+    "38AUD/38AUZ - Split Systems",
+    "i-Vu - Building Automation",
+    "Serial pattern: MMYYXNNNNN"
+  ],
+  "mock_data": true
+}

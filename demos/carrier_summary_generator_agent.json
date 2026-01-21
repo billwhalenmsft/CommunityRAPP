@@ -1,0 +1,98 @@
+{
+  "agent_name": "CarrierSummaryGenerator",
+  "description": "Generates structured triage summary with recommended actions and routing. Part of the Carrier Case Triage Agent Swarm.",
+  "customer": "Carrier",
+  "use_case": "MVP Use Case 1 - Customer Service Case Triage",
+  "demo_scenarios": [
+    {
+      "name": "Generate Full Triage",
+      "description": "Create complete triage summary from analysis results",
+      "request": {
+        "action": "generate_full_triage",
+        "case_data": {
+          "id": "500xx000000JKL1AAA",
+          "subject": "RTU not cooling - E47 error",
+          "account": {"name": "Desert Sun Properties", "tier": "Enterprise"}
+        },
+        "analysis": {
+          "issue_type": "Equipment Failure",
+          "urgency": "Critical",
+          "product_references": ["50XC"],
+          "symptoms": ["Not cooling", "E47 error", "High temperature"]
+        },
+        "enrichment": {
+          "warranty": {"status": "Expired"},
+          "known_issues": {"bulletins_count": 1}
+        },
+        "attachments": {
+          "error_codes_found": ["E47"],
+          "key_findings": ["Low superheat error visible on display"]
+        }
+      },
+      "expected_output": {
+        "priority": "High",
+        "summary": "RTU not cooling - E47 low superheat error. Customer reports critical urgency due to business event.",
+        "recommended_action": "Dispatch field technician for refrigerant system diagnosis",
+        "routing": {"queue": "Field Service - Commercial", "reason": "On-site diagnosis required"},
+        "resolution_estimate": "Same day dispatch, 2-4 hour repair"
+      }
+    },
+    {
+      "name": "Recommend Next Action",
+      "description": "Determine the best next step for a case",
+      "request": {
+        "action": "recommend_next_action",
+        "issue_type": "Controls Issue",
+        "urgency": "Medium",
+        "product": "i-Vu"
+      },
+      "expected_output": {
+        "recommended_action": "Remote diagnostics session",
+        "action_details": "Schedule i-Vu remote access to review system configuration"
+      }
+    },
+    {
+      "name": "Assign Priority",
+      "description": "Calculate appropriate priority level",
+      "request": {
+        "action": "assign_priority",
+        "urgency": "Critical",
+        "issue_type": "Equipment Failure",
+        "account_tier": "Enterprise"
+      },
+      "expected_output": {
+        "priority": "Critical",
+        "priority_score": 95,
+        "factors": ["Critical urgency", "Equipment failure", "Enterprise customer"]
+      }
+    },
+    {
+      "name": "Suggest Routing",
+      "description": "Recommend appropriate queue for case",
+      "request": {
+        "action": "suggest_routing",
+        "issue_type": "Preventive Maintenance",
+        "product": "30RB",
+        "location": "Phoenix, AZ"
+      },
+      "expected_output": {
+        "queue": "Scheduled Maintenance - Southwest",
+        "routing_reason": "PM request for chiller in Southwest region"
+      }
+    }
+  ],
+  "routing_rules": {
+    "Equipment Failure": "Field Service - Commercial",
+    "Controls Issue": "Technical Support - Controls",
+    "Preventive Maintenance": "Scheduled Maintenance",
+    "Parts Request": "Parts & Logistics",
+    "Warranty Claim": "Warranty Administration"
+  },
+  "priority_matrix": {
+    "Critical": "SLA: 2 hours response",
+    "High": "SLA: 4 hours response",
+    "Medium": "SLA: 8 hours response",
+    "Low": "SLA: 24 hours response"
+  },
+  "mock_data": true
+}

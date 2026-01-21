@@ -1,0 +1,115 @@
+{
+  "demo_name": "Carrier Case Triage - End-to-End Demo",
+  "description": "Complete demonstration of the Carrier MVP Use Case 1: Customer Service Case Triage Agent Swarm",
+  "customer": "Carrier",
+  "use_case": "MVP Use Case 1 - Customer Service Case Triage",
+  "problem_statement": "Customer service cases in Salesforce often sit untriaged for days, increasing SLA risk and driving unnecessary call volume",
+  "solution": "AI-powered agent swarm that automatically triages new cases, extracts key information, and routes to appropriate teams",
+  
+  "demo_flow": [
+    {
+      "step": 1,
+      "title": "Case Arrives",
+      "description": "New case created in Salesforce with subject 'RTU not cooling - E47 error'",
+      "agent": "CarrierSFCaseMonitor",
+      "action": "Detects new case in queue"
+    },
+    {
+      "step": 2,
+      "title": "Attachment Analysis",
+      "description": "Customer attached photo of error display showing E47 code",
+      "agent": "CarrierAttachmentProcessor",
+      "action": "GPT-4 Vision extracts E47 error code from image"
+    },
+    {
+      "step": 3,
+      "title": "AI Text Analysis",
+      "description": "Case text analyzed for issue type, urgency, and product references",
+      "agent": "CarrierCaseAnalyzer",
+      "action": "Identifies: Equipment Failure, Critical urgency, 50XC product"
+    },
+    {
+      "step": 4,
+      "title": "Product Context",
+      "description": "Equipment details enriched from product database",
+      "agent": "CarrierProductEnrichment",
+      "action": "Retrieves warranty status (expired), service history, known bulletins"
+    },
+    {
+      "step": 5,
+      "title": "Triage Summary",
+      "description": "Generate actionable summary with routing recommendation",
+      "agent": "CarrierSummaryGenerator",
+      "action": "Priority: High, Queue: Field Service, Action: Dispatch technician"
+    },
+    {
+      "step": 6,
+      "title": "Update Salesforce",
+      "description": "Write triage results back to case record",
+      "agent": "CarrierSFWriter",
+      "action": "Updates custom fields with triage data and routing"
+    }
+  ],
+  
+  "demo_case": {
+    "id": "500xx000000JKL1AAA",
+    "subject": "RTU not cooling - E47 error",
+    "description": "Our rooftop unit 50XC (serial 2419G12345) stopped cooling this morning. Display shows E47 error. Temperature in building is 82F and climbing. We have a corporate event tonight - URGENT!",
+    "account": "Desert Sun Properties (Enterprise tier)",
+    "contact": "Maria Santos, Facilities Director",
+    "attachments": ["error_display.jpg - photo of E47 error on control panel"],
+    "created": "2024-12-15T08:30:00Z"
+  },
+  
+  "expected_triage_result": {
+    "priority": "High",
+    "issue_type": "Equipment Failure - Cooling System",
+    "urgency": "Critical",
+    "summary": "RTU not cooling with E47 low superheat error. Enterprise customer with event tonight requires immediate response.",
+    "routing": "Field Service - Commercial",
+    "recommended_action": "Dispatch technician for refrigerant system diagnosis",
+    "resolution_estimate": "Same day dispatch, 2-4 hour repair",
+    "warranty_status": "Expired",
+    "relevant_bulletin": "SB-2024-047: E47 Error - TXV Sensing Bulb"
+  },
+  
+  "kpis": {
+    "before_ai": {
+      "avg_triage_time": "4-6 hours",
+      "missed_sla_rate": "23%",
+      "manual_effort": "15 min per case"
+    },
+    "after_ai": {
+      "avg_triage_time": "< 5 minutes",
+      "missed_sla_rate": "< 5%",
+      "manual_effort": "0 min (fully automated)"
+    }
+  },
+  
+  "how_to_run": {
+    "orchestrator_command": {
+      "action": "demo_full_workflow"
+    },
+    "single_case_command": {
+      "action": "triage_single_case",
+      "case_id": "500xx000000JKL1AAA"
+    },
+    "batch_command": {
+      "action": "triage_all_new_cases",
+      "max_cases": 10
+    }
+  },
+  
+  "agents_in_swarm": [
+    "carrier_sf_case_monitor_agent.py",
+    "carrier_sf_writer_agent.py",
+    "carrier_case_analyzer_agent.py",
+    "carrier_summary_generator_agent.py",
+    "carrier_attachment_processor_agent.py",
+    "carrier_product_enrichment_agent.py",
+    "carrier_case_triage_orchestrator_agent.py"
+  ],
+  
+  "mock_data": true,
+  "salesforce_instance": "https://empathetic-bear-vanmxr-dev-ed.my.salesforce.com/"
+}

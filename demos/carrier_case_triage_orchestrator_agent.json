@@ -1,0 +1,137 @@
+{
+  "agent_name": "CarrierCaseTriageOrchestrator",
+  "description": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce.",
+  "customer": "Carrier",
+  "use_case": "MVP Use Case 1 - Customer Service Case Triage",
+  "swarm_agents": [
+    {
+      "order": 1,
+      "name": "CarrierSFCaseMonitor",
+      "purpose": "Retrieve cases from Salesforce"
+    },
+    {
+      "order": 2,
+      "name": "CarrierAttachmentProcessor",
+      "purpose": "Extract info from images/PDFs"
+    },
+    {
+      "order": 3,
+      "name": "CarrierCaseAnalyzer",
+      "purpose": "AI-powered text analysis"
+    },
+    {
+      "order": 4,
+      "name": "CarrierProductEnrichment",
+      "purpose": "Add product context (STUBBED)"
+    },
+    {
+      "order": 5,
+      "name": "CarrierSummaryGenerator",
+      "purpose": "Generate triage summary"
+    },
+    {
+      "order": 6,
+      "name": "CarrierSFWriter",
+      "purpose": "Write results to Salesforce"
+    }
+  ],
+  "demo_scenarios": [
+    {
+      "name": "Demo Full Workflow",
+      "description": "Run complete end-to-end triage demonstration",
+      "request": {
+        "action": "demo_full_workflow"
+      },
+      "expected_output": {
+        "workflow_steps": [
+          "1️⃣ SF Case Monitor → Retrieved case details",
+          "2️⃣ Attachment Processor → Analyzed case attachments",
+          "3️⃣ Case Analyzer → AI-powered text analysis",
+          "4️⃣ Product Enrichment → Added product context (STUBBED)",
+          "5️⃣ Summary Generator → Created triage summary",
+          "6️⃣ SF Writer → Would update Salesforce (skipped for demo)"
+        ],
+        "demo_mode": true
+      }
+    },
+    {
+      "name": "Triage Single Case",
+      "description": "Full triage workflow for one case",
+      "request": {
+        "action": "triage_single_case",
+        "case_id": "500xx000000JKL1AAA",
+        "write_to_sf": false
+      },
+      "expected_output": {
+        "status": "success",
+        "triage_result": {
+          "analysis": {
+            "issue_type": "Equipment Failure",
+            "urgency": "Critical"
+          },
+          "triage": {
+            "priority": "High",
+            "queue": "Field Service - Commercial",
+            "recommended_action": "Dispatch technician"
+          }
+        }
+      }
+    },
+    {
+      "name": "Triage All New Cases",
+      "description": "Process all new untriaged cases",
+      "request": {
+        "action": "triage_all_new_cases",
+        "max_cases": 5,
+        "write_to_sf": true
+      },
+      "expected_output": {
+        "cases_found": 3,
+        "cases_processed": 3,
+        "results": [
+          {"case_id": "500xx000000JKL1AAA", "priority": "High"},
+          {"case_id": "500xx000000MNO2BBB", "priority": "Medium"},
+          {"case_id": "500xx000000PQR3CCC", "priority": "Low"}
+        ]
+      }
+    },
+    {
+      "name": "Triage Aging Cases",
+      "description": "Priority processing of SLA-risk cases",
+      "request": {
+        "action": "triage_aging_cases",
+        "max_cases": 10,
+        "write_to_sf": true
+      },
+      "expected_output": {
+        "aging_cases_found": 1,
+        "cases_processed": 1,
+        "results": [
+          {"case_id": "500xx000000STU4DDD", "age_hours": 6, "priority": "High"}
+        ]
+      }
+    },
+    {
+      "name": "Get Triage Status",
+      "description": "Check queue status and get recommendations",
+      "request": {
+        "action": "get_triage_status"
+      },
+      "expected_output": {
+        "swarm_status": {
+          "agents_active": 6
+        },
+        "queue_summary": {
+          "new_cases": 3,
+          "aging_cases": 1,
+          "untriaged": 4
+        },
+        "recommendations": [
+          "⚠️ 1 aging case(s) detected - prioritize with 'triage_aging_cases'"
+        ]
+      }
+    }
+  ],
+  "workflow_diagram": "SF Cases → Monitor → Attachments → Analyzer → Enrichment → Summary → SF Update",
+  "mock_data": true
+}

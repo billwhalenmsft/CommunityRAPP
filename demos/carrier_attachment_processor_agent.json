@@ -1,0 +1,115 @@
+{
+  "agent_name": "CarrierAttachmentProcessor",
+  "description": "Processes case attachments (images, PDFs, documents) to extract error codes and relevant information. Uses GPT-4 Vision for image analysis. Part of the Carrier Case Triage Agent Swarm.",
+  "customer": "Carrier",
+  "use_case": "MVP Use Case 1 - Customer Service Case Triage",
+  "demo_scenarios": [
+    {
+      "name": "Process All Attachments",
+      "description": "Analyze all attachments for a case",
+      "request": {
+        "action": "process_attachments",
+        "case_id": "500xx000000JKL1AAA",
+        "attachments": [
+          {
+            "id": "att001",
+            "name": "error_display.jpg",
+            "type": "image/jpeg",
+            "size": 245000
+          },
+          {
+            "id": "att002",
+            "name": "service_history.pdf",
+            "type": "application/pdf",
+            "size": 156000
+          }
+        ]
+      },
+      "expected_output": {
+        "attachments_processed": 2,
+        "error_codes_found": ["E47"],
+        "key_findings": [
+          "E47 error code displayed on unit control panel",
+          "Previous service record shows refrigerant leak repair in 2023"
+        ],
+        "recommendations": ["Check refrigerant levels", "Inspect TXV sensing bulb"]
+      }
+    },
+    {
+      "name": "Extract Image Info",
+      "description": "Use GPT-4 Vision to analyze an equipment image",
+      "request": {
+        "action": "extract_image_info",
+        "attachment_id": "att001",
+        "image_url": "https://storage.example.com/error_display.jpg"
+      },
+      "expected_output": {
+        "image_type": "Equipment Display/Control Panel",
+        "visible_error_codes": ["E47"],
+        "equipment_identified": "Carrier RTU Control Display",
+        "observations": ["Error indicator lit", "Temperature reading visible"]
+      }
+    },
+    {
+      "name": "Analyze Error Codes",
+      "description": "Look up Carrier error codes and provide context",
+      "request": {
+        "action": "analyze_error_codes",
+        "error_codes": ["E47", "E23"]
+      },
+      "expected_output": {
+        "codes_analyzed": [
+          {
+            "code": "E47",
+            "description": "Low Superheat",
+            "severity": "High",
+            "probable_cause": "Overcharged system, TXV stuck open, or sensing bulb issue",
+            "recommended_action": "Check TXV and refrigerant charge"
+          },
+          {
+            "code": "E23",
+            "description": "Outdoor Coil Temperature Sensor Fault",
+            "severity": "Medium",
+            "probable_cause": "Faulty sensor or wiring issue",
+            "recommended_action": "Inspect and replace sensor if needed"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Summarize Attachments",
+      "description": "Create a brief summary of all attachment findings",
+      "request": {
+        "action": "summarize_attachments",
+        "attachment_results": [
+          {
+            "name": "error_photo.jpg",
+            "findings": ["E47 error visible", "Unit appears to be running"]
+          },
+          {
+            "name": "install_manual.pdf",
+            "findings": ["50XC installation guide", "Includes troubleshooting section"]
+          }
+        ]
+      },
+      "expected_output": {
+        "summary": "Customer provided photo showing E47 error code on RTU display. Installation manual also attached for reference.",
+        "action_items": ["Verify E47 troubleshooting steps from manual"]
+      }
+    }
+  ],
+  "supported_formats": {
+    "images": ["jpg", "jpeg", "png", "gif", "webp"],
+    "documents": ["pdf", "doc", "docx", "txt"],
+    "data": ["csv", "xlsx"]
+  },
+  "error_code_database": {
+    "E47": "Low Superheat - Check TXV and refrigerant charge",
+    "E48": "High Superheat - Low refrigerant or restriction",
+    "E23": "Outdoor Coil Temp Sensor Fault",
+    "E15": "Low Pressure Lockout",
+    "E61": "Communication Error - Controls",
+    "E72": "Indoor Blower Motor Fault"
+  },
+  "mock_data": true
+}

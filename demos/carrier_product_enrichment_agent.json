@@ -1,0 +1,130 @@
+{
+  "agent_name": "CarrierProductEnrichment",
+  "description": "Enriches case with product details, warranty status, service history, and known issues. STUBBED for demo - uses mock data until internal APIs are available. Part of the Carrier Case Triage Agent Swarm.",
+  "customer": "Carrier",
+  "use_case": "MVP Use Case 1 - Customer Service Case Triage",
+  "status": "STUBBED",
+  "future_api_endpoints": {
+    "product_lookup": "[FUTURE: https://api.carrier.com/products/v1/lookup]",
+    "install_base": "[FUTURE: https://api.carrier.com/installbase/v1/query]",
+    "warranty": "[FUTURE: https://api.carrier.com/warranty/v1/status]",
+    "service_history": "[FUTURE: https://api.carrier.com/service/v1/history]"
+  },
+  "demo_scenarios": [
+    {
+      "name": "Full Enrichment",
+      "description": "Get complete product context for a case",
+      "request": {
+        "action": "full_enrichment",
+        "model": "50XC",
+        "serial": "2419G12345",
+        "account_id": "001xx000000ABC"
+      },
+      "expected_output": {
+        "product": {
+          "model": "50XC",
+          "full_name": "Carrier 50XC WeatherMaker Rooftop Unit",
+          "product_line": "Rooftop Units",
+          "category": "Commercial HVAC",
+          "support_tier": "Standard"
+        },
+        "serial_info": {
+          "manufacture_date": "2019-04-15",
+          "install_date": "2019-06-15",
+          "age_years": 6.5,
+          "has_service_contract": false
+        },
+        "warranty": {
+          "status": "Expired",
+          "expiry_date": "2024-06-15"
+        },
+        "service_history": {
+          "total_records": 3,
+          "last_service": "2024-09-15"
+        },
+        "known_issues": {
+          "bulletins_found": 2,
+          "has_relevant_bulletins": true
+        }
+      }
+    },
+    {
+      "name": "Lookup Product",
+      "description": "Get product details by model number",
+      "request": {
+        "action": "lookup_product",
+        "model": "30RB"
+      },
+      "expected_output": {
+        "model": "30RB",
+        "full_name": "Carrier 30RB AquaSnap Air-Cooled Chiller",
+        "product_line": "Chillers",
+        "cooling_capacity_tons": "30-180",
+        "support_tier": "Premium"
+      }
+    },
+    {
+      "name": "Check Warranty Status",
+      "description": "Verify warranty coverage for equipment",
+      "request": {
+        "action": "check_warranty_status",
+        "serial": "2419G12345"
+      },
+      "expected_output": {
+        "status": "Expired",
+        "start_date": "2019-06-15",
+        "end_date": "2024-06-15",
+        "days_remaining": 0,
+        "has_service_contract": false
+      }
+    },
+    {
+      "name": "Get Service History",
+      "description": "Retrieve service records for equipment",
+      "request": {
+        "action": "get_service_history",
+        "serial": "2419G12345"
+      },
+      "expected_output": {
+        "total_records": 3,
+        "services": [
+          {
+            "date": "2024-09-15",
+            "type": "Preventive Maintenance",
+            "resolution": "Replaced filters, cleaned coils"
+          },
+          {
+            "date": "2023-07-22",
+            "type": "Repair",
+            "issue": "E47 error - refrigerant leak",
+            "resolution": "Repaired leak and recharged"
+          }
+        ],
+        "total_cost": 1850.00
+      }
+    },
+    {
+      "name": "Get Known Issues",
+      "description": "Find service bulletins for a product",
+      "request": {
+        "action": "get_known_issues",
+        "model": "50XC",
+        "serial": "2419G12345"
+      },
+      "expected_output": {
+        "bulletins_count": 2,
+        "bulletins": [
+          {
+            "bulletin_id": "SB-2024-047",
+            "title": "E47 Error - TXV Sensing Bulb",
+            "severity": "Medium",
+            "recommended_action": "Verify TXV bulb position"
+          }
+        ],
+        "has_critical_bulletins": false
+      }
+    }
+  ],
+  "stubbed_products": ["50XC", "30RB", "38AUD", "i-Vu"],
+  "mock_data": true
+}

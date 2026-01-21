@@ -1,0 +1,71 @@
+{
+  "agent_name": "CarrierSFWriter",
+  "description": "Writes triage results back to Salesforce cases. Part of the Carrier Case Triage Agent Swarm.",
+  "customer": "Carrier",
+  "use_case": "MVP Use Case 1 - Customer Service Case Triage",
+  "demo_scenarios": [
+    {
+      "name": "Update Case Triage",
+      "description": "Write complete triage results to a case",
+      "request": {
+        "action": "update_case_triage",
+        "case_id": "500xx000000JKL1AAA",
+        "triage_data": {
+          "priority": "High",
+          "issue_type": "Equipment Failure",
+          "triage_summary": "RTU not cooling - E47 low superheat error. Customer reports warm air since this morning. Compressor running but no cooling effect.",
+          "recommended_action": "Dispatch technician - likely refrigerant leak or TXV issue",
+          "recommended_queue": "Field Service - Commercial",
+          "triage_status": "Completed"
+        }
+      },
+      "expected_output": "Success confirmation with updated field values"
+    },
+    {
+      "name": "Set Case Priority",
+      "description": "Update case priority and reason",
+      "request": {
+        "action": "set_case_priority",
+        "case_id": "500xx000000JKL1AAA",
+        "priority": "High",
+        "reason": "Customer has event tonight, needs immediate resolution"
+      },
+      "expected_output": "Priority update confirmation"
+    },
+    {
+      "name": "Add Case Comment",
+      "description": "Add internal comment to case",
+      "request": {
+        "action": "add_case_comment",
+        "case_id": "500xx000000JKL1AAA",
+        "comment": "AI Triage: E47 error detected in customer photo. Recommend TXV inspection.",
+        "is_public": false
+      },
+      "expected_output": "Comment added confirmation with timestamp"
+    },
+    {
+      "name": "Route Case",
+      "description": "Route case to appropriate queue",
+      "request": {
+        "action": "route_case",
+        "case_id": "500xx000000JKL1AAA",
+        "queue": "Field Service - Commercial",
+        "routing_reason": "On-site service required for refrigerant system diagnosis"
+      },
+      "expected_output": "Routing confirmation with queue assignment"
+    }
+  ],
+  "integration": {
+    "salesforce_instance": "https://empathetic-bear-vanmxr-dev-ed.my.salesforce.com/",
+    "api_version": "v59.0",
+    "custom_fields": [
+      "Triage_Status__c",
+      "Triage_Priority__c",
+      "Triage_Issue_Type__c",
+      "Triage_Summary__c",
+      "Recommended_Action__c",
+      "AI_Triaged_Date__c"
+    ]
+  },
+  "mock_data": true
+}

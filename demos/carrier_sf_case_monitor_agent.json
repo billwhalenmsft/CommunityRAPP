@@ -1,0 +1,48 @@
+{
+  "agent_name": "CarrierSFCaseMonitor",
+  "description": "Monitors Salesforce for new, aging, and untriaged cases. Part of the Carrier Case Triage Agent Swarm.",
+  "customer": "Carrier",
+  "use_case": "MVP Use Case 1 - Customer Service Case Triage",
+  "demo_scenarios": [
+    {
+      "name": "Get New Cases",
+      "description": "Retrieve all new cases that need triage",
+      "request": {
+        "action": "get_new_cases"
+      },
+      "expected_output": "List of new Salesforce cases with subject, account, creation time"
+    },
+    {
+      "name": "Get Aging Cases",
+      "description": "Retrieve cases that are approaching or exceeding SLA thresholds",
+      "request": {
+        "action": "get_aging_cases",
+        "threshold_hours": 4
+      },
+      "expected_output": "List of aging cases with age in hours"
+    },
+    {
+      "name": "Get Case Details",
+      "description": "Get full details for a specific case",
+      "request": {
+        "action": "get_case_details",
+        "case_id": "500xx000000JKL1AAA"
+      },
+      "expected_output": "Full case record with description, attachments, contact info"
+    },
+    {
+      "name": "Get Queue Summary",
+      "description": "Get overview of case queue status",
+      "request": {
+        "action": "get_queue_summary"
+      },
+      "expected_output": "Summary showing new, aging, and untriaged case counts"
+    }
+  ],
+  "integration": {
+    "salesforce_instance": "https://empathetic-bear-vanmxr-dev-ed.my.salesforce.com/",
+    "api_version": "v59.0",
+    "objects_used": ["Case", "Account", "Contact", "ContentDocumentLink"]
+  },
+  "mock_data": true
+}
