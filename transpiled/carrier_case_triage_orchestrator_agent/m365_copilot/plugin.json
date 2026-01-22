@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.2/schema.json",
+  "schema_version": "v2.2",
+  "name_for_human": "CarrierCaseTriageOrchestrator",
+  "description_for_human": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case",
+  "description_for_model": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce.",
+  "api": {
+    "type": "openapi",
+    "url": "https://your-function-app.azurewebsites.net/api/openapi/carrier_case_triage_orchestrator"
+  },
+  "auth": {
+    "type": "none"
+  },
+  "capabilities": {
+    "conversation_starters": true
+  }
+}

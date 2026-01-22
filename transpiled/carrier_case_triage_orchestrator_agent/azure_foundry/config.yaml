@@ -1,0 +1,17 @@
+{
+  "agent": {
+    "name": "CarrierCaseTriageOrchestrator",
+    "description": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce.",
+    "model": "gpt-4o",
+    "version": "1.0.0"
+  },
+  "rapp_backend": {
+    "url": "https://your-function-app.azurewebsites.net",
+    "enabled": true
+  },
+  "tools": [],
+  "environment": {
+    "AI_PROJECT_CONNECTION_STRING": "${AI_PROJECT_CONNECTION_STRING}",
+    "RAPP_FUNCTION_APP_URL": "https://your-function-app.azurewebsites.net"
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "agent": {
+    "id": "agent_transpiler_agent",
+    "name": "Agent Transpiler",
+    "version": "1.0.0",
+    "category": "meta",
+    "icon": "fa-exchange-alt",
+    "description": "Multi-Platform Agent Factory - Converts RAPP agent definitions to M365 Copilot Declarative Agents, Copilot Studio Agents, or Azure AI Foundry Agents. Enables RAPP to be a universal agent builder that can deploy to any platform.",
+    "tokens": 2000,
+    "author": "RAPP",
+    "created": "2026-01-22",
+    "updated": "2026-01-22"
+  },
+  "metadata": {
+    "name": "AgentTranspiler",
+    "description": "Converts RAPP agent definitions to multiple target platforms",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["transpile", "analyze", "generate_openapi", "preview", "list_platforms", "batch_transpile"],
+          "description": "The transpilation action to perform"
+        },
+        "agent_name": {
+          "type": "string",
+          "description": "Name of the RAPP agent to transpile"
+        },
+        "target_platform": {
+          "type": "string",
+          "enum": ["m365_copilot", "copilot_studio", "azure_foundry", "all"],
+          "description": "Target platform for transpilation"
+        },
+        "function_app_url": {
+          "type": "string",
+          "description": "URL of the RAPP Function App for API connections"
+        },
+        "save_files": {
+          "type": "boolean",
+          "description": "Whether to save generated files to disk"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "supported_platforms": {
+    "m365_copilot": {
+      "name": "M365 Copilot Declarative Agent",
+      "description": "Declarative agents for Microsoft 365 Copilot with API plugins",
+      "output_files": ["declarativeAgent.json", "plugin.json", "openapi.yaml"],
+      "best_for": ["Teams integration", "Outlook integration", "SharePoint integration"]
+    },
+    "copilot_studio": {
+      "name": "Copilot Studio Agent",
+      "description": "Low-code agents with Power Platform connectors",
+      "output_files": ["agent.yaml", "topics/*.yaml", "connector.json"],
+      "best_for": ["Power Platform", "Low-code", "Business users"]
+    },
+    "azure_foundry": {
+      "name": "Azure AI Foundry Agent",
+      "description": "Full Python agents with Azure AI Agent Service",
+      "output_files": ["agent.py", "tools.py", "config.yaml"],
+      "best_for": ["Complex logic", "Custom integrations", "Full control"]
+    }
+  },
+  "actions": [
+    {
+      "name": "list_platforms",
+      "description": "List all supported target platforms with their capabilities",
+      "parameters": [],
+      "example": {
+        "input": {"action": "list_platforms"},
+        "output": "**Supported Platforms:**\n\n1. **M365 Copilot** - Declarative agents for Microsoft 365\n2. **Copilot Studio** - Low-code agents with Power Platform\n3. **Azure AI Foundry** - Full Python agents"
+      }
+    },
+    {
+      "name": "analyze",
+      "description": "Analyze an agent and recommend the best target platform",
+      "parameters": ["agent_name"],
+      "example": {
+        "input": {"action": "analyze", "agent_name": "CarrierCaseTriageOrchestrator"},
+        "output": "**Analysis: CarrierCaseTriageOrchestrator**\n\n📊 Complexity Score: 25\n- Actions: 6\n- Has Swarm: Yes\n- External APIs: Yes\n\n🎯 **Recommended Platform: Azure AI Foundry**\n- Score: 90/100\n- Reason: Complex orchestration with swarm agents"
+      }
+    },
+    {
+      "name": "transpile",
+      "description": "Convert a RAPP agent to the target platform format",
+      "parameters": ["agent_name", "target_platform", "function_app_url"],
+      "example": {
+        "input": {
+          "action": "transpile",
+          "agent_name": "CarrierCaseTriageOrchestrator",
+          "target_platform": "m365_copilot",
+          "function_app_url": "https://rapp-kt6i6mlby5wzi.azurewebsites.net"
+        },
+        "output": "✅ **Transpilation Complete**\n\nGenerated files for M365 Copilot:\n- declarativeAgent.json\n- plugin.json\n- openapi.yaml"
+      }
+    },
+    {
+      "name": "preview",
+      "description": "Preview transpilation without saving files",
+      "parameters": ["agent_name", "target_platform"],
+      "example": {
+        "input": {"action": "preview", "agent_name": "CarrierSFCaseMonitor", "target_platform": "copilot_studio"},
+        "output": "**Preview: Copilot Studio Agent**\n\n```yaml\nname: CarrierSFCaseMonitor\ntopics:\n  - CheckCaseQueue\n  - GetCaseDetails\n  - GetNewCases\n```"
+      }
+    },
+    {
+      "name": "generate_openapi",
+      "description": "Generate OpenAPI spec for the RAPP Function App",
+      "parameters": ["function_app_url", "include_agents"],
+      "example": {
+        "input": {"action": "generate_openapi", "function_app_url": "https://rapp.azurewebsites.net"},
+        "output": "**OpenAPI Spec Generated**\n\nEndpoints: 15\nAgents included: All"
+      }
+    },
+    {
+      "name": "batch_transpile",
+      "description": "Transpile multiple agents at once",
+      "parameters": ["agent_names", "target_platform"],
+      "example": {
+        "input": {"action": "batch_transpile", "target_platform": "all"},
+        "output": "**Batch Transpilation Complete**\n\nProcessed: 7 agents\n- M365 Copilot: 7 files\n- Copilot Studio: 21 files\n- Azure Foundry: 14 files"
+      }
+    }
+  ],
+  "system_prompt": "You are the Agent Transpiler - a meta-agent that converts RAPP agent definitions to multiple target platforms. You can generate:\n\n1. **M365 Copilot Declarative Agents** - With API plugins for Teams/Outlook/SharePoint integration\n2. **Copilot Studio Agents** - With topics, flows, and Power Platform connectors\n3. **Azure AI Foundry Agents** - Full Python code with tools and configuration\n\n**Workflow:**\n1. First use 'analyze' to understand agent complexity and get platform recommendations\n2. Use 'preview' to see what would be generated\n3. Use 'transpile' to generate the actual files\n4. Use 'generate_openapi' to create the API spec for custom connectors\n\n**Best Practices:**\n- M365 Copilot is best for Teams/Outlook integration with moderate complexity\n- Copilot Studio is best for low-code scenarios and Power Platform users\n- Azure Foundry is best for complex orchestration, swarms, and custom logic",
+  "demo_conversation": [
+    {
+      "role": "user",
+      "content": "I want to convert the Carrier Case Triage agents to Copilot Studio"
+    },
+    {
+      "role": "assistant",
+      "content": "I'll help you convert the Carrier Case Triage agents to Copilot Studio! Let me first analyze the agent to recommend the best approach.\n\n**Analysis: CarrierCaseTriageOrchestrator**\n\n📊 **Complexity Assessment:**\n- Actions: 6 (triage_single_case, triage_all_new_cases, etc.)\n- Has Swarm Orchestration: Yes (6 sub-agents)\n- External APIs: Salesforce REST API\n- Complexity Score: 25/30\n\n🎯 **Platform Recommendations:**\n\n| Platform | Score | Fit |\n|----------|-------|-----|\n| Azure Foundry | 90 | ⭐ Best - handles swarm complexity |\n| M365 Copilot | 65 | Good - via API plugin |\n| Copilot Studio | 55 | Moderate - needs multiple flows |\n\n**For Copilot Studio, I recommend:**\n1. Keep RAPP Function App as the backend\n2. Create a Custom Connector pointing to your Function App\n3. Build topics that call the connector\n\nWould you like me to:\n1. Generate the Copilot Studio configuration (agent.yaml + topics)\n2. Generate the Power Automate flow template\n3. Generate all platforms for comparison\n\nWhich option would you prefer?"
+    },
+    {
+      "role": "user",
+      "content": "Generate all platforms for comparison"
+    },
+    {
+      "role": "assistant",
+      "content": "✅ **Transpilation Complete - All Platforms**\n\n---\n\n### 📁 M365 Copilot Declarative Agent\n\n**declarativeAgent.json:**\n```json\n{\n  \"version\": \"v1.6\",\n  \"name\": \"Carrier Case Triage\",\n  \"description\": \"AI-powered case triage for Salesforce\",\n  \"instructions\": \"You coordinate 6 specialized agents...\",\n  \"actions\": [{\"id\": \"carrier_plugin\", \"file\": \"plugin.json\"}]\n}\n```\n\n**plugin.json:** API plugin pointing to RAPP Function App\n**openapi.yaml:** OpenAPI spec for the agent endpoints\n\n---\n\n### 📁 Copilot Studio Agent\n\n**agent.yaml:**\n```yaml\nname: CarrierCaseTriageOrchestrator\nconnector: RAPP-Custom-Connector\ntopics:\n  - TriageSingleCase\n  - TriageAllNewCases\n  - TriageAgingCases\n  - GetTriageStatus\n```\n\n**Topics generated:** 6 YAML files\n**Flow template:** Power Automate HTTP flow\n\n---\n\n### 📁 Azure AI Foundry Agent\n\n**carrier_case_triage_orchestrator_agent.py:** Full Python agent\n**carrier_case_triage_orchestrator_tools.py:** Tool definitions\n**config.yaml:** Agent configuration\n**requirements.txt:** Dependencies\n\n---\n\n💡 **Recommendation:** Given the swarm orchestration complexity, I recommend:\n1. **Production:** Azure AI Foundry for full control\n2. **Quick demo:** M365 Copilot with API plugin\n3. **Business users:** Copilot Studio with Custom Connector\n\nShall I save these files to disk?"
+    }
+  ]
+}

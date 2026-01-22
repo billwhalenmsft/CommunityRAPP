@@ -1,0 +1,60 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CarrierCaseTriageOrchestrator API",
+    "description": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://your-function-app.azurewebsites.net"
+    }
+  ],
+  "paths": {
+    "/api/carrier_case_triage_orchestrator": {
+      "post": {
+        "operationId": "carrier_case_triage_orchestrator_invoke",
+        "summary": "Invoke CarrierCaseTriageOrchestrator",
+        "description": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "The action to perform",
+                    "enum": [
+                      "default"
+                    ]
+                  },
+                  "parameters": {
+                    "type": "object",
+                    "description": "Action-specific parameters"
+                  }
+                },
+                "required": [
+                  "action"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

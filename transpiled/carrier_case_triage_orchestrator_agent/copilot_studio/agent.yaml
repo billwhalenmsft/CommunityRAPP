@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "Bot",
+  "metadata": {
+    "name": "CarrierCaseTriageOrchestrator",
+    "description": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce.",
+    "icon": "fa-robot",
+    "category": "productivity"
+  },
+  "language": {
+    "primaryLanguage": "en-us"
+  },
+  "systemTopic": {
+    "kind": "SystemTopic",
+    "name": "System",
+    "instructions": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce."
+  },
+  "topics": [],
+  "connectors": [
+    {
+      "id": "rapp-carrier_case_triage_orchestrator-connector",
+      "type": "CustomConnector",
+      "apiDefinitionUrl": "https://your-function-app.azurewebsites.net/api/openapi"
+    }
+  ]
+}

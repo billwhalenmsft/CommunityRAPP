@@ -1,0 +1,46 @@
+{
+  "name": "RAPP-CarrierCaseTriageOrchestrator-Flow",
+  "description": "Power Automate flow for CarrierCaseTriageOrchestrator",
+  "trigger": {
+    "type": "Request",
+    "kind": "Http",
+    "inputs": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "Call_RAPP_Function": {
+      "type": "Http",
+      "inputs": {
+        "method": "POST",
+        "uri": "https://your-function-app.azurewebsites.net/api/carrier_case_triage_orchestrator",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "@triggerBody()"
+      }
+    },
+    "Response": {
+      "type": "Response",
+      "inputs": {
+        "statusCode": 200,
+        "body": "@body('Call_RAPP_Function')"
+      },
+      "runAfter": {
+        "Call_RAPP_Function": [
+          "Succeeded"
+        ]
+      }
+    }
+  }
+}

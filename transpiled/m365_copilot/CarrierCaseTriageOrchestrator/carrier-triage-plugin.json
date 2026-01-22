@@ -1,0 +1,149 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.2/schema.json",
+  "schema_version": "v2.2",
+  "name_for_human": "Carrier Case Triage",
+  "name_for_model": "carrier_case_triage",
+  "description_for_human": "AI-powered Salesforce case triage and processing using specialized agent swarm",
+  "description_for_model": "Use this plugin to triage, analyze, and process Salesforce support cases. The plugin orchestrates multiple specialized agents to handle case monitoring, attachment processing, product enrichment, analysis, summary generation, and Salesforce updates. Call triage_single_case for one case, triage_all_new_cases for batch processing, or check_aging_cases for SLA monitoring.",
+  "contact_email": "support@example.com",
+  "namespace": "CarrierTriage",
+  "logo_url": "https://example.com/carrier-logo.png",
+  "legal_info_url": "https://example.com/legal",
+  "privacy_policy_url": "https://example.com/privacy",
+  "functions": [
+    {
+      "name": "triage_single_case",
+      "description": "Triage a single Salesforce case through the full pipeline: monitor → attachments → enrichment → analysis → summary → write back",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "description": "The Salesforce Case ID (e.g., 5001234567890ABCDEF)"
+          },
+          "include_attachments": {
+            "type": "boolean",
+            "description": "Whether to process case attachments",
+            "default": true
+          },
+          "auto_write_back": {
+            "type": "boolean",
+            "description": "Whether to automatically write triage results back to Salesforce",
+            "default": true
+          }
+        },
+        "required": ["case_id"]
+      }
+    },
+    {
+      "name": "triage_all_new_cases",
+      "description": "Find and triage all new/unprocessed Salesforce cases",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "max_cases": {
+            "type": "integer",
+            "description": "Maximum number of cases to process",
+            "default": 10
+          },
+          "priority_filter": {
+            "type": "string",
+            "enum": ["all", "high", "medium", "low"],
+            "description": "Filter cases by priority",
+            "default": "all"
+          }
+        }
+      }
+    },
+    {
+      "name": "check_aging_cases",
+      "description": "Find and triage cases that have exceeded SLA thresholds",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "hours_threshold": {
+            "type": "integer",
+            "description": "Hours since case creation to consider 'aging'",
+            "default": 48
+          },
+          "escalate": {
+            "type": "boolean",
+            "description": "Whether to escalate aging cases",
+            "default": false
+          }
+        }
+      }
+    },
+    {
+      "name": "get_triage_status",
+      "description": "Get current status of the triage queue and recent processing results",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "include_history": {
+            "type": "boolean",
+            "description": "Include recently processed cases",
+            "default": true
+          }
+        }
+      }
+    },
+    {
+      "name": "get_case_summary",
+      "description": "Get an executive summary of a previously triaged case",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "description": "The Salesforce Case ID"
+          }
+        },
+        "required": ["case_id"]
+      }
+    },
+    {
+      "name": "update_case_status",
+      "description": "Update the status or notes on a Salesforce case",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "description": "The Salesforce Case ID"
+          },
+          "new_status": {
+            "type": "string",
+            "enum": ["New", "In Progress", "Escalated", "Pending Customer", "Resolved", "Closed"],
+            "description": "New status for the case"
+          },
+          "internal_notes": {
+            "type": "string",
+            "description": "Internal notes to add to the case"
+          }
+        },
+        "required": ["case_id"]
+      }
+    }
+  ],
+  "runtimes": [
+    {
+      "type": "OpenApi",
+      "auth": {
+        "type": "ApiKeyPluginVault",
+        "reference_id": "{RAPP_API_KEY_REFERENCE}"
+      },
+      "spec": {
+        "url": "openapi.yaml"
+      },
+      "run_for_functions": [
+        "triage_single_case",
+        "triage_all_new_cases",
+        "check_aging_cases",
+        "get_triage_status",
+        "get_case_summary",
+        "update_case_status"
+      ]
+    }
+  ]
+}

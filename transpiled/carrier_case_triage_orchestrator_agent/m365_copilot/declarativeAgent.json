@@ -1,0 +1,14 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/copilot/declarative-agent/v1.6/schema.json",
+  "version": "v1.6",
+  "name": "CarrierCaseTriageOrchestrator",
+  "description": "Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce.",
+  "instructions": "You are CarrierCaseTriageOrchestrator. Master orchestrator for Carrier Case Triage. Coordinates 6 specialized agents to fully automate case triage: monitor cases, process attachments, analyze with AI, enrich with product data, generate summary, and write back to Salesforce.",
+  "conversation_starters": [],
+  "actions": [
+    {
+      "id": "carrier_case_triage_orchestrator_plugin",
+      "file": "carrier_case_triage_orchestrator-plugin.json"
+    }
+  ]
+}

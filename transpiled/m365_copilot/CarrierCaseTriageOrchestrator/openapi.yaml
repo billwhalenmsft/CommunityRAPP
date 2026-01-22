@@ -1,0 +1,339 @@
+openapi: 3.0.3
+info:
+  title: Carrier Case Triage Orchestrator API
+  description: |
+    RAPP Agent API for Carrier Case Triage Orchestrator.
+    This API provides access to AI-powered Salesforce case triage functionality
+    that coordinates 6 specialized sub-agents for comprehensive case processing.
+  version: 1.0.0
+  contact:
+    name: RAPP Support
+    email: support@example.com
+    url: https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen
+
+servers:
+  - url: https://rapp-kt6i6mlby5wzi.azurewebsites.net/api
+    description: RAPP Azure Function App
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /chat:
+    post:
+      operationId: triageSingleCase
+      summary: Triage a single Salesforce case
+      description: |
+        Processes a single Salesforce case through the full triage pipeline:
+        1. Retrieve case details from Salesforce
+        2. Process any attachments
+        3. Enrich with product information
+        4. Analyze case and determine priority
+        5. Generate executive summary
+        6. Write triage results back to Salesforce
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - agent
+                - message
+              properties:
+                agent:
+                  type: string
+                  const: CarrierCaseTriageOrchestrator
+                  description: The agent to invoke
+                message:
+                  type: string
+                  description: |
+                    Natural language request including the case ID.
+                    Example: "Triage case 5001234567890ABCDEF"
+                conversation_history:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        enum: [user, assistant]
+                      content:
+                        type: string
+                  description: Previous conversation messages for context
+      responses:
+        '200':
+          description: Successful triage response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    description: AI-generated triage results and summary
+                  agent:
+                    type: string
+                    description: Name of the agent that processed the request
+                  metadata:
+                    type: object
+                    properties:
+                      case_id:
+                        type: string
+                      triage_status:
+                        type: string
+                      priority:
+                        type: string
+                      agents_invoked:
+                        type: array
+                        items:
+                          type: string
+        '400':
+          description: Bad request - invalid parameters
+        '429':
+          description: Rate limit exceeded
+        '500':
+          description: Internal server error
+
+  /chat/batch:
+    post:
+      operationId: triageAllNewCases
+      summary: Batch triage all new cases
+      description: |
+        Finds and triages all new/unprocessed Salesforce cases.
+        Processes up to max_cases through the full pipeline.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - agent
+                - message
+              properties:
+                agent:
+                  type: string
+                  const: CarrierCaseTriageOrchestrator
+                message:
+                  type: string
+                  description: |
+                    Request to process new cases.
+                    Example: "Triage all new cases, max 10"
+                max_cases:
+                  type: integer
+                  default: 10
+                  description: Maximum cases to process
+                priority_filter:
+                  type: string
+                  enum: [all, high, medium, low]
+                  default: all
+      responses:
+        '200':
+          description: Batch processing results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                  processed_count:
+                    type: integer
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        case_id:
+                          type: string
+                        status:
+                          type: string
+                        priority:
+                          type: string
+
+  /chat/aging:
+    post:
+      operationId: checkAgingCases
+      summary: Check and triage aging cases
+      description: |
+        Finds cases that have exceeded SLA thresholds and processes them.
+        Can optionally escalate critical aging cases.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - agent
+                - message
+              properties:
+                agent:
+                  type: string
+                  const: CarrierCaseTriageOrchestrator
+                message:
+                  type: string
+                  description: |
+                    Request to check aging cases.
+                    Example: "Check for cases older than 48 hours"
+                hours_threshold:
+                  type: integer
+                  default: 48
+                escalate:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Aging case analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                  aging_count:
+                    type: integer
+                  escalated:
+                    type: array
+                    items:
+                      type: string
+
+  /status:
+    get:
+      operationId: getTriageStatus
+      summary: Get triage queue status
+      description: Returns current status of the triage queue and recent activity
+      parameters:
+        - name: include_history
+          in: query
+          schema:
+            type: boolean
+            default: true
+          description: Include recently processed cases
+      responses:
+        '200':
+          description: Queue status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  queue_length:
+                    type: integer
+                  agents_active:
+                    type: array
+                    items:
+                      type: string
+                  recent_cases:
+                    type: array
+                    items:
+                      type: object
+
+  /agents:
+    get:
+      operationId: listAgents
+      summary: List available agents
+      description: Returns all available RAPP agents
+      responses:
+        '200':
+          description: List of agents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Health check endpoint
+      description: Returns health status of the RAPP Function App
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    const: healthy
+                  version:
+                    type: string
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-functions-key
+      description: Azure Function App API key
+
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - agent
+        - message
+      properties:
+        agent:
+          type: string
+          description: Name of the RAPP agent to invoke
+        message:
+          type: string
+          description: User message or query
+        conversation_history:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        context:
+          type: object
+          additionalProperties: true
+          description: Additional context for the agent
+
+    ChatMessage:
+      type: object
+      required:
+        - role
+        - content
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+
+    ChatResponse:
+      type: object
+      properties:
+        response:
+          type: string
+          description: AI-generated response
+        agent:
+          type: string
+          description: Agent that processed the request
+        metadata:
+          type: object
+          additionalProperties: true
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: integer
