@@ -1,0 +1,116 @@
+{
+  "agent": {
+    "id": "aes_excel_parser_agent",
+    "name": "AES Excel Parser",
+    "version": "1.0.0",
+    "category": "data-processing",
+    "icon": "fa-file-excel",
+    "description": "Parses customer RFQ Excel files to extract store locations, scope quantities, and project requirements. Interprets comment fields using AI to identify additional scope items.",
+    "tokens": 1800,
+    "author": "RAPP",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "AESExcelParser",
+    "description": "Excel parsing and data extraction for customer RFQ files",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["parse_rfq", "extract_stores", "extract_scope", "interpret_comments", "validate_data", "get_summary", "export_structured"],
+          "description": "The parsing action to perform"
+        },
+        "file_path": {
+          "type": "string",
+          "description": "Path to the Excel file to parse"
+        },
+        "store_id": {
+          "type": "string",
+          "description": "Specific store number to extract"
+        },
+        "comments": {
+          "type": "string",
+          "description": "Comment text to interpret"
+        },
+        "output_format": {
+          "type": "string",
+          "enum": ["json", "csv", "markdown"],
+          "description": "Output format for extracted data"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "parse_rfq",
+      "description": "Parse a complete customer RFQ Excel file",
+      "parameters": ["file_path"],
+      "example": {
+        "input": {"action": "parse_rfq", "file_path": "/uploads/walmart_rfq_2026.xlsx"},
+        "output": "✅ **Parsed: Walmart RFQ 2026**\n\n- **Total Stores:** 49\n- **States Covered:** FL (22), CO (8), CA (5), ...\n- **Scope Items Found:** RTU, AHU, Cut-ins, Panels\n- **Total Bid Value:** $15.2M\n- **Data Quality:** 94% complete"
+      }
+    },
+    {
+      "name": "extract_stores",
+      "description": "Get list of all stores with basic info",
+      "parameters": ["file_path"],
+      "example": {
+        "input": {"action": "extract_stores"},
+        "output": "**Store List (49 stores):**\n\n| Store # | City | State | Est. Value |\n|---------|------|-------|------------|\n| 547 | Plant City | FL | $535,000 |\n| 767 | Plant City | FL | $449,700 |\n| 956 | Melbourne | FL | $425,700 |\n..."
+      }
+    },
+    {
+      "name": "extract_scope",
+      "description": "Get detailed scope for a specific store",
+      "parameters": ["store_id"],
+      "example": {
+        "input": {"action": "extract_scope", "store_id": "3207"},
+        "output": "**Store #3207 - Sanford, FL Scope:**\n\n📊 **Quantities:**\n- Remove/Replace RTU: 0\n- Remove/Replace AHU: 0\n- New RTU Cut-in: 0\n- New AHU Cut-in: 0\n- Panel Points: 86\n\n📝 **Comments:**\n\"31 RTUs, (2) SL Demo, (1) Circuit\"\n\n⚠️ **Parsed Additional Scope:**\n- RTU Work: 31 units (from comments)\n- Skylight Demo: 2\n- Circuit Work: 1"
+      }
+    },
+    {
+      "name": "interpret_comments",
+      "description": "AI interpretation of free-text comment field",
+      "parameters": ["comments"],
+      "example": {
+        "input": {"action": "interpret_comments", "comments": "11 RTUs, RTU>AHU conversion, Below roof CD, new circuit"},
+        "output": "**Comment Interpretation:**\n\n*Original:* \"11 RTUs, RTU>AHU conversion, Below roof CD, new circuit\"\n\n**Extracted Scope:**\n1. **RTU Work:** 11 units\n2. **RTU to AHU Conversion:** Yes (complexity: high)\n3. **Below Roof CD:** Curb/Deck work required\n4. **New Circuit:** 1 electrical circuit\n\n**Flags:**\n⚠️ RTU>AHU conversion requires engineering review\n⚠️ Below roof work may need structural assessment"
+      }
+    },
+    {
+      "name": "validate_data",
+      "description": "Check for missing or invalid data",
+      "parameters": ["file_path"],
+      "example": {
+        "input": {"action": "validate_data"},
+        "output": "**Data Validation Report:**\n\n✅ All stores have Store # and City\n✅ State codes valid\n⚠️ 3 stores missing scope quantities\n⚠️ 7 stores have comments but no quantities\n❌ Store #4425 has conflicting data\n\n**Recommended Actions:**\n1. Review stores 4211, 4260, 4425\n2. Parse comments for scope data"
+      }
+    },
+    {
+      "name": "get_summary",
+      "description": "Get high-level summary of parsed RFQ",
+      "parameters": [],
+      "example": {
+        "input": {"action": "get_summary"},
+        "output": "**RFQ Summary:**\n\n🏪 **49 Stores** across 12 states\n\n**By State:**\n- Florida: 22 stores ($8.2M)\n- Colorado: 8 stores ($2.4M)\n- California: 5 stores ($1.9M)\n\n**Scope Totals:**\n- RTU Replace: 312 units\n- AHU Replace: 87 units\n- New Cut-ins: 156 units\n- Panel Points: 847 points"
+      }
+    },
+    {
+      "name": "export_structured",
+      "description": "Export parsed data in structured format",
+      "parameters": ["output_format"],
+      "example": {
+        "input": {"action": "export_structured", "output_format": "json"},
+        "output": "✅ Exported 49 stores to JSON format\n\n```json\n{\n  \"rfq_id\": \"WALMART-2026-001\",\n  \"stores\": [...]\n}\n```"
+      }
+    }
+  ],
+  "system_prompt": "You are the AES Excel Parser agent. Extract and structure data from customer RFQ Excel files. Pay special attention to the Comments field which often contains critical scope information not captured in the quantity columns. Use AI to interpret abbreviations and shorthand (e.g., 'SL Demo' = Skylight Demo, 'CD' = Curb/Deck). Flag any ambiguous or incomplete data for human review.",
+  "demo_conversation": [
+    {"role": "user", "content": "What does '2for2 AHU, Add AHU w/ duct, (3) circuits, add gas line' mean?"},
+    {"role": "assistant", "content": "**Comment Interpretation:**\n\n*Original:* \"2for2 AHU, Add AHU w/ duct, (3) circuits, add gas line\"\n\n**Parsed Scope:**\n\n1. **\"2for2 AHU\"** \n   - Replace 2 existing AHUs with 2 new AHUs\n   - Scope: 2× Remove/Replace AHU\n\n2. **\"Add AHU w/ duct\"**\n   - Install 1 additional new AHU\n   - Includes ductwork connection\n   - Scope: 1× New AHU Cut-in + Ductwork\n\n3. **\"(3) circuits\"**\n   - 3 new electrical circuits required\n   - Scope: 3× Electrical Circuit\n\n4. **\"add gas line\"**\n   - New gas line installation\n   - Scope: 1× Gas Line\n\n**Confidence:** 95%\n\n⚠️ **Notes:**\n- AHU cut-in may require crane\n- Gas line work needs licensed plumber sub"}
+  ]
+}

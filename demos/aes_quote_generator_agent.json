@@ -1,0 +1,120 @@
+{
+  "agent": {
+    "id": "aes_quote_generator_agent",
+    "name": "AES Quote Generator",
+    "version": "1.0.0",
+    "category": "documentation",
+    "icon": "fa-file-invoice-dollar",
+    "description": "Generates formatted customer bid documents from estimates. Creates summary sheets, detailed breakdowns, and customer-specific formats. Manages bid versions and discount applications.",
+    "tokens": 1600,
+    "author": "RAPP",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "AESQuoteGenerator",
+    "description": "Quote/Bid document generation for AES Mechanical Services",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["generate_summary", "generate_detail", "apply_discount", "format_for_customer", "compare_rounds", "create_bid_package", "get_version_history"],
+          "description": "The quote generation action to perform"
+        },
+        "bid_id": {
+          "type": "string",
+          "description": "Bid/Quote identifier"
+        },
+        "customer_id": {
+          "type": "string",
+          "description": "Customer identifier for formatting"
+        },
+        "discount_percent": {
+          "type": "number",
+          "description": "Discount percentage to apply"
+        },
+        "store_ids": {
+          "type": "array",
+          "description": "List of store IDs to include"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["excel", "pdf", "word"],
+          "description": "Output document format"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "generate_summary",
+      "description": "Create bid summary sheet with all stores",
+      "parameters": ["bid_id", "store_ids"],
+      "example": {
+        "input": {"action": "generate_summary", "bid_id": "WALMART-2026-001"},
+        "output": "**Bid Summary Generated:**\n\n📄 **WALMART-2026-001**\n\n| Store # | City | State | Bid Amount |\n|---------|------|-------|------------|\n| 547 | Plant City | FL | $535,000 |\n| 767 | Plant City | FL | $449,700 |\n| ... | ... | ... | ... |\n\n**Total Bid: $15,247,800**\n\n✅ Summary saved to bid folder"
+      }
+    },
+    {
+      "name": "generate_detail",
+      "description": "Generate detailed per-store breakdown",
+      "parameters": ["bid_id", "store_ids"],
+      "example": {
+        "input": {"action": "generate_detail", "bid_id": "WALMART-2026-001", "store_ids": ["547"]},
+        "output": "**Detailed Breakdown: Store #547**\n\n*Plant City, FL*\n\n**Equipment/Materials:**\n| Item | Qty | Unit | Extended |\n|------|-----|------|----------|\n| AHU Replace | 2 | $750 | $1,500 |\n| AHU Cut-in | 1 | $2,000 | $2,000 |\n...\n\n**Subcontractor:**\n| Trade | Amount |\n|-------|--------|\n| Crane | $35,000 |\n..."
+      }
+    },
+    {
+      "name": "apply_discount",
+      "description": "Apply discount percentage to bid",
+      "parameters": ["bid_id", "discount_percent"],
+      "example": {
+        "input": {"action": "apply_discount", "bid_id": "WALMART-2026-001", "discount_percent": 5},
+        "output": "**Discount Applied:**\n\n- Original Total: $15,247,800\n- Discount (5%): -$762,390\n- **New Total: $14,485,410**\n\n✅ Discounted bid saved as Round 2"
+      }
+    },
+    {
+      "name": "format_for_customer",
+      "description": "Format bid using customer-specific template",
+      "parameters": ["bid_id", "customer_id", "format"],
+      "example": {
+        "input": {"action": "format_for_customer", "customer_id": "WALMART", "format": "excel"},
+        "output": "**Customer Format Applied:**\n\n✅ Formatted to Walmart bid template\n✅ Applied Walmart column mapping\n✅ Added required Walmart fields\n\n📎 Output: WALMART-2026-001_WMT_Format.xlsx"
+      }
+    },
+    {
+      "name": "compare_rounds",
+      "description": "Compare 1st and 2nd round bid amounts",
+      "parameters": ["bid_id"],
+      "example": {
+        "input": {"action": "compare_rounds", "bid_id": "WALMART-2026-001"},
+        "output": "**Bid Round Comparison:**\n\n| Store | Round 1 | Round 2 | Delta |\n|-------|---------|---------|-------|\n| 547 | $535,000 | $508,250 | -5% |\n| 767 | $449,700 | $427,215 | -5% |\n...\n\n**Summary:**\n- Round 1 Total: $15,247,800\n- Round 2 Total: $14,485,410\n- Savings: $762,390 (5%)"
+      }
+    },
+    {
+      "name": "create_bid_package",
+      "description": "Create complete bid package with all documents",
+      "parameters": ["bid_id", "customer_id"],
+      "example": {
+        "input": {"action": "create_bid_package", "bid_id": "WALMART-2026-001"},
+        "output": "**Bid Package Created:**\n\n📁 **WALMART-2026-001/**\n├── 📄 Bid_Summary.xlsx\n├── 📄 Store_Details.xlsx\n├── 📄 Terms_Conditions.pdf\n├── 📄 Scope_Clarifications.docx\n└── 📄 Insurance_Certs.pdf\n\n✅ Ready for submission"
+      }
+    },
+    {
+      "name": "get_version_history",
+      "description": "Get version history of a bid",
+      "parameters": ["bid_id"],
+      "example": {
+        "input": {"action": "get_version_history", "bid_id": "WALMART-2026-001"},
+        "output": "**Version History:**\n\n| Version | Date | Amount | Notes |\n|---------|------|--------|-------|\n| 1.0 | 01/10/26 | $15.2M | Initial |\n| 1.1 | 01/12/26 | $15.1M | Adjusted crane |\n| 2.0 | 01/15/26 | $14.5M | 5% discount |"
+      }
+    }
+  ],
+  "system_prompt": "You are the AES Quote Generator agent. Create professional, accurate bid documents from estimates. Format output according to customer requirements. Track bid versions and clearly show pricing changes. Ensure all required information is included for customer submission.",
+  "demo_conversation": [
+    {"role": "user", "content": "Generate a summary for the Walmart bid with a 5% discount applied"},
+    {"role": "assistant", "content": "**Walmart Bid Summary - 5% Discount Applied**\n\n📋 **Bid ID:** WALMART-2026-001 (Round 2)\n📅 **Date:** January 16, 2026\n🏢 **Customer:** Walmart Inc.\n\n---\n\n**Executive Summary:**\n- Total Stores: 49\n- Geographic Coverage: 12 states\n- Original Bid: $15,247,800\n- Discount (5%): -$762,390\n- **Final Bid: $14,485,410**\n\n---\n\n**By Region:**\n\n| Region | Stores | Original | Discounted |\n|--------|--------|----------|------------|\n| Florida | 22 | $8,234,500 | $7,822,775 |\n| Colorado | 8 | $2,412,000 | $2,291,400 |\n| California | 5 | $1,894,200 | $1,799,490 |\n| Other | 14 | $2,707,100 | $2,571,745 |\n\n---\n\n**Scope Totals:**\n- RTU Replacements: 312 units\n- AHU Replacements: 87 units\n- New Cut-ins: 156 units\n- Panel Reinforcements: 847 points\n\n---\n\n✅ Ready for customer submission\n📎 Files attached: Summary.xlsx, Detail.xlsx"}
+  ]
+}

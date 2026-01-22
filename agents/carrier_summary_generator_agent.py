@@ -144,7 +144,7 @@ class CarrierSummaryGeneratorAgent(BasicAgent):
 
     def perform(self, **kwargs) -> str:
         """Execute summary generation."""
-        action = kwargs.get('action', 'generate_full_triage')
+        action = kwargs.pop('action', 'generate_full_triage')
 
         try:
             if self.config["use_mock_data"]:

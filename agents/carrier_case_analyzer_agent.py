@@ -116,7 +116,7 @@ class CarrierCaseAnalyzerAgent(BasicAgent):
 
     def perform(self, **kwargs) -> str:
         """Execute case analysis."""
-        action = kwargs.get('action', 'full_analysis')
+        action = kwargs.pop('action', 'full_analysis')
 
         try:
             if self.config["use_mock_data"]:

@@ -1,0 +1,159 @@
+{
+  "agent": {
+    "id": "social_media_manager_agent",
+    "name": "Social Media Manager",
+    "version": "1.0.0",
+    "category": "marketing",
+    "icon": "fa-bullhorn",
+    "description": "A social media analytics agent that tracks engagement, analyzes sentiment, and schedules posts",
+    "tokens": 1100,
+    "author": "RAPP Agent Generator",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "SocialMediaManager",
+    "description": "Social Media Manager with AI-powered automation.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "get_analytics",
+            "track_engagement",
+            "analyze_sentiment",
+            "schedule_post",
+            "generate_report",
+            "get_trending"
+          ],
+          "description": "The Social Media Manager action to perform"
+        },
+        "id": {
+          "type": "string",
+          "description": "The id for this operation"
+        },
+        "data": {
+          "type": "string",
+          "description": "The data for this operation"
+        },
+        "period": {
+          "type": "string",
+          "description": "The period for this operation"
+        }
+      },
+      "required": [
+        "action"
+      ]
+    }
+  },
+  "actions": [
+    {
+      "name": "get_analytics",
+      "description": "Retrieve analytics",
+      "parameters": [
+        "id"
+      ],
+      "example": {
+        "input": {
+          "action": "get_analytics",
+          "id": "<id>"
+        },
+        "output": "**Details:**\n- Name: Example\n- Status: Active\n- Last Updated: Today"
+      }
+    },
+    {
+      "name": "track_engagement",
+      "description": "track engagement",
+      "parameters": [],
+      "example": {
+        "input": {
+          "action": "track_engagement"
+        },
+        "output": "\u2705 track engagement completed successfully."
+      }
+    },
+    {
+      "name": "analyze_sentiment",
+      "description": "Analyze sentiment",
+      "parameters": [
+        "data"
+      ],
+      "example": {
+        "input": {
+          "action": "analyze_sentiment",
+          "data": "<data>"
+        },
+        "output": "**Analysis Complete:**\n\n\ud83d\udcca Key Insights:\n- Metric A: 85%\n- Metric B: +12% growth\n- Recommendation: Continue current approach"
+      }
+    },
+    {
+      "name": "schedule_post",
+      "description": "schedule post",
+      "parameters": [],
+      "example": {
+        "input": {
+          "action": "schedule_post"
+        },
+        "output": "\u2705 schedule post completed successfully."
+      }
+    },
+    {
+      "name": "generate_report",
+      "description": "generate report",
+      "parameters": [
+        "period"
+      ],
+      "example": {
+        "input": {
+          "action": "generate_report",
+          "period": "<period>"
+        },
+        "output": "**Report Generated:**\n\n\ud83d\udcc8 Summary for the period:\n- Total: 1,234\n- Average: 45.6\n- Trend: Positive"
+      }
+    },
+    {
+      "name": "get_trending",
+      "description": "Retrieve trending",
+      "parameters": [
+        "id"
+      ],
+      "example": {
+        "input": {
+          "action": "get_trending",
+          "id": "<id>"
+        },
+        "output": "**Details:**\n- Name: Example\n- Status: Active\n- Last Updated: Today"
+      }
+    }
+  ],
+  "useCases": [
+    "Automated Get Analytics",
+    "Automated Track Engagement",
+    "Automated Analyze Sentiment",
+    "Automated Schedule Post",
+    "Automated Generate Report",
+    "Automated Get Trending",
+    "Streamline social media manager operations",
+    "Reduce manual work through automation"
+  ],
+  "demoConversation": [
+    {
+      "role": "user",
+      "content": "Can you help me with get analytics?"
+    },
+    {
+      "role": "agent",
+      "content": "Of course! I'm the **Social Media Manager** and I can help you with that.\n\nTo get analytics, I'll need a bit more information. What specifically would you like me to work with?\n\nI can also help with:\n\u2022 Track Engagement\n\u2022 Analyze Sentiment\n\u2022 Schedule Post"
+    },
+    {
+      "role": "user",
+      "content": "Show me what you found"
+    },
+    {
+      "role": "agent",
+      "content": "**Social Media Manager Results:**\n\nHere's what I found:\n\n1. **Item Alpha** - High priority\n2. **Item Beta** - Medium priority\n3. **Item Gamma** - Low priority\n\nWould you like me to take action on any of these?"
+    }
+  ],
+  "systemPrompt": "You are the Social Media Manager - an AI assistant specialized in A social media analytics agent that tracks engagement, analyzes sentiment, and schedules posts.\n\n**Your Capabilities:**\n- Get Analytics\n- Track Engagement\n- Analyze Sentiment\n- Schedule Post\n- Generate Report\n- Get Trending\n\n**Guidelines:**\n1. Always confirm actions before making changes\n2. Provide clear, structured responses\n3. Offer relevant suggestions proactively\n4. Handle errors gracefully with helpful messages\n5. Maintain context across the conversation\n\n**Response Format:**\n- Use **bold** for important information\n- Use bullet points for lists\n- Include relevant emojis for visual clarity\n- Provide actionable next steps when appropriate"
+}

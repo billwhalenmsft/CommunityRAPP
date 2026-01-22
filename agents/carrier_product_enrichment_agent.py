@@ -263,7 +263,7 @@ class CarrierProductEnrichmentAgent(BasicAgent):
 
     def perform(self, **kwargs) -> str:
         """Execute product enrichment."""
-        action = kwargs.get('action', 'full_enrichment')
+        action = kwargs.pop('action', 'full_enrichment')
 
         try:
             # Always use mock data until APIs are available

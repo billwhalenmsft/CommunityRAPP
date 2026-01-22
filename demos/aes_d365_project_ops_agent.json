@@ -1,0 +1,142 @@
+{
+  "agent": {
+    "id": "aes_d365_project_ops_agent",
+    "name": "AES D365 Project Operations",
+    "version": "1.0.0",
+    "category": "integration",
+    "icon": "fa-microsoft",
+    "description": "Integrates with Dynamics 365 Project Operations to create projects, quotes, and resources. Syncs estimates and tracks project status. Manages the data flow between RAPP and D365.",
+    "tokens": 1800,
+    "author": "RAPP",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "AESD365ProjectOps",
+    "description": "Dynamics 365 Project Operations integration",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["create_project", "create_quote", "add_quote_lines", "update_status", "sync_estimate", "get_project", "list_projects", "create_resource_booking"],
+          "description": "The D365 operation to perform"
+        },
+        "project_id": {
+          "type": "string",
+          "description": "D365 Project ID"
+        },
+        "quote_id": {
+          "type": "string",
+          "description": "D365 Quote ID"
+        },
+        "bid_id": {
+          "type": "string",
+          "description": "RAPP Bid ID to sync"
+        },
+        "customer_account": {
+          "type": "string",
+          "description": "D365 Customer Account"
+        },
+        "store_id": {
+          "type": "string",
+          "description": "Store identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "submitted", "won", "lost", "in_progress", "complete"],
+          "description": "Project/Quote status"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "create_project",
+      "description": "Create a new project in D365 Project Operations",
+      "parameters": ["bid_id", "customer_account", "store_id"],
+      "example": {
+        "input": {
+          "action": "create_project",
+          "bid_id": "WALMART-2026-001",
+          "customer_account": "WALMART",
+          "store_id": "547"
+        },
+        "output": "**D365 Project Created:**\n\n✅ **Project:** PRJ-2026-00547\n- Name: Walmart #547 - Plant City HVAC\n- Customer: Walmart Inc.\n- Type: Fixed Price\n- Status: Draft\n\n🔗 [Open in D365](https://aesmech.crm.dynamics.com/...)"
+      }
+    },
+    {
+      "name": "create_quote",
+      "description": "Create a quote record from RAPP estimate",
+      "parameters": ["bid_id", "customer_account"],
+      "example": {
+        "input": {
+          "action": "create_quote",
+          "bid_id": "WALMART-2026-001",
+          "customer_account": "WALMART"
+        },
+        "output": "**D365 Quote Created:**\n\n✅ **Quote:** QUO-2026-00234\n- Customer: Walmart Inc.\n- Amount: $15,247,800\n- Valid Until: Feb 15, 2026\n- Stores: 49\n\n📋 Quote lines pending..."
+      }
+    },
+    {
+      "name": "add_quote_lines",
+      "description": "Add line items to a D365 quote",
+      "parameters": ["quote_id", "store_id"],
+      "example": {
+        "input": {"action": "add_quote_lines", "quote_id": "QUO-2026-00234", "store_id": "547"},
+        "output": "**Quote Lines Added - Store #547:**\n\n| Line | Description | Qty | Amount |\n|------|-------------|-----|--------|\n| 1 | AHU Replacement | 2 | $45,000 |\n| 2 | AHU Cut-in | 1 | $65,000 |\n| 3 | Electrical | 3 | $12,000 |\n| 4 | Crane Services | 1 | $35,000 |\n...\n\n✅ 12 lines added to QUO-2026-00234"
+      }
+    },
+    {
+      "name": "update_status",
+      "description": "Update project or quote status",
+      "parameters": ["project_id", "quote_id", "status"],
+      "example": {
+        "input": {"action": "update_status", "quote_id": "QUO-2026-00234", "status": "won"},
+        "output": "**Status Updated:**\n\n✅ Quote QUO-2026-00234 → **Won**\n\n🔄 Triggered:\n- Convert quote to project\n- Create project tasks\n- Schedule resource bookings\n- Notify Project Admin"
+      }
+    },
+    {
+      "name": "sync_estimate",
+      "description": "Sync RAPP estimate to D365 quote/project",
+      "parameters": ["bid_id", "quote_id"],
+      "example": {
+        "input": {"action": "sync_estimate", "bid_id": "WALMART-2026-001", "quote_id": "QUO-2026-00234"},
+        "output": "**Estimate Sync Complete:**\n\n📊 **Synced from RAPP:**\n- 49 stores\n- 847 line items\n- $15,247,800 total\n\n✅ D365 Quote Updated\n✅ Cost estimates attached\n✅ Resource requirements set"
+      }
+    },
+    {
+      "name": "get_project",
+      "description": "Get project details from D365",
+      "parameters": ["project_id"],
+      "example": {
+        "input": {"action": "get_project", "project_id": "PRJ-2026-00547"},
+        "output": "**Project: PRJ-2026-00547**\n\n📋 **Details:**\n- Name: Walmart #547 - Plant City HVAC\n- Customer: Walmart Inc.\n- Status: In Progress\n- Start: Feb 1, 2026\n- End: Feb 5, 2026\n\n💰 **Financials:**\n- Contract: $535,000\n- Cost to Date: $127,500\n- % Complete: 35%"
+      }
+    },
+    {
+      "name": "list_projects",
+      "description": "List projects by customer or status",
+      "parameters": ["customer_account", "status"],
+      "example": {
+        "input": {"action": "list_projects", "customer_account": "WALMART", "status": "in_progress"},
+        "output": "**Walmart Projects - In Progress:**\n\n| Project | Store | City | % Complete |\n|---------|-------|------|------------|\n| PRJ-2026-00547 | 547 | Plant City | 35% |\n| PRJ-2026-00767 | 767 | Plant City | 20% |\n| PRJ-2026-00956 | 956 | Melbourne | 10% |\n\n**Total Active: 12 projects**"
+      }
+    },
+    {
+      "name": "create_resource_booking",
+      "description": "Create resource bookings for project",
+      "parameters": ["project_id"],
+      "example": {
+        "input": {"action": "create_resource_booking", "project_id": "PRJ-2026-00547"},
+        "output": "**Resource Bookings Created:**\n\n👷 **Crew Assignment:**\n- Lead Tech: Mike Johnson\n- Tech 2: Sarah Williams\n- Tech 3: James Brown\n- Tech 4: Lisa Garcia\n- Tech 5: David Lee\n\n📅 **Schedule:**\n- Feb 1-5, 2026\n- 10 hrs/day\n\n✅ Bookings confirmed in D365"
+      }
+    }
+  ],
+  "system_prompt": "You are the AES D365 Project Operations agent. Integrate RAPP estimates and quotes with Dynamics 365 Project Operations. Create projects, quotes, and manage status transitions. Ensure data accuracy between systems. Handle the conversion from quotes to active projects when won.",
+  "demo_conversation": [
+    {"role": "user", "content": "Create a D365 project for Store 547 from the Walmart bid"},
+    {"role": "assistant", "content": "**Creating D365 Project for Store #547**\n\n📋 **Source Data (RAPP):**\n- Bid: WALMART-2026-001\n- Store: 547 - Plant City, FL\n- Amount: $535,000\n\n---\n\n✅ **D365 Project Created:**\n\n| Field | Value |\n|-------|-------|\n| Project ID | PRJ-2026-00547 |\n| Name | Walmart #547 - Plant City HVAC |\n| Customer | Walmart Inc. (ACCT-00142) |\n| Contract Type | Fixed Price |\n| Contract Amount | $535,000 |\n| Start Date | TBD |\n| End Date | TBD |\n| Project Manager | Unassigned |\n| Status | Draft |\n\n---\n\n**Next Steps:**\n1. Assign Project Manager\n2. Set schedule dates\n3. Create resource bookings\n4. Generate work breakdown structure\n\n🔗 [Open Project in D365](https://aesmech.crm.dynamics.com/main.aspx?pagetype=entityrecord&etn=msdyn_project&id=...)"}
+  ]
+}

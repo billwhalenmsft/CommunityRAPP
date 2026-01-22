@@ -1,0 +1,126 @@
+{
+  "agent": {
+    "id": "aes_subcontractor_agent",
+    "name": "AES Subcontractor Manager",
+    "version": "1.0.0",
+    "category": "vendor-management",
+    "icon": "fa-hard-hat",
+    "description": "Manages subcontractor relationships, quote requests, and tracking. Maintains preferred vendor lists by trade and region. Compares quotes and supports vendor selection.",
+    "tokens": 1400,
+    "author": "RAPP",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "AESSubcontractorManager",
+    "description": "Subcontractor quote and vendor management",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["request_quote", "list_subs", "track_quotes", "compare_quotes", "select_sub", "add_vendor", "get_vendor_performance"],
+          "description": "The subcontractor management action to perform"
+        },
+        "trade": {
+          "type": "string",
+          "enum": ["roofing", "electrical", "plumbing", "crane", "welding", "sprinkler", "general"],
+          "description": "Trade/specialty category"
+        },
+        "region": {
+          "type": "string",
+          "description": "Geographic region (state or city)"
+        },
+        "bid_id": {
+          "type": "string",
+          "description": "Associated bid identifier"
+        },
+        "vendor_id": {
+          "type": "string",
+          "description": "Vendor identifier"
+        },
+        "scope_description": {
+          "type": "string",
+          "description": "Description of work for quote request"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "request_quote",
+      "description": "Send quote request to subcontractors",
+      "parameters": ["trade", "region", "scope_description", "bid_id"],
+      "example": {
+        "input": {
+          "action": "request_quote",
+          "trade": "crane",
+          "region": "FL",
+          "scope_description": "AHU lift, 5-ton unit, 40ft roof height, Plant City area",
+          "bid_id": "WALMART-2026-001"
+        },
+        "output": "**Quote Requests Sent:**\n\n✉️ Sent to 3 crane vendors in FL:\n1. Gulf Coast Crane - Contact: John M.\n2. Florida Rigging - Contact: Sarah T.\n3. Sunshine Crane Svc - Contact: Mike R.\n\n📅 Response requested by: Jan 20, 2026\n🔗 Tracking ID: QR-2026-0142"
+      }
+    },
+    {
+      "name": "list_subs",
+      "description": "List preferred subcontractors by trade and region",
+      "parameters": ["trade", "region"],
+      "example": {
+        "input": {"action": "list_subs", "trade": "electrical", "region": "CO"},
+        "output": "**Electrical Subs - Colorado:**\n\n| Vendor | City | Rating | Avg Response |\n|--------|------|--------|-------------|\n| Peak Electric | Denver | ⭐⭐⭐⭐⭐ | 2 days |\n| Rocky Mtn Elec | Boulder | ⭐⭐⭐⭐ | 3 days |\n| Front Range | Ft Collins | ⭐⭐⭐⭐ | 4 days |"
+      }
+    },
+    {
+      "name": "track_quotes",
+      "description": "Track outstanding quote requests",
+      "parameters": ["bid_id"],
+      "example": {
+        "input": {"action": "track_quotes", "bid_id": "WALMART-2026-001"},
+        "output": "**Outstanding Quotes - WALMART-2026-001:**\n\n| Trade | Vendor | Requested | Status |\n|-------|--------|-----------|--------|\n| Crane | Gulf Coast | 01/15 | ⏳ Pending |\n| Crane | FL Rigging | 01/15 | ✅ Received |\n| Electrical | Peak Elec | 01/14 | ✅ Received |\n| Roofing | ABC Roofing | 01/14 | ⏳ Pending |\n\n**Summary:** 8 of 12 quotes received"
+      }
+    },
+    {
+      "name": "compare_quotes",
+      "description": "Compare received quotes for a scope item",
+      "parameters": ["trade", "bid_id"],
+      "example": {
+        "input": {"action": "compare_quotes", "trade": "crane", "bid_id": "WALMART-2026-001"},
+        "output": "**Crane Quote Comparison:**\n\n| Vendor | Quote | Availability | Notes |\n|--------|-------|--------------|-------|\n| FL Rigging | $32,500 | Feb 1-5 | Includes rigging |\n| Gulf Coast | $35,000 | Feb 3-7 | 24hr notice req |\n| Sunshine | $38,200 | Feb 8-12 | Premium rate |\n\n💡 **Recommendation:** FL Rigging - Best price, good availability"
+      }
+    },
+    {
+      "name": "select_sub",
+      "description": "Select vendor for a scope item",
+      "parameters": ["vendor_id", "bid_id", "trade"],
+      "example": {
+        "input": {"action": "select_sub", "vendor_id": "FL_RIGGING", "bid_id": "WALMART-2026-001", "trade": "crane"},
+        "output": "**Vendor Selected:**\n\n✅ Florida Rigging assigned to WALMART-2026-001 (Crane)\n- Quote: $32,500\n- Availability: Feb 1-5, 2026\n- PO Draft: Ready for approval\n\n📋 Updated estimate with sub cost"
+      }
+    },
+    {
+      "name": "add_vendor",
+      "description": "Add new vendor to preferred list",
+      "parameters": ["trade", "region"],
+      "example": {
+        "input": {"action": "add_vendor", "trade": "electrical", "region": "FL", "vendor_name": "Tampa Bay Electric"},
+        "output": "✅ **Vendor Added:**\n\n- Name: Tampa Bay Electric\n- Trade: Electrical\n- Region: FL\n- Status: Pending verification\n\n📋 Please provide:\n- Contact info\n- Insurance certs\n- W-9"
+      }
+    },
+    {
+      "name": "get_vendor_performance",
+      "description": "Get vendor performance history",
+      "parameters": ["vendor_id"],
+      "example": {
+        "input": {"action": "get_vendor_performance", "vendor_id": "GULF_COAST_CRANE"},
+        "output": "**Gulf Coast Crane Performance:**\n\n📊 **Last 12 Months:**\n- Jobs Completed: 24\n- On-Time: 92%\n- Quote Accuracy: 95%\n- Quality Rating: 4.5/5\n\n💰 **Pricing Trend:**\n- Avg vs Market: +3%\n- Last Quote: $35,000"
+      }
+    }
+  ],
+  "system_prompt": "You are the AES Subcontractor Manager agent. Manage vendor relationships, quote requests, and selection. Maintain accurate vendor data including performance history. Help PMs get competitive quotes quickly and select reliable vendors. Track all outstanding quotes and follow up as needed.",
+  "demo_conversation": [
+    {"role": "user", "content": "I need crane quotes for a job in Orlando with 3 AHU lifts"},
+    {"role": "assistant", "content": "**Crane Quote Request - Orlando, FL**\n\n📋 **Scope:** 3 AHU lifts\n\n**Preferred Vendors in Orlando Area:**\n\n| Vendor | Last Used | Rating | Typical Price |\n|--------|-----------|--------|---------------|\n| Florida Rigging | Dec 2025 | ⭐⭐⭐⭐⭐ | $30-35K |\n| Central FL Crane | Nov 2025 | ⭐⭐⭐⭐ | $32-38K |\n| Gulf Coast Crane | Oct 2025 | ⭐⭐⭐⭐ | $33-40K |\n\n**Shall I send quote requests to all three?**\n\nI'll need:\n- Unit weights (estimated)\n- Roof height\n- Access constraints\n- Preferred dates"}
+  ]
+}

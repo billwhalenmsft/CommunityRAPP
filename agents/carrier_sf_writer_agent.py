@@ -169,7 +169,7 @@ class CarrierSFWriterAgent(BasicAgent):
 
     def perform(self, **kwargs) -> str:
         """Execute case write operations."""
-        action = kwargs.get('action', 'update_case_triage')
+        action = kwargs.pop('action', 'update_case_triage')
         case_id = kwargs.get('case_id')
 
         try:
@@ -332,7 +332,19 @@ class CarrierSFWriterAgent(BasicAgent):
         
         try:
             if action == "update_case_triage":
-                triage_data = kwargs.get('triage_data', {})
+                # Build triage_data - support both dict format and individual params
+                if 'triage_data' in kwargs:
+                    triage_data = kwargs['triage_data']
+                else:
+                    triage_data = {
+                        'triage_summary': kwargs.get('triage_summary', ''),
+                        'recommended_action': kwargs.get('recommended_action', ''),
+                        'priority': kwargs.get('priority', 'Medium'),
+                        'issue_type': kwargs.get('issue_type', 'Other'),
+                        'recommended_queue': kwargs.get('routing_suggestion', ''),
+                        'triage_status': 'Completed'
+                    }
+                
                 # Use the client's triage update method
                 result = client.update_case_triage(case_id, triage_data)
                 

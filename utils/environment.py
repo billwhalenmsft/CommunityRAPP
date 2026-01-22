@@ -3,10 +3,38 @@ Environment Detection Utilities
 
 Provides functions to detect the runtime environment (Azure vs Local)
 and adjust behavior accordingly for optimal development experience.
+
+Feature Flags:
+- USE_IDENTITY_BASED_STORAGE: When 'true', uses Managed Identity for Azure Storage access.
+  When 'false' or unset, uses connection string/key-based access.
 """
 
 import os
 import logging
+
+
+def use_identity_based_storage() -> bool:
+    """
+    Determine if identity-based (Managed Identity) storage access should be used.
+    
+    This is a feature flag to toggle between:
+    - Identity-based: Uses Managed Identity or Azure CLI credentials (more secure)
+    - Key-based: Uses connection strings with account keys (legacy)
+    
+    Set USE_IDENTITY_BASED_STORAGE=true in app settings to enable identity-based access.
+    This is required when the storage account has allowSharedKeyAccess=false.
+    
+    Returns:
+        bool: True if identity-based storage should be used, False for key-based
+    """
+    use_identity = os.environ.get('USE_IDENTITY_BASED_STORAGE', '').lower() in ('true', '1', 'yes')
+    
+    if use_identity:
+        logging.info("USE_IDENTITY_BASED_STORAGE=true - using Managed Identity for storage")
+    else:
+        logging.debug("USE_IDENTITY_BASED_STORAGE not set - using key-based storage (if available)")
+    
+    return use_identity
 
 
 def is_running_in_azure() -> bool:

@@ -1,0 +1,115 @@
+{
+  "agent": {
+    "id": "aes_pricing_database_agent",
+    "name": "AES Pricing Database",
+    "version": "1.0.0",
+    "category": "pricing",
+    "icon": "fa-database",
+    "description": "Manages pricing data for HVAC equipment, labor rates, and rental costs. Provides unit pricing lookups, regional adjustments, and customer-specific pricing rules.",
+    "tokens": 1500,
+    "author": "RAPP",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "AESPricingDatabase",
+    "description": "Pricing database for AES Mechanical Services quoting system",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["get_unit_price", "get_labor_rate", "get_rental_rate", "get_margin_rules", "update_pricing", "get_customer_pricing", "list_items"],
+          "description": "The pricing action to perform"
+        },
+        "item_code": {
+          "type": "string",
+          "description": "The item code (e.g., 'RTU_REPLACE', 'AHU_CUTIN')"
+        },
+        "region": {
+          "type": "string",
+          "description": "Geographic region for pricing adjustments"
+        },
+        "customer_id": {
+          "type": "string",
+          "description": "Customer identifier for customer-specific pricing"
+        },
+        "category": {
+          "type": "string",
+          "description": "Item category filter (equipment, labor, rental, margin)"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "get_unit_price",
+      "description": "Get material and labor unit price for a line item",
+      "parameters": ["item_code", "region"],
+      "example": {
+        "input": {"action": "get_unit_price", "item_code": "RTU_REPLACE"},
+        "output": "**RTU_REPLACE Pricing:**\n- Material: $125.00/unit\n- Labor: $11.00/unit\n- Labor Hours: 0.37 hrs"
+      }
+    },
+    {
+      "name": "get_labor_rate",
+      "description": "Get labor rate including wage, fringe, and burden by region",
+      "parameters": ["region"],
+      "example": {
+        "input": {"action": "get_labor_rate", "region": "FL"},
+        "output": "**Florida Labor Rates:**\n- Base Wage: $30.00/hr\n- Fringe: $2.70\n- ST Burden: 15%\n- Effective Rate: $37.35/hr"
+      }
+    },
+    {
+      "name": "get_rental_rate",
+      "description": "Get equipment rental rates (day/week/month)",
+      "parameters": ["item_code"],
+      "example": {
+        "input": {"action": "get_rental_rate", "item_code": "SCISSOR_LIFT_30FT"},
+        "output": "**30ft Scissor Lift Rates:**\n- Day: $363\n- Week: $727\n- Month: $1,454"
+      }
+    },
+    {
+      "name": "get_margin_rules",
+      "description": "Get margin/markup rules (OH, profit, tax, shortfall)",
+      "parameters": ["customer_id"],
+      "example": {
+        "input": {"action": "get_margin_rules"},
+        "output": "**Standard Margins:**\n- OH: 25%\n- Sales Tax: 10%\n- Shortfall: 10%\n- Profit: 40%"
+      }
+    },
+    {
+      "name": "update_pricing",
+      "description": "Update pricing for an item (admin only)",
+      "parameters": ["item_code", "category"],
+      "example": {
+        "input": {"action": "update_pricing", "item_code": "RTU_REPLACE", "material_price": 130.00},
+        "output": "✅ Updated RTU_REPLACE material price to $130.00"
+      }
+    },
+    {
+      "name": "get_customer_pricing",
+      "description": "Get customer-specific pricing rules and discounts",
+      "parameters": ["customer_id"],
+      "example": {
+        "input": {"action": "get_customer_pricing", "customer_id": "WALMART"},
+        "output": "**Walmart Pricing:**\n- Base Discount: 5%\n- Volume Discount (50+ stores): 3%\n- Payment Terms: Net 45"
+      }
+    },
+    {
+      "name": "list_items",
+      "description": "List all pricing items by category",
+      "parameters": ["category"],
+      "example": {
+        "input": {"action": "list_items", "category": "equipment"},
+        "output": "**Equipment Items:**\n1. RTU_REPLACE - Remove/Replace RTU\n2. AHU_REPLACE - Remove/Replace AHU\n..."
+      }
+    }
+  ],
+  "system_prompt": "You are the AES Pricing Database agent. You manage all pricing data for the HVAC quoting system including equipment costs, labor rates, rental equipment, and margin calculations. Always provide accurate, up-to-date pricing. When regional or customer-specific pricing applies, note it clearly.",
+  "demo_conversation": [
+    {"role": "user", "content": "What's the unit price for a new AHU cut-in?"},
+    {"role": "assistant", "content": "**AHU_CUTIN Pricing:**\n\n- **Material Cost:** $2,000.00/unit\n- **Labor Cost:** $60.00/unit\n- **Est. Labor Hours:** 2.0 hours\n\n*Note: Does not include crane, permits, or subcontractor work which may be required.*"}
+  ]
+}

@@ -1,0 +1,219 @@
+{
+  "demo_name": "Dealer_Self_Service_Portal_Demo",
+  "description": "1-minute demo: AI-powered self-service portal enabling dealers and distributors to get instant answers on order status, product registration, warranty coverage, dealer support, and analytics without submitting support tickets",
+  "version": "2.0.0",
+  "trigger_phrases": [
+    "I need help checking on my recent orders and warranty coverage for my shop.",
+    "dealer portal help",
+    "check order status",
+    "warranty lookup"
+  ],
+  "metadata": {
+    "category": "dealer_portal",
+    "industry": "automotive_aftermarket",
+    "max_response_length": "250_words",
+    "total_steps": 6,
+    "estimated_duration_seconds": 60,
+    "target_audience": "dealers_distributors"
+  },
+  "persona": {
+    "name": "Mike Rodriguez",
+    "title": "Shop Owner",
+    "company": "Rodriguez Auto Service",
+    "context": "Independent auto repair shop with 6-8k annual orders, Gold Partner tier dealer managing inventory, warranties, and parts ordering"
+  },
+  "agents_utilized": [
+    {
+      "agent_name": "OrderTrackerAgent",
+      "agent_file": "order_tracker_agent.py",
+      "description": "Retrieves and displays order status, tracking information, and order history from Salesforce",
+      "inputs": ["dealer_id", "order_id", "date_range"],
+      "outputs": ["order_status", "tracking_info", "delivery_eta", "order_history"],
+      "data_sources": ["Salesforce Order Management", "Shipping Carrier APIs", "Inventory System"],
+      "used_in_steps": [1, 2]
+    },
+    {
+      "agent_name": "WarrantyLookupAgent",
+      "agent_file": "warranty_lookup_agent.py",
+      "description": "Checks warranty coverage, expiration dates, and claim eligibility from ERP system",
+      "inputs": ["serial_number", "product_id", "dealer_id"],
+      "outputs": ["warranty_status", "coverage_details", "expiration_date", "claim_eligibility"],
+      "data_sources": ["SAP ERP Warranty Module", "Product Registration Database"],
+      "used_in_steps": [3]
+    },
+    {
+      "agent_name": "ProductRegistrationAgent",
+      "agent_file": "product_registration_agent.py",
+      "description": "Handles product registration, warranty activation, and registration history",
+      "inputs": ["serial_number", "purchase_date", "dealer_id", "product_model"],
+      "outputs": ["registration_confirmation", "warranty_activation", "registration_history"],
+      "data_sources": ["Product Database", "Warranty System", "Dealer Portal API"],
+      "used_in_steps": [4]
+    },
+    {
+      "agent_name": "DealerAnalyticsAgent",
+      "agent_file": "dealer_analytics_agent.py",
+      "description": "Provides dealer performance analytics, spending insights, and loyalty program status",
+      "inputs": ["dealer_id", "date_range", "metric_type"],
+      "outputs": ["spending_summary", "category_breakdown", "loyalty_status", "insights"],
+      "data_sources": ["Analytics Data Warehouse", "Salesforce Reports", "Loyalty Program API"],
+      "used_in_steps": [5]
+    },
+    {
+      "agent_name": "DealerSupportAgent",
+      "agent_file": "dealer_support_agent.py",
+      "description": "Handles support requests, creates cases, and provides troubleshooting guidance",
+      "inputs": ["dealer_id", "issue_type", "product_id", "description"],
+      "outputs": ["case_number", "troubleshooting_steps", "escalation_path", "resolution_eta"],
+      "data_sources": ["Salesforce Service Cloud", "Knowledge Base", "Case Management System"],
+      "used_in_steps": [6]
+    }
+  ],
+  "integration_points": {
+    "salesforce": {
+      "objects": ["Account", "Order", "OrderItem", "Case", "Contact"],
+      "api_version": "v58.0",
+      "auth_method": "OAuth 2.0",
+      "endpoints": [
+        "/services/data/v58.0/sobjects/Order",
+        "/services/data/v58.0/sobjects/Case",
+        "/services/data/v58.0/query"
+      ]
+    },
+    "sap_erp": {
+      "type": "SAP S/4HANA",
+      "modules": ["Warranty Management", "Inventory", "Order Fulfillment"],
+      "auth_method": "OAuth 2.0 / SAP Principal Propagation",
+      "endpoints": [
+        "/sap/opu/odata/sap/API_WARRANTY_SRV",
+        "/sap/opu/odata/sap/API_PRODUCT_SRV"
+      ]
+    },
+    "shipping_carriers": {
+      "providers": ["UPS", "FedEx", "USPS"],
+      "tracking_api": "Multi-carrier tracking aggregator",
+      "auth_method": "API Key"
+    },
+    "analytics_platform": {
+      "type": "Azure Synapse / Power BI",
+      "datasets": ["DealerTransactions", "ProductPerformance", "LoyaltyMetrics"],
+      "auth_method": "Azure AD / Managed Identity"
+    }
+  },
+  "conversation_flow": [
+    {
+      "step_number": 1,
+      "user_message": "I need help checking on my recent orders and warranty coverage for my shop.",
+      "agent_response": "Welcome! I've pulled up your account. Here's your current status:\n\n**Account Overview**\n\n| Metric | Value | Status |\n|--------|-------|--------|\n| Partner Tier | Gold | Active |\n| Open Orders | 2 | In Transit |\n| YTD Orders | 847 | +12% vs LY |\n| Pending Warranties | 3 | Action needed |\n\n**Recent Orders:**\n\n| Order # | Date | Items | Status | ETA |\n|---------|------|-------|--------|-----|\n| ORD-2026-08471 | Jan 3 | 5 parts | Shipped | Jan 8 |\n| ORD-2026-08392 | Dec 28 | 3 parts | Delivered | - |\n\nSource: [Salesforce Order Management + Shipping APIs]\nAgents: OrderTrackerAgent\n\nWould you like tracking details on the in-transit order, or check warranty coverage?",
+      "wait_timeout_seconds": 15,
+      "description": "Initial greeting with account overview"
+    },
+    {
+      "step_number": 2,
+      "user_message": "Yes, show me tracking details for the order that's shipping.",
+      "agent_response": "Here's the detailed tracking for order ORD-2026-08471:\n\n**Shipment Tracking**\n\n| Event | Date/Time | Location |\n|-------|-----------|----------|\n| Out for Delivery | Today 6:42 AM | Local Hub |\n| Arrived at Facility | Yesterday 11:30 PM | Regional DC |\n| In Transit | Jan 5, 2:15 PM | Origin Facility |\n| Shipped | Jan 4, 9:00 AM | Distribution Center |\n\n**Delivery Details:**\n- Carrier: UPS Ground\n- Tracking: 1Z999AA10123456784\n- ETA: Today by 7:00 PM\n- Signature Required: Yes\n\n**Order Contents:**\n- (2) Brake Rotor Set - Premium\n- (1) Ceramic Brake Pad Kit\n- (2) Wheel Bearing Assembly\n\nSource: [UPS Tracking API + Salesforce Orders]\nAgents: OrderTrackerAgent\n\nWant to check warranty coverage for any products, or view your analytics?",
+      "wait_timeout_seconds": 15,
+      "description": "Detailed order tracking information"
+    },
+    {
+      "step_number": 3,
+      "user_message": "Check warranty coverage on the products I have registered.",
+      "agent_response": "Here's your warranty coverage summary:\n\n**Active Warranties (8 Products)**\n\n| Product | Serial # | Purchased | Expires | Coverage |\n|---------|----------|-----------|---------|----------|\n| Compressor XR-500 | XR-78456 | Jun 2024 | Jun 2027 | Full |\n| Diagnostic Scanner Pro | DS-34521 | Aug 2024 | Aug 2026 | Parts Only |\n| Lift System 9000 | LS-99012 | Mar 2023 | Mar 2026 | Full |\n\n**Expiring Soon (Action Needed):**\n\n| Product | Expires | Days Left | Extend? |\n|---------|---------|-----------|--------|\n| Pneumatic Tool Set | Aug 2025 | 226 | 15% off |\n| Impact Wrench Pro | Sep 2025 | 257 | 15% off |\n\n**Coverage Summary:**\n- Total Registered: 8 products\n- Active Warranties: 8\n- Expiring in 90 days: 0\n- Extended Warranty Eligible: 2\n\nSource: [SAP ERP Warranty + Product Database]\nAgents: WarrantyLookupAgent\n\nWant to extend coverage on expiring items, or register a new product?",
+      "wait_timeout_seconds": 15,
+      "description": "Warranty coverage lookup"
+    },
+    {
+      "step_number": 4,
+      "user_message": "How do I register a new product I just purchased?",
+      "agent_response": "I can register your product right now. Here are your options:\n\n**Quick Registration Methods:**\n\n| Method | How It Works | Time |\n|--------|--------------|------|\n| Tell Me | Share model + serial number | 30 sec |\n| Scan QR | Use phone camera on product | 15 sec |\n| Receipt Upload | Photo of purchase receipt | 45 sec |\n\n**What I Need:**\n1. Product model or name\n2. Serial number (on product label)\n3. Purchase date\n\n**Example:** \"Register my new Torque Wrench Pro, serial TW-2026-45678, purchased today\"\n\n**Auto-Registration Available:**\nProducts ordered through your dealer account are automatically registered. Your recent order (ORD-2026-08471) will auto-register upon delivery confirmation.\n\n**Benefits of Registration:**\n- Warranty activation (required within 30 days)\n- Recall notifications\n- Software update alerts\n- Trade-in value tracking\n\nSource: [Product Database + Registration API]\nAgents: ProductRegistrationAgent\n\nShare your product details, or would you like to see your account analytics?",
+      "wait_timeout_seconds": 15,
+      "description": "Product registration guidance"
+    },
+    {
+      "step_number": 5,
+      "user_message": "Show me my account analytics and spending summary.",
+      "agent_response": "Here's your performance dashboard:\n\n**Spending Summary (YTD)**\n\n| Metric | Amount | vs Last Year |\n|--------|--------|-------------|\n| Total Spend | $127,450 | +12% |\n| Orders Placed | 847 | +8% |\n| Avg Order Size | $150.47 | +4% |\n\n**Top Categories:**\n\n| Category | Spend | % of Total |\n|----------|-------|------------|\n| Brake Systems | $42,180 | 33% |\n| Engine Components | $31,862 | 25% |\n| Suspension Parts | $22,941 | 18% |\n| Electrical | $19,116 | 15% |\n| Other | $11,351 | 9% |\n\n**Loyalty Program Status:**\n- Tier: Gold Partner (top 15%)\n- Points Balance: 127,450\n- Points Value: $1,274.50\n- Next Tier (Platinum): $22,550 away\n\n**Insights:**\n- You've saved $8,921 vs retail this year\n- Bulk ordering brake parts could save additional $340/quarter\n- Your busiest ordering day: Tuesday\n\nSource: [Analytics Platform + Salesforce Reports]\nAgents: DealerAnalyticsAgent\n\nNeed help with a product issue, or anything else?",
+      "wait_timeout_seconds": 15,
+      "description": "Account analytics and insights"
+    },
+    {
+      "step_number": 6,
+      "user_message": "I have an issue with a compressor I purchased last month - it's making a strange noise.",
+      "agent_response": "I'm sorry to hear that. Let me help resolve this quickly.\n\n**Issue Assessment:**\n\n| Detail | Value |\n|--------|-------|\n| Product | Compressor (likely XR-500) |\n| Purchase | ~30 days ago |\n| Symptom | Unusual noise |\n| Warranty | Active - Full Coverage |\n\n**Immediate Troubleshooting:**\n1. Check oil level (dipstick on side)\n2. Verify air filter isn't clogged\n3. Confirm unit is level (±2 degrees)\n\n**If Issue Persists:**\n\n| Option | Timeline | Action |\n|--------|----------|--------|\n| Warranty Replacement | 2-3 days | Ship defective unit back |\n| On-Site Service | Schedule | Tech visit to your shop |\n| Exchange at DC | Same day | Swap at distribution center |\n\n**Case Created:** SUP-2026-004521\n- Priority: High (equipment down)\n- Status: Open - Awaiting your preference\n- Contact: support@dealer-portal.example.com\n\nSource: [Salesforce Service Cloud + Knowledge Base]\nAgents: DealerSupportAgent\n\nWhich resolution option works best for you?",
+      "wait_timeout_seconds": 20,
+      "description": "Support case creation and troubleshooting"
+    }
+  ],
+  "design_principles": {
+    "max_response_length": "150-250 words",
+    "max_lines": "25-30 lines",
+    "max_table_rows": "4-5 rows",
+    "max_bullets": "4-6 bullets",
+    "sections": "2-3 maximum",
+    "visual_elements": "1 status indicator OR 1 table per response",
+    "source_attribution": "Compact format at end with Source and Agents",
+    "evergreen_language": "Relative timeframes only (today, yesterday, X days)",
+    "call_to_action": "Clear next question to continue flow"
+  },
+  "business_value": {
+    "problem": "6-8k dealers submitting support tickets for routine inquiries (order status, warranty, registration), creating call center burden and delays",
+    "solution": "AI-powered self-service portal with natural language interface providing instant answers from Salesforce, ERP, and analytics systems",
+    "roi": "60% reduction in support tickets, 85% faster response time, 15-point CSAT improvement",
+    "performance": "Real-time order tracking, instant warranty lookup, automated product registration, personalized analytics"
+  },
+  "one_pager": {
+    "title": "Dealer Self-Service Portal - Agent Catalog",
+    "agents": [
+      {
+        "agent_name": "Order Tracker",
+        "industry": "Automotive Aftermarket",
+        "use_case_descriptions": "Retrieve and display order status, tracking information, and order history; Provide real-time shipment tracking with carrier integration; Show delivery ETAs and signature requirements; Display order contents and quantities",
+        "key_outcomes": "60% reduction in order status inquiries; Real-time tracking visibility across carriers; Proactive delivery notifications; Complete order history access",
+        "key_value": "Instant order visibility without phone calls; Multi-carrier tracking in single view; Proactive status updates; Historical order analytics",
+        "target_personas": "Shop Owners - Track parts orders and manage inventory; Service Managers - Monitor incoming parts for scheduled jobs; Parts Managers - Verify deliveries and manage receiving; Purchasing Agents - Track bulk orders and shipments",
+        "what_it_does": "Order status retrieval from Salesforce; Multi-carrier shipment tracking (UPS, FedEx, USPS); Delivery ETA calculation; Order history aggregation; Proactive delay alerting",
+        "data_sources": "Salesforce Order Management - Order records and status; Shipping Carrier APIs - UPS, FedEx, USPS tracking; Inventory System - Stock levels and allocation; ERP - Order fulfillment data"
+      },
+      {
+        "agent_name": "Warranty Lookup",
+        "industry": "Automotive Aftermarket",
+        "use_case_descriptions": "Check warranty coverage status for registered products; Display warranty expiration dates and remaining coverage; Verify claim eligibility based on coverage terms; Identify products eligible for extended warranty; Track warranty claim history",
+        "key_outcomes": "Instant warranty status verification; Expiration alerting for proactive renewals; Extended warranty upsell opportunities; Claim eligibility pre-validation",
+        "key_value": "Self-service warranty verification; Reduced warranty dispute calls; Extended warranty revenue capture; Compliance documentation",
+        "target_personas": "Shop Owners - Verify equipment warranty before repairs; Service Technicians - Check part coverage during diagnostics; Parts Managers - Validate warranty claims; Finance Managers - Track warranty assets and renewals",
+        "what_it_does": "Warranty status lookup by serial number or product ID; Coverage details and terms display; Expiration date tracking and alerting; Extended warranty eligibility checking; Claim history retrieval",
+        "data_sources": "SAP ERP Warranty Module - Warranty records and terms; Product Registration Database - Registered products; Claims History - Previous warranty claims; Product Catalog - Coverage specifications"
+      },
+      {
+        "agent_name": "Product Registration",
+        "industry": "Automotive Aftermarket",
+        "use_case_descriptions": "Register new products for warranty activation; Support multiple registration methods (manual, QR scan, receipt upload); Auto-register products ordered through dealer account; Track registration history and status; Send registration confirmations",
+        "key_outcomes": "30-second product registration; 95% registration completion rate; Automated warranty activation; Complete registration audit trail",
+        "key_value": "Simplified registration process; Warranty compliance assurance; Recall notification eligibility; Trade-in value documentation",
+        "target_personas": "Shop Owners - Register new equipment purchases; Service Technicians - Register parts installed for customers; Parts Managers - Bulk register inventory items; Administrative Staff - Process registration paperwork",
+        "what_it_does": "Multi-method registration (manual entry, QR scan, receipt OCR); Warranty activation upon registration; Auto-registration for portal orders; Registration confirmation and documentation; Recall notification enrollment",
+        "data_sources": "Product Database - Product catalog and specifications; Warranty System - Coverage activation; Dealer Portal API - Order integration; Document OCR - Receipt processing"
+      },
+      {
+        "agent_name": "Dealer Analytics",
+        "industry": "Automotive Aftermarket",
+        "use_case_descriptions": "Analyze dealer spending patterns and category breakdown; Track loyalty program status and points balance; Provide year-over-year performance comparisons; Generate savings insights and bulk ordering recommendations; Monitor tier progression toward next loyalty level",
+        "key_outcomes": "12% increase in dealer engagement; 8% lift in average order value; 15% improvement in loyalty tier progression; Actionable spending insights",
+        "key_value": "Personalized spending analytics; Loyalty program visibility; Cost savings identification; Data-driven ordering recommendations",
+        "target_personas": "Shop Owners - Monitor business spending and savings; Finance Managers - Track purchasing patterns and budgets; Purchasing Agents - Optimize order timing and quantities; Regional Managers - Compare location performance",
+        "what_it_does": "Spending summary with YoY comparisons; Category breakdown analysis; Loyalty program status and points tracking; Tier progression monitoring; Bulk ordering recommendations; Savings calculations vs retail",
+        "data_sources": "Analytics Data Warehouse - Transaction history and trends; Salesforce Reports - Account metrics; Loyalty Program API - Points and tier data; Pricing Engine - Savings calculations"
+      },
+      {
+        "agent_name": "Dealer Support",
+        "industry": "Automotive Aftermarket",
+        "use_case_descriptions": "Create support cases for product issues; Provide immediate troubleshooting guidance; Offer multiple resolution options (replacement, service, exchange); Track case status and escalation; Connect dealers with appropriate support channels",
+        "key_outcomes": "40% reduction in support call volume; 85% faster issue resolution; 20-point improvement in CSAT; First-contact resolution improvement",
+        "key_value": "24/7 support availability; Immediate troubleshooting; Multiple resolution paths; Case tracking and visibility",
+        "target_personas": "Shop Owners - Report equipment issues and track resolution; Service Technicians - Get troubleshooting assistance; Parts Managers - Handle defective product returns; Service Managers - Escalate urgent issues",
+        "what_it_does": "Support case creation with auto-categorization; Immediate troubleshooting steps from knowledge base; Resolution option presentation (warranty, service, exchange); Case priority assignment; Status tracking and updates; Escalation routing",
+        "data_sources": "Salesforce Service Cloud - Case management; Knowledge Base - Troubleshooting articles; Case Management System - Workflow and routing; Product Database - Known issues and recalls"
+      }
+    ]
+  }
+}

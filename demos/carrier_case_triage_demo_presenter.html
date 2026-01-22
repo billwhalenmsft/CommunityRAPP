@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrier AI Case Triage Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #0078d4;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #0078d4;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #888;
+        }
+        
+        .persona-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .persona-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0078d4, #00bcf2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+        
+        .persona-info h3 {
+            color: #00bcf2;
+            margin-bottom: 5px;
+        }
+        
+        .demo-steps {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .step-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .step-card:hover {
+            background: rgba(0,120,212,0.2);
+            border-color: #0078d4;
+            transform: translateX(10px);
+        }
+        
+        .step-card.active {
+            background: rgba(0,120,212,0.3);
+            border-color: #00bcf2;
+            box-shadow: 0 0 20px rgba(0,188,242,0.3);
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #0078d4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .step-title {
+            font-size: 1.3em;
+            color: #00bcf2;
+        }
+        
+        .user-message {
+            background: rgba(0,188,242,0.2);
+            border-left: 4px solid #00bcf2;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .user-message::before {
+            content: "👤 User: ";
+            font-weight: bold;
+            font-style: normal;
+        }
+        
+        .agent-response {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 8px;
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .step-card.active .agent-response {
+            display: block;
+        }
+        
+        .agents-used {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .agent-badge {
+            background: rgba(0,120,212,0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            border: 1px solid #0078d4;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        th {
+            background: rgba(0,120,212,0.3);
+            color: #00bcf2;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .kpi-card {
+            background: rgba(0,120,212,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .kpi-value {
+            font-size: 2em;
+            color: #00bcf2;
+            font-weight: bold;
+        }
+        
+        .kpi-label {
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .swarm-diagram {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .swarm-agent {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .swarm-agent .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .swarm-agent .name {
+            font-weight: bold;
+            color: #00bcf2;
+            font-size: 0.9em;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            background: #0078d4;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #00bcf2;
+            transform: scale(1.05);
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #00bcf2;
+            transition: width 0.3s ease;
+        }
+        
+        code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Cascadia Code', monospace;
+            color: #00bcf2;
+        }
+        
+        pre {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .highlight {
+            color: #00bcf2;
+            font-weight: bold;
+        }
+        
+        .source-line {
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="container">
+        <header>
+            <h1>🤖 Carrier AI Case Triage Demo</h1>
+            <p class="subtitle">MVP Use Case 1 - Customer Service Automation | 60-Second Interactive Demo</p>
+        </header>
+        
+        <div class="persona-card">
+            <div class="persona-avatar">👩‍💼</div>
+            <div class="persona-info">
+                <h3>Jennifer Martinez</h3>
+                <p>Service Operations Manager, Carrier</p>
+                <p style="color: #888; font-size: 0.9em;">Oversees case queue management for Commercial HVAC service across 3 regional teams</p>
+            </div>
+        </div>
+        
+        <div class="demo-steps">
+            <!-- Step 1 -->
+            <div class="step-card" data-step="1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <span class="step-title">📥 Check Case Queue</span>
+                </div>
+                <div class="user-message">Good morning! Show me the case queue status</div>
+                <div class="agent-response">
+                    <p>Good morning, Jennifer! 📥 <strong>Case Queue Status</strong></p>
+                    <p>I've scanned your Salesforce queue. Here's the current situation:</p>
+                    <table>
+                        <tr><th>Status</th><th>Count</th><th>Oldest</th></tr>
+                        <tr><td>🔴 New (Untriaged)</td><td>5</td><td>2 hours ago</td></tr>
+                        <tr><td>🟡 Aging (>4 hours)</td><td>3</td><td>6 hours ago</td></tr>
+                        <tr><td>🟢 Triaged Today</td><td>12</td><td>-</td></tr>
+                    </table>
+                    <p><strong>Priority Alerts:</strong></p>
+                    <ul>
+                        <li>2 Enterprise accounts with open cases</li>
+                        <li>1 case mentions "not cooling" - potential urgent</li>
+                        <li>1 case has image attachment (error code photo)</li>
+                    </ul>
+                    <p><strong>Recommendation:</strong> Run AI triage on the 5 new cases to prevent SLA risk.</p>
+                    <div class="agents-used">
+                        <span class="agent-badge">📥 CarrierSFCaseMonitor</span>
+                    </div>
+                    <p class="source-line">Source: Salesforce Service Cloud</p>
+                </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="step-card" data-step="2">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <span class="step-title">🎯 Run AI Triage</span>
+                </div>
+                <div class="user-message">Yes, run AI triage on the new cases</div>
+                <div class="agent-response">
+                    <p>🎯 <strong>Running AI Triage Workflow...</strong></p>
+                    <p>Processing 5 cases through the 6-agent swarm:</p>
+                    <pre>
+✅ Step 1: Case Monitor      - Retrieved case details
+✅ Step 2: Attachment Scan   - 1 image processed (E47 error)
+✅ Step 3: AI Text Analysis  - Issue types classified  
+✅ Step 4: Product Enrichment - Warranty & history added
+✅ Step 5: Summary Generated  - Routing recommendations
+✅ Step 6: Salesforce Updated - Custom fields written</pre>
+                    <p><strong>Results Summary:</strong></p>
+                    <table>
+                        <tr><th>Case</th><th>Issue Type</th><th>Priority</th><th>Routing</th></tr>
+                        <tr><td>00001028</td><td>Password Reset</td><td>Low</td><td>Self-Service</td></tr>
+                        <tr><td>00001027</td><td>Equipment Error</td><td class="highlight">High</td><td>Field Service</td></tr>
+                        <tr><td>00001002</td><td>Installation</td><td>Medium</td><td>Tech Support</td></tr>
+                        <tr><td>00001016</td><td>Maintenance</td><td>Medium</td><td>Parts Team</td></tr>
+                        <tr><td>00001024</td><td>Design Issue</td><td>Medium</td><td>Engineering</td></tr>
+                    </table>
+                    <p>⏱️ <strong>Total time: 18 seconds</strong> (vs 75+ minutes manual)</p>
+                    <div class="agents-used">
+                        <span class="agent-badge">🎯 Orchestrator</span>
+                        <span class="agent-badge">📥 Monitor</span>
+                        <span class="agent-badge">📎 Attachments</span>
+                        <span class="agent-badge">🔍 Analyzer</span>
+                        <span class="agent-badge">🔧 Enrichment</span>
+                        <span class="agent-badge">📝 Summary</span>
+                        <span class="agent-badge">💾 Writer</span>
+                    </div>
+                    <p class="source-line">Source: AI Triage Pipeline | Full Agent Swarm</p>
+                </div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="step-card" data-step="3">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <span class="step-title">🔍 High-Priority Case Details</span>
+                </div>
+                <div class="user-message">Show me details on case 00001027</div>
+                <div class="agent-response">
+                    <p>🔍 <strong>Case 00001027 - AI Triage Analysis</strong></p>
+                    <p><strong>Customer:</strong> Desert Sun Properties (Enterprise Tier)<br>
+                    <strong>Equipment:</strong> RTU Model 50XC (Serial: 2419G12345)<br>
+                    <strong>Issue:</strong> Rooftop unit not cooling, E47 error code</p>
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+                    <p><strong>📎 Attachment Analysis:</strong></p>
+                    <ul>
+                        <li>Photo shows E47 error on control panel</li>
+                        <li>AI detected: Low superheat condition</li>
+                        <li>Relevant bulletin: SB-2024-047 (TXV sensing bulb)</li>
+                    </ul>
+                    <p><strong>🔧 Product Context:</strong></p>
+                    <ul>
+                        <li>Install Date: March 2021</li>
+                        <li>Warranty: ❌ Expired (June 2024)</li>
+                        <li>Service History: 2 prior visits (refrigerant leak repaired 2023)</li>
+                    </ul>
+                    <p><strong>🎯 AI Recommendation:</strong></p>
+                    <ul>
+                        <li><strong>Priority:</strong> High (business impact + enterprise account)</li>
+                        <li><strong>Route to:</strong> Field Service - Commercial</li>
+                        <li><strong>Action:</strong> Dispatch technician for TXV diagnosis</li>
+                        <li><strong>Estimate:</strong> Same-day dispatch, 2-4 hour repair</li>
+                    </ul>
+                    <div class="agents-used">
+                        <span class="agent-badge">🔍 Analyzer</span>
+                        <span class="agent-badge">🔧 Enrichment</span>
+                        <span class="agent-badge">📎 Attachments</span>
+                    </div>
+                    <p class="source-line">Source: Salesforce + Product Database + AI Analysis</p>
+                </div>
+            </div>
+            
+            <!-- Step 4 -->
+            <div class="step-card" data-step="4">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <span class="step-title">💾 Salesforce Updates</span>
+                </div>
+                <div class="user-message">Show me what was written to Salesforce</div>
+                <div class="agent-response">
+                    <p>💾 <strong>Salesforce Case Record Updated</strong></p>
+                    <p>The following custom triage fields were automatically populated:</p>
+                    <table>
+                        <tr><th>Field</th><th>Value</th></tr>
+                        <tr><td><code>Triage_Status__c</code></td><td>Completed</td></tr>
+                        <tr><td><code>Triage_Priority__c</code></td><td>High</td></tr>
+                        <tr><td><code>Triage_Issue_Type__c</code></td><td>Equipment Failure</td></tr>
+                        <tr><td><code>Recommended_Action__c</code></td><td>Dispatch technician for TXV diagnosis</td></tr>
+                        <tr><td><code>Recommended_Queue__c</code></td><td>Field Service - Commercial</td></tr>
+                        <tr><td><code>AI_Triaged_Date__c</code></td><td>2026-01-21T20:22:10Z</td></tr>
+                    </table>
+                    <p><strong>Internal Comment Added:</strong></p>
+                    <blockquote style="background: rgba(0,0,0,0.2); padding: 10px; border-left: 3px solid #0078d4; margin: 10px 0;">
+                        <em>AI Triage: High priority equipment failure. Enterprise customer Desert Sun Properties. E47 error detected from attachment image. Warranty expired. Recommend same-day dispatch.</em>
+                    </blockquote>
+                    <p>✅ Case is now ready for Field Service team pickup.</p>
+                    <div class="agents-used">
+                        <span class="agent-badge">💾 CarrierSFWriter</span>
+                    </div>
+                    <p class="source-line">Source: Salesforce REST API</p>
+                </div>
+            </div>
+            
+            <!-- Step 5 -->
+            <div class="step-card" data-step="5">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <span class="step-title">📊 KPI Impact</span>
+                </div>
+                <div class="user-message">Show me the KPI impact</div>
+                <div class="agent-response">
+                    <p>📊 <strong>AI Triage KPI Dashboard</strong></p>
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-value">99.9%</div>
+                            <div class="kpi-label">Triage Time Reduction</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">91%</div>
+                            <div class="kpi-label">SLA Miss Reduction</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">$200K</div>
+                            <div class="kpi-label">Monthly Savings</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">6.7x</div>
+                            <div class="kpi-label">Throughput Increase</div>
+                        </div>
+                    </div>
+                    <table>
+                        <tr><th>Metric</th><th>Before AI</th><th>With AI</th><th>Improvement</th></tr>
+                        <tr><td>Avg Triage Time</td><td>4.2 hours</td><td>18 sec</td><td class="highlight">99.9%</td></tr>
+                        <tr><td>Cases/Day</td><td>15</td><td>100+</td><td class="highlight">6.7x</td></tr>
+                        <tr><td>SLA Miss Rate</td><td>23%</td><td>2%</td><td class="highlight">91%</td></tr>
+                        <tr><td>Manual Effort</td><td>15 min/case</td><td>0 min</td><td class="highlight">100%</td></tr>
+                    </table>
+                    <p class="source-line">Source: Analytics Dashboard | Orchestrator Metrics</p>
+                </div>
+            </div>
+            
+            <!-- Step 6 -->
+            <div class="step-card" data-step="6">
+                <div class="step-header">
+                    <div class="step-number">6</div>
+                    <span class="step-title">🤖 Agent Swarm Overview</span>
+                </div>
+                <div class="user-message">Show me all the agents</div>
+                <div class="agent-response">
+                    <p>🤖 <strong>Carrier Case Triage Agent Swarm</strong></p>
+                    <p><strong>7 Specialized AI Agents Working Together:</strong></p>
+                    <div class="swarm-diagram">
+                        <div class="swarm-agent">
+                            <div class="icon">📥</div>
+                            <div class="name">SF Monitor</div>
+                            <div style="font-size: 0.8em; color: #888;">Detect Cases</div>
+                        </div>
+                        <div class="swarm-agent">
+                            <div class="icon">📎</div>
+                            <div class="name">Attachments</div>
+                            <div style="font-size: 0.8em; color: #888;">GPT-4 Vision</div>
+                        </div>
+                        <div class="swarm-agent">
+                            <div class="icon">🔍</div>
+                            <div class="name">Analyzer</div>
+                            <div style="font-size: 0.8em; color: #888;">AI Classification</div>
+                        </div>
+                        <div class="swarm-agent">
+                            <div class="icon">🔧</div>
+                            <div class="name">Enrichment</div>
+                            <div style="font-size: 0.8em; color: #888;">Product Context</div>
+                        </div>
+                        <div class="swarm-agent">
+                            <div class="icon">📝</div>
+                            <div class="name">Summary</div>
+                            <div style="font-size: 0.8em; color: #888;">Generate Triage</div>
+                        </div>
+                        <div class="swarm-agent">
+                            <div class="icon">💾</div>
+                            <div class="name">SF Writer</div>
+                            <div style="font-size: 0.8em; color: #888;">Update Salesforce</div>
+                        </div>
+                        <div class="swarm-agent" style="background: rgba(0,120,212,0.3); border-color: #0078d4;">
+                            <div class="icon">🎯</div>
+                            <div class="name">Orchestrator</div>
+                            <div style="font-size: 0.8em; color: #888;">Coordinate All</div>
+                        </div>
+                    </div>
+                    <p><strong>Architecture:</strong> Azure Functions (Serverless) + Salesforce + Azure OpenAI</p>
+                    <p style="margin-top: 20px; padding: 15px; background: rgba(0,188,242,0.2); border-radius: 8px; text-align: center;">
+                        <strong>✅ Demo Complete!</strong><br>
+                        Carrier MVP Use Case 1 - Ready for Pilot Deployment
+                    </p>
+                    <p class="source-line">Built with: RAPP Agent Framework + Azure + Salesforce</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="prevStep()">← Previous</button>
+        <button onclick="nextStep()">Next →</button>
+        <button onclick="resetDemo()">🔄 Reset</button>
+    </div>
+    
+    <script>
+        let currentStep = 0;
+        const totalSteps = 6;
+        
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function showStep(step) {
+            // Remove active from all
+            document.querySelectorAll('.step-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add active to current
+            if (step > 0) {
+                const activeCard = document.querySelector(`.step-card[data-step="${step}"]`);
+                if (activeCard) {
+                    activeCard.classList.add('active');
+                    activeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            currentStep = step;
+            updateProgress();
+        }
+        
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 0) {
+                showStep(currentStep - 1);
+            }
+        }
+        
+        function resetDemo() {
+            showStep(0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Click on cards to activate
+        document.querySelectorAll('.step-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const step = parseInt(card.dataset.step);
+                showStep(step);
+            });
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextStep();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevStep();
+            } else if (e.key === 'r' || e.key === 'R') {
+                resetDemo();
+            }
+        });
+        
+        // Start with first step highlighted
+        showStep(1);
+    </script>
+</body>
+</html>

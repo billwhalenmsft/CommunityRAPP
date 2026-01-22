@@ -108,60 +108,33 @@ class ScriptedDemoAgent(BasicAgent):
     def list_available_demos(self):
         """
         List all available demo JSON files in the Azure File Storage demos directory.
-        Falls back to local demos directory if Azure Storage unavailable.
         """
         try:
-            demo_files = []
-            source = "Azure File Storage"
-            
             # Ensure the demos directory exists
             self.storage_manager.ensure_directory_exists(self.demo_directory)
 
-            # List all files in the demos directory from Azure
+            # List all files in the demos directory
             files = self.storage_manager.list_files(self.demo_directory)
 
+            demo_files = []
             for file_info in files:
                 if hasattr(file_info, 'name') and file_info.name.endswith('.json'):
                     demo_name = file_info.name.replace('.json', '')
                     demo_files.append(demo_name)
 
-            # Fallback to local file system if no demos found in Azure
-            if not demo_files:
-                try:
-                    import os
-                    local_paths = [
-                        self.demo_directory,
-                        os.path.join(os.path.dirname(__file__), '..', self.demo_directory),
-                        os.path.join(os.getcwd(), self.demo_directory),
-                    ]
-                    for local_path in local_paths:
-                        if os.path.isdir(local_path):
-                            logging.info(f"Listing demos from local directory: {local_path}")
-                            for filename in os.listdir(local_path):
-                                if filename.endswith('.json'):
-                                    demo_name = filename.replace('.json', '')
-                                    if demo_name not in demo_files:
-                                        demo_files.append(demo_name)
-                            if demo_files:
-                                source = f"local directory ({local_path})"
-                                break
-                except Exception as e:
-                    logging.warning(f"Local directory fallback failed: {str(e)}")
-
             if not demo_files:
                 response = {
                     "status": "success",
-                    "message": "No demo files found",
+                    "message": "No demo files found in Azure File Storage",
                     "available_demos": [],
-                    "instructions": "Upload demo JSON files to the 'demos' directory in Azure File Storage or place them locally",
+                    "instructions": "Upload demo JSON files to the 'demos' directory in Azure File Storage",
                     "demo_directory": self.demo_directory
                 }
             else:
                 response = {
                     "status": "success",
                     "message": f"Found {len(demo_files)} demo file(s)",
-                    "source": source,
-                    "available_demos": sorted(demo_files),
+                    "available_demos": demo_files,
                     "demo_directory": self.demo_directory,
                     "next_steps": "Use 'load_demo' action to view demo structure, or 'respond' action to get canned responses"
                 }
@@ -283,36 +256,14 @@ class ScriptedDemoAgent(BasicAgent):
     def _read_demo_file(self, demo_name):
         """
         Read and parse a demo file from Azure File Storage with caching.
-        Falls back to local demos directory if Azure Storage unavailable.
         """
         # Check cache first
         if demo_name in self.loaded_demo_cache:
             return self.loaded_demo_cache[demo_name]
 
+        # Read from Azure
         file_name = f"{demo_name}.json"
-        demo_content = None
-        
-        # Try Azure Storage first
         demo_content = self.storage_manager.read_file(self.demo_directory, file_name)
-
-        # Fallback to local file system if Azure Storage unavailable
-        if not demo_content:
-            try:
-                import os
-                # Check multiple potential local paths
-                local_paths = [
-                    os.path.join(self.demo_directory, file_name),
-                    os.path.join(os.path.dirname(__file__), '..', self.demo_directory, file_name),
-                    os.path.join(os.getcwd(), self.demo_directory, file_name),
-                ]
-                for local_path in local_paths:
-                    if os.path.exists(local_path):
-                        logging.info(f"Loading demo from local file: {local_path}")
-                        with open(local_path, 'r', encoding='utf-8') as f:
-                            demo_content = f.read()
-                        break
-            except Exception as e:
-                logging.warning(f"Local file fallback failed: {str(e)}")
 
         if not demo_content:
             return None

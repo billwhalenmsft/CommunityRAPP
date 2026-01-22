@@ -1,0 +1,138 @@
+{
+  "agent": {
+    "id": "aes_estimate_calculator_agent",
+    "name": "AES Estimate Calculator",
+    "version": "1.0.0",
+    "category": "estimating",
+    "icon": "fa-calculator",
+    "description": "Calculates cost estimates for HVAC projects based on scope quantities, pricing rules, and project parameters. Handles material, labor, equipment, subcontractor, and margin calculations.",
+    "tokens": 2000,
+    "author": "RAPP",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "AESEstimateCalculator",
+    "description": "Cost estimation engine for AES Mechanical Services",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["calculate_store", "calculate_batch", "get_material_cost", "get_labor_cost", "get_equipment_needs", "calculate_per_diem", "apply_margins", "get_estimate_breakdown"],
+          "description": "The estimation action to perform"
+        },
+        "store_id": {
+          "type": "string",
+          "description": "Store number/identifier"
+        },
+        "scope": {
+          "type": "object",
+          "description": "Scope quantities (rtu_replace, ahu_replace, rtu_cutin, ahu_cutin, etc.)"
+        },
+        "region": {
+          "type": "string",
+          "description": "Geographic region (state code)"
+        },
+        "crew_size": {
+          "type": "integer",
+          "description": "Number of crew members"
+        },
+        "duration_days": {
+          "type": "integer",
+          "description": "Estimated project duration in days"
+        },
+        "comments": {
+          "type": "string",
+          "description": "Additional scope from comments field"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "calculate_store",
+      "description": "Calculate complete estimate for a single store",
+      "parameters": ["store_id", "scope", "region", "comments"],
+      "example": {
+        "input": {
+          "action": "calculate_store",
+          "store_id": "547",
+          "scope": {"ahu_replace": 2, "ahu_cutin": 1},
+          "region": "FL",
+          "comments": "2for2 AHU, Add AHU w/ duct, (3) circuits, add gas line"
+        },
+        "output": "**Store #547 Estimate:**\n\n📦 Materials: $5,200\n👷 Labor: $3,070\n🔧 Subs/Equipment: $9,500\n🏨 Per Diem/Travel: $5,600\n\n**Subtotal:** $23,370\n**With Margins:** $49,486\n\n*Confidence: 85% - Review crane needs*"
+      }
+    },
+    {
+      "name": "calculate_batch",
+      "description": "Calculate estimates for multiple stores",
+      "parameters": ["scope"],
+      "example": {
+        "input": {"action": "calculate_batch", "stores": ["547", "767", "956"]},
+        "output": "**Batch Estimate Summary:**\n\n| Store | City | Estimate |\n|-------|------|----------|\n| 547 | Plant City | $49,486 |\n| 767 | Plant City | $52,100 |\n| 956 | Melbourne | $48,200 |\n\n**Total: $149,786**"
+      }
+    },
+    {
+      "name": "get_material_cost",
+      "description": "Calculate material costs from scope quantities",
+      "parameters": ["scope"],
+      "example": {
+        "input": {"action": "get_material_cost", "scope": {"rtu_replace": 5, "ahu_replace": 2}},
+        "output": "**Material Breakdown:**\n- RTU Replace (5): $625\n- AHU Replace (2): $1,500\n**Total Materials: $2,125**"
+      }
+    },
+    {
+      "name": "get_labor_cost",
+      "description": "Calculate labor costs including burden and fringe",
+      "parameters": ["scope", "region"],
+      "example": {
+        "input": {"action": "get_labor_cost", "scope": {"rtu_replace": 5}, "region": "FL"},
+        "output": "**Labor Breakdown:**\n- Hours: 1.85\n- Base: $55.50\n- Fringe: $5.00\n- Burden: $9.08\n**Total Labor: $69.58**"
+      }
+    },
+    {
+      "name": "get_equipment_needs",
+      "description": "Determine required rental equipment based on scope",
+      "parameters": ["scope", "comments"],
+      "example": {
+        "input": {"action": "get_equipment_needs", "scope": {"ahu_cutin": 2}, "comments": "rooftop units"},
+        "output": "**Required Equipment:**\n- Crane: $35,000 (AHU rooftop)\n- Scissor Lift: $2,500\n- Dumpster: $2,000\n**Total Rentals: $39,500**"
+      }
+    },
+    {
+      "name": "calculate_per_diem",
+      "description": "Calculate per diem and travel costs",
+      "parameters": ["crew_size", "duration_days", "region"],
+      "example": {
+        "input": {"action": "calculate_per_diem", "crew_size": 5, "duration_days": 4, "region": "FL"},
+        "output": "**Per Diem Breakdown:**\n- Rate: $130/day\n- Crew: 5\n- Days: 4\n- Per Diem: $2,600\n- Travel: $3,000\n**Total: $5,600**"
+      }
+    },
+    {
+      "name": "apply_margins",
+      "description": "Apply OH, profit, tax, and shortfall margins",
+      "parameters": ["subtotal"],
+      "example": {
+        "input": {"action": "apply_margins", "subtotal": 23370},
+        "output": "**Margin Application:**\n- Subtotal: $23,370\n- OH (25%): $5,843\n- Sales Tax (10%): $2,921\n- Shortfall (10%): $3,213\n- Profit (40%): $14,139\n**Final Total: $49,486**"
+      }
+    },
+    {
+      "name": "get_estimate_breakdown",
+      "description": "Get detailed breakdown of an existing estimate",
+      "parameters": ["store_id"],
+      "example": {
+        "input": {"action": "get_estimate_breakdown", "store_id": "547"},
+        "output": "**Store #547 - Plant City, FL**\n*Detailed Estimate Breakdown*\n\n[Full itemized breakdown...]"
+      }
+    }
+  ],
+  "system_prompt": "You are the AES Estimate Calculator agent. Calculate accurate cost estimates for HVAC projects based on scope quantities and pricing rules. Always show your calculation methodology. Flag items that may need review or have uncertainty. Consider regional variations and project-specific factors.",
+  "demo_conversation": [
+    {"role": "user", "content": "Calculate an estimate for Store 3207 in Sanford, FL with 31 RTUs, 2 skylight demos, and 1 circuit"},
+    {"role": "assistant", "content": "**Store #3207 - Sanford, FL Estimate**\n\n📋 **Scope Summary:**\n- Remove/Replace RTUs: 31\n- Skylight Demo: 2\n- Circuits: 1\n\n📦 **Materials:**\n- RTU Replace (31 × $125): $3,875\n- Skylight Demo (2 × $200): $400\n- Circuit: $400\n- **Material Total: $4,675**\n\n👷 **Labor:**\n- RTU Work: 11.5 hrs × $37.35 = $429\n- Skylight: 1.6 hrs × $37.35 = $60\n- Electrical: 4 hrs × $37.35 = $149\n- **Labor Total: $638**\n\n🔧 **Subs/Equipment:**\n- Roofer (skylights): $3,500\n- Lift: $5,000\n- Dumpster: $2,000\n- Permit: $2,500\n- **Sub Total: $13,000**\n\n🏨 **Per Diem/Travel:**\n- 5 crew × 6 days × $130: $3,900\n- Travel: $3,500\n- **Travel Total: $7,400**\n\n💰 **Summary:**\n- Direct Costs: $25,713\n- OH (25%): $6,428\n- Sales Tax: $3,214\n- Shortfall: $3,536\n- Profit (40%): $15,556\n\n**📊 Total Bid: $54,447**\n\n*Actual bid in system: $435,400 - large scope difference, please review*"}
+  ]
+}

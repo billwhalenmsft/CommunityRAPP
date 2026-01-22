@@ -1,0 +1,185 @@
+{
+  "agent": {
+    "id": "hacker_news_agent",
+    "name": "Hacker News Intelligence",
+    "version": "1.0.0",
+    "category": "tech-news",
+    "icon": "fa-fire",
+    "description": "Real-time Hacker News aggregator that fetches top stories, new posts, best discussions, and job listings from the official HN API.",
+    "tokens": 850,
+    "author": "RAPP Community",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "HackerNews",
+    "description": "Fetches and analyzes content from Hacker News API in real-time.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["get_top_stories", "get_new_stories", "get_best_stories", "get_ask_hn", "get_show_hn", "get_jobs", "get_story_details", "search_stories"],
+          "description": "The Hacker News action to perform"
+        },
+        "story_id": { "type": "integer", "description": "The HN story ID to fetch details for" },
+        "limit": { "type": "integer", "description": "Number of stories to return (default 10, max 30)" },
+        "query": { "type": "string", "description": "Search query for stories" }
+      },
+      "required": ["action"]
+    }
+  },
+  "api_config": {
+    "base_url": "https://hacker-news.firebaseio.com/v0",
+    "endpoints": {
+      "top_stories": "/topstories.json",
+      "new_stories": "/newstories.json",
+      "best_stories": "/beststories.json",
+      "ask_stories": "/askstories.json",
+      "show_stories": "/showstories.json",
+      "job_stories": "/jobstories.json",
+      "item": "/item/{id}.json"
+    }
+  },
+  "actions": [
+    {
+      "name": "get_top_stories",
+      "description": "Fetch the current top stories from Hacker News front page",
+      "parameters": ["limit"],
+      "api_call": {
+        "endpoint": "/topstories.json",
+        "method": "GET"
+      },
+      "example": {
+        "input": { "action": "get_top_stories", "limit": 5 },
+        "output": "**🔥 Top 5 Hacker News Stories:**\n\n1. **Show HN: I built a terminal-based Spotify client** (342 pts)\n   🔗 github.com/user/spotify-tui | 💬 127 comments\n\n2. **Why SQLite is so great for edge computing** (289 pts)\n   🔗 fly.io/blog/sqlite-edge | 💬 98 comments\n\n3. **Apple announces M4 chip with 50% faster AI processing** (256 pts)\n   🔗 apple.com/newsroom | 💬 234 comments"
+      }
+    },
+    {
+      "name": "get_new_stories",
+      "description": "Fetch the newest stories just submitted to HN",
+      "parameters": ["limit"],
+      "api_call": {
+        "endpoint": "/newstories.json",
+        "method": "GET"
+      },
+      "example": {
+        "input": { "action": "get_new_stories", "limit": 5 },
+        "output": "**🆕 Latest 5 Stories:**\n\n1. **Ask HN: Best practices for Kubernetes in production?** (2 min ago)\n2. **How we reduced our AWS bill by 70%** (5 min ago)\n3. **Open source alternative to Notion** (8 min ago)"
+      }
+    },
+    {
+      "name": "get_best_stories",
+      "description": "Fetch the highest-voted stories of recent time",
+      "parameters": ["limit"],
+      "api_call": {
+        "endpoint": "/beststories.json",
+        "method": "GET"
+      },
+      "example": {
+        "input": { "action": "get_best_stories", "limit": 3 },
+        "output": "**⭐ Best Stories:**\n\n1. **The entire history of JavaScript frameworks** (1,247 pts)\n2. **Why Rust is taking over systems programming** (986 pts)\n3. **A deep dive into TCP/IP** (872 pts)"
+      }
+    },
+    {
+      "name": "get_ask_hn",
+      "description": "Fetch 'Ask HN' discussion threads",
+      "parameters": ["limit"],
+      "api_call": {
+        "endpoint": "/askstories.json",
+        "method": "GET"
+      },
+      "example": {
+        "input": { "action": "get_ask_hn", "limit": 3 },
+        "output": "**❓ Ask HN Discussions:**\n\n1. **Ask HN: How do you stay motivated as a solo founder?** (156 pts, 89 comments)\n2. **Ask HN: What's your favorite underrated programming language?** (98 pts, 234 comments)\n3. **Ask HN: Best resources for learning system design?** (87 pts, 67 comments)"
+      }
+    },
+    {
+      "name": "get_show_hn",
+      "description": "Fetch 'Show HN' project showcases",
+      "parameters": ["limit"],
+      "api_call": {
+        "endpoint": "/showstories.json",
+        "method": "GET"
+      },
+      "example": {
+        "input": { "action": "get_show_hn", "limit": 3 },
+        "output": "**🚀 Show HN Projects:**\n\n1. **Show HN: Real-time collaborative code editor** (234 pts)\n   Built with WebRTC and CRDTs\n\n2. **Show HN: AI-powered git commit messages** (178 pts)\n   Analyzes your diff and writes meaningful commits\n\n3. **Show HN: Terminal dashboard for AWS costs** (145 pts)\n   Track spending in real-time from your terminal"
+      }
+    },
+    {
+      "name": "get_jobs",
+      "description": "Fetch current job postings from HN",
+      "parameters": ["limit"],
+      "api_call": {
+        "endpoint": "/jobstories.json",
+        "method": "GET"
+      },
+      "example": {
+        "input": { "action": "get_jobs", "limit": 3 },
+        "output": "**💼 HN Job Postings:**\n\n1. **Stripe** - Senior Backend Engineer (Remote)\n2. **Figma** - Staff Frontend Engineer (SF/NYC)\n3. **Linear** - Founding Engineer (Remote)"
+      }
+    },
+    {
+      "name": "get_story_details",
+      "description": "Get full details for a specific story including comments",
+      "parameters": ["story_id"],
+      "api_call": {
+        "endpoint": "/item/{story_id}.json",
+        "method": "GET"
+      },
+      "example": {
+        "input": { "action": "get_story_details", "story_id": 38792446 },
+        "output": "**📖 Story Details:**\n\n**Title:** Why functional programming matters in 2026\n**Author:** pg\n**Score:** 567 points\n**Posted:** 3 hours ago\n**Comments:** 189\n\n**Top Comment:**\n> \"This resonates with me. After 10 years of OOP, switching to FP was like seeing clearly for the first time...\" - user123"
+      }
+    },
+    {
+      "name": "search_stories",
+      "description": "Search for stories matching a query (uses Algolia HN Search API)",
+      "parameters": ["query", "limit"],
+      "api_call": {
+        "endpoint": "https://hn.algolia.com/api/v1/search?query={query}&tags=story",
+        "method": "GET"
+      },
+      "example": {
+        "input": { "action": "search_stories", "query": "rust programming", "limit": 5 },
+        "output": "**🔍 Search Results for 'rust programming':**\n\n1. **Rust is the most loved language for 8 years running** (892 pts)\n2. **Building a game engine in Rust** (654 pts)\n3. **Why I'm mass-migrating from Go to Rust** (543 pts)"
+      }
+    }
+  ],
+  "useCases": [
+    "Stay updated on tech industry news",
+    "Discover trending programming topics",
+    "Find new open source projects",
+    "Track startup job opportunities",
+    "Research community sentiment on technologies",
+    "Find technical discussions and Ask HN threads"
+  ],
+  "demoConversation": [
+    {
+      "role": "user",
+      "content": "What's hot on Hacker News right now?"
+    },
+    {
+      "role": "agent",
+      "content": "**🔥 Top 5 Hacker News Stories Right Now:**\n\n1. **Show HN: I built a real-time collaborative VS Code** (487 pts)\n   🔗 github.com/liveshare-oss | 💬 156 comments\n   *A fully open-source alternative to VS Code Live Share*\n\n2. **OpenAI releases GPT-5 with 1M token context** (423 pts)\n   🔗 openai.com/blog/gpt5 | 💬 892 comments\n   *Finally, you can fit your entire codebase in context*\n\n3. **Why I quit Google after 15 years** (389 pts)\n   🔗 medium.com/@ex-googler | 💬 445 comments\n   *A senior engineer's candid reflection on big tech culture*\n\n4. **Postgres 18 benchmarks: 40% faster than MySQL** (312 pts)\n   🔗 postgresql.org/blog | 💬 234 comments\n\n5. **The Cloudflare outage post-mortem** (298 pts)\n   🔗 blog.cloudflare.com | 💬 178 comments\n\n---\n*Would you like me to get details on any of these stories, or check out Ask HN discussions?*"
+    },
+    {
+      "role": "user",
+      "content": "Show me the latest Show HN projects"
+    },
+    {
+      "role": "agent",
+      "content": "**🚀 Latest Show HN Projects:**\n\n1. **Show HN: Open source Figma alternative built with Rust+WASM** (234 pts)\n   🔗 penpot.app | 💬 87 comments\n   *Vector graphics editor running entirely in the browser*\n\n2. **Show HN: I made a CLI that explains shell commands with AI** (189 pts)\n   🔗 github.com/explain-shell | 💬 56 comments\n   *Never Google 'what does tar -xvzf mean' again*\n\n3. **Show HN: Real-time database sync for offline-first apps** (167 pts)\n   🔗 github.com/electric-sql | 💬 43 comments\n   *CRDTs + Postgres = magic*\n\n4. **Show HN: AI code review bot that actually understands context** (145 pts)\n   🔗 codereview.ai | 💬 78 comments\n   *Uses your repo's history to give meaningful reviews*\n\n5. **Show HN: Terminal dashboard for all your cloud costs** (132 pts)\n   🔗 github.com/cloudcost-tui | 💬 34 comments\n   *AWS, GCP, Azure in one view*\n\n---\n*Anything catch your eye? I can get more details on any project!*"
+    },
+    {
+      "role": "user",
+      "content": "Search for articles about Azure AI"
+    },
+    {
+      "role": "agent",
+      "content": "**🔍 Search Results for 'Azure AI':**\n\n1. **Microsoft Azure AI Studio now generally available** (312 pts)\n   🔗 azure.microsoft.com/blog | 💬 145 comments\n   *Build, deploy, and manage AI apps in one place*\n\n2. **Comparing Azure OpenAI vs AWS Bedrock for enterprise** (267 pts)\n   🔗 techcrunch.com | 💬 198 comments\n   *A detailed comparison for production workloads*\n\n3. **How we migrated our ML pipeline to Azure AI** (189 pts)\n   🔗 engineering.spotify.com | 💬 67 comments\n   *Spotify's journey from custom infra to managed AI*\n\n4. **Azure AI Search: The hidden gem for RAG applications** (156 pts)\n   🔗 dev.to/azure | 💬 45 comments\n   *Why vector search in Azure beats Pinecone*\n\n5. **Building agents with Azure AI Agent Service** (134 pts)\n   🔗 microsoft.com/ai | 💬 89 comments\n   *New agentic framework from Microsoft*\n\n---\n*Found 247 total results. Want me to narrow down by date or popularity?*"
+    }
+  ],
+  "systemPrompt": "You are a Hacker News intelligence agent with real-time access to the HN API. Your job is to fetch, summarize, and analyze content from Hacker News.\n\n**API Endpoints:**\n- Base: https://hacker-news.firebaseio.com/v0\n- Top Stories: /topstories.json (returns array of story IDs)\n- New Stories: /newstories.json\n- Best Stories: /beststories.json\n- Ask HN: /askstories.json\n- Show HN: /showstories.json\n- Jobs: /jobstories.json\n- Item Details: /item/{id}.json\n- Search: https://hn.algolia.com/api/v1/search?query={query}&tags=story\n\n**Response Guidelines:**\n1. Always format stories with emoji indicators (🔥 hot, 🆕 new, ⭐ best, 🚀 projects, ❓ ask, 💼 jobs)\n2. Include points, comment count, and relative time\n3. Provide brief context or summary when helpful\n4. Offer to dive deeper into interesting stories\n5. Be conversational and enthusiastic about tech news\n\n**When fetching stories:**\n1. First get the story IDs from the list endpoint\n2. Then fetch individual story details for each ID\n3. Format nicely with title, score, URL, and comments\n4. Default to 10 stories unless user specifies"
+}

@@ -9,7 +9,6 @@
     "AZURE_OPENAI_DEPLOYMENT_NAME": "gpt-deployment",
     "AZURE_STORAGE_ACCOUNT_NAME": "<your-storage-account-name>",
     "AZURE_FILES_SHARE_NAME": "<your-file-share-name>",
-    "USE_IDENTITY_BASED_STORAGE": "true",
     "ASSISTANT_NAME": "Copilot Entra Agent",
     "CHARACTERISTIC_DESCRIPTION": "Enterprise AI assistant integrated with Microsoft 365"
   },

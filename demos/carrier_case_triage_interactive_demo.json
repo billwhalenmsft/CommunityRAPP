@@ -1,0 +1,278 @@
+{
+  "demo_name": "Carrier AI Case Triage Demo",
+  "description": "60-second interactive demo showcasing Carrier MVP Use Case 1: AI-powered Customer Service Case Triage Agent Swarm with live Salesforce integration",
+  "version": "2.0.0",
+  "trigger_phrases": [
+    "carrier demo",
+    "case triage demo",
+    "show me case triage",
+    "carrier case demo",
+    "triage demo",
+    "run carrier demo",
+    "show me the carrier agents"
+  ],
+  "metadata": {
+    "category": "customer service automation",
+    "industry": "hvac_manufacturing",
+    "customer": "Carrier",
+    "max_response_length": "250_words",
+    "total_steps": 6,
+    "estimated_duration_seconds": 60,
+    "target_audience": "service_operations_managers",
+    "salesforce_instance": "https://empathetic-bear-vanmxr-dev-ed.my.salesforce.com/",
+    "live_integration": true
+  },
+  "persona": {
+    "name": "Jennifer Martinez",
+    "title": "Service Operations Manager",
+    "company": "Carrier",
+    "context": "Oversees case queue management for Commercial HVAC service. Responsible for SLA compliance and case routing optimization across 3 regional service teams."
+  },
+  "agents_utilized": [
+    {
+      "name": "CarrierSFCaseMonitor",
+      "purpose": "Monitors Salesforce for new and aging cases requiring triage",
+      "data_source": "Salesforce Service Cloud",
+      "icon": "📥"
+    },
+    {
+      "name": "CarrierAttachmentProcessor", 
+      "purpose": "Extracts information from images and documents using GPT-4 Vision",
+      "data_source": "Azure AI Services",
+      "icon": "📎"
+    },
+    {
+      "name": "CarrierCaseAnalyzer",
+      "purpose": "AI-powered text analysis for issue classification and urgency detection",
+      "data_source": "Azure OpenAI GPT-4o",
+      "icon": "🔍"
+    },
+    {
+      "name": "CarrierProductEnrichment",
+      "purpose": "Enriches cases with product specs, warranty status, and service history",
+      "data_source": "Carrier Product Database (Stubbed)",
+      "icon": "🔧"
+    },
+    {
+      "name": "CarrierSummaryGenerator",
+      "purpose": "Generates actionable triage summaries with routing recommendations",
+      "data_source": "AI Analysis Pipeline",
+      "icon": "📝"
+    },
+    {
+      "name": "CarrierSFWriter",
+      "purpose": "Writes triage results back to Salesforce custom fields",
+      "data_source": "Salesforce REST API",
+      "icon": "💾"
+    },
+    {
+      "name": "CarrierCaseTriageOrchestrator",
+      "purpose": "Master orchestrator coordinating all 6 agents in the triage workflow",
+      "data_source": "RAPP Agent Framework",
+      "icon": "🎯"
+    }
+  ],
+  "design_principles": {
+    "max_response_length": "150-250 words",
+    "max_lines": "25-30 lines",
+    "max_table_rows": "4-5 rows",
+    "max_bullets": "4-6 bullets",
+    "sections": "2-3 maximum",
+    "visual_elements": "1 status indicator OR 1 table per response",
+    "source_attribution": "Compact format at end with Source and Agents",
+    "evergreen_language": "Relative timeframes only (today, yesterday, X days)",
+    "call_to_action": "Clear next question to continue flow"
+  },
+  "business_value": {
+    "problem": "Customer service cases sit untriaged for hours, increasing SLA risk and driving unnecessary inbound call volume. Manual triage takes 15+ minutes per case.",
+    "solution": "AI-powered agent swarm automatically triages cases in under 5 minutes, extracting key information, enriching with product context, and routing to appropriate teams.",
+    "metrics": {
+      "triage_time_before": "4-6 hours average",
+      "triage_time_after": "< 5 minutes",
+      "sla_miss_rate_before": "23%",
+      "sla_miss_rate_after": "< 5%",
+      "manual_effort_before": "15 min per case",
+      "manual_effort_after": "0 min (fully automated)"
+    },
+    "roi_summary": "85% reduction in triage time, 80% reduction in SLA misses, $2.4M annual savings in labor costs"
+  },
+  "conversation_flow": [
+    {
+      "step_number": 1,
+      "title": "Check Case Queue",
+      "description": "Service manager checks the morning case queue status",
+      "user_message": "Good morning! Show me the case queue status",
+      "trigger_phrases": ["case queue", "queue status", "morning", "show me cases", "what's in the queue"],
+      "agent_response": "Good morning, Jennifer! 📥 **Case Queue Status**\n\nI've scanned your Salesforce queue. Here's the current situation:\n\n| Status | Count | Oldest |\n|--------|-------|--------|\n| 🔴 New (Untriaged) | 5 | 2 hours ago |\n| 🟡 Aging (>4 hours) | 3 | 6 hours ago |\n| 🟢 Triaged Today | 12 | - |\n\n**Priority Alerts:**\n- 2 Enterprise accounts with open cases\n- 1 case mentions \"not cooling\" - potential urgent\n- 1 case has image attachment (error code photo)\n\n**Recommendation:** Run AI triage on the 5 new cases to prevent SLA risk.\n\n*Source: Salesforce Service Cloud | Agent: CarrierSFCaseMonitor*\n\nWould you like me to **run AI triage on these cases** now?",
+      "agents_called": ["CarrierSFCaseMonitor"],
+      "display_result": {
+        "type": "status_dashboard",
+        "data": {
+          "new_cases": 5,
+          "aging_cases": 3,
+          "triaged_today": 12,
+          "priority_alerts": 3
+        }
+      },
+      "wait_for_response": true,
+      "wait_timeout_seconds": 15
+    },
+    {
+      "step_number": 2,
+      "title": "Run AI Triage",
+      "description": "Manager triggers AI triage on new cases",
+      "user_message": "Yes, run AI triage on the new cases",
+      "trigger_phrases": ["run triage", "triage", "yes", "do it", "process cases", "run AI"],
+      "agent_response": "🎯 **Running AI Triage Workflow...**\n\nProcessing 5 cases through the 6-agent swarm:\n\n```\n✅ Step 1: Case Monitor      - Retrieved case details\n✅ Step 2: Attachment Scan   - 1 image processed (E47 error)\n✅ Step 3: AI Text Analysis  - Issue types classified  \n✅ Step 4: Product Enrichment - Warranty & history added\n✅ Step 5: Summary Generated  - Routing recommendations\n✅ Step 6: Salesforce Updated - Custom fields written\n```\n\n**Results Summary:**\n\n| Case | Issue Type | Priority | Routing |\n|------|------------|----------|----------|\n| 00001028 | Password Reset | Low | Self-Service |\n| 00001027 | Equipment Error | High | Field Service |\n| 00001002 | Installation | Medium | Tech Support |\n| 00001016 | Maintenance | Medium | Parts Team |\n| 00001024 | Design Issue | Medium | Engineering |\n\n⏱️ **Total time: 18 seconds** (vs 75+ minutes manual)\n\n*Source: AI Triage Pipeline | Agents: Full Swarm (7 agents)*\n\nWant to **see details on the high-priority case**?",
+      "agents_called": ["CarrierCaseTriageOrchestrator", "CarrierSFCaseMonitor", "CarrierAttachmentProcessor", "CarrierCaseAnalyzer", "CarrierProductEnrichment", "CarrierSummaryGenerator", "CarrierSFWriter"],
+      "display_result": {
+        "type": "triage_results",
+        "data": {
+          "cases_processed": 5,
+          "high_priority": 1,
+          "medium_priority": 3,
+          "low_priority": 1,
+          "execution_time_seconds": 18
+        }
+      },
+      "wait_for_response": true,
+      "wait_timeout_seconds": 20
+    },
+    {
+      "step_number": 3,
+      "title": "Review High-Priority Case",
+      "description": "Deep dive into the high-priority case details",
+      "user_message": "Yes, show me details on case 00001027",
+      "trigger_phrases": ["details", "high priority", "show me", "case 00001027", "equipment error"],
+      "agent_response": "🔍 **Case 00001027 - AI Triage Analysis**\n\n**Customer:** Desert Sun Properties (Enterprise Tier)\n**Equipment:** RTU Model 50XC (Serial: 2419G12345)\n**Issue:** Rooftop unit not cooling, E47 error code\n\n---\n\n**📎 Attachment Analysis:**\n- Photo shows E47 error on control panel\n- AI detected: Low superheat condition\n- Relevant bulletin: SB-2024-047 (TXV sensing bulb)\n\n**🔧 Product Context:**\n- Install Date: March 2021\n- Warranty: ❌ Expired (June 2024)\n- Service History: 2 prior visits (refrigerant leak repaired 2023)\n\n**🎯 AI Recommendation:**\n- **Priority:** High (business impact + enterprise account)\n- **Issue Type:** Equipment Failure - Refrigeration\n- **Route to:** Field Service - Commercial\n- **Action:** Dispatch technician for TXV diagnosis\n- **Estimate:** Same-day dispatch, 2-4 hour repair\n\n*Source: Salesforce + Product DB | Agents: Analyzer, Enrichment, Summary*\n\nShall I **show the triage summary that was written to Salesforce**?",
+      "agents_called": ["CarrierCaseAnalyzer", "CarrierProductEnrichment", "CarrierSummaryGenerator", "CarrierAttachmentProcessor"],
+      "display_result": {
+        "type": "case_detail",
+        "data": {
+          "case_number": "00001027",
+          "priority": "High",
+          "issue_type": "Equipment Failure",
+          "warranty_status": "Expired",
+          "routing": "Field Service - Commercial"
+        }
+      },
+      "wait_for_response": true,
+      "wait_timeout_seconds": 15
+    },
+    {
+      "step_number": 4,
+      "title": "View Salesforce Updates",
+      "description": "Show the custom fields updated in Salesforce",
+      "user_message": "Yes, show me what was written to Salesforce",
+      "trigger_phrases": ["salesforce", "written", "updated", "fields", "show me"],
+      "agent_response": "💾 **Salesforce Case Record Updated**\n\nThe following custom triage fields were automatically populated:\n\n| Field | Value |\n|-------|-------|\n| `Triage_Status__c` | Completed |\n| `Triage_Priority__c` | High |\n| `Triage_Issue_Type__c` | Equipment Failure |\n| `Triage_Summary__c` | RTU not cooling with E47 error... |\n| `Recommended_Action__c` | Dispatch technician for TXV diagnosis |\n| `Recommended_Queue__c` | Field Service - Commercial |\n| `AI_Triaged_Date__c` | 2026-01-21T20:22:10Z |\n\n**Internal Comment Added:**\n> *AI Triage: High priority equipment failure. Enterprise customer Desert Sun Properties. E47 error detected from attachment image. Warranty expired. Recommend same-day dispatch.*\n\n✅ Case is now ready for Field Service team pickup.\n\n*Source: Salesforce REST API | Agent: CarrierSFWriter*\n\nWould you like to **see the KPI impact** of AI triage?",
+      "agents_called": ["CarrierSFWriter"],
+      "display_result": {
+        "type": "salesforce_update",
+        "data": {
+          "fields_updated": 7,
+          "comment_added": true,
+          "case_routed": true
+        }
+      },
+      "wait_for_response": true,
+      "wait_timeout_seconds": 15
+    },
+    {
+      "step_number": 5,
+      "title": "Review KPI Impact",
+      "description": "Show the business impact metrics",
+      "user_message": "Yes, show me the KPI impact",
+      "trigger_phrases": ["KPI", "impact", "metrics", "savings", "ROI", "business value"],
+      "agent_response": "📊 **AI Triage KPI Dashboard**\n\n**Today's Performance:**\n\n| Metric | Before AI | With AI | Improvement |\n|--------|-----------|---------|-------------|\n| Avg Triage Time | 4.2 hours | 18 sec | **99.9%** |\n| Cases Triaged | 15/day | 100+/day | **6.7x** |\n| SLA Miss Rate | 23% | 2% | **91%** |\n| Manual Effort | 15 min/case | 0 min | **100%** |\n\n**Monthly Projection:**\n- 🕐 **2,400 hours saved** in manual triage\n- 💰 **$200K/month** in labor savings\n- 📈 **95% SLA compliance** (up from 77%)\n- 😊 **NPS improvement** from faster response\n\n**Agent Utilization Today:**\n- Cases processed: 17\n- Attachments analyzed: 4\n- Products enriched: 12\n- Salesforce writes: 17\n\n*Source: Analytics Dashboard | Agent: Orchestrator Metrics*\n\nWant to see a **summary of all agents in the swarm**?",
+      "agents_called": ["CarrierCaseTriageOrchestrator"],
+      "display_result": {
+        "type": "kpi_dashboard",
+        "data": {
+          "time_savings_percent": 99.9,
+          "sla_improvement_percent": 91,
+          "monthly_labor_savings": 200000,
+          "cases_processed_today": 17
+        }
+      },
+      "wait_for_response": true,
+      "wait_timeout_seconds": 15
+    },
+    {
+      "step_number": 6,
+      "title": "Agent Swarm Summary",
+      "description": "Closing with full agent swarm overview",
+      "user_message": "Yes, show me all the agents",
+      "trigger_phrases": ["agents", "swarm", "summary", "all agents", "overview"],
+      "agent_response": "🤖 **Carrier Case Triage Agent Swarm**\n\n**7 Specialized AI Agents Working Together:**\n\n| Agent | Role | Integration |\n|-------|------|-------------|\n| 📥 SF Case Monitor | Detect new/aging cases | Salesforce SOQL |\n| 📎 Attachment Processor | Extract from images/docs | GPT-4 Vision |\n| 🔍 Case Analyzer | Classify issues & urgency | Azure OpenAI |\n| 🔧 Product Enrichment | Add warranty & history | Product API |\n| 📝 Summary Generator | Create triage summary | AI Pipeline |\n| 💾 SF Writer | Update Salesforce fields | REST API |\n| 🎯 Orchestrator | Coordinate full workflow | RAPP Framework |\n\n**Architecture Highlights:**\n- Runs on Azure Functions (serverless)\n- Real-time Salesforce integration\n- Custom fields for triage data\n- Scalable to 1000s of cases/day\n\n**Demo Complete!** ✅\n\nThis is Carrier MVP Use Case 1 - ready for pilot deployment.\n\n*Built with: RAPP Agent Framework + Azure + Salesforce*\n\nQuestions about implementation or next steps?",
+      "agents_called": [],
+      "display_result": {
+        "type": "agent_catalog",
+        "data": {
+          "total_agents": 7,
+          "integrations": ["Salesforce", "Azure OpenAI", "GPT-4 Vision", "Azure Functions"]
+        }
+      },
+      "wait_for_response": true,
+      "wait_timeout_seconds": 30
+    }
+  ],
+  "one_pager": {
+    "title": "Carrier AI Case Triage Agent Swarm",
+    "subtitle": "MVP Use Case 1 - Customer Service Automation",
+    "value_proposition": "Automatically triage service cases in under 5 minutes with AI-powered analysis, reducing SLA risk by 80% and eliminating manual effort",
+    "key_features": [
+      "Real-time Salesforce case monitoring",
+      "GPT-4 Vision for attachment analysis",
+      "AI-powered issue classification and urgency detection",
+      "Product enrichment with warranty and service history",
+      "Automated routing recommendations",
+      "Custom field updates written back to Salesforce"
+    ],
+    "agents": [
+      "CarrierSFCaseMonitor",
+      "CarrierAttachmentProcessor",
+      "CarrierCaseAnalyzer",
+      "CarrierProductEnrichment",
+      "CarrierSummaryGenerator",
+      "CarrierSFWriter",
+      "CarrierCaseTriageOrchestrator"
+    ],
+    "integrations": [
+      "Salesforce Service Cloud",
+      "Azure OpenAI (GPT-4o)",
+      "Azure AI Services (Vision)",
+      "Carrier Product Database"
+    ],
+    "deployment": "Azure Functions (Serverless)",
+    "roi": {
+      "time_savings": "99.9% reduction in triage time",
+      "sla_improvement": "91% reduction in SLA misses",
+      "annual_savings": "$2.4M in labor costs"
+    },
+    "contact": "Microsoft + Carrier AI Partnership"
+  },
+  "live_demo_commands": {
+    "check_queue": {
+      "agent": "CarrierSFCaseMonitor",
+      "action": "get_queue_summary",
+      "description": "Get real case queue status from Salesforce"
+    },
+    "triage_single": {
+      "agent": "CarrierCaseTriageOrchestrator", 
+      "action": "triage_single_case",
+      "parameters": {"case_id": "CASE_ID_HERE", "write_to_sf": true},
+      "description": "Run full triage on a specific case"
+    },
+    "triage_all_new": {
+      "agent": "CarrierCaseTriageOrchestrator",
+      "action": "triage_all_new_cases",
+      "parameters": {"max_cases": 10, "write_to_sf": true},
+      "description": "Triage all new untriaged cases"
+    },
+    "verify_fields": {
+      "script": "python scripts/check_triaged_cases.py",
+      "description": "Check triaged cases in Salesforce"
+    }
+  }
+}

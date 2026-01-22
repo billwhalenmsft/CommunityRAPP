@@ -1,0 +1,125 @@
+{
+  "agent": {
+    "id": "aes_workflow_orchestrator_agent",
+    "name": "AES Workflow Orchestrator",
+    "version": "1.0.0",
+    "category": "workflow",
+    "icon": "fa-project-diagram",
+    "description": "Coordinates the end-to-end bidding process across all AES agents. Tracks bid status, manages approvals, orchestrates workflows, and provides pipeline visibility.",
+    "tokens": 1600,
+    "author": "RAPP",
+    "created": "2026-01-16",
+    "updated": "2026-01-16"
+  },
+  "metadata": {
+    "name": "AESWorkflowOrchestrator",
+    "description": "Bid workflow coordination and pipeline management",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["start_bid", "get_status", "advance_stage", "request_approval", "notify", "get_pipeline", "get_timeline", "assign_pm"],
+          "description": "The workflow action to perform"
+        },
+        "bid_id": {
+          "type": "string",
+          "description": "Bid identifier"
+        },
+        "stage": {
+          "type": "string",
+          "enum": ["rfq_received", "parsing", "estimating", "sub_quotes", "review", "approval", "submitted", "won", "lost"],
+          "description": "Workflow stage"
+        },
+        "assignee": {
+          "type": "string",
+          "description": "Person to assign or notify"
+        },
+        "message": {
+          "type": "string",
+          "description": "Notification message"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "start_bid",
+      "description": "Initiate a new bid process",
+      "parameters": ["bid_id"],
+      "example": {
+        "input": {"action": "start_bid", "customer": "Walmart", "rfq_file": "walmart_rfq_2026.xlsx"},
+        "output": "**New Bid Initiated:**\n\n✅ **Bid ID:** WALMART-2026-001\n📅 **Started:** Jan 16, 2026\n👤 **Owner:** Unassigned\n\n**Workflow Started:**\n1. ⏳ Parse RFQ Excel\n2. ⬜ Generate Estimates\n3. ⬜ Request Sub Quotes\n4. ⬜ PM Review\n5. ⬜ Management Approval\n6. ⬜ Submit to Customer"
+      }
+    },
+    {
+      "name": "get_status",
+      "description": "Get current status of a bid",
+      "parameters": ["bid_id"],
+      "example": {
+        "input": {"action": "get_status", "bid_id": "WALMART-2026-001"},
+        "output": "**Bid Status: WALMART-2026-001**\n\n📊 **Current Stage:** Sub Quotes (60%)\n\n**Progress:**\n✅ RFQ Parsed (49 stores)\n✅ Estimates Generated ($15.2M)\n⏳ Sub Quotes (8/12 received)\n⬜ PM Review\n⬜ Approval\n⬜ Submission\n\n**Due:** Jan 25, 2026 (9 days)\n**Blockers:** Waiting on crane quotes"
+      }
+    },
+    {
+      "name": "advance_stage",
+      "description": "Move bid to next workflow stage",
+      "parameters": ["bid_id", "stage"],
+      "example": {
+        "input": {"action": "advance_stage", "bid_id": "WALMART-2026-001", "stage": "review"},
+        "output": "**Stage Advanced:**\n\n✅ WALMART-2026-001 → **PM Review**\n\n📋 **Review Checklist:**\n- [ ] Verify all store estimates\n- [ ] Confirm sub selections\n- [ ] Check margin calculations\n- [ ] Review exclusions/clarifications\n\n📧 Notification sent to PM: John Smith"
+      }
+    },
+    {
+      "name": "request_approval",
+      "description": "Request management approval for bid",
+      "parameters": ["bid_id", "assignee"],
+      "example": {
+        "input": {"action": "request_approval", "bid_id": "WALMART-2026-001", "assignee": "Mike Director"},
+        "output": "**Approval Requested:**\n\n📤 Sent to: Mike Director\n💰 Bid Amount: $15,247,800\n📊 Margin: 40%\n📅 Due: Jan 25, 2026\n\n**Approval Link:** [Review & Approve](https://...)\n\n⏳ Awaiting response..."
+      }
+    },
+    {
+      "name": "notify",
+      "description": "Send notification to team member",
+      "parameters": ["assignee", "message", "bid_id"],
+      "example": {
+        "input": {"action": "notify", "assignee": "John PM", "message": "Sub quotes complete, ready for review"},
+        "output": "**Notification Sent:**\n\n📧 To: John PM\n📋 Re: WALMART-2026-001\n💬 \"Sub quotes complete, ready for review\"\n\n✅ Delivered via Teams & Email"
+      }
+    },
+    {
+      "name": "get_pipeline",
+      "description": "View bid pipeline overview",
+      "parameters": [],
+      "example": {
+        "input": {"action": "get_pipeline"},
+        "output": "**Bid Pipeline:**\n\n| Stage | Count | Value |\n|-------|-------|-------|\n| Parsing | 2 | $4.2M |\n| Estimating | 3 | $8.7M |\n| Sub Quotes | 1 | $15.2M |\n| Review | 2 | $6.1M |\n| Approval | 1 | $3.5M |\n| Submitted | 4 | $22.8M |\n\n**Total Pipeline: $60.5M**\n\n⚠️ **Attention Needed:**\n- WALMART-2026-001: Sub quotes overdue\n- TARGET-2026-003: Approval pending 3 days"
+      }
+    },
+    {
+      "name": "get_timeline",
+      "description": "Get timeline and milestones for a bid",
+      "parameters": ["bid_id"],
+      "example": {
+        "input": {"action": "get_timeline", "bid_id": "WALMART-2026-001"},
+        "output": "**Timeline: WALMART-2026-001**\n\n```\nJan 10 ──●── RFQ Received\n         │\nJan 11 ──●── Parsing Complete\n         │\nJan 12 ──●── Estimates Generated\n         │\nJan 15 ──◐── Sub Quotes (in progress)\n         │\nJan 18 ──○── PM Review (planned)\n         │\nJan 20 ──○── Approval (planned)\n         │\nJan 25 ──○── Submit to Customer (due)\n```\n\n**On Track:** ✅ Yes"
+      }
+    },
+    {
+      "name": "assign_pm",
+      "description": "Assign Project Manager to bid",
+      "parameters": ["bid_id", "assignee"],
+      "example": {
+        "input": {"action": "assign_pm", "bid_id": "WALMART-2026-001", "assignee": "John Smith"},
+        "output": "**PM Assigned:**\n\n✅ John Smith → WALMART-2026-001\n\n📧 Notification sent with:\n- Bid summary\n- Current status\n- Due date\n- Action items"
+      }
+    }
+  ],
+  "system_prompt": "You are the AES Workflow Orchestrator agent. Coordinate the end-to-end bidding process. Track all bids through their lifecycle stages. Ensure timely progression through workflow stages. Alert team members of blockers, approaching deadlines, and required actions. Provide visibility into the bid pipeline.",
+  "demo_conversation": [
+    {"role": "user", "content": "What's the status of our active bids?"},
+    {"role": "assistant", "content": "**AES Bid Pipeline Overview**\n\n📊 **Active Bids: 13** | **Total Value: $60.5M**\n\n---\n\n**By Stage:**\n\n| Stage | Bids | Value | Avg Days in Stage |\n|-------|------|-------|-------------------|\n| 📥 Parsing | 2 | $4.2M | 1 day |\n| 🧮 Estimating | 3 | $8.7M | 2 days |\n| 📞 Sub Quotes | 1 | $15.2M | 3 days |\n| 👀 Review | 2 | $6.1M | 2 days |\n| ✅ Approval | 1 | $3.5M | 3 days |\n| 📤 Submitted | 4 | $22.8M | 5 days |\n\n---\n\n⚠️ **Action Required:**\n\n1. **WALMART-2026-001** ($15.2M)\n   - Stage: Sub Quotes\n   - Issue: 4 crane quotes outstanding\n   - Due: Jan 25 (9 days)\n\n2. **TARGET-2026-003** ($3.5M)\n   - Stage: Approval\n   - Issue: Pending 3 days\n   - Due: Jan 20 (4 days)\n\n3. **COSTCO-2026-002** ($2.1M)\n   - Stage: Review\n   - Issue: PM review overdue\n   - Due: Jan 22 (6 days)\n\n---\n\n**Upcoming Deadlines:**\n- Jan 20: TARGET-2026-003\n- Jan 22: COSTCO-2026-002\n- Jan 25: WALMART-2026-001"}
+  ]
+}

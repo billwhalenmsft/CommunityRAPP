@@ -96,7 +96,8 @@ def test_connection():
     if recent_cases.get('records'):
         print(f"\n📋 Recent Cases ({len(recent_cases['records'])} found):")
         for case in recent_cases['records']:
-            print(f"   [{case.get('CaseNumber')}] {case.get('Subject', 'No subject')[:50]}")
+            subject = case.get('Subject') or 'No subject'
+            print(f"   [{case.get('CaseNumber')}] {subject[:50]}")
             print(f"       Status: {case.get('Status')} | Priority: {case.get('Priority')}")
     else:
         print("   No cases found in this org.")

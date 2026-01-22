@@ -19,9 +19,149 @@ from azure.identity import (
 )
 from datetime import datetime
 import time
+import threading
 from utils.azure_file_storage import safe_json_loads
 from utils.storage_factory import get_storage_manager
 from utils.result import Result, Success, Failure, AgentLoadError, APIError, partition_results
+
+
+# =============================================================================
+# PERFORMANCE & RESILIENCE OPTIMIZATIONS
+# =============================================================================
+# These module-level singletons avoid expensive re-initialization on each request,
+# dramatically reducing cold start times and improving response latency.
+# =============================================================================
+
+# Singleton OpenAI client - created once, reused across requests
+_openai_client = None
+_openai_client_lock = threading.Lock()
+_openai_client_created_at = None
+OPENAI_CLIENT_TTL_SECONDS = 30 * 60  # 30 minutes to match storage TTL
+
+# Cached agents - loaded once, refreshed periodically
+_cached_agents = None
+_cached_agents_lock = threading.Lock()
+_cached_agents_created_at = None
+AGENTS_CACHE_TTL_SECONDS = 5 * 60  # 5 minutes - agents change less frequently
+
+# Request timeout for OpenAI API calls (in seconds)
+OPENAI_REQUEST_TIMEOUT = 45  # Allows time for complex agent chains while staying under 60s
+
+
+def _get_openai_client():
+    """
+    Get or create a singleton OpenAI client with TTL refresh.
+    
+    This dramatically improves performance by:
+    1. Avoiding credential acquisition on every request
+    2. Reusing HTTP connections
+    3. Automatic refresh before token expiration
+    """
+    global _openai_client, _openai_client_created_at
+    
+    with _openai_client_lock:
+        # Check if we need to create or refresh the client
+        needs_refresh = (
+            _openai_client is None or
+            _openai_client_created_at is None or
+            (time.time() - _openai_client_created_at) >= OPENAI_CLIENT_TTL_SECONDS
+        )
+        
+        if needs_refresh:
+            logging.info("Creating/refreshing OpenAI client singleton")
+            api_key = os.environ.get('AZURE_OPENAI_API_KEY')
+            
+            if api_key:
+                # API key authentication (simplest)
+                logging.info("Using API key authentication for Azure OpenAI")
+                _openai_client = AzureOpenAI(
+                    azure_endpoint=os.environ['AZURE_OPENAI_ENDPOINT'],
+                    api_key=api_key,
+                    api_version=os.environ.get('AZURE_OPENAI_API_VERSION', '2025-01-01-preview'),
+                    timeout=OPENAI_REQUEST_TIMEOUT,
+                    max_retries=2
+                )
+            else:
+                # Entra ID authentication
+                if os.environ.get('WEBSITE_INSTANCE_ID'):
+                    credential = ManagedIdentityCredential()
+                    logging.info("Using ManagedIdentityCredential for Azure deployment")
+                else:
+                    credential = ChainedTokenCredential(
+                        ManagedIdentityCredential(),
+                        AzureCliCredential()
+                    )
+                    logging.info("Using ChainedTokenCredential for local development")
+                
+                token_provider = get_bearer_token_provider(
+                    credential,
+                    "https://cognitiveservices.azure.com/.default"
+                )
+                
+                _openai_client = AzureOpenAI(
+                    azure_endpoint=os.environ['AZURE_OPENAI_ENDPOINT'],
+                    azure_ad_token_provider=token_provider,
+                    api_version=os.environ.get('AZURE_OPENAI_API_VERSION', '2025-01-01-preview'),
+                    timeout=OPENAI_REQUEST_TIMEOUT,
+                    max_retries=2
+                )
+            
+            _openai_client_created_at = time.time()
+        
+        return _openai_client
+
+
+def _get_cached_agents(user_guid=None, force_refresh=False):
+    """
+    Get agents with caching to avoid reloading on every request.
+    
+    This significantly reduces cold start and request latency by:
+    1. Loading agents once and caching them
+    2. Only refreshing when TTL expires or forced
+    3. Using thread-safe access
+    """
+    global _cached_agents, _cached_agents_created_at
+    
+    with _cached_agents_lock:
+        needs_refresh = (
+            force_refresh or
+            _cached_agents is None or
+            _cached_agents_created_at is None or
+            (time.time() - _cached_agents_created_at) >= AGENTS_CACHE_TTL_SECONDS
+        )
+        
+        if needs_refresh:
+            logging.info("Loading/refreshing agents cache")
+            _cached_agents = load_agents_from_folder(user_guid)
+            _cached_agents_created_at = time.time()
+        
+        return _cached_agents.copy()  # Return a copy to prevent mutation
+
+
+def _reset_openai_client():
+    """
+    Reset the OpenAI client singleton.
+    
+    Call this when authentication fails to force credential refresh on next request.
+    """
+    global _openai_client, _openai_client_created_at
+    with _openai_client_lock:
+        _openai_client = None
+        _openai_client_created_at = None
+        logging.info("OpenAI client cache reset - will refresh on next request")
+
+
+def _reset_agents_cache():
+    """
+    Reset the agents cache.
+    
+    Call this when agents need to be reloaded (e.g., after deployment updates).
+    """
+    global _cached_agents, _cached_agents_created_at
+    with _cached_agents_lock:
+        _cached_agents = None
+        _cached_agents_created_at = None
+        logging.info("Agents cache reset - will reload on next request")
 
 
 # =============================================================================
@@ -425,45 +565,9 @@ class Assistant:
             'characteristic_description': str(os.environ.get('CHARACTERISTIC_DESCRIPTION', 'helpful business assistant'))
         }
 
-        # Initialize Azure OpenAI client
-        # Priority: API Key > Entra ID (token auth)
-        api_key = os.environ.get('AZURE_OPENAI_API_KEY')
-
-        if api_key:
-            # Use API key authentication (simplest, works everywhere)
-            logging.info("Using API key authentication for Azure OpenAI")
-            self.client = AzureOpenAI(
-                azure_endpoint=os.environ['AZURE_OPENAI_ENDPOINT'],
-                api_key=api_key,
-                api_version=os.environ.get('AZURE_OPENAI_API_VERSION', '2025-01-01-preview')
-            )
-        else:
-            # Use Entra ID authentication (token-based)
-            # Use optimized credential chain for faster cold starts:
-            # - ManagedIdentityCredential: Used in Azure (Function App, VM, etc.) - fastest
-            # - AzureCliCredential: Used locally after 'az login' - for development
-            if os.environ.get('WEBSITE_INSTANCE_ID'):
-                # Running in Azure - use ManagedIdentity directly (fastest)
-                credential = ManagedIdentityCredential()
-                logging.info("Using ManagedIdentityCredential for Azure deployment")
-            else:
-                # Local development - use chained credential
-                credential = ChainedTokenCredential(
-                    ManagedIdentityCredential(),
-                    AzureCliCredential()
-                )
-                logging.info("Using ChainedTokenCredential for local development")
-
-            token_provider = get_bearer_token_provider(
-                credential,
-                "https://cognitiveservices.azure.com/.default"
-            )
-
-            self.client = AzureOpenAI(
-                azure_endpoint=os.environ['AZURE_OPENAI_ENDPOINT'],
-                azure_ad_token_provider=token_provider,
-                api_version=os.environ.get('AZURE_OPENAI_API_VERSION', '2025-01-01-preview')
-            )
+        # Use the singleton OpenAI client for better performance
+        # This avoids re-authenticating and creating connections on every request
+        self.client = _get_openai_client()
 
         self.known_agents = self.reload_agents(declared_agents)
         
@@ -1208,6 +1312,134 @@ Revenue's up 12 percent and customers are happier - looking good for Q3.
 
 app = func.FunctionApp()
 
+
+# =============================================================================
+# HEALTH CHECK ENDPOINT
+# =============================================================================
+# This endpoint enables:
+# 1. Azure warm-up triggers to keep the function "hot"
+# 2. Power Automate health checks before main requests
+# 3. Load balancer health probes
+# 4. Monitoring and alerting systems
+# =============================================================================
+
+@app.route(route="health", auth_level=func.AuthLevel.ANONYMOUS)
+def health_check(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Health check endpoint for monitoring and warm-up.
+    
+    Call this endpoint:
+    - Before making main API calls to ensure the function is warm
+    - From Azure Monitor or custom health checks
+    - From Power Automate as a pre-flight check
+    
+    Query Parameters:
+        deep (optional): If "true", performs a deeper health check including
+                        OpenAI client initialization and agent loading.
+    
+    Returns:
+        200 OK with health status JSON
+        500 with error details if unhealthy
+    """
+    start_time = time.time()
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    
+    # Build response allowing CORS preflight
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+    
+    health_status = {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "version": "1.0.0",
+        "checks": {}
+    }
+    
+    try:
+        # Basic check - always performed
+        health_status["checks"]["basic"] = {
+            "status": "pass",
+            "message": "Function app is responding"
+        }
+        
+        # Deep health check if requested
+        deep_check = req.params.get('deep', '').lower() == 'true'
+        
+        if deep_check:
+            # Check OpenAI client can be initialized
+            try:
+                client = _get_openai_client()
+                health_status["checks"]["openai_client"] = {
+                    "status": "pass",
+                    "message": "OpenAI client initialized successfully",
+                    "client_age_seconds": round(time.time() - (_openai_client_created_at or time.time()), 2)
+                }
+            except Exception as e:
+                health_status["checks"]["openai_client"] = {
+                    "status": "fail",
+                    "message": f"OpenAI client initialization failed: {str(e)}"
+                }
+                health_status["status"] = "degraded"
+            
+            # Check agent loading
+            try:
+                agents = _get_cached_agents()
+                health_status["checks"]["agents"] = {
+                    "status": "pass",
+                    "message": f"Loaded {len(agents)} agents",
+                    "cache_age_seconds": round(time.time() - (_cached_agents_created_at or time.time()), 2) if _cached_agents_created_at else 0
+                }
+            except Exception as e:
+                health_status["checks"]["agents"] = {
+                    "status": "fail",
+                    "message": f"Agent loading failed: {str(e)}"
+                }
+                health_status["status"] = "degraded"
+            
+            # Check storage connectivity
+            try:
+                storage = get_storage_manager()
+                if storage:
+                    health_status["checks"]["storage"] = {
+                        "status": "pass",
+                        "message": "Storage manager initialized"
+                    }
+                else:
+                    health_status["checks"]["storage"] = {
+                        "status": "warn",
+                        "message": "Storage manager not configured (running locally)"
+                    }
+            except Exception as e:
+                health_status["checks"]["storage"] = {
+                    "status": "fail", 
+                    "message": f"Storage check failed: {str(e)}"
+                }
+                health_status["status"] = "degraded"
+        
+        # Calculate response time
+        health_status["response_time_ms"] = round((time.time() - start_time) * 1000, 2)
+        
+        return func.HttpResponse(
+            json.dumps(health_status, indent=2),
+            status_code=200,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+        
+    except Exception as e:
+        logging.error(f"Health check failed: {str(e)}")
+        health_status["status"] = "unhealthy"
+        health_status["error"] = str(e)
+        health_status["response_time_ms"] = round((time.time() - start_time) * 1000, 2)
+        
+        return func.HttpResponse(
+            json.dumps(health_status, indent=2),
+            status_code=500,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+
 @app.route(route="businessinsightbot_function", auth_level=func.AuthLevel.FUNCTION)
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
@@ -1267,7 +1499,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         )
 
     try:
-        agents = load_agents_from_folder(user_guid)
+        # Use cached agents for better performance (avoids reloading on every request)
+        agents = _get_cached_agents(user_guid)
         # Create a new Assistant instance for each request
         assistant = Assistant(agents)
         
@@ -1299,19 +1532,40 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         error_str = str(e)
 
-        # Check for authentication/authorization errors and reset credential cache
+        # Check for authentication/authorization errors and reset credential caches
         # This handles cases where cached credentials have expired (e.g., overnight idle)
-        if any(auth_err in error_str for auth_err in [
+        auth_error_indicators = [
             'AuthenticationError', 'AuthorizationFailure', 'AuthenticationFailed',
-            '401', '403', 'token', 'credential', 'Unauthorized'
-        ]):
-            logging.warning(f"Auth error detected, resetting storage manager: {error_str}")
+            '401', '403', 'token', 'credential', 'Unauthorized', 'invalid_api_key'
+        ]
+        
+        if any(auth_err in error_str for auth_err in auth_error_indicators):
+            logging.warning(f"Auth error detected, resetting all caches: {error_str}")
+            
+            # Reset OpenAI client cache
+            _reset_openai_client()
+            
+            # Reset storage manager
             try:
                 from utils.storage_factory import reset_storage_manager
                 reset_storage_manager()
-                logging.info("Storage manager reset - next request will use fresh credentials")
+                logging.info("All credential caches reset - next request will use fresh credentials")
             except Exception as reset_err:
                 logging.error(f"Failed to reset storage manager: {reset_err}")
+        
+        # Check for timeout errors and provide helpful response
+        if any(timeout_err in error_str for timeout_err in ['timeout', 'Timeout', 'timed out']):
+            error_response = {
+                "error": "Request timed out",
+                "details": "The request took too long to process. Please try again with a simpler query.",
+                "suggestion": "Try breaking your request into smaller parts."
+            }
+            return func.HttpResponse(
+                json.dumps(error_response),
+                status_code=408,
+                mimetype="application/json",
+                headers=cors_headers
+            )
 
         error_response = {
             "error": "Internal server error",

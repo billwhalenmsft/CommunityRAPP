@@ -133,7 +133,7 @@ class CarrierAttachmentProcessorAgent(BasicAgent):
 
     def perform(self, **kwargs) -> str:
         """Execute attachment processing."""
-        action = kwargs.get('action', 'process_attachments')
+        action = kwargs.pop('action', 'process_attachments')
 
         try:
             if self.config["use_mock_data"]:

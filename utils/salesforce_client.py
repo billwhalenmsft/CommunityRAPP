@@ -1,6 +1,6 @@
 """
 Salesforce Client - Handles authentication and API calls to Salesforce
-Supports both Username-Password OAuth flow (dev/demo) and JWT Bearer (production)
+Uses the simple-salesforce library for robust OAuth handling.
 
 Configuration via environment variables:
 - SALESFORCE_INSTANCE_URL: Your Salesforce instance URL
@@ -15,10 +15,16 @@ Configuration via environment variables:
 import os
 import json
 import logging
-import requests
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
-from functools import lru_cache
+
+# Try to import simple_salesforce, fall back gracefully
+try:
+    from simple_salesforce import Salesforce, SalesforceAuthenticationFailed
+    SIMPLE_SALESFORCE_AVAILABLE = True
+except ImportError:
+    SIMPLE_SALESFORCE_AVAILABLE = False
+    logging.warning("simple-salesforce not installed. Run: pip install simple-salesforce")
 
 # =============================================================================
 # CONFIGURATION
@@ -34,12 +40,11 @@ class SalesforceConfig:
         self.username = os.environ.get('SALESFORCE_USERNAME', '')
         self.password = os.environ.get('SALESFORCE_PASSWORD', '')
         self.security_token = os.environ.get('SALESFORCE_SECURITY_TOKEN', '')
-        self.api_version = os.environ.get('SALESFORCE_API_VERSION', 'v59.0')
+        self.api_version = os.environ.get('SALESFORCE_API_VERSION', 'v59.0').replace('v', '')
         
         # Derived URLs
         self.login_url = os.environ.get('SALESFORCE_LOGIN_URL', 
             'https://login.salesforce.com')  # Use test.salesforce.com for sandbox
-        self.token_url = f"{self.login_url}/services/oauth2/token"
         
     @property
     def is_configured(self) -> bool:
@@ -49,7 +54,7 @@ class SalesforceConfig:
     @property
     def api_base_url(self) -> str:
         """Get the base URL for REST API calls."""
-        return f"{self.instance_url}/services/data/{self.api_version}"
+        return f"{self.instance_url}/services/data/v{self.api_version}"
 
 
 # =============================================================================
@@ -57,7 +62,7 @@ class SalesforceConfig:
 # =============================================================================
 class SalesforceClient:
     """
-    Salesforce REST API Client with OAuth 2.0 authentication.
+    Salesforce REST API Client using simple-salesforce library.
     
     Usage:
         client = SalesforceClient()
@@ -67,67 +72,55 @@ class SalesforceClient:
     
     def __init__(self, config: SalesforceConfig = None):
         self.config = config or SalesforceConfig()
-        self.access_token: Optional[str] = None
+        self._sf: Optional[Salesforce] = None
         self.instance_url: Optional[str] = None
-        self.token_expiry: Optional[datetime] = None
-        self._session = requests.Session()
+        self._authenticated = False
         
     def authenticate(self) -> bool:
         """
-        Authenticate with Salesforce using Username-Password OAuth flow.
+        Authenticate with Salesforce using simple-salesforce.
         Returns True if authentication succeeds.
         """
+        if not SIMPLE_SALESFORCE_AVAILABLE:
+            logging.error("simple-salesforce library not available")
+            return False
+            
         if not self.config.is_configured:
             logging.warning("Salesforce credentials not configured. Using mock data.")
             return False
             
         try:
-            # Username-Password OAuth 2.0 Flow
-            payload = {
-                'grant_type': 'password',
-                'client_id': self.config.client_id,
-                'client_secret': self.config.client_secret,
-                'username': self.config.username,
-                'password': self.config.password + self.config.security_token
-            }
-            
-            response = self._session.post(self.config.token_url, data=payload)
-            
-            if response.status_code == 200:
-                token_data = response.json()
-                self.access_token = token_data['access_token']
-                self.instance_url = token_data['instance_url']
-                # Token typically valid for 2 hours, refresh at 90 minutes
-                self.token_expiry = datetime.utcnow() + timedelta(minutes=90)
+            self._sf = Salesforce(
+                username=self.config.username,
+                password=self.config.password,
+                security_token=self.config.security_token,
+                consumer_key=self.config.client_id,
+                consumer_secret=self.config.client_secret,
+                version=self.config.api_version
+            )
+            self.instance_url = f"https://{self._sf.sf_instance}"
+            self._authenticated = True
+            logging.info(f"Salesforce authentication successful. Instance: {self.instance_url}")
+            return True
                 
-                # Update session headers
-                self._session.headers.update({
-                    'Authorization': f'Bearer {self.access_token}',
-                    'Content-Type': 'application/json'
-                })
-                
-                logging.info(f"Salesforce authentication successful. Instance: {self.instance_url}")
-                return True
-            else:
-                error = response.json()
-                logging.error(f"Salesforce authentication failed: {error}")
-                return False
-                
+        except SalesforceAuthenticationFailed as e:
+            logging.error(f"Salesforce authentication failed: {str(e)}")
+            return False
         except Exception as e:
             logging.error(f"Salesforce authentication error: {str(e)}")
             return False
     
     def _ensure_authenticated(self) -> bool:
-        """Ensure we have a valid access token."""
-        if self.access_token and self.token_expiry and datetime.utcnow() < self.token_expiry:
+        """Ensure we have a valid connection."""
+        if self._authenticated and self._sf:
             return True
         return self.authenticate()
     
     @property
     def api_base(self) -> str:
-        """Get the API base URL (uses instance URL from auth response)."""
+        """Get the API base URL."""
         base = self.instance_url or self.config.instance_url
-        return f"{base}/services/data/{self.config.api_version}"
+        return f"{base}/services/data/v{self.config.api_version}"
     
     # =========================================================================
     # QUERY METHODS
@@ -146,15 +139,12 @@ class SalesforceClient:
             return {"totalSize": 0, "done": True, "records": [], "error": "Not authenticated"}
         
         try:
-            url = f"{self.api_base}/query"
-            response = self._session.get(url, params={'q': soql})
-            
-            if response.status_code == 200:
-                return response.json()
-            else:
-                error = response.json()
-                logging.error(f"SOQL query failed: {error}")
-                return {"totalSize": 0, "done": True, "records": [], "error": error}
+            result = self._sf.query(soql)
+            return {
+                "totalSize": result.get('totalSize', 0),
+                "done": result.get('done', True),
+                "records": result.get('records', [])
+            }
                 
         except Exception as e:
             logging.error(f"Query error: {str(e)}")
@@ -164,20 +154,15 @@ class SalesforceClient:
         """
         Execute SOQL query and return all records (handles pagination).
         """
-        all_records = []
-        result = self.query(soql)
-        all_records.extend(result.get('records', []))
-        
-        # Handle pagination
-        while not result.get('done', True) and 'nextRecordsUrl' in result:
-            response = self._session.get(f"{self.instance_url}{result['nextRecordsUrl']}")
-            if response.status_code == 200:
-                result = response.json()
-                all_records.extend(result.get('records', []))
-            else:
-                break
-                
-        return all_records
+        if not self._ensure_authenticated():
+            return []
+            
+        try:
+            result = self._sf.query_all(soql)
+            return result.get('records', [])
+        except Exception as e:
+            logging.error(f"Query all error: {str(e)}")
+            return []
     
     # =========================================================================
     # CASE-SPECIFIC METHODS
@@ -271,15 +256,9 @@ class SalesforceClient:
             return {"success": False, "error": "Not authenticated"}
         
         try:
-            url = f"{self.api_base}/sobjects/{sobject}/{record_id}"
-            response = self._session.patch(url, json=data)
-            
-            if response.status_code == 204:  # Success with no content
-                return {"success": True, "id": record_id}
-            else:
-                error = response.json() if response.content else {"message": "Unknown error"}
-                logging.error(f"Update failed: {error}")
-                return {"success": False, "error": error}
+            sf_object = getattr(self._sf, sobject)
+            sf_object.update(record_id, data)
+            return {"success": True, "id": record_id}
                 
         except Exception as e:
             logging.error(f"Update error: {str(e)}")
@@ -327,19 +306,13 @@ class SalesforceClient:
             return {"success": False, "error": "Not authenticated"}
         
         try:
-            url = f"{self.api_base}/sobjects/CaseComment"
             data = {
                 "ParentId": case_id,
                 "CommentBody": comment,
                 "IsPublished": is_public
             }
-            response = self._session.post(url, json=data)
-            
-            if response.status_code == 201:
-                return {"success": True, "id": response.json().get('id')}
-            else:
-                error = response.json()
-                return {"success": False, "error": error}
+            result = self._sf.CaseComment.create(data)
+            return {"success": True, "id": result.get('id')}
                 
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -374,9 +347,12 @@ class SalesforceClient:
         if not self._ensure_authenticated():
             return {}
         
-        url = f"{self.api_base}/sobjects/{sobject}/describe"
-        response = self._session.get(url)
-        return response.json() if response.status_code == 200 else {}
+        try:
+            sf_object = getattr(self._sf, sobject)
+            return sf_object.describe()
+        except Exception as e:
+            logging.error(f"Describe error: {str(e)}")
+            return {}
     
     def get_case_fields(self) -> List[str]:
         """Get list of available Case fields."""

@@ -1,27 +1,36 @@
 """
-Azure File Storage Manager with Entra ID Token Authentication
+Azure File Storage Manager with Flexible Authentication
 
-This module provides Azure File Storage access using token-based authentication ONLY.
-Key-based authentication (connection strings) is NOT supported as the storage account
-has allowSharedKeyAccess disabled for security.
+This module provides Azure File Storage access with support for both:
+1. Identity-based authentication (Managed Identity / Azure CLI) - Recommended
+2. Key-based authentication (Connection strings) - Legacy
 
-Authentication Priority:
+Feature Flag: USE_IDENTITY_BASED_STORAGE
+- When 'true': Uses Managed Identity (Azure) or Azure CLI (local dev)
+- When 'false' or unset: Uses connection string/account key if available
+
+Authentication Priority (Identity-based mode):
 1. App Registration (if AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET set)
 2. ChainedTokenCredential:
    - ManagedIdentityCredential (for Azure deployments - Function App, VM, etc.)
    - AzureCliCredential (for local development - requires 'az login')
 
+Authentication (Key-based mode):
+- Uses AZURE_STORAGE_CONNECTION_STRING or constructs from account name/key
+
 Environment Variables Required:
 - AZURE_STORAGE_ACCOUNT_NAME: Storage account name
 - AZURE_FILES_SHARE_NAME: File share name
+- USE_IDENTITY_BASED_STORAGE: Set to 'true' to use Managed Identity
 
-For Local Development:
+For Identity-Based Local Development:
 1. Run 'az login' to authenticate with Azure CLI
 2. Ensure your user account has 'Storage File Data Privileged Contributor' role
    on the storage account
 
-For Azure Deployment:
+For Azure Deployment (Identity-based):
 - The Function App's managed identity must have 'Storage File Data Privileged Contributor' role
+- Set USE_IDENTITY_BASED_STORAGE=true in app settings
 """
 
 import json
@@ -40,6 +49,8 @@ from azure.identity import (
 from azure.storage.fileshare import ShareServiceClient, ShareFileClient, ShareDirectoryClient
 from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 from azure.core.exceptions import ResourceNotFoundError, ResourceExistsError, AzureError
+
+from utils.environment import use_identity_based_storage
 
 
 def safe_json_loads(json_str):
@@ -95,10 +106,30 @@ class AzureFileStorageManager:
     
     def _init_auth(self):
         """
-        Initialize token-based authentication for Azure Files.
+        Initialize authentication for Azure Files.
 
-        NO connection string/key-based auth - storage account has allowSharedKeyAccess=false.
-
+        Supports two modes based on USE_IDENTITY_BASED_STORAGE feature flag:
+        
+        Identity-based mode (USE_IDENTITY_BASED_STORAGE=true):
+        - Uses Managed Identity (Azure) or Azure CLI (local dev)
+        - Required when storage account has allowSharedKeyAccess=false
+        - Priority: App Registration -> ManagedIdentity -> AzureCli
+        
+        Key-based mode (USE_IDENTITY_BASED_STORAGE=false or unset):
+        - Uses connection string or account key
+        - Traditional authentication method
+        """
+        self.use_identity = use_identity_based_storage()
+        
+        if self.use_identity:
+            self._init_identity_auth()
+        else:
+            self._init_key_auth()
+    
+    def _init_identity_auth(self):
+        """
+        Initialize identity-based (Managed Identity / Azure CLI) authentication.
+        
         Priority:
         1. App Registration (if AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET set)
         2. ChainedTokenCredential (ManagedIdentity -> AzureCli)
@@ -109,7 +140,7 @@ class AzureFileStorageManager:
         client_secret = os.environ.get('AZURE_CLIENT_SECRET')
 
         if tenant_id and client_id and client_secret:
-            logging.info("Using App Registration (Client Secret) credentials")
+            logging.info("Using App Registration (Client Secret) credentials for storage")
             self.credential = ClientSecretCredential(
                 tenant_id=tenant_id,
                 client_id=client_id,
@@ -118,7 +149,7 @@ class AzureFileStorageManager:
         else:
             # Use ChainedTokenCredential - much faster and more predictable than DefaultAzureCredential
             # Order: ManagedIdentity first (Azure), then AzureCli (local dev with 'az login')
-            logging.info("Using ChainedTokenCredential (ManagedIdentity -> AzureCli)")
+            logging.info("Using ChainedTokenCredential (ManagedIdentity -> AzureCli) for storage")
             self.credential = ChainedTokenCredential(
                 ManagedIdentityCredential(),  # Works in Azure (Function App, VM, etc.)
                 AzureCliCredential()          # Works locally after 'az login'
@@ -141,7 +172,47 @@ class AzureFileStorageManager:
             credential=self.credential
         )
 
-        logging.info(f"Initialized token auth for storage account: {self.account_name}")
+        logging.info(f"Initialized IDENTITY-BASED auth for storage account: {self.account_name}")
+    
+    def _init_key_auth(self):
+        """
+        Initialize key-based (connection string) authentication.
+        
+        Uses connection string from environment or constructs from account name/key.
+        This is the legacy authentication method.
+        """
+        # Try connection string first
+        connection_string = os.environ.get('AZURE_STORAGE_CONNECTION_STRING')
+        
+        if not connection_string:
+            # Try to construct from account name and key
+            account_key = os.environ.get('AZURE_STORAGE_ACCOUNT_KEY')
+            if account_key:
+                connection_string = (
+                    f"DefaultEndpointsProtocol=https;"
+                    f"AccountName={self.account_name};"
+                    f"AccountKey={account_key};"
+                    f"EndpointSuffix=core.windows.net"
+                )
+                logging.info("Constructed connection string from account name and key")
+        
+        if not connection_string:
+            # Fall back to identity-based if no key available
+            logging.warning("No connection string or account key found, falling back to identity-based auth")
+            self._init_identity_auth()
+            return
+
+        # Initialize File Share client with connection string
+        self.share_service = ShareServiceClient.from_connection_string(connection_string)
+        self.share_client = self.share_service.get_share_client(self.share_name)
+
+        # Initialize Blob client with connection string
+        self.blob_service = BlobServiceClient.from_connection_string(connection_string)
+        
+        # Store credential as None for key-based auth (used in SAS generation check)
+        self.credential = None
+
+        logging.info(f"Initialized KEY-BASED auth for storage account: {self.account_name}")
 
     def refresh_credentials(self):
         """
