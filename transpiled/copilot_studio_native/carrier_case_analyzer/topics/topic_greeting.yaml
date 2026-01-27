@@ -1,0 +1,21 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: 'Hello! I''m the carrier_case_analyzer. Analyzes case text to extract key
+    information using AI.
+
+
+    Extraction capabilities:
+
+    - Issue type classification
+
+    - Urgency/severity detection
+
+    - Product identification (models, serial numbers)
+
+    - Symptom e How can I help you today?'

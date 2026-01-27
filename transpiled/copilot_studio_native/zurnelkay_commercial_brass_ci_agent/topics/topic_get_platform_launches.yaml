@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_platform_launches
+displayName: Get Platform Launches
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_platform_launches
+  triggerQueries:
+  - get platform launches
+  - run get platform launches
+  - execute get platform launches
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get platform launches'

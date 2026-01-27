@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_signal_summary
+displayName: Get Signal Summary
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_signal_summary
+  triggerQueries:
+  - get signal summary
+  - run get signal summary
+  - execute get signal summary
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get signal summary'

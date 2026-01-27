@@ -68,21 +68,48 @@ ACTION_PATTERNS = {
 }
 
 
+# Deployment channels
+DEPLOYMENT_CHANNELS = {
+    "rapp": {
+        "name": "RAPP Function App",
+        "description": "Default RAPP deployment via Azure Functions",
+        "generates": ["json_config", "python_code"]
+    },
+    "copilot_studio": {
+        "name": "Microsoft Copilot Studio",
+        "description": "Native Copilot Studio agent with generative AI",
+        "generates": ["mcs_solution", "yaml_topics", "power_automate_flows"]
+    },
+    "both": {
+        "name": "RAPP + Copilot Studio",
+        "description": "Generate both RAPP assets and Copilot Studio templates",
+        "generates": ["json_config", "python_code", "mcs_solution"]
+    }
+}
+
+
 class AgentGeneratorAgent(BasicAgent):
-    """Meta-agent that generates other agents from natural language descriptions."""
+    """Meta-agent that generates other agents from natural language descriptions.
+    
+    Supports multiple deployment channels:
+    - RAPP Function App (default): JSON config + Python implementation
+    - Copilot Studio: Native MCS solution with generative AI
+    - Both: Generate assets for both platforms
+    """
     
     def __init__(self):
         self.name = "AgentGenerator"
         self.metadata = {
             "name": self.name,
-            "description": "Generates complete agent configurations from natural language descriptions.",
+            "description": "Generates complete agent configurations from natural language descriptions with optional Copilot Studio deployment.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "action": {
                         "type": "string",
                         "enum": ["generate_agent", "list_templates", "enhance_agent", 
-                                "generate_code", "validate_agent", "preview_agent"],
+                                "generate_code", "validate_agent", "preview_agent",
+                                "list_deployment_channels", "generate_copilot_studio"],
                         "description": "The agent generation action to perform"
                     },
                     "agent_description": {
@@ -109,11 +136,29 @@ class AgentGeneratorAgent(BasicAgent):
                     },
                     "generate_python": {
                         "type": "boolean",
-                        "description": "Whether to also generate Python code"
+                        "description": "Whether to also generate Python code",
+                        "default": False
                     },
                     "save_files": {
                         "type": "boolean",
-                        "description": "Whether to save generated files to disk"
+                        "description": "Whether to save generated files to disk",
+                        "default": True
+                    },
+                    "deployment_channel": {
+                        "type": "string",
+                        "enum": ["rapp", "copilot_studio", "both"],
+                        "description": "Deployment channel: 'rapp' (default), 'copilot_studio', or 'both'",
+                        "default": "rapp"
+                    },
+                    "copilot_studio_options": {
+                        "type": "object",
+                        "description": "Options for Copilot Studio deployment",
+                        "properties": {
+                            "enable_web_browsing": {"type": "boolean", "default": True},
+                            "enable_knowledge": {"type": "boolean", "default": True},
+                            "channels": {"type": "array", "items": {"type": "string"}},
+                            "deploy_immediately": {"type": "boolean", "default": False}
+                        }
                     }
                 },
                 "required": ["action"]
@@ -125,6 +170,7 @@ class AgentGeneratorAgent(BasicAgent):
         self.base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.demos_path = os.path.join(self.base_path, "demos")
         self.agents_path = os.path.join(self.base_path, "agents")
+        self.transpiled_path = os.path.join(self.base_path, "transpiled", "copilot_studio_native")
     
     def perform(self, **kwargs) -> str:
         """Route to appropriate action handler."""
@@ -137,6 +183,8 @@ class AgentGeneratorAgent(BasicAgent):
             "generate_code": self._generate_code,
             "validate_agent": self._validate_agent,
             "preview_agent": self._preview_agent,
+            "list_deployment_channels": self._list_deployment_channels,
+            "generate_copilot_studio": self._generate_copilot_studio_from_existing,
         }
         
         if action not in actions:
@@ -149,7 +197,13 @@ class AgentGeneratorAgent(BasicAgent):
             return f"❌ Error generating agent: {str(e)}"
     
     def _generate_agent(self, **kwargs) -> str:
-        """Generate a complete agent configuration from description."""
+        """Generate a complete agent configuration from description.
+        
+        Supports multiple deployment channels:
+        - 'rapp' (default): JSON config + optional Python code for RAPP Function App
+        - 'copilot_studio': Native MCS solution for Microsoft Copilot Studio
+        - 'both': Generate assets for both platforms
+        """
         description = kwargs.get("agent_description", "")
         name = kwargs.get("agent_name", "")
         category = kwargs.get("category", "productivity")
@@ -157,6 +211,8 @@ class AgentGeneratorAgent(BasicAgent):
         integrations = kwargs.get("integrations", [])
         generate_python = kwargs.get("generate_python", False)
         save_files = kwargs.get("save_files", True)
+        deployment_channel = kwargs.get("deployment_channel", "rapp")
+        copilot_studio_options = kwargs.get("copilot_studio_options", {})
         
         if not description and not name:
             return "❌ Please provide an agent_description or agent_name"
@@ -183,28 +239,54 @@ class AgentGeneratorAgent(BasicAgent):
         )
         
         output = [f"🪄 **Generated Agent: {name}**\n"]
+        output.append(f"📦 **Deployment Channel:** {DEPLOYMENT_CHANNELS.get(deployment_channel, {}).get('name', deployment_channel)}\n")
         
-        # Save JSON config
-        if save_files:
-            json_path = os.path.join(self.demos_path, f"{agent_id}.json")
-            try:
-                with open(json_path, 'w', encoding='utf-8') as f:
-                    json.dump(config, f, indent=2)
-                output.append(f"✅ Saved: `demos/{agent_id}.json`")
-            except Exception as e:
-                output.append(f"⚠️ Could not save JSON: {e}")
-        
-        # Generate Python code if requested
-        if generate_python:
-            python_code = self._generate_python_code(config)
+        # =====================================================================
+        # RAPP ASSETS (JSON + Python)
+        # =====================================================================
+        if deployment_channel in ["rapp", "both"]:
+            output.append("**RAPP Assets:**")
+            
+            # Save JSON config
             if save_files:
-                py_path = os.path.join(self.agents_path, f"{agent_id}.py")
+                json_path = os.path.join(self.demos_path, f"{agent_id}.json")
                 try:
-                    with open(py_path, 'w', encoding='utf-8') as f:
-                        f.write(python_code)
-                    output.append(f"✅ Saved: `agents/{agent_id}.py`")
+                    with open(json_path, 'w', encoding='utf-8') as f:
+                        json.dump(config, f, indent=2)
+                    output.append(f"  ✅ Saved: `demos/{agent_id}.json`")
                 except Exception as e:
-                    output.append(f"⚠️ Could not save Python: {e}")
+                    output.append(f"  ⚠️ Could not save JSON: {e}")
+            
+            # Generate Python code if requested
+            if generate_python:
+                python_code = self._generate_python_code(config)
+                if save_files:
+                    py_path = os.path.join(self.agents_path, f"{agent_id}.py")
+                    try:
+                        with open(py_path, 'w', encoding='utf-8') as f:
+                            f.write(python_code)
+                        output.append(f"  ✅ Saved: `agents/{agent_id}.py`")
+                    except Exception as e:
+                        output.append(f"  ⚠️ Could not save Python: {e}")
+        
+        # =====================================================================
+        # COPILOT STUDIO ASSETS
+        # =====================================================================
+        if deployment_channel in ["copilot_studio", "both"]:
+            output.append("\n**Copilot Studio Assets:**")
+            
+            try:
+                cs_result = self._generate_copilot_studio_assets(
+                    config=config,
+                    agent_id=agent_id,
+                    name=name,
+                    save_files=save_files,
+                    options=copilot_studio_options
+                )
+                output.extend(cs_result)
+            except Exception as e:
+                output.append(f"  ⚠️ Could not generate Copilot Studio assets: {e}")
+                logger.error(f"Copilot Studio generation error: {e}")
         
         # Summary
         output.append(f"\n**Configuration Summary:**")
@@ -847,6 +929,263 @@ if __name__ == "__main__":
         """Preview agent generation without saving."""
         kwargs["save_files"] = False
         return self._generate_agent(**kwargs)
+    
+    # =========================================================================
+    # COPILOT STUDIO INTEGRATION
+    # =========================================================================
+    
+    def _list_deployment_channels(self, **kwargs) -> str:
+        """List available deployment channels."""
+        output = ["**Available Deployment Channels:**\n"]
+        
+        for channel_id, channel_info in DEPLOYMENT_CHANNELS.items():
+            output.append(f"### {channel_info['name']} (`{channel_id}`)")
+            output.append(f"_{channel_info['description']}_\n")
+            output.append("**Generates:**")
+            for asset in channel_info['generates']:
+                output.append(f"  • {asset.replace('_', ' ').title()}")
+            output.append("")
+        
+        output.append("**Usage:**")
+        output.append("```")
+        output.append('generator.perform(action="generate_agent", deployment_channel="copilot_studio", ...)')
+        output.append("```")
+        
+        return "\n".join(output)
+    
+    def _generate_copilot_studio_assets(
+        self, 
+        config: Dict[str, Any], 
+        agent_id: str, 
+        name: str,
+        save_files: bool = True,
+        options: Dict = None
+    ) -> List[str]:
+        """Generate Copilot Studio MCS solution from agent config.
+        
+        Uses the MCSGenerator utility to create properly formatted assets
+        with correct AI settings for generative capabilities.
+        """
+        from utils.mcs_generator import MCSGenerator
+        
+        options = options or {}
+        output = []
+        
+        # Create output directory
+        output_dir = os.path.join(self.transpiled_path, agent_id)
+        if save_files:
+            os.makedirs(output_dir, exist_ok=True)
+        
+        # Extract instructions from config
+        instructions = config.get("systemPrompt", "")
+        if not instructions:
+            # Build instructions from description and capabilities
+            instructions = self._build_copilot_studio_instructions(config)
+        
+        # Build conversation starters from demo conversation
+        conversation_starters = []
+        demo = config.get("demoConversation", [])
+        for msg in demo:
+            if msg.get("role") == "user":
+                conversation_starters.append({
+                    "title": msg.get("content", "")[:50],
+                    "text": msg.get("content", "")
+                })
+        
+        # Generate MCS files
+        generator = MCSGenerator()
+        
+        # Generate agent.mcs.yml (GPT component with instructions)
+        agent_yaml = generator.generate_agent_yaml(
+            name=name,
+            instructions=instructions,
+            conversation_starters=conversation_starters[:6],  # Max 6 starters
+            web_browsing=options.get("enable_web_browsing", True),
+            code_interpreter=False
+        )
+        
+        if save_files:
+            agent_yaml_path = os.path.join(output_dir, "agent.mcs.yml")
+            with open(agent_yaml_path, 'w', encoding='utf-8') as f:
+                f.write(agent_yaml)
+            output.append(f"  ✅ Saved: `transpiled/copilot_studio_native/{agent_id}/agent.mcs.yml`")
+        
+        # Generate settings.mcs.yml (with correct AI settings)
+        schema_name = generator.generate_schema_name(name)
+        settings_yaml = generator.generate_settings_yaml(
+            name=name,
+            schema_name=schema_name,
+            auth_mode="Integrated",
+            channels=options.get("channels", ["MsTeams"])
+        )
+        
+        if save_files:
+            settings_yaml_path = os.path.join(output_dir, "settings.mcs.yml")
+            with open(settings_yaml_path, 'w', encoding='utf-8') as f:
+                f.write(settings_yaml)
+            output.append(f"  ✅ Saved: `transpiled/copilot_studio_native/{agent_id}/settings.mcs.yml`")
+        
+        # Generate botdefinition.json (full solution with AI settings)
+        bot_definition = generator.generate_bot_definition(
+            name=name,
+            schema_name=schema_name,
+            instructions=instructions,
+            conversation_starters=conversation_starters[:6]
+        )
+        
+        if save_files:
+            bot_def_path = os.path.join(output_dir, "botdefinition.json")
+            with open(bot_def_path, 'w', encoding='utf-8') as f:
+                json.dump(bot_definition, f, indent=2)
+            output.append(f"  ✅ Saved: `transpiled/copilot_studio_native/{agent_id}/botdefinition.json`")
+        
+        # Generate README for deployment instructions
+        if save_files:
+            readme = self._generate_copilot_studio_readme(name, agent_id, schema_name)
+            readme_path = os.path.join(output_dir, "README.md")
+            with open(readme_path, 'w', encoding='utf-8') as f:
+                f.write(readme)
+            output.append(f"  ✅ Saved: `transpiled/copilot_studio_native/{agent_id}/README.md`")
+        
+        output.append(f"\n  📋 **Next Steps for Copilot Studio:**")
+        output.append(f"  1. Import the solution via Copilot Studio UI or Power Platform CLI")
+        output.append(f"  2. Or use the transpiler to deploy: `transpiler.perform(action='deploy', agent_name='{agent_id}')`")
+        
+        return output
+    
+    def _build_copilot_studio_instructions(self, config: Dict[str, Any]) -> str:
+        """Build instructions for Copilot Studio from agent config."""
+        agent_info = config.get("agent", {})
+        actions = config.get("actions", [])
+        
+        lines = [
+            f"You are {agent_info.get('name', 'an AI assistant')}.",
+            "",
+            agent_info.get('description', ''),
+            "",
+            "## Your Capabilities",
+            ""
+        ]
+        
+        for action in actions:
+            lines.append(f"- **{action.get('name', 'Unknown')}**: {action.get('description', '')}")
+        
+        lines.extend([
+            "",
+            "## Response Guidelines",
+            "- Provide detailed, actionable responses",
+            "- Use specific examples and data when available",
+            "- Ask clarifying questions if the request is ambiguous",
+            "- Always provide confidence levels for your recommendations"
+        ])
+        
+        return "\n".join(lines)
+    
+    def _generate_copilot_studio_readme(self, name: str, agent_id: str, schema_name: str) -> str:
+        """Generate README with deployment instructions."""
+        return f'''# {name} - Copilot Studio Deployment
+
+This folder contains the Copilot Studio solution files for **{name}**.
+
+## Files
+
+| File | Description |
+|------|-------------|
+| `agent.mcs.yml` | GPT component with AI instructions |
+| `settings.mcs.yml` | Agent settings with AI configuration |
+| `botdefinition.json` | Complete solution definition |
+
+## AI Settings
+
+This agent is configured with the following critical AI settings:
+
+```yaml
+aISettings:
+  useModelKnowledge: true          # REQUIRED for generative AI
+  isSemanticSearchEnabled: true
+  generativeAnswersEnabled: true
+  boostedConversationsEnabled: true
+```
+
+These settings ensure the agent can handle queries that don\'t exactly match topic triggers.
+
+## Deployment Options
+
+### Option 1: Copilot Studio UI
+
+1. Go to [Copilot Studio](https://copilotstudio.microsoft.com/)
+2. Create a new agent
+3. Configure instructions from `agent.mcs.yml`
+4. Enable generative AI in Settings → Generative AI
+
+### Option 2: Power Platform CLI
+
+```bash
+pac solution import --path ./solution.zip
+```
+
+### Option 3: Programmatic Deployment
+
+```python
+from utils.copilot_studio_api import CopilotStudioClient
+
+client = CopilotStudioClient(environment_url="https://yourorg.crm.dynamics.com")
+client.authenticate()
+
+# Deploy the agent
+result = client.deploy_transpiled_agent(
+    agent_manifest={{...}},
+    topics=[]
+)
+```
+
+## Schema Name
+
+`{schema_name}`
+
+---
+*Generated by RAPP Agent Generator with Copilot Studio support*
+'''
+    
+    def _generate_copilot_studio_from_existing(self, **kwargs) -> str:
+        """Generate Copilot Studio assets from an existing RAPP agent."""
+        agent_name = kwargs.get("agent_name")
+        if not agent_name:
+            return "❌ Please provide agent_name"
+        
+        # Load existing agent config
+        agent_id = self._to_snake_case(agent_name) + "_agent"
+        json_path = os.path.join(self.demos_path, f"{agent_id}.json")
+        
+        if not os.path.exists(json_path):
+            # Try without _agent suffix
+            json_path = os.path.join(self.demos_path, f"{self._to_snake_case(agent_name)}.json")
+        
+        if not os.path.exists(json_path):
+            return f"❌ Could not find agent config at: {json_path}"
+        
+        try:
+            with open(json_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+        except Exception as e:
+            return f"❌ Error loading agent config: {e}"
+        
+        # Generate Copilot Studio assets
+        output = [f"🔄 **Generating Copilot Studio assets for: {agent_name}**\n"]
+        
+        try:
+            cs_result = self._generate_copilot_studio_assets(
+                config=config,
+                agent_id=agent_id,
+                name=config.get("agent", {}).get("name", agent_name),
+                save_files=kwargs.get("save_files", True),
+                options=kwargs.get("copilot_studio_options", {})
+            )
+            output.extend(cs_result)
+        except Exception as e:
+            output.append(f"❌ Error: {e}")
+        
+        return "\n".join(output)
     
     # Utility methods
     def _to_snake_case(self, name: str) -> str:

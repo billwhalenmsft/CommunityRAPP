@@ -1,0 +1,16 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: 'Hello! I''m the zurnelkay_drinking_water_ci_agent. Drinking Water Competitive
+    Intelligence Agent for Zurn Elkay.
+
+
+    Monitors Bottle Fillers, Drinking Fountains, Filtration, and Water Coolers.
+
+    Special focus on NSF certifications, public sector wins, sust How can I help you
+    today?'

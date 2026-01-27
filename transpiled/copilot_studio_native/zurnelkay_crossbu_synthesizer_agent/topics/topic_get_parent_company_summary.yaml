@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_parent_company_summary
+displayName: Get Parent Company Summary
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_parent_company_summary
+  triggerQueries:
+  - get parent company summary
+  - run get parent company summary
+  - execute get parent company summary
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get parent company summary'

@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_digital_innovation
+displayName: Get Digital Innovation
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_digital_innovation
+  triggerQueries:
+  - get digital innovation
+  - run get digital innovation
+  - execute get digital innovation
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get digital innovation'

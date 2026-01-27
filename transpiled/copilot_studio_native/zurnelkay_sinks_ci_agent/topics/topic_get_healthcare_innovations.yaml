@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_healthcare_innovations
+displayName: Get Healthcare Innovations
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_healthcare_innovations
+  triggerQueries:
+  - get healthcare innovations
+  - run get healthcare innovations
+  - execute get healthcare innovations
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get healthcare innovations'

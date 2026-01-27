@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_check_parent_company_coordination
+displayName: Check Parent Company Coordination
+triggers:
+- kind: OnRecognizedIntent
+  intent: check_parent_company_coordination
+  triggerQueries:
+  - check parent company coordination
+  - run check parent company coordination
+  - execute check parent company coordination
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_check_parent_company_coordination
+  inputs:
+    action: check_parent_company_coordination
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

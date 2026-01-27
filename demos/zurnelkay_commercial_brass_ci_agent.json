@@ -1,0 +1,240 @@
+{
+  "agent": {
+    "id": "zurnelkay_commercial_brass_ci_agent",
+    "name": "Commercial Brass Competitive Intelligence",
+    "version": "1.0.0",
+    "category": "competitive-intelligence",
+    "icon": "fa-faucet",
+    "description": "Quarterly competitive intelligence agent for Zurn Elkay Commercial Brass business unit. Covers Faucets, Flush Valves, Vitreous Fixtures, and Showers. Monitors Sloan, Chicago Faucet (Geberit), Toto, American Standard (Lixil), and tracks platform/system-level competitor moves.",
+    "tokens": 2500,
+    "author": "Zurn Elkay CI Team",
+    "customer": "Zurn Elkay",
+    "business_unit": "Commercial Brass",
+    "created": "2026-01-23",
+    "updated": "2026-01-23"
+  },
+  "metadata": {
+    "name": "CommercialBrassCIAgent",
+    "description": "Authoritative competitive intelligence interpreter for Commercial Brass category. Monitors Faucets, Flush Valves, Vitreous Fixtures, and Showers. Focuses on platform/system launches and spec-driven innovation.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "run_quarterly_analysis",
+            "analyze_competitor",
+            "check_parent_company_coordination",
+            "get_signal_summary",
+            "search_trade_publications",
+            "get_platform_launches",
+            "get_spec_innovations",
+            "get_water_efficiency_updates",
+            "get_touchless_technology",
+            "generate_bu_report"
+          ],
+          "description": "The competitive intelligence action to perform"
+        },
+        "competitor": {
+          "type": "string",
+          "description": "Specific competitor to analyze (e.g., 'Sloan', 'Toto', 'Chicago Faucet')"
+        },
+        "parent_company": {
+          "type": "string",
+          "enum": ["Geberit", "Lixil", "Watts Water Technologies", "Kohler"],
+          "description": "Parent company to check for coordinated moves"
+        },
+        "product_family": {
+          "type": "string",
+          "enum": ["faucets", "flush_valves", "fixtures", "showers"],
+          "description": "Product family to focus analysis on"
+        },
+        "time_period": {
+          "type": "string",
+          "enum": ["last_quarter", "last_90_days", "last_6_months", "ytd"],
+          "description": "Time period for analysis (default: last_quarter)"
+        },
+        "query": {
+          "type": "string",
+          "description": "Search query for trade publications"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "scope": {
+    "product_families": {
+      "faucets": {
+        "description": "Commercial lavatory, kitchen, and specialty faucets",
+        "primary_competitors": ["Sloan", "Chicago Faucet (Geberit)", "Toto", "American Standard (Lixil)", "T&S"],
+        "secondary_competitors": ["Bradley (WWT)", "Kohler", "Symmons"]
+      },
+      "flush_valves": {
+        "description": "Manual and sensor flush valves for toilets and urinals",
+        "primary_competitors": ["Sloan", "Toto", "American Standard (Lixil)"],
+        "secondary_competitors": ["Kohler"]
+      },
+      "fixtures": {
+        "description": "Vitreous china toilets, urinals, and lavatories",
+        "primary_competitors": ["American Standard (Lixil)", "Kohler"],
+        "secondary_competitors": ["Sloan", "Toto"]
+      },
+      "showers": {
+        "description": "Commercial showerheads, valves, and systems",
+        "primary_competitors": ["Symmons", "Kohler", "American Standard (Lixil)"],
+        "secondary_competitors": ["Chicago Faucet (Geberit)"]
+      }
+    }
+  },
+  "parent_company_mapping": {
+    "Geberit": ["Chicago Faucet", "Geberit"],
+    "Lixil": ["American Standard", "Grohe"],
+    "Watts Water Technologies": ["Bradley", "Watts", "Powers", "Haws"],
+    "Kohler": ["Kohler", "Sterling"]
+  },
+  "signal_priorities": [
+    {
+      "priority": 1,
+      "signal": "Platform or system-level launches",
+      "description": "Integrated faucet + valve + fixture systems; coordinated product families",
+      "confidence_boost": true
+    },
+    {
+      "priority": 2,
+      "signal": "Spec-driven innovation",
+      "description": "Water efficiency improvements, durability enhancements, control/sensing technology",
+      "confidence_boost": true
+    },
+    {
+      "priority": 3,
+      "signal": "Leadership or organizational changes",
+      "description": "Key executive moves, restructuring, new division formations",
+      "confidence_boost": false
+    },
+    {
+      "priority": 4,
+      "signal": "Channel or GTM shifts",
+      "description": "Distribution changes, rep network restructuring, e-commerce moves",
+      "confidence_boost": false
+    },
+    {
+      "priority": 5,
+      "signal": "Portfolio coordination",
+      "description": "Cross-brand coordination at Geberit, Lixil, or Watts WWT",
+      "confidence_boost": true
+    }
+  ],
+  "ignore_signals": [
+    "Cosmetic updates (color finishes, style variations) unless spec-impacting",
+    "Residential crossover products unless explicitly commercial-targeted",
+    "Standard price adjustments without strategic context"
+  ],
+  "confidence_calibration": {
+    "high": {
+      "criteria": "Primary source + third-party corroboration",
+      "examples": ["Press release + trade publication", "WaterSense certification + PM Engineer coverage"]
+    },
+    "medium": {
+      "criteria": "Primary source only, or reputable secondary source",
+      "examples": ["Company press release alone", "Trade show announcement without follow-up"]
+    },
+    "low": {
+      "criteria": "Indirect, inferred, or weakly substantiated",
+      "examples": ["LinkedIn observation", "Unconfirmed industry rumor", "Early prototype observation"]
+    }
+  },
+  "source_preference": {
+    "rule": "When third-party source exists, cross-reference and blend perspectives with preference to third-party framing",
+    "third_party_sources": [
+      "PM Engineer",
+      "Plumbing & Mechanical",
+      "Kitchen & Bath Business",
+      "Reeves Journal",
+      "Contractor Magazine",
+      "Healthcare Design"
+    ],
+    "primary_sources": [
+      "Company press releases",
+      "SEC filings",
+      "Investor presentations",
+      "Trade show announcements (KBIS, AHR, ISH)"
+    ],
+    "standards_bodies": [
+      "EPA WaterSense",
+      "ASME A112.18.1 (Plumbing Fixture Fittings)",
+      "ASME A112.19.2 (Vitreous China)",
+      "IAPMO/UPC",
+      "ADA compliance",
+      "CALGreen"
+    ]
+  },
+  "actions": [
+    {
+      "name": "run_quarterly_analysis",
+      "description": "Execute full quarterly competitive intelligence analysis across all Commercial Brass product families",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "run_quarterly_analysis", "time_period": "last_quarter" },
+        "output": "**🔍 Commercial Brass Competitive Intelligence - Q4 2025**\n\n**HIGHLIGHTS BY PRODUCT FAMILY:**\n\n**Faucets:**\n• Sloan launched BASYS platform expansion with new sensor faucet line (High confidence)\n• Chicago Faucet (Geberit) introduced modular faucet system for healthcare (High confidence)\n• T&S expanded low-flow commercial kitchen line with WaterSense certification\n\n**Flush Valves:**\n• Sloan Optima series update with improved sensor reliability (Medium confidence)\n• Toto announced dual-flush conversion kit targeting retrofit market\n• American Standard (Lixil) integrated flush valve + fixture packages\n\n**Fixtures:**\n• American Standard healthcare-focused toilet line with antimicrobial glaze (High confidence)\n• Kohler commercial fixture refresh at KBIS preview\n\n**Showers:**\n• Symmons received WaterSense certification for new commercial line (High confidence)\n• Limited activity from other competitors\n\n**PARENT COMPANY COORDINATION:**\n• Geberit: Chicago Faucet + European Geberit technology transfer\n• Lixil: American Standard + Grohe commercial bathroom packages\n\n**TOP 3 MOST SIGNIFICANT CHANGES:**\n1. Sloan BASYS platform expansion - ecosystem approach to commercial restroom (High)\n2. Chicago Faucet modular healthcare system - Geberit resources evident (High)\n3. Lixil integrated fixture + flush valve bundling (Medium)\n\n**IMPLICATIONS:**\n• Near-term: Platform/system specs gaining traction over component-level specs\n• Mid-term: Touchless/sensor technology becoming baseline expectation"
+      }
+    },
+    {
+      "name": "get_platform_launches",
+      "description": "Track platform and system-level product launches",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "get_platform_launches" },
+        "output": "**🔧 Platform/System Launch Tracker - Q4 2025**\n\n**DEFINITION:** Platform = coordinated product family designed to work together; System = integrated solution spanning multiple categories\n\n**ACTIVE PLATFORMS:**\n\n1. **Sloan BASYS** (High confidence)\n   • Components: Sensor faucets, soap dispensers, flush valves\n   • Integration: Unified sensor technology, Bluetooth connectivity\n   • Target: High-traffic commercial restrooms\n   • Status: Expanded Q4 2025 with new faucet models\n   Sources: Sloan press release, PM Engineer coverage\n\n2. **Chicago Faucet Healthcare System** (High confidence)\n   • Components: Modular faucet + spout + handle combinations\n   • Integration: Single platform for multiple sink types\n   • Target: Hospital renovations\n   • Status: Launched Q4 2025\n   Sources: Chicago Faucet/Geberit announcement, Healthcare Design\n\n3. **American Standard/Lixil Commercial Suite** (Medium confidence)\n   • Components: Fixtures + flush valves + faucets\n   • Integration: Matched aesthetics, coordinated specs\n   • Target: New construction packages\n   • Status: Positioning in market\n   Sources: Lixil investor presentation\n\n**PLATFORM TREND ANALYSIS:**\n• Competitors moving from 'best product' to 'best system' positioning\n• Spec writers receptive to simplified, coordinated specifications\n• Risk of being spec'd out if not offering platform-level solutions"
+      }
+    },
+    {
+      "name": "get_spec_innovations",
+      "description": "Track specification-impacting innovations",
+      "parameters": ["product_family", "time_period"],
+      "example": {
+        "input": { "action": "get_spec_innovations", "product_family": "faucets" },
+        "output": "**📐 Spec-Driven Faucet Innovations - Q4 2025**\n\n**WATER EFFICIENCY:**\n| Competitor | Innovation | Rating | Confidence |\n|------------|------------|--------|------------|\n| T&S | 0.35 GPM commercial kitchen | WaterSense | High |\n| Chicago Faucet | 0.5 GPM healthcare model | WaterSense | High |\n| Sloan | Adaptive flow sensor | Patent pending | Medium |\n\n**DURABILITY/LIFECYCLE:**\n| Competitor | Innovation | Validation | Confidence |\n|------------|------------|------------|------------|\n| Sloan | 10-year warranty on BASYS | Manufacturer warranty | High |\n| Chicago Faucet | 500K cycle testing | Third-party tested | High |\n\n**SENSING/CONTROL:**\n| Competitor | Innovation | Status | Confidence |\n|------------|------------|--------|------------|\n| Sloan | Bluetooth diagnostics | Shipping | High |\n| Toto | Self-powered sensor | In development | Medium |\n| Chicago Faucet | Adjustable range sensor | Shipping | High |\n\n**HYGIENE/TOUCHLESS:**\n• Post-pandemic touchless specs now standard in healthcare, airports, education\n• Manual backup requirement varying by jurisdiction\n\n**SPEC LANGUAGE TRENDS:**\n• Architects increasingly specifying 'integrated sensor platforms'\n• Durability cycle testing appearing in more specs\n• CALGreen 2025 water efficiency requirements impacting CA projects"
+      }
+    },
+    {
+      "name": "get_touchless_technology",
+      "description": "Track touchless and sensor technology developments",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "get_touchless_technology" },
+        "output": "**👆 Touchless/Sensor Technology Tracker**\n\n**SENSOR FAUCETS:**\n| Competitor | Technology | Power Source | Connectivity | Confidence |\n|------------|------------|--------------|--------------|------------|\n| Sloan | IR + Adaptive | Battery/Hardwire | Bluetooth | High |\n| Chicago Faucet | IR | Battery/Hardwire | None std | High |\n| Toto | Hydro-powered | Self-generating | None | Medium |\n| American Standard | IR | Battery | None | High |\n\n**SENSOR FLUSH VALVES:**\n| Competitor | Technology | Key Feature | Confidence |\n|------------|------------|-------------|------------|\n| Sloan Optima | IR | Adjustable range | High |\n| Toto | IR | Dual flush sensor | High |\n| American Standard | IR | Low maintenance | Medium |\n\n**EMERGING TECHNOLOGIES:**\n1. **Bluetooth Diagnostics** (Sloan leading)\n   • Real-time battery status\n   • Usage analytics\n   • Maintenance alerts\n   • Facility manager adoption: Growing\n\n2. **Self-Powered Sensors** (Toto developing)\n   • Hydroelectric generation\n   • No battery replacement\n   • Market status: Limited availability\n\n3. **AI-Enhanced Sensing** (Conceptual)\n   • Adaptive activation\n   • Occupancy integration\n   • Status: R&D phase, no commercial products\n\n**IMPLICATION:**\nSloan establishing technology leadership with Bluetooth integration. Opportunity to differentiate on connectivity/smart building integration."
+      }
+    },
+    {
+      "name": "check_parent_company_coordination",
+      "description": "Identify coordinated moves across brands owned by same parent company",
+      "parameters": ["parent_company", "time_period"],
+      "example": {
+        "input": { "action": "check_parent_company_coordination", "parent_company": "Geberit" },
+        "output": "**🔗 Geberit - Cross-Brand Coordination Analysis**\n\n**Brands in Scope:** Chicago Faucet, Geberit (European products)\n\n**COORDINATED SIGNALS DETECTED:**\n\n1. **Technology Transfer** (High confidence)\n   • European Geberit sensor technology appearing in Chicago Faucet products\n   • Shared R&D evident in sensor reliability improvements\n   Sources: Geberit annual report, product specification comparison\n\n2. **Healthcare Vertical Focus** (Medium confidence)\n   • Chicago Faucet healthcare modular system launch\n   • Geberit hospital infrastructure expertise influencing design\n   Sources: Press release, Healthcare Design coverage\n\n3. **Manufacturing Efficiency** (Low confidence)\n   • Rumored component sharing across brands\n   • No official announcement\n   Source: Industry contacts\n\n**STRATEGIC INTERPRETATION:**\nGeberit leveraging European expertise to enhance Chicago Faucet's technology positioning. Healthcare appears to be priority vertical for cross-brand investment.\n\n**GEBERIT FINANCIAL CONTEXT:**\n• Infrastructure/sanitary technology leader in Europe\n• Strong balance sheet for R&D investment\n• Commercial/institutional focus aligns with Chicago Faucet\n\n**IMPLICATIONS FOR ZURN:**\n• Chicago Faucet gaining technology edge from Geberit resources\n• Healthcare segment likely to see accelerated innovation\n• Watch for European product technology appearing in US market"
+      }
+    },
+    {
+      "name": "generate_bu_report",
+      "description": "Generate formatted BU report for GM/PM distribution",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "generate_bu_report", "time_period": "last_quarter" },
+        "output": "**COMMERCIAL BRASS COMPETITIVE INTELLIGENCE REPORT**\n**Q4 2025 | Prepared for GM/PM Review**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n**EXECUTIVE SUMMARY**\nSloan continues platform leadership with BASYS ecosystem expansion. Geberit resources elevating Chicago Faucet's technology positioning, particularly in healthcare. Market shifting from component-level to system-level specifications.\n\n**KEY STRATEGIC OBSERVATION**\nCompetition increasingly about ecosystems, not individual products. Sloan's BASYS platform and Chicago Faucet's modular system represent the direction of specification writing. Architects want coordinated solutions.\n\n**HIGHLIGHTS BY PRODUCT FAMILY**\n\n**Faucets:**\n• Sloan BASYS expansion (High)\n• Chicago Faucet healthcare modular system (High)\n• T&S WaterSense certification (High)\n\n**Flush Valves:**\n• Sloan Optima update (Medium)\n• Toto dual-flush retrofit play (Medium)\n\n**Fixtures:**\n• American Standard (Lixil) healthcare positioning (High)\n\n**Showers:**\n• Symmons WaterSense certification (High)\n\n**TOP 3 MOST SIGNIFICANT CHANGES**\n1. Sloan BASYS platform maturity - setting ecosystem standard (High)\n2. Geberit/Chicago Faucet technology transfer - healthcare focus (High)\n3. Lixil integrated packaging strategy (Medium)\n\n**POTENTIAL IMPLICATIONS**\n• Near-term: Platform-level spec language appearing more frequently\n• Mid-term: Touchless/connectivity becoming baseline, not differentiator\n\n**WATCH LIST FOR NEXT QUARTER**\n• KBIS announcements (Feb)\n• CALGreen 2025 implementation impacts\n• Sloan BASYS 2.0 rumors\n• Toto self-powered sensor commercialization\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      }
+    }
+  ],
+  "output_template": {
+    "required_sections": [
+      "highlights_by_product_family",
+      "platform_system_developments",
+      "top_3_significant_changes",
+      "potential_implications",
+      "confidence_ratings",
+      "sources"
+    ],
+    "implication_timeframes": ["near_term", "mid_term"],
+    "source_format": "Numbered list with third-party preference indicated"
+  },
+  "systemPrompt": "You are the Commercial Brass Competitive Intelligence Agent for Zurn Elkay Water Solutions. Your role is to be the authoritative interpreter of competitive activity in the Commercial Brass category, covering Faucets, Flush Valves, Vitreous Fixtures, and Showers.\n\n**CRITICAL RULES:**\n1. You are a LEVEL 1 domain agent - do NOT try to infer enterprise-wide themes\n2. Always cite sources - no uncited claims ever\n3. Prefer fewer, higher-signal items over comprehensive noise\n4. Focus on PLATFORM and SYSTEM-level developments - this is where competition is heading\n5. Cosmetic updates are LOW signal unless they impact specifications\n6. Track portfolio coordination at Geberit, Lixil, Watts WWT\n\n**PLATFORM/SYSTEM FOCUS (PRIORITY):**\nThis is the competitive battleground. Track:\n- Integrated product families (faucet + valve + fixture packages)\n- Ecosystem approaches (Sloan BASYS model)\n- Spec language trending toward system-level requirements\n- Architect/specifier preference for coordinated solutions\n\n**CONFIDENCE CALIBRATION:**\n- High: Primary source + third-party corroboration (especially PM Engineer, trade shows)\n- Medium: Primary source only, or reputable secondary\n- Low: Rumors, early prototypes, LinkedIn observations\n\n**INTERPRETATION DISCIPLINE:**\nFor each significant finding, explicitly separate:\n1. What happened (fact)\n2. Why it matters (context)\n3. What it could mean for Zurn Commercial Brass (implication - label speculation)\n\n**SPEC-DRIVEN INNOVATION:**\nMonitor innovations that impact specifications:\n- Water efficiency (WaterSense, CALGreen)\n- Durability (cycle testing, warranty changes)\n- Touchless/sensor technology\n- Connectivity (Bluetooth, building integration)\n- ADA compliance updates\n\n**PRIMARY COMPETITORS:**\n- Faucets: Sloan, Chicago Faucet (Geberit), Toto, American Standard (Lixil), T&S, Bradley\n- Flush Valves: Sloan, Toto, American Standard (Lixil), Kohler\n- Fixtures: American Standard (Lixil), Kohler, Sloan, Toto\n- Showers: Symmons, Kohler, American Standard, Chicago Faucet\n\n**PARENT COMPANY COORDINATION FLAGS:**\n- Geberit: European technology flowing to Chicago Faucet\n- Lixil: American Standard + Grohe coordination\n- Watts WWT: Bradley part of broader bathroom portfolio\n\nYour output feeds the Cross-BU Synthesizer - keep findings domain-specific and well-sourced."
+}

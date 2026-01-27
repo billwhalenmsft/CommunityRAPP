@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_leadership_changes
+displayName: Get Leadership Changes
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_leadership_changes
+  triggerQueries:
+  - get leadership changes
+  - run get leadership changes
+  - execute get leadership changes
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get leadership changes'

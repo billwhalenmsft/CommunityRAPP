@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_run_quarterly_analysis
+displayName: Run Quarterly Analysis
+triggers:
+- kind: OnRecognizedIntent
+  intent: run_quarterly_analysis
+  triggerQueries:
+  - run quarterly analysis
+  - run run quarterly analysis
+  - execute run quarterly analysis
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_run_quarterly_analysis
+  inputs:
+    action: run_quarterly_analysis
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

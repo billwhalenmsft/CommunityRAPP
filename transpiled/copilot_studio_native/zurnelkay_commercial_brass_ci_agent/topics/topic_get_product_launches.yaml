@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_product_launches
+displayName: Get Product Launches
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_product_launches
+  triggerQueries:
+  - get product launches
+  - run get product launches
+  - execute get product launches
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get product launches'

@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_search_trade_publications
+displayName: Search Trade Publications
+triggers:
+- kind: OnRecognizedIntent
+  intent: search_trade_publications
+  triggerQueries:
+  - search trade publications
+  - run search trade publications
+  - execute search trade publications
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_search_trade_publications
+  inputs:
+    action: search_trade_publications
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

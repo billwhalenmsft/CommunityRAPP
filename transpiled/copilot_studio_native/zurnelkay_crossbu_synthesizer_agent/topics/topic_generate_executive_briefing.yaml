@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_generate_executive_briefing
+displayName: Generate Executive Briefing
+triggers:
+- kind: OnRecognizedIntent
+  intent: generate_executive_briefing
+  triggerQueries:
+  - generate executive briefing
+  - run generate executive briefing
+  - execute generate executive briefing
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_generate_executive_briefing
+  inputs:
+    action: generate_executive_briefing
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

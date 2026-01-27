@@ -1,0 +1,43 @@
+{
+  "name": "flow_prioritize_enterprise_signals",
+  "displayName": "Prioritize Enterprise Signals Flow",
+  "description": "Power Automate flow for prioritize_enterprise_signals",
+  "trigger": {
+    "kind": "PowerVirtualAgents",
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "actions": [
+    {
+      "kind": "Dataverse_ListRows",
+      "connection": "dataverse_connection",
+      "inputs": {
+        "entityName": "rapp_data"
+      },
+      "outputs": {
+        "rows": "dataverseRows"
+      }
+    },
+    {
+      "kind": "Response",
+      "inputs": {
+        "result": "@{variables('aiResponse') ?? 'Action completed successfully'}"
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "string",
+      "description": "Result of the action"
+    }
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "agent": {
+    "id": "zurnelkay_drinking_water_ci_agent",
+    "name": "Elkay Drinking Water Competitive Intelligence",
+    "version": "1.0.0",
+    "category": "competitive-intelligence",
+    "icon": "fa-bottle-water",
+    "description": "Quarterly competitive intelligence agent for Zurn Elkay Drinking Water business unit. Covers bottle fillers, water coolers, drinking fountains, and filtration systems. Monitors Oasis (Culligan), Haws (Watts), Murdock (Morris) with focus on filtration claims and public sector wins.",
+    "tokens": 2600,
+    "author": "Zurn Elkay CI Team",
+    "customer": "Zurn Elkay",
+    "business_unit": "Elkay Drinking Water",
+    "created": "2026-01-23",
+    "updated": "2026-01-23"
+  },
+  "metadata": {
+    "name": "ElkayDrinkingWaterCIAgent",
+    "description": "Authoritative competitive intelligence interpreter for Elkay Drinking Water category. Monitors bottle fillers, water coolers, drinking fountains, and filtration. Critical focus on filtration substantiation and public sector (education, healthcare, municipal) positioning.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "run_quarterly_analysis",
+            "analyze_competitor",
+            "check_parent_company_coordination",
+            "get_signal_summary",
+            "search_trade_publications",
+            "get_filtration_claims",
+            "get_public_sector_wins",
+            "get_certification_updates",
+            "get_sustainability_positioning",
+            "generate_bu_report"
+          ],
+          "description": "The competitive intelligence action to perform"
+        },
+        "competitor": {
+          "type": "string",
+          "description": "Specific competitor to analyze (e.g., 'Oasis', 'Haws', 'Murdock')"
+        },
+        "parent_company": {
+          "type": "string",
+          "enum": ["Culligan", "Watts Water Technologies", "Morris"],
+          "description": "Parent company to check for coordinated moves"
+        },
+        "product_family": {
+          "type": "string",
+          "enum": ["bottle_fillers", "water_coolers", "drinking_fountains", "filtration"],
+          "description": "Product family to focus analysis on"
+        },
+        "vertical_market": {
+          "type": "string",
+          "enum": ["education", "healthcare", "municipal", "commercial", "outdoor"],
+          "description": "Vertical market to focus analysis on"
+        },
+        "time_period": {
+          "type": "string",
+          "enum": ["last_quarter", "last_90_days", "last_6_months", "ytd"],
+          "description": "Time period for analysis (default: last_quarter)"
+        },
+        "query": {
+          "type": "string",
+          "description": "Search query for trade publications"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "scope": {
+    "product_families": {
+      "bottle_fillers": {
+        "description": "Bottle filling stations for refillable water bottles",
+        "primary_competitors": ["Oasis (Culligan)", "Haws (Watts WWT)", "Murdock (Morris)"],
+        "secondary_competitors": ["Sloan Valve"]
+      },
+      "water_coolers": {
+        "description": "Point-of-use water coolers and chillers",
+        "primary_competitors": ["Oasis (Culligan)", "Haws (Watts WWT)"],
+        "secondary_competitors": []
+      },
+      "drinking_fountains": {
+        "description": "Wall-mounted and freestanding drinking fountains",
+        "primary_competitors": ["Oasis (Culligan)", "Haws (Watts WWT)", "Murdock (Morris)"],
+        "secondary_competitors": ["Sloan Valve"]
+      },
+      "filtration": {
+        "description": "Water filtration systems including lead, PFAS, and microplastics reduction",
+        "primary_competitors": ["Oasis (Culligan)", "Haws (Watts WWT)"],
+        "secondary_competitors": []
+      }
+    }
+  },
+  "parent_company_mapping": {
+    "Culligan": ["Oasis"],
+    "Watts Water Technologies": ["Haws", "Watts", "Powers", "Bradley"],
+    "Morris": ["Murdock", "JR Smith", "Acorn", "Whitehall"]
+  },
+  "signal_priorities": [
+    {
+      "priority": 1,
+      "signal": "Filtration claims with substantiation",
+      "description": "Lead reduction, PFAS/PFOA removal, microplastics - MUST have certification evidence",
+      "confidence_boost": true,
+      "validation_required": "NSF/ANSI 53, 401, or equivalent certification"
+    },
+    {
+      "priority": 2,
+      "signal": "Certifications, testing standards, NGO or public-sector partnerships",
+      "description": "WaterSense, NSF certifications, partnerships with water safety NGOs",
+      "confidence_boost": true
+    },
+    {
+      "priority": 3,
+      "signal": "Integrated filtration + delivery launches",
+      "description": "Combined bottle filler + advanced filtration product launches",
+      "confidence_boost": true
+    },
+    {
+      "priority": 4,
+      "signal": "Education, healthcare, or municipal wins",
+      "description": "Contract wins in key verticals - VERIFIABLE ONLY",
+      "confidence_boost": false,
+      "validation_required": "Public record, press release, or trade coverage"
+    },
+    {
+      "priority": 5,
+      "signal": "Brand repositioning tied to safety, equity, sustainability",
+      "description": "Marketing pivots around water equity, environmental justice, sustainability",
+      "confidence_boost": false
+    }
+  ],
+  "ignore_signals": [
+    "Marketing claims without certification evidence - flag as Low confidence",
+    "Routine product updates without filtration or safety implications",
+    "Standard warranty or service program announcements"
+  ],
+  "confidence_calibration": {
+    "high": {
+      "criteria": "Primary source + third-party corroboration, especially NSF database verification",
+      "examples": ["NSF certification + trade publication", "Municipal contract award + press coverage"]
+    },
+    "medium": {
+      "criteria": "Primary source only, or reputable secondary source",
+      "examples": ["Company press release alone", "Trade publication without company confirmation"]
+    },
+    "low": {
+      "criteria": "Indirect, inferred, or weakly substantiated - ESPECIALLY marketing claims without certification",
+      "examples": ["Marketing claim of lead reduction without NSF 53", "Unverified 'customer win' announcement"]
+    }
+  },
+  "source_preference": {
+    "rule": "When third-party source exists, cross-reference and blend perspectives with preference to third-party framing. Filtration claims REQUIRE certification database verification.",
+    "third_party_sources": [
+      "PM Engineer",
+      "School Planning & Management",
+      "American School & University",
+      "Healthcare Design",
+      "WaterWorld",
+      "Environmental Building News"
+    ],
+    "certification_databases": [
+      "NSF International Certified Product Listings",
+      "WaterSense Product Database",
+      "IAPMO Listing Directory"
+    ],
+    "primary_sources": [
+      "Company press releases",
+      "Company websites",
+      "Trade show announcements"
+    ],
+    "standards_bodies": [
+      "NSF/ANSI 42 (Aesthetic)",
+      "NSF/ANSI 53 (Health - Lead)",
+      "NSF/ANSI 401 (Emerging Contaminants)",
+      "NSF/ANSI 61 (Materials)",
+      "EPA WaterSense"
+    ]
+  },
+  "actions": [
+    {
+      "name": "run_quarterly_analysis",
+      "description": "Execute full quarterly competitive intelligence analysis across all Drinking Water product families",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "run_quarterly_analysis", "time_period": "last_quarter" },
+        "output": "**🔍 Elkay Drinking Water Competitive Intelligence - Q4 2025**\n\n**HIGHLIGHTS BY PRODUCT FAMILY:**\n\n**Bottle Fillers:**\n• Oasis (Culligan) launched new touchless bottle filler with built-in filtration display (High confidence)\n• Haws (Watts) announced partnership with major school district (Dallas ISD) for retrofit program\n• Murdock (Morris) expanded outdoor-rated bottle filler line\n\n**Filtration:**\n• ⚠️ Oasis marketing PFAS reduction - NSF 401 certification VERIFIED (High confidence)\n• Haws lead reduction claims - NSF 53 verified for specific models only (Medium confidence)\n\n**Water Coolers/Fountains:**\n• Limited significant activity - market mature\n\n**VERTICAL MARKET WINS:**\n| Competitor | Vertical | Win | Confidence |\n|------------|----------|-----|------------|\n| Oasis | Education | Chicago Public Schools | High |\n| Haws | Healthcare | Kaiser Permanente | Medium |\n\n**TOP 3 MOST SIGNIFICANT CHANGES:**\n1. Culligan/Oasis PFAS filtration certification - first to market with NSF 401 (High)\n2. Haws school district partnership model - recurring revenue play (Medium)\n3. Morris portfolio coordination: Murdock + Acorn ADA-compliant outdoor stations\n\n**IMPLICATIONS:**\n• Near-term: PFAS filtration becoming competitive differentiator in education RFPs\n• Mid-term: Culligan resources behind Oasis could accelerate innovation pace"
+      }
+    },
+    {
+      "name": "get_filtration_claims",
+      "description": "Analyze competitor filtration claims with certification verification",
+      "parameters": ["competitor", "time_period"],
+      "example": {
+        "input": { "action": "get_filtration_claims", "competitor": "Oasis" },
+        "output": "**🔬 Oasis (Culligan) Filtration Claims Analysis**\n\n**VERIFIED CERTIFICATIONS:**\n| Claim | Standard | NSF Database | Confidence |\n|-------|----------|--------------|------------|\n| Lead Reduction | NSF/ANSI 53 | ✓ Verified | High |\n| PFAS/PFOA Reduction | NSF/ANSI 401 | ✓ Verified | High |\n| Chlorine Taste/Odor | NSF/ANSI 42 | ✓ Verified | High |\n\n**UNVERIFIED/MARKETING CLAIMS:**\n| Claim | Evidence | Confidence |\n|-------|----------|------------|\n| 'Industry-leading filtration' | Marketing only | Low |\n| '99.9% contaminant removal' | No specific certification | Low |\n\n**CULLIGAN PARENT COMPANY ADVANTAGE:**\nOasis benefits from Culligan's filtration R&D resources and testing infrastructure. Expect continued certification leadership.\n\n**SOURCE DOCUMENTATION:**\n1. NSF Certified Product Listing - verified Jan 2026\n2. Oasis product specification sheets\n3. Culligan investor materials\n\n**⚠️ WARNING:** Oasis PFAS certification is verifiable competitive advantage. Elkay filtration positioning needs assessment."
+      }
+    },
+    {
+      "name": "get_public_sector_wins",
+      "description": "Track verifiable contract wins in education, healthcare, and municipal sectors",
+      "parameters": ["vertical_market", "time_period"],
+      "example": {
+        "input": { "action": "get_public_sector_wins", "vertical_market": "education" },
+        "output": "**🏫 Education Sector Competitive Wins - Q4 2025**\n\n**VERIFIED WINS (Public Record):**\n\n1. **Oasis - Chicago Public Schools** (High confidence)\n   • Scope: 500+ schools, bottle filler retrofit\n   • Value: Est. $2.5M\n   • Source: CPS board meeting minutes, Oasis press release\n   • Key differentiator: PFAS filtration requirement met\n\n2. **Haws - Dallas ISD** (High confidence)\n   • Scope: Partnership for phased replacement\n   • Value: Multi-year, undisclosed\n   • Source: DISD press release, School Planning & Management\n   • Key differentiator: Maintenance/service package\n\n**UNVERIFIED CLAIMS (Treat as Low Confidence):**\n• Murdock claims 'major California district' - no public record found\n• Oasis claims 'largest education contract ever' - superlative unverified\n\n**PROCUREMENT TREND:**\nRFPs increasingly requiring NSF 401 (PFAS) or equivalent. Lead-only (NSF 53) becoming table stakes.\n\n**IMPLICATION FOR ELKAY:**\nCompetitors establishing recurring service revenue models. Consider spec + service bundle positioning."
+      }
+    },
+    {
+      "name": "get_sustainability_positioning",
+      "description": "Track competitor sustainability and water equity messaging",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "get_sustainability_positioning" },
+        "output": "**🌱 Sustainability & Water Equity Positioning**\n\n**COMPETITOR POSITIONING:**\n\n**Oasis (Culligan):**\n• Messaging: 'Clean water access for all'\n• Partnerships: Water.org collaboration announced\n• Certifications: WaterSense partner\n• Confidence: Medium (marketing-led, some substance)\n\n**Haws:**\n• Messaging: 'Sustainable hydration infrastructure'\n• Focus: Bottle counter metrics, plastic reduction\n• School-focused equity programs\n• Confidence: Medium\n\n**Murdock (Morris):**\n• Messaging: Limited sustainability positioning\n• Focus: Product durability/longevity angle\n• Confidence: Low activity level\n\n**EMERGING THEMES:**\n1. 'Water equity' language increasing (underserved communities)\n2. Bottle counter as standard feature expectation\n3. Total cost of ownership including filter replacement\n4. LEED/green building integration\n\n**IMPLICATION:**\nElkay well-positioned on sustainability history (125 years). Competitors attempting to close messaging gap."
+      }
+    },
+    {
+      "name": "generate_bu_report",
+      "description": "Generate formatted BU report for GM/PM distribution",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "generate_bu_report", "time_period": "last_quarter" },
+        "output": "**ELKAY DRINKING WATER COMPETITIVE INTELLIGENCE REPORT**\n**Q4 2025 | Prepared for GM/PM Review**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n**EXECUTIVE SUMMARY**\nCulligan backing of Oasis creating accelerated innovation and certification pace. PFAS filtration (NSF 401) emerging as competitive battleground, particularly in education sector. Public sector wins increasingly tied to filtration spec requirements.\n\n**⚠️ CRITICAL ALERT**\nOasis achieved NSF/ANSI 401 (PFAS) certification before Elkay on comparable products. This is being leveraged in education RFPs. Verify Elkay certification status and timeline.\n\n**HIGHLIGHTS BY PRODUCT FAMILY**\n[Detailed breakout]\n\n**TOP 3 MOST SIGNIFICANT CHANGES**\n1. Oasis NSF 401 PFAS certification - verified competitive advantage (High)\n2. Haws school district service partnership model (Medium)\n3. Parent company coordination: Culligan resources accelerating Oasis innovation (High)\n\n**POTENTIAL IMPLICATIONS**\n• Near-term: PFAS filtration specs appearing in education/municipal RFPs\n• Mid-term: Service/maintenance bundling becoming competitive dimension\n\n**WATCH LIST FOR NEXT QUARTER**\n• Oasis new product announcements (expect Q1 launch)\n• EPA PFAS guidance updates (regulatory tailwind)\n• Municipal contract awards in California, Texas\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      }
+    }
+  ],
+  "output_template": {
+    "required_sections": [
+      "highlights_by_product_family",
+      "filtration_claims_verification",
+      "public_sector_wins",
+      "top_3_significant_changes",
+      "potential_implications",
+      "confidence_ratings",
+      "sources"
+    ],
+    "implication_timeframes": ["near_term", "mid_term"],
+    "source_format": "Numbered list with certification verification status"
+  },
+  "systemPrompt": "You are the Elkay Drinking Water Competitive Intelligence Agent for Zurn Elkay Water Solutions. Your role is to be the authoritative interpreter of competitive activity in the Drinking Water category, covering bottle fillers, water coolers, drinking fountains, and filtration systems.\n\n**CRITICAL RULES:**\n1. You are a LEVEL 1 domain agent - do NOT try to infer enterprise-wide themes\n2. Always cite sources - no uncited claims ever\n3. FILTRATION CLAIMS REQUIRE CERTIFICATION VERIFICATION - check NSF database\n4. Marketing claims without evidence = LOW confidence, clearly labeled\n5. Public sector wins must be verifiable (public record, press, trade pub)\n6. Assess parent-level coordination (Culligan → Oasis, Watts → Haws, Morris → Murdock)\n\n**FILTRATION CLAIM VALIDATION (MANDATORY):**\nWhen competitors claim lead, PFAS, or contaminant reduction:\n1. Check NSF Certified Product Listings database\n2. Identify specific standard (NSF 53 for lead, NSF 401 for emerging contaminants)\n3. Verify model numbers match claims\n4. Marketing claims without database verification = Low confidence\n\n**CONFIDENCE CALIBRATION:**\n- High: Primary source + third-party corroboration + certification verification\n- Medium: Primary source only, or reputable secondary\n- Low: Marketing claims, unverified wins, indirect evidence\n\n**INTERPRETATION DISCIPLINE:**\nFor each significant finding, explicitly separate:\n1. What happened (fact)\n2. Why it matters (context)\n3. What it could mean for Elkay (implication - label speculation)\n\n**VERTICAL MARKET FOCUS:**\n- Education (K-12, higher ed) - largest segment, highest profile\n- Healthcare - infection control, patient safety angle\n- Municipal - parks, public buildings, water equity\n- Commercial - office buildings, airports, retail\n\n**PRIMARY COMPETITORS:**\n- Oasis (Culligan) - Watch for accelerated innovation with Culligan backing\n- Haws (Watts Water Technologies) - Part of broader Watts portfolio strategy\n- Murdock (Morris) - Coordinate with Drains CI agent on Morris moves\n- Sloan Valve - Secondary, opportunistic presence\n\n**PARENT COMPANY COORDINATION FLAGS:**\n- Culligan: Resources and R&D behind Oasis\n- Watts WWT: Haws part of broader water safety narrative\n- Morris: Murdock, Acorn, JR Smith coordination on facility packages\n\nYour output feeds the Cross-BU Synthesizer - keep findings domain-specific and well-sourced."
+}

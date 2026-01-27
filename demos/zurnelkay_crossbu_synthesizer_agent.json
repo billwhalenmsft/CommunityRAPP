@@ -1,0 +1,101 @@
+{
+  "name": "ZurnElkay Cross-BU CI Synthesizer",
+  "description": "Level 2 agent that aggregates reports from all 5 BU CI agents and identifies portfolio-level competitive patterns. Detects cross-BU coordination by parent companies (Watts, Morris, Lixil, Geberit) and generates enterprise-level executive briefings.",
+  "version": "1.0.0",
+  "level": 2,
+  "agent_type": "synthesizer",
+  "customer": "Zurn Elkay Water Solutions",
+  
+  "input_agents": [
+    "ZurnElkayDrainsCIAgent",
+    "ZurnElkayWilkinsCIAgent", 
+    "ZurnElkayDrinkingWaterCIAgent",
+    "ZurnElkaySinksCIAgent",
+    "ZurnElkayCommercialBrassCIAgent"
+  ],
+  
+  "parent_companies_tracked": {
+    "Watts Water Technologies": {
+      "brands": ["Watts", "Ames", "Febco", "Powers", "Bradley", "Josam", "Wade", "Blucher", "Haws"],
+      "bus_affected": ["Drains", "Wilkins", "Drinking Water", "Commercial Brass"],
+      "strategic_focus": "Platform/digital ecosystem, brand consolidation, healthcare vertical"
+    },
+    "Morris Group": {
+      "brands": ["Just Manufacturing", "T&S Brass", "Chicago Faucets"],
+      "bus_affected": ["Sinks", "Commercial Brass"],
+      "strategic_focus": "Healthcare bundling, shared rep networks"
+    },
+    "Lixil": {
+      "brands": ["American Standard", "Grohe"],
+      "bus_affected": ["Commercial Brass", "Sinks"],
+      "strategic_focus": "Americas commercial market entry"
+    },
+    "Geberit": {
+      "brands": ["Geberit"],
+      "bus_affected": ["Commercial Brass", "Drains"],
+      "strategic_focus": "Digital ecosystem, specification influence"
+    },
+    "Aalberts": {
+      "brands": ["Apollo", "Lasco"],
+      "bus_affected": ["Wilkins"],
+      "strategic_focus": "Backflow market share"
+    }
+  },
+  
+  "actions": [
+    {
+      "name": "synthesize_quarterly_report",
+      "description": "Collect reports from all 5 BU agents and synthesize into enterprise view",
+      "parameters": {
+        "time_period": "last_quarter"
+      }
+    },
+    {
+      "name": "detect_cross_bu_patterns",
+      "description": "Identify coordinated moves by parent companies across multiple BUs",
+      "parameters": {
+        "parent_company": "optional - specific parent to analyze"
+      }
+    },
+    {
+      "name": "generate_executive_briefing",
+      "description": "Generate CEO/COO-level briefing with portfolio implications",
+      "parameters": {
+        "time_period": "last_quarter",
+        "include_recommendations": true
+      }
+    },
+    {
+      "name": "prioritize_enterprise_signals",
+      "description": "Re-rank all signals from BU perspective to enterprise perspective",
+      "parameters": {}
+    },
+    {
+      "name": "compare_bu_competitive_pressure",
+      "description": "Compare competitive intensity across BUs to identify resource allocation needs",
+      "parameters": {}
+    }
+  ],
+  
+  "output_format": {
+    "executive_briefing": {
+      "sections": [
+        "enterprise_summary",
+        "cross_bu_patterns",
+        "parent_company_coordination",
+        "top_5_enterprise_signals",
+        "bu_competitive_pressure_ranking",
+        "strategic_recommendations",
+        "watch_list"
+      ]
+    }
+  },
+  
+  "system_prompt": "You are the Cross-BU Competitive Intelligence Synthesizer for Zurn Elkay Water Solutions. Your role is to aggregate intelligence from all 5 business unit CI agents (Drains, Wilkins, Drinking Water, Sinks, Commercial Brass) and identify patterns that individual BUs cannot see. Focus especially on: (1) Coordinated moves by parent companies like Watts Water Technologies, Morris Group, and Lixil across multiple product categories, (2) Enterprise-level strategic shifts that affect multiple BUs, (3) Prioritizing signals from a portfolio perspective rather than BU perspective. Generate executive briefings suitable for CEO/COO consumption. Always cite which BU agents contributed to each finding.",
+  
+  "confidence_calibration": {
+    "high": "Pattern confirmed across 3+ BUs with corroborating signals",
+    "medium": "Pattern observed in 2 BUs or single BU with strong evidence",
+    "low": "Inference from limited signals, requires monitoring"
+  }
+}

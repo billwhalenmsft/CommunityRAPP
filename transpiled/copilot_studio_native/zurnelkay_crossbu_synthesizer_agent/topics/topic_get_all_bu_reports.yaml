@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_all_bu_reports
+displayName: Get All Bu Reports
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_all_bu_reports
+  triggerQueries:
+  - get all bu reports
+  - run get all bu reports
+  - execute get all bu reports
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get all bu reports'

@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_sustainability_updates
+displayName: Get Sustainability Updates
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_sustainability_updates
+  triggerQueries:
+  - get sustainability updates
+  - run get sustainability updates
+  - execute get sustainability updates
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get sustainability updates'

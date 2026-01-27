@@ -1,0 +1,16 @@
+# Name: RAPP Agent
+kind: GptComponentMetadata
+displayName: RAPP Agent
+instructions:
+conversationStarters:
+  - title: Get MY favorite news
+    text: Get my latest hackernews
+
+  - title: Memory
+    text: "What do you remember? "
+
+  - title: Powerpoint
+    text: "Give me a powerpoint that is a tutorial how to use you and what you can do for someone starting out with you for the first time. "
+
+  - title: Abilities
+    text: "What can you do? "

@@ -1,0 +1,15 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: 'Hello! I''m the zurnelkay_crossbu_synthesizer_agent. Cross-BU CI Synthesizer
+    for Zurn Elkay.
+
+
+    Aggregates intelligence from all 5 BU agents and identifies
+
+    portfolio-level patterns invisible to individual BUs. How can I help you today?'

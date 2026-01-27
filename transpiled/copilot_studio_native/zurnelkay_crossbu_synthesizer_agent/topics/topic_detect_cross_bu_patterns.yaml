@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_detect_cross_bu_patterns
+displayName: Detect Cross Bu Patterns
+triggers:
+- kind: OnRecognizedIntent
+  intent: detect_cross_bu_patterns
+  triggerQueries:
+  - detect cross bu patterns
+  - run detect cross bu patterns
+  - execute detect cross bu patterns
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_detect_cross_bu_patterns
+  inputs:
+    action: detect_cross_bu_patterns
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

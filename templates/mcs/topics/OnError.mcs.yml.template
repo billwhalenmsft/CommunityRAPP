@@ -1,0 +1,46 @@
+# Copilot Studio MCS Template - On Error Topic
+# Handles errors gracefully - should remain active
+
+kind: AdaptiveDialog
+startBehavior: UseLatestPublishedContentAndCancelOtherTopics
+beginDialog:
+  kind: OnError
+  id: main
+  actions:
+    - kind: SetVariable
+      id: setVariable_timestamp
+      variable: init:Topic.CurrentTime
+      value: =Text(Now(), DateTimeFormat.UTC)
+
+    - kind: ConditionGroup
+      id: condition_testMode
+      conditions:
+        - id: testModeCheck
+          condition: =System.Conversation.InTestMode = true
+          actions:
+            # Show detailed error in test mode
+            - kind: SendActivity
+              id: sendMessage_testError
+              activity: |
+                Error Message: {System.Error.Message}
+                Error Code: {System.Error.Code}
+                Conversation Id: {System.Conversation.Id}
+                Time (UTC): {Topic.CurrentTime}
+
+      elseActions:
+        # Show user-friendly error in production
+        - kind: SendActivity
+          id: sendMessage_prodError
+          activity:
+            text:
+              - "I encountered an issue processing your request. Please try again or rephrase your question."
+            speak:
+              - "Sorry, I encountered an error. Please try again."
+
+    - kind: LogCustomTelemetryEvent
+      id: logError
+      eventName: OnErrorLog
+      properties: "={ErrorMessage: System.Error.Message, ErrorCode: System.Error.Code, TimeUTC: Topic.CurrentTime, ConversationId: System.Conversation.Id}"
+
+    - kind: CancelAllDialogs
+      id: cancelDialogs

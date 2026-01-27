@@ -1,0 +1,143 @@
+# Name: MAIN
+kind: AdaptiveDialog
+inputs:
+  - kind: AutomaticTaskInput
+    propertyName: Var1
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+    modelDescription: This should call the assistant. Always trigger this when a user has a message they post in the chat to trigger giving them a response from the assistant.
+
+beginDialog:
+  kind: OnActivity
+  id: main
+  type: Message
+  actions:
+    - kind: ConditionGroup
+      id: conditionGroup_tn2uNJ
+      conditions:
+        - id: conditionItem_NgqTVs
+          condition: =System.LastMessage.Text in "Clear Chat"
+          actions:
+            - kind: SetVariable
+              id: setVariable_iFJY3X
+              variable: Global.VarConversationHistory
+              value:
+
+            - kind: SendActivity
+              id: sendActivity_xpkHnp
+              activity: "Chat context has been cleared. Thank you for saving tokens. :) This is the last message: gobalVar{Global.VarConversationHistory}LastMessage:{System.LastMessage.Text}"
+
+    - kind: SetVariable
+      id: setVariable_dFuvBf
+      variable: Topic.user_input
+      value: =System.LastMessage.Text
+
+    - kind: SetVariable
+      id: setVariable_q5aimI
+      variable: Topic.varEscapedInput
+      value: =Substitute(Topic.user_input, """", "\""")
+
+    - kind: SetVariable
+      id: setVariable_zt7h6L
+      variable: Global.VarConversationHistory
+      value: |-
+        =If(
+          Or(Global.VarConversationHistory = "", Global.VarConversationHistory = "[]"),
+          Concatenate("{""role"": ""user"", ""content"": """, Topic.varEscapedInput, """}"),
+          Concatenate(Global.VarConversationHistory, ", {""role"": ""user"", ""content"": """, Topic.varEscapedInput, """}")
+        )
+
+    - kind: InvokeFlowAction
+      id: invokeFlowAction_amLXtt
+      input:
+        binding:
+          text: =Topic.user_input
+          text_1: =Global.VarConversationHistory
+
+      output:
+        binding:
+          output: Topic.Var1
+          output_1: Topic.AgentLogs
+          output_2: Topic.UserGuid
+
+      flowId: ced8f731-2fef-ef11-be20-6045bd06598d
+
+    - kind: SetVariable
+      id: setVariable_3Q0Gl1
+      variable: Topic.varEscapedInput
+      value: =Substitute(Topic.Var1, """", "\""")
+
+    - kind: SetVariable
+      id: setVariable_appendAssistantResponse
+      variable: Global.VarConversationHistory
+      value: "=Concatenate(Global.VarConversationHistory, \", {\"\"role\"\": \"\"assistant\"\", \"\"content\"\": \"\"\", Topic.varEscapedInput, \"\"\"}\")"
+
+    - kind: ConditionGroup
+      id: conditionGroup_appendAgentLogs
+      conditions:
+        - id: conditionItem_hasAgentLogs
+          condition: =And(Not(IsBlank(Topic.AgentLogs)), Len(Topic.AgentLogs) > 0)
+          actions:
+            - kind: SetVariable
+              id: setVariable_appendAgentLogsToHistory
+              variable: Global.VarConversationHistory
+              value: "=Concatenate(Global.VarConversationHistory, \", {\"\"role\"\": \"\"system\"\", \"\"content\"\": \"\"\", Substitute(Topic.AgentLogs, \"\"\"\", \"\\\"\"\"), \"\"\"}\")"
+
+    - kind: ConditionGroup
+      id: conditionGroup_displayMode
+      conditions:
+        - id: conditionItem_debugRequested
+          condition: =Find("debug", Lower(Topic.user_input)) > 0
+          actions:
+            - kind: ConditionGroup
+              id: conditionGroup_debugDisplay
+              conditions:
+                - id: conditionItem_debugWithAgentLogs
+                  condition: =And(Not(IsBlank(Topic.AgentLogs)), Len(Topic.AgentLogs) > 0)
+                  actions:
+                    - kind: SendActivity
+                      id: sendActivity_debugWithAgentLogs
+                      activity: |-
+                        {Topic.Var1}
+
+                        ---
+                        🔧 **Agent Calls:** {Topic.AgentLogs}
+
+                        🆔 **User GUID:** {Topic.UserGuid}
+
+                - id: conditionItem_debugNoAgentLogs
+                  condition: =Or(IsBlank(Topic.AgentLogs), Len(Topic.AgentLogs) = 0)
+                  actions:
+                    - kind: SendActivity
+                      id: sendActivity_debugNoAgentLogs
+                      activity: |-
+                        {Topic.Var1}
+
+                        ---
+                        🆔 **User GUID:** {Topic.UserGuid}
+
+                        ℹ️ **No agent calls made**
+
+        - id: conditionItem_normalMode
+          condition: =Find("debug", Lower(Topic.user_input)) <= 0
+          actions:
+            - kind: ConditionGroup
+              id: conditionGroup_normalDisplay
+              conditions:
+                - id: conditionItem_normalWithAgentLogs
+                  condition: =And(Not(IsBlank(Topic.AgentLogs)), Len(Topic.AgentLogs) > 0)
+                  actions:
+                    - kind: SendActivity
+                      id: sendActivity_normalWithAgentLogs
+                      activity: |-
+                        {Topic.Var1}
+
+                        ---
+                        🔧 **Agent Calls:** {Left(Topic.AgentLogs, Find(" and got result:", Topic.AgentLogs) - 1)}
+
+                - id: conditionItem_normalNoAgentLogs
+                  condition: =Or(IsBlank(Topic.AgentLogs), Len(Topic.AgentLogs) = 0)
+                  actions:
+                    - kind: SendActivity
+                      id: sendActivity_normalStandard
+                      activity: "{Topic.Var1}"

@@ -1,0 +1,16 @@
+# Copilot Studio MCS Template - Agent Definition
+# This file defines the GPT component with instructions and conversation starters
+
+kind: GptComponentMetadata
+displayName: ${AGENT_NAME}
+instructions: |
+  ${INSTRUCTIONS}
+
+# Conversation starters appear as quick-action buttons in the chat interface
+conversationStarters:
+  - title: "${STARTER_1_TITLE}"
+    text: "${STARTER_1_TEXT}"
+  - title: "${STARTER_2_TITLE}"
+    text: "${STARTER_2_TEXT}"
+  - title: "${STARTER_3_TITLE}"
+    text: "${STARTER_3_TEXT}"

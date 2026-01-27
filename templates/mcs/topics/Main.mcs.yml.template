@@ -1,0 +1,86 @@
+# Copilot Studio MCS Template - Main Message Handler Topic
+# This is the catch-all topic that routes ALL messages to the RAPP backend
+# Based on the RAPP Agent pattern that works reliably
+
+kind: AdaptiveDialog
+inputs:
+  - kind: AutomaticTaskInput
+    propertyName: UserMessage
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+    modelDescription: "This catches all user messages and routes them to the RAPP backend for processing."
+
+beginDialog:
+  kind: OnActivity
+  id: main
+  type: Message
+  actions:
+    # Handle "Clear Chat" command
+    - kind: ConditionGroup
+      id: conditionGroup_clearChat
+      conditions:
+        - id: conditionItem_clearCheck
+          condition: =System.LastMessage.Text in "Clear Chat"
+          actions:
+            - kind: SetVariable
+              id: setVariable_clearHistory
+              variable: Global.VarConversationHistory
+              value:
+
+            - kind: SendActivity
+              id: sendActivity_cleared
+              activity: "Chat context has been cleared."
+
+    # Capture user input
+    - kind: SetVariable
+      id: setVariable_userInput
+      variable: Topic.user_input
+      value: =System.LastMessage.Text
+
+    # Escape quotes for JSON
+    - kind: SetVariable
+      id: setVariable_escaped
+      variable: Topic.varEscapedInput
+      value: =Substitute(Topic.user_input, "\"", "\\\"")
+
+    # Append to conversation history
+    - kind: SetVariable
+      id: setVariable_appendUser
+      variable: Global.VarConversationHistory
+      value: |
+        =If(
+          Or(Global.VarConversationHistory = "", Global.VarConversationHistory = "[]"),
+          Concatenate("{\"role\": \"user\", \"content\": \"", Topic.varEscapedInput, "\"}"),
+          Concatenate(Global.VarConversationHistory, ", {\"role\": \"user\", \"content\": \"", Topic.varEscapedInput, "\"}")
+        )
+
+    # Call Power Automate flow (RAPP backend)
+    - kind: InvokeFlowAction
+      id: invokeFlowAction_rapp
+      input:
+        binding:
+          text: =Topic.user_input
+          text_1: =Global.VarConversationHistory
+      output:
+        binding:
+          output: Topic.Response
+          output_1: Topic.AgentLogs
+          output_2: Topic.UserGuid
+      flowId: ${FLOW_ID}
+
+    # Escape response for history
+    - kind: SetVariable
+      id: setVariable_escapeResponse
+      variable: Topic.varEscapedResponse
+      value: =Substitute(Topic.Response, "\"", "\\\"")
+
+    # Append assistant response to history
+    - kind: SetVariable
+      id: setVariable_appendAssistant
+      variable: Global.VarConversationHistory
+      value: "=Concatenate(Global.VarConversationHistory, \", {\\\"role\\\": \\\"assistant\\\", \\\"content\\\": \\\"\", Topic.varEscapedResponse, \"\\\"}\")"
+
+    # Send response to user
+    - kind: SendActivity
+      id: sendActivity_response
+      activity: "{Topic.Response}"

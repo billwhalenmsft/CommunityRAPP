@@ -1,0 +1,101 @@
+# Name: Greeting
+# This topic is triggered when the user greets the agent.
+kind: AdaptiveDialog
+modelDescription: This should call the assistant. Always trigger this when a user has a message they post in the chat to trigger giving them a response from the assistant.
+inputs:
+  - kind: AutomaticTaskInput
+    propertyName: Var1
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Greeting
+    includeInOnSelectIntent: false
+    triggerQueries:
+      - Good afternoon
+      - Good morning
+      - Hello
+      - Hey
+      - Hi
+
+  actions:
+    - kind: ConditionGroup
+      id: conditionGroup_tn2uNJ
+      conditions:
+        - id: conditionItem_NgqTVs
+          condition: =System.LastMessage.Text in "Clear Chat"
+          actions:
+            - kind: SetVariable
+              id: setVariable_iFJY3X
+              variable: Global.VarConversationHistory
+              value: "\"[]\""
+
+            - kind: SendActivity
+              id: sendActivity_xpkHnp
+              activity: "Chat context has been cleared. Thank you for saving tokens. :) This is the last message: gobalVar{Global.VarConversationHistory}LastMessage:{System.LastMessage.Text}"
+
+    - kind: SetVariable
+      id: setVariable_dFuvBf
+      variable: Topic.user_input
+      value: =System.LastMessage.Text
+
+    - kind: SetVariable
+      id: setVariable_q5aimI
+      variable: Topic.varEscapedInput
+      value: =Substitute(Topic.user_input, """", "\""")
+
+    - kind: SetVariable
+      id: setVariable_zt7h6L
+      variable: Global.VarConversationHistory
+      value: |-
+        =If(
+            Global.VarConversationHistory = "[]",
+            Concatenate("{""role"": ""user"", ""content"": """, Topic.varEscapedInput, """}"),
+            Concatenate(Global.VarConversationHistory, ", {""role"": ""user"", ""content"": """, Topic.varEscapedInput, """}")
+        )
+
+    - kind: InvokeFlowAction
+      id: invokeFlowAction_syINQq
+      input:
+        binding:
+          text: =Topic.user_input
+          text_1: =Global.VarConversationHistory
+
+      output:
+        binding:
+          output: Topic.Var2
+
+      flowId: 5b4ed212-861c-f011-9989-000d3a5c4aea
+
+    - kind: SetVariable
+      id: setVariable_3Q0Gl1
+      variable: Topic.varEscapedResponse
+      value: =Topic.Var2
+
+    - kind: SetVariable
+      id: setVariable_appendAssistantResponse
+      variable: Global.VarConversationHistory
+      value: "=Concatenate(Global.VarConversationHistory, \", {\"\"role\"\": \"\"assistant\"\", \"\"content\"\": \"\"\", Topic.varEscapedResponse, \"\"\"}\")"
+
+    - kind: ConditionGroup
+      id: conditionGroup_uTCUdF
+      conditions:
+        - id: conditionItem_jR2XKa
+          condition: =Global.VarConversationHistory = """[]"""
+
+      elseActions:
+        - kind: Question
+          id: question_ASR8Wq
+          interruptionPolicy:
+            allowInterruption: true
+
+          variable: Topic.Var1
+          prompt: Substitute(Topic.Var2, """", "\""")
+          entity: StringPrebuiltEntity
+
+    - kind: BeginDialog
+      id: xrL7Bo
+      dialog: crf9a_agent2_L4Y3ee.topic.Greeting

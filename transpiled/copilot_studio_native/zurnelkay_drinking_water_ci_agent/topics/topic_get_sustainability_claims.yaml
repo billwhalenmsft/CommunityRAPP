@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_sustainability_claims
+displayName: Get Sustainability Claims
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_sustainability_claims
+  triggerQueries:
+  - get sustainability claims
+  - run get sustainability claims
+  - execute get sustainability claims
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get sustainability claims'

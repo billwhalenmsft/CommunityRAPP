@@ -1,0 +1,43 @@
+{
+  "name": "flow_detect_cross_bu_patterns",
+  "displayName": "Detect Cross Bu Patterns Flow",
+  "description": "Power Automate flow for detect_cross_bu_patterns",
+  "trigger": {
+    "kind": "PowerVirtualAgents",
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "actions": [
+    {
+      "kind": "Dataverse_ListRows",
+      "connection": "dataverse_connection",
+      "inputs": {
+        "entityName": "rapp_data"
+      },
+      "outputs": {
+        "rows": "dataverseRows"
+      }
+    },
+    {
+      "kind": "Response",
+      "inputs": {
+        "result": "@{variables('aiResponse') ?? 'Action completed successfully'}"
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "string",
+      "description": "Result of the action"
+    }
+  }
+}

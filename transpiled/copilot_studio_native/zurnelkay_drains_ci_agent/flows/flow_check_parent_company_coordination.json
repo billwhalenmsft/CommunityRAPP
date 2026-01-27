@@ -1,0 +1,54 @@
+{
+  "name": "flow_check_parent_company_coordination",
+  "displayName": "Check Parent Company Coordination Flow",
+  "description": "Power Automate flow for check_parent_company_coordination",
+  "trigger": {
+    "kind": "PowerVirtualAgents",
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "actions": [
+    {
+      "kind": "Dataverse_ListRows",
+      "connection": "dataverse_connection",
+      "inputs": {
+        "entityName": "rapp_data"
+      },
+      "outputs": {
+        "rows": "dataverseRows"
+      }
+    },
+    {
+      "kind": "AzureOpenAI_ChatCompletion",
+      "connection": "azure_openai_connection",
+      "inputs": {
+        "prompt": "Process the data for check_parent_company_coordination",
+        "systemMessage": "Drains Competitive Intelligence Agent for Zurn Elkay.\n\nProvides quarterly competitive analysis for:\n- Core Spec Drains\n- Siteworks (Division 22 & 33)\n- FOG Separation\n\nMonitors competitors and flags parent company coordination."
+      },
+      "outputs": {
+        "response": "aiResponse"
+      }
+    },
+    {
+      "kind": "Response",
+      "inputs": {
+        "result": "@{variables('aiResponse') ?? 'Action completed successfully'}"
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "string",
+      "description": "Result of the action"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.2",
+  "name": "zurnelkay_sinks_ci_agent",
+  "displayName": "Zurnelkay Sinks Ci Agent",
+  "description": "Sinks Competitive Intelligence Agent for Zurn Elkay.\n\nMonitors Commercial Sinks, Healthcare/Patient Care, and Food Service.\nSpecial focus on healthcare infection control and ADA compliance.",
+  "icon": "robot",
+  "primaryLanguage": "en-US",
+  "isGenerativeActionsEnabled": true,
+  "isOrchestrationEnabled": true,
+  "knowledgeSources": [],
+  "instructions": "See instructions.md for full agent instructions.",
+  "capabilities": {
+    "generativeAnswers": true,
+    "powerAutomateFlows": true,
+    "customConnectors": false
+  },
+  "topics": [
+    "topic_run_quarterly_analysis",
+    "topic_analyze_competitor",
+    "topic_check_parent_company_coordination",
+    "topic_get_healthcare_innovations",
+    "topic_get_ada_compliance_updates",
+    "topic_get_sustainability_updates",
+    "topic_search_trade_publications",
+    "topic_get_product_launches",
+    "topic_get_leadership_changes",
+    "topic_generate_bu_report"
+  ],
+  "metadata": {
+    "source": "RAPP Transpiler",
+    "transpiled_at": "2026-01-26T16:24:09.511721",
+    "original_agent": "ZurnElkaySinksCIAgent"
+  }
+}

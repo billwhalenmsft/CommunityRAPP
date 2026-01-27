@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_compare_bu_competitive_pressure
+displayName: Compare Bu Competitive Pressure
+triggers:
+- kind: OnRecognizedIntent
+  intent: compare_bu_competitive_pressure
+  triggerQueries:
+  - compare bu competitive pressure
+  - run compare bu competitive pressure
+  - execute compare bu competitive pressure
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_compare_bu_competitive_pressure
+  inputs:
+    action: compare_bu_competitive_pressure
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

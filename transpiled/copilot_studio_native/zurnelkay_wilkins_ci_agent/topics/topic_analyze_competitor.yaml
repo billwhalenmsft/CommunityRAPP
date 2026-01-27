@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_analyze_competitor
+displayName: Analyze Competitor
+triggers:
+- kind: OnRecognizedIntent
+  intent: analyze_competitor
+  triggerQueries:
+  - analyze competitor
+  - run analyze competitor
+  - execute analyze competitor
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_analyze_competitor
+  inputs:
+    action: analyze_competitor
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

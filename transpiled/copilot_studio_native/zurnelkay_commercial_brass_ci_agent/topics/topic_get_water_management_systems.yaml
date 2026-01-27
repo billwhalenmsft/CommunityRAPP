@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_water_management_systems
+displayName: Get Water Management Systems
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_water_management_systems
+  triggerQueries:
+  - get water management systems
+  - run get water management systems
+  - execute get water management systems
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get water management systems'

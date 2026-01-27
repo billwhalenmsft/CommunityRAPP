@@ -1,0 +1,15 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: 'Hello! I''m the zurnelkay_commercial_brass_ci_agent. Commercial Brass
+    Competitive Intelligence Agent for Zurn Elkay.
+
+
+    Monitors Commercial Faucets, Flush Valves, and Electronic/Touchless fixtures.
+
+    Special focus on platform launches, IoT, and water manage How can I help you today?'

@@ -1,0 +1,37 @@
+# Name: Conversation Start
+# This system topic triggers when the agent receives an Activity indicating the beginning of a new conversation. If you do not want the agent to initiate the conversation, disable this topic.
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SetVariable
+      id: setVariable_e2iOCi
+      variable: Global.VarConversationHistory
+      value: "\"[]\""
+
+    - kind: SendActivity
+      id: sendMessage_M0LuhV
+      activity:
+        text:
+          - |-
+            Hi there! I'm {System.Bot.Name} , your specialized assistant for understanding and analyzing business data. My key capabilities include:
+            - Tailoring support through onboarding and continuous learning
+            - Interpreting business queries and providing insights
+            - Generating reports and managing tasks
+            - Integrating with external data sources like CRMs
+            - Building a business glossary
+            - Leveraging context-aware memory for personalized experiences
+            
+            To get started, you can:
+            1. Onboard new business information
+            2. Analyze business data
+            3. Generate reports
+            4. Manage tasks
+            5. Integrate CRM data
+            6. Define business terms
+            7. Provide feedback
+            
+            Please choose an option by typing the number.
+        speak:
+          - Thanks for calling, how can I help?

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.2",
+  "name": "zurnelkay_drains_ci_agent",
+  "displayName": "Zurnelkay Drains Ci Agent",
+  "description": "Drains Competitive Intelligence Agent for Zurn Elkay.\n\nProvides quarterly competitive analysis for:\n- Core Spec Drains\n- Siteworks (Division 22 & 33)\n- FOG Separation\n\nMonitors competitors and flags parent company coordination.",
+  "icon": "robot",
+  "primaryLanguage": "en-US",
+  "isGenerativeActionsEnabled": true,
+  "isOrchestrationEnabled": true,
+  "knowledgeSources": [],
+  "instructions": "See instructions.md for full agent instructions.",
+  "capabilities": {
+    "generativeAnswers": true,
+    "powerAutomateFlows": true,
+    "customConnectors": false
+  },
+  "topics": [
+    "topic_run_quarterly_analysis",
+    "topic_analyze_competitor",
+    "topic_check_parent_company_coordination",
+    "topic_get_signal_summary",
+    "topic_search_trade_publications",
+    "topic_get_product_launches",
+    "topic_get_leadership_changes",
+    "topic_get_certification_updates",
+    "topic_generate_bu_report"
+  ],
+  "metadata": {
+    "source": "RAPP Transpiler",
+    "transpiled_at": "2026-01-26T16:24:09.421651",
+    "original_agent": "ZurnElkayDrainsCIAgent"
+  }
+}

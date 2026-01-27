@@ -1,0 +1,25 @@
+# Copilot Studio MCS Template - Fallback Topic
+# DISABLED by default - we rely on generative AI or custom routing
+# Set state to Inactive in botdefinition.json
+
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnUnknownIntent
+  id: main
+  actions:
+    # This topic should be DISABLED
+    # If somehow triggered, defer to generative AI
+    - kind: SearchAndSummarizeContent
+      id: search-fallback
+      variable: Topic.Answer
+      userInput: =System.Activity.Text
+
+    - kind: ConditionGroup
+      id: check-answer
+      conditions:
+        - id: has-answer
+          condition: =!IsBlank(Topic.Answer)
+          actions:
+            - kind: EndDialog
+              id: end-fallback
+              clearTopicQueue: true

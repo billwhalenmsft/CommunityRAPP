@@ -1,0 +1,180 @@
+{
+  "$schema": "https://schema.copilot.studio/v1/botdefinition.json",
+  "$kind": "BotDefinition",
+  "components": [
+    {
+      "$kind": "GptComponent",
+      "displayName": "${AGENT_NAME}",
+      "id": "${GPT_COMPONENT_ID}",
+      "parentBotId": "${BOT_ID}",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Active",
+      "status": "Active",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.gpt.default",
+      "metadata": "kind: GptComponentMetadata\r\ndisplayName: ${AGENT_NAME}\r\ninstructions: ${INSTRUCTIONS_ESCAPED}\r\nconversationStarters:\r\n  - title: ${STARTER_1_TITLE}\r\n    text: ${STARTER_1_TEXT}\r\n"
+    },
+    {
+      "$kind": "DialogComponent",
+      "displayName": "Conversation Start",
+      "id": "${CONVERSATION_START_ID}",
+      "parentBotId": "${BOT_ID}",
+      "description": "This system topic triggers when the agent receives an Activity indicating the beginning of a new conversation.",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Active",
+      "status": "Active",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.topic.ConversationStart",
+      "dialog": "kind: AdaptiveDialog\r\nbeginDialog:\r\n  kind: OnConversationStart\r\n  id: main\r\n  actions:\r\n    - kind: SetVariable\r\n      id: setVariable_initHistory\r\n      variable: Global.VarConversationHistory\r\n      value: \"\\\"[]\\\"\""
+    },
+    {
+      "$kind": "DialogComponent",
+      "displayName": "On Error",
+      "id": "${ON_ERROR_ID}",
+      "parentBotId": "${BOT_ID}",
+      "description": "This system topic triggers when the agent encounters an error.",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Active",
+      "status": "Active",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.topic.OnError",
+      "dialog": "kind: AdaptiveDialog\r\nstartBehavior: UseLatestPublishedContentAndCancelOtherTopics\r\nbeginDialog:\r\n  kind: OnError\r\n  id: main\r\n  actions:\r\n    - kind: SendActivity\r\n      id: sendMessage_error\r\n      activity: I encountered an issue. Please try again."
+    },
+    {
+      "$kind": "DialogComponent",
+      "displayName": "Fallback",
+      "id": "${FALLBACK_ID}",
+      "parentBotId": "${BOT_ID}",
+      "description": "This system topic triggers when the user's utterance does not match any existing topics.",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Inactive",
+      "status": "Inactive",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.topic.Fallback",
+      "dialog": "kind: AdaptiveDialog\r\nbeginDialog:\r\n  kind: OnUnknownIntent\r\n  id: main\r\n  actions: []"
+    },
+    {
+      "$kind": "DialogComponent",
+      "displayName": "End of Conversation",
+      "id": "${END_CONVERSATION_ID}",
+      "parentBotId": "${BOT_ID}",
+      "description": "This system topic is triggered at the end of a conversation.",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Inactive",
+      "status": "Inactive",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.topic.EndofConversation",
+      "dialog": "kind: AdaptiveDialog\r\nbeginDialog:\r\n  kind: OnSystemRedirect\r\n  id: main\r\n  actions: []"
+    },
+    {
+      "$kind": "DialogComponent",
+      "displayName": "Escalate",
+      "id": "${ESCALATE_ID}",
+      "parentBotId": "${BOT_ID}",
+      "description": "This system topic is triggered when the user wants to speak to a human.",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Inactive",
+      "status": "Inactive",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.topic.Escalate",
+      "dialog": "kind: AdaptiveDialog\r\nbeginDialog:\r\n  kind: OnEscalate\r\n  id: main\r\n  actions: []"
+    },
+    {
+      "$kind": "DialogComponent",
+      "displayName": "Multiple Topics Matched",
+      "id": "${MULTIPLE_TOPICS_ID}",
+      "parentBotId": "${BOT_ID}",
+      "description": "This system topic triggers when multiple topics match the user's input.",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Inactive",
+      "status": "Inactive",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.topic.MultipleTopicsMatched",
+      "dialog": "kind: AdaptiveDialog\r\nbeginDialog:\r\n  kind: OnSelectIntent\r\n  id: main\r\n  actions: []"
+    },
+    {
+      "$kind": "DialogComponent",
+      "displayName": "Greeting",
+      "id": "${GREETING_ID}",
+      "parentBotId": "${BOT_ID}",
+      "description": "This topic triggers when the user greets the agent.",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Inactive",
+      "status": "Inactive",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.topic.Greeting",
+      "dialog": "kind: AdaptiveDialog\r\nbeginDialog:\r\n  kind: OnRecognizedIntent\r\n  id: main\r\n  intent:\r\n    displayName: Greeting\r\n    triggerQueries:\r\n      - Hello\r\n      - Hi\r\n  actions: []"
+    },
+    {
+      "$kind": "DialogComponent",
+      "displayName": "Goodbye",
+      "id": "${GOODBYE_ID}",
+      "parentBotId": "${BOT_ID}",
+      "description": "This topic triggers when the user says goodbye.",
+      "shareContext": {
+        "$kind": "ContentShareContext"
+      },
+      "state": "Inactive",
+      "status": "Inactive",
+      "publisherUniqueName": "${PUBLISHER}",
+      "schemaName": "${SCHEMA_NAME}.topic.Goodbye",
+      "dialog": "kind: AdaptiveDialog\r\nbeginDialog:\r\n  kind: OnRecognizedIntent\r\n  id: main\r\n  intent:\r\n    displayName: Goodbye\r\n    triggerQueries:\r\n      - Bye\r\n      - Goodbye\r\n  actions: []"
+    }
+  ],
+  "entity": {
+    "$kind": "BotEntity",
+    "displayName": "${AGENT_NAME}",
+    "schemaName": "${SCHEMA_NAME}",
+    "cdsBotId": "${BOT_ID}",
+    "accessControlPolicy": "GroupMembership",
+    "authenticationMode": "Integrated",
+    "authenticationTrigger": "Always",
+    "configuration": {
+      "$kind": "BotConfiguration",
+      "channels": [
+        {
+          "$kind": "ChannelDefinition",
+          "channelId": "MsTeams"
+        }
+      ],
+      "gPTSettings": {
+        "$kind": "GPTSettings",
+        "defaultSchemaName": "${SCHEMA_NAME}.gpt.default"
+      },
+      "isLightweightBot": false,
+      "aISettings": {
+        "$kind": "AISettings",
+        "useModelKnowledge": true,
+        "isSemanticSearchEnabled": true,
+        "isFileAnalysisEnabled": true,
+        "contentModeration": "Medium",
+        "optInUseLatestModels": true,
+        "generativeAnswersEnabled": true,
+        "boostedConversationsEnabled": true
+      },
+      "settings": {
+        "orchestrationType": "Generative"
+      }
+    },
+    "language": 1033,
+    "runtimeProvider": "PowerVirtualAgents",
+    "state": "Active",
+    "status": 1
+  }
+}

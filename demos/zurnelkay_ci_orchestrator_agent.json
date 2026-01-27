@@ -1,0 +1,103 @@
+{
+  "name": "ZurnElkay CI Orchestrator",
+  "description": "Level 0 orchestrator agent that coordinates the entire CI system. Manages workflow execution, validates quality, handles scheduling, and ensures all agents produce consistent, high-quality output.",
+  "version": "1.0.0",
+  "level": 0,
+  "agent_type": "orchestrator",
+  "customer": "Zurn Elkay Water Solutions",
+  
+  "managed_agents": {
+    "level_1": [
+      "ZurnElkayDrainsCIAgent",
+      "ZurnElkayWilkinsCIAgent",
+      "ZurnElkayDrinkingWaterCIAgent",
+      "ZurnElkaySinksCIAgent",
+      "ZurnElkayCommercialBrassCIAgent"
+    ],
+    "level_2": [
+      "ZurnElkayCrossbuSynthesizerAgent"
+    ]
+  },
+  
+  "workflows": {
+    "quarterly_ci_report": {
+      "description": "Full quarterly competitive intelligence cycle",
+      "steps": [
+        {"step": 1, "action": "health_check", "description": "Verify all agents responsive"},
+        {"step": 2, "action": "collect_bu_reports", "description": "Execute all 5 BU agents"},
+        {"step": 3, "action": "validate_bu_outputs", "description": "QA check on BU reports"},
+        {"step": 4, "action": "synthesize", "description": "Execute Cross-BU Synthesizer"},
+        {"step": 5, "action": "validate_synthesis", "description": "QA check on synthesis"},
+        {"step": 6, "action": "generate_executive_briefing", "description": "Create final deliverable"},
+        {"step": 7, "action": "distribute", "description": "Send to stakeholders"}
+      ]
+    },
+    "on_demand_bu_report": {
+      "description": "Single BU report on demand",
+      "steps": [
+        {"step": 1, "action": "health_check_single", "description": "Verify specific agent"},
+        {"step": 2, "action": "execute_bu_agent", "description": "Run requested BU agent"},
+        {"step": 3, "action": "validate_output", "description": "QA check"}
+      ]
+    },
+    "parent_company_alert": {
+      "description": "Check specific parent company across all BUs",
+      "steps": [
+        {"step": 1, "action": "check_all_bus_for_parent", "description": "Query each BU for parent signals"},
+        {"step": 2, "action": "aggregate_signals", "description": "Combine findings"},
+        {"step": 3, "action": "assess_coordination", "description": "Determine if coordinated"}
+      ]
+    }
+  },
+  
+  "quality_checks": {
+    "required_fields": {
+      "bu_report": ["report_title", "executive_summary", "top_3_significant_changes", "sources", "generated_at"],
+      "synthesis": ["enterprise_summary", "cross_bu_patterns", "top_5_enterprise_signals"],
+      "executive_briefing": ["executive_summary", "critical_findings", "strategic_recommendations"]
+    },
+    "confidence_validation": {
+      "valid_values": ["high", "medium", "low"],
+      "flag_if_all_low": true
+    },
+    "source_validation": {
+      "require_sources": true,
+      "flag_unsourced_claims": true
+    }
+  },
+  
+  "actions": [
+    {
+      "name": "run_quarterly_workflow",
+      "description": "Execute full quarterly CI workflow end-to-end"
+    },
+    {
+      "name": "run_bu_report",
+      "description": "Execute single BU agent and validate",
+      "parameters": {"bu_name": "string"}
+    },
+    {
+      "name": "health_check",
+      "description": "Check health of all managed agents"
+    },
+    {
+      "name": "validate_report",
+      "description": "Run QA validation on a report",
+      "parameters": {"report": "object", "report_type": "string"}
+    },
+    {
+      "name": "get_system_status",
+      "description": "Get overall system status and last run times"
+    }
+  ],
+  
+  "scheduling": {
+    "quarterly_report": {
+      "frequency": "quarterly",
+      "typical_dates": ["Jan 15", "Apr 15", "Jul 15", "Oct 15"],
+      "lead_time_days": 5
+    }
+  },
+  
+  "system_prompt": "You are the CI System Orchestrator for Zurn Elkay Water Solutions. Your role is to coordinate the entire competitive intelligence system, ensuring all agents execute properly and produce high-quality, validated output. You manage workflow execution, perform quality checks, handle errors gracefully, and ensure the final executive briefing meets the standards expected by Zurn Elkay leadership. Always validate outputs before passing them upstream. Flag any quality issues with specific recommendations for remediation."
+}

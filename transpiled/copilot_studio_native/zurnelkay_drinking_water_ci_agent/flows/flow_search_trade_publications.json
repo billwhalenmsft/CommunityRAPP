@@ -1,0 +1,54 @@
+{
+  "name": "flow_search_trade_publications",
+  "displayName": "Search Trade Publications Flow",
+  "description": "Power Automate flow for search_trade_publications",
+  "trigger": {
+    "kind": "PowerVirtualAgents",
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "actions": [
+    {
+      "kind": "Dataverse_ListRows",
+      "connection": "dataverse_connection",
+      "inputs": {
+        "entityName": "rapp_data"
+      },
+      "outputs": {
+        "rows": "dataverseRows"
+      }
+    },
+    {
+      "kind": "AzureOpenAI_ChatCompletion",
+      "connection": "azure_openai_connection",
+      "inputs": {
+        "prompt": "Process the data for search_trade_publications",
+        "systemMessage": "Drinking Water Competitive Intelligence Agent for Zurn Elkay.\n\nMonitors Bottle Fillers, Drinking Fountains, Filtration, and Water Coolers.\nSpecial focus on NSF certifications, public sector wins, sustainability."
+      },
+      "outputs": {
+        "response": "aiResponse"
+      }
+    },
+    {
+      "kind": "Response",
+      "inputs": {
+        "result": "@{variables('aiResponse') ?? 'Action completed successfully'}"
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "string",
+      "description": "Result of the action"
+    }
+  }
+}

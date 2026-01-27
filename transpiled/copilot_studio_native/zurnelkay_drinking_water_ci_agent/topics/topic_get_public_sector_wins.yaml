@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_public_sector_wins
+displayName: Get Public Sector Wins
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_public_sector_wins
+  triggerQueries:
+  - get public sector wins
+  - run get public sector wins
+  - execute get public sector wins
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get public sector wins'

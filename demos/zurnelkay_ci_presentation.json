@@ -1,0 +1,291 @@
+{
+  "presentation_config": {
+    "title": "Zurn Elkay Competitive Intelligence System",
+    "subtitle": "AI-Powered Multi-BU Competitive Intelligence",
+    "customer": "Zurn Elkay Water Solutions",
+    "date": "Q4 2025",
+    "author": "Microsoft Azure AI Solutions",
+    "slides": [
+      {
+        "slide_number": 1,
+        "type": "title",
+        "title": "Competitive Intelligence, Reimagined",
+        "subtitle": "AI-Powered Intelligence for Zurn Elkay",
+        "speaker_notes": "Welcome the audience. Set context that this is a custom-built solution for Zurn Elkay's unique multi-BU structure."
+      },
+      {
+        "slide_number": 2,
+        "type": "challenge",
+        "title": "Three Challenges We Heard",
+        "content": {
+          "challenge_1": {
+            "icon": "⏰",
+            "title": "Time",
+            "description": "CI analysts spend weeks manually gathering quarterly data across 5 business units"
+          },
+          "challenge_2": {
+            "icon": "📊",
+            "title": "Consistency",
+            "description": "Each BU does CI differently, making enterprise roll-ups difficult and time-consuming"
+          },
+          "challenge_3": {
+            "icon": "🔍",
+            "title": "Coordination Blindspots",
+            "description": "Missing when competitors like Watts or Morris Group make coordinated moves across their portfolios"
+          }
+        },
+        "speaker_notes": "Pause after each challenge. These came directly from our discovery sessions. Ask if anything has changed."
+      },
+      {
+        "slide_number": 3,
+        "type": "solution",
+        "title": "Our Solution: 7 Specialized AI Agents",
+        "content": {
+          "headline": "Purpose-built for Zurn Elkay's structure",
+          "agent_count": 7,
+          "architecture": "3-tier: Orchestrator → Synthesizer → BU Agents",
+          "key_point": "Not a generic tool - knows YOUR competitors, categories, and parent companies"
+        },
+        "speaker_notes": "Emphasize this is custom, not off-the-shelf. Transition to architecture slide."
+      },
+      {
+        "slide_number": 4,
+        "type": "architecture",
+        "title": "System Architecture",
+        "content": {
+          "level_0": {
+            "name": "CI Orchestrator",
+            "role": "Quality assurance, workflow management, error handling"
+          },
+          "level_2": {
+            "name": "Cross-BU Synthesizer",
+            "role": "Enterprise aggregation, cross-portfolio pattern detection"
+          },
+          "level_1": [
+            {"name": "Drains CI", "focus": "Core Spec, Siteworks, FOG"},
+            {"name": "Wilkins CI", "focus": "Backflow, PRVs, TMVs"},
+            {"name": "Drinking Water CI", "focus": "Bottle Fillers, Filtration"},
+            {"name": "Sinks CI", "focus": "Healthcare, ADA, Food Service"},
+            {"name": "Commercial Brass CI", "focus": "Flush Valves, Faucets, Touchless"}
+          ]
+        },
+        "speaker_notes": "Walk through each level. Explain why hierarchy matters - BU experts feed into enterprise view."
+      },
+      {
+        "slide_number": 5,
+        "type": "feature",
+        "title": "Parent Company Tracking",
+        "content": {
+          "headline": "See coordinated moves you're missing today",
+          "companies": [
+            {
+              "name": "Watts Water Technologies",
+              "bus_affected": ["Drains", "Wilkins", "Drinking Water", "Commercial Brass"],
+              "insight": "Coordinated digital platform investment across brands"
+            },
+            {
+              "name": "Morris Group",
+              "bus_affected": ["Sinks", "Commercial Brass"],
+              "insight": "Just Mfg + T&S bundled healthcare solutions"
+            },
+            {
+              "name": "Lixil",
+              "bus_affected": ["Commercial Brass", "Sinks"],
+              "insight": "American Standard premium positioning"
+            },
+            {
+              "name": "Geberit",
+              "bus_affected": ["Commercial Brass", "Drains"],
+              "insight": "European market strategy expansion"
+            },
+            {
+              "name": "Aalberts",
+              "bus_affected": ["Wilkins"],
+              "insight": "Caleffi acquisition integration"
+            }
+          ]
+        },
+        "speaker_notes": "This is the 'aha' moment for most audiences. They're competing against portfolios, not products."
+      },
+      {
+        "slide_number": 6,
+        "type": "feature",
+        "title": "Confidence Calibration",
+        "content": {
+          "headline": "Know exactly how much to trust each insight",
+          "levels": [
+            {
+              "level": "High",
+              "color": "green",
+              "meaning": "Verified against official databases (NSF, FDA) or multiple sources"
+            },
+            {
+              "level": "Medium",
+              "color": "yellow",
+              "meaning": "Single reliable trade publication or press release"
+            },
+            {
+              "level": "Low",
+              "color": "red",
+              "meaning": "Inference or unverified company announcement"
+            }
+          ],
+          "key_point": "Third-party sources prioritized over company PR"
+        },
+        "speaker_notes": "Executives love this. It's honest about what we know vs. what we're inferring."
+      },
+      {
+        "slide_number": 7,
+        "type": "demo_preview",
+        "title": "What You'll See Today",
+        "content": {
+          "demos": [
+            {"number": 1, "title": "BU Deep Dive", "description": "Drains quarterly analysis with output walkthrough"},
+            {"number": 2, "title": "Digital Innovation", "description": "Wilkins smart valve technology tracking"},
+            {"number": 3, "title": "Source Transparency", "description": "Drinking Water NSF certification verification"},
+            {"number": 4, "title": "Healthcare Focus", "description": "Sinks infection control innovation monitoring"},
+            {"number": 5, "title": "Platform Competition", "description": "Commercial Brass Sloan Connect analysis"},
+            {"number": 6, "title": "Enterprise View", "description": "Cross-BU synthesis and executive briefing"}
+          ]
+        },
+        "speaker_notes": "Set expectations for the demo. Ask which areas are most interesting."
+      },
+      {
+        "slide_number": 8,
+        "type": "value",
+        "title": "Business Value Summary",
+        "content": {
+          "value_props": [
+            {
+              "challenge": "Time",
+              "before": "2-3 weeks",
+              "after": "Hours",
+              "improvement": "Automated data gathering with human review"
+            },
+            {
+              "challenge": "Consistency",
+              "before": "5 methods",
+              "after": "1 standard",
+              "improvement": "Unified framework with confidence calibration"
+            },
+            {
+              "challenge": "Coordination",
+              "before": "Blindspots",
+              "after": "Full visibility",
+              "improvement": "Automatic parent company tracking"
+            },
+            {
+              "challenge": "Quality",
+              "before": "Manual QA",
+              "after": "Automated",
+              "improvement": "Orchestrator validates all outputs"
+            },
+            {
+              "challenge": "Executive Ready",
+              "before": "Manual rollup",
+              "after": "On demand",
+              "improvement": "CEO briefings generated automatically"
+            }
+          ]
+        },
+        "speaker_notes": "Tie back to the three challenges from the opening. Show how each is addressed."
+      },
+      {
+        "slide_number": 9,
+        "type": "deployment",
+        "title": "Deployment Options",
+        "content": {
+          "tiers": [
+            {
+              "tier": "Core",
+              "components": "5 BU Agents",
+              "use_case": "BU-level competitive intelligence",
+              "price_indicator": "$"
+            },
+            {
+              "tier": "Plus",
+              "components": "5 BU Agents + Synthesizer",
+              "use_case": "Enterprise view with cross-BU patterns",
+              "price_indicator": "$$"
+            },
+            {
+              "tier": "Enterprise",
+              "components": "Full 7-Agent System",
+              "use_case": "Complete automation with QA and scheduling",
+              "price_indicator": "$$$"
+            }
+          ]
+        },
+        "speaker_notes": "Most customers start with Core or Plus, then expand. Enterprise includes orchestration."
+      },
+      {
+        "slide_number": 10,
+        "type": "next_steps",
+        "title": "Next Steps",
+        "content": {
+          "steps": [
+            {"number": 1, "title": "Today", "description": "Live demo of all 7 agents"},
+            {"number": 2, "title": "This Week", "description": "Share recording and detailed documentation"},
+            {"number": 3, "title": "Next Week", "description": "Technical deep-dive with your IT/Data team"},
+            {"number": 4, "title": "30 Days", "description": "Pilot deployment with 1-2 BUs and real data"}
+          ]
+        },
+        "speaker_notes": "Be specific about timeline. Ask about decision-makers and budget cycles."
+      },
+      {
+        "slide_number": 11,
+        "type": "closing",
+        "title": "Questions?",
+        "content": {
+          "contact": {
+            "name": "[Your Name]",
+            "email": "[Your Email]",
+            "phone": "[Your Phone]"
+          },
+          "resources": {
+            "demo_recording": "Will be shared post-meeting",
+            "technical_docs": "Available upon request",
+            "pilot_proposal": "Ready when you are"
+          }
+        },
+        "speaker_notes": "Open for questions. Have backup slides ready for technical deep-dives."
+      }
+    ],
+    "backup_slides": [
+      {
+        "slide_number": "B1",
+        "type": "technical",
+        "title": "Technical Architecture Detail",
+        "content": "Detailed Python implementation, Azure Functions, API structure"
+      },
+      {
+        "slide_number": "B2",
+        "type": "integration",
+        "title": "Integration Options",
+        "content": "Power BI, Salesforce, SharePoint, Data Warehouse connectors"
+      },
+      {
+        "slide_number": "B3",
+        "type": "security",
+        "title": "Security & Compliance",
+        "content": "Data handling, access controls, audit trails"
+      },
+      {
+        "slide_number": "B4",
+        "type": "roadmap",
+        "title": "Future Enhancements",
+        "content": "Real-time alerts, additional data sources, mobile app"
+      }
+    ]
+  },
+  "generation_instructions": {
+    "tool": "powerpoint_generator_agent",
+    "style": "professional",
+    "color_scheme": "corporate_blue",
+    "fonts": {
+      "title": "Segoe UI Semibold",
+      "body": "Segoe UI"
+    },
+    "notes": "Generate with RAPP powerpoint_generator_agent using: agent.perform('generate_presentation', config=this_json)"
+  }
+}

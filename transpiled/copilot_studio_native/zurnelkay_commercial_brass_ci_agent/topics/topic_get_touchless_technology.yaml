@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_touchless_technology
+displayName: Get Touchless Technology
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_touchless_technology
+  triggerQueries:
+  - get touchless technology
+  - run get touchless technology
+  - execute get touchless technology
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get touchless technology'

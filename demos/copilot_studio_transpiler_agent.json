@@ -1,0 +1,43 @@
+{
+  "name": "CopilotStudioTranspiler",
+  "display_name": "Copilot Studio Native Transpiler",
+  "description": "Converts RAPP Python agents to fully native Copilot Studio solutions that run without a Function App backend.",
+  "agent_file": "agents/copilot_studio_transpiler_agent.py",
+  "class_name": "CopilotStudioTranspilerAgent",
+  "category": "Development",
+  "tags": ["transpiler", "copilot-studio", "migration", "no-code"],
+  "capabilities": [
+    "transpile - Convert RAPP agent to Copilot Studio format",
+    "analyze - Analyze agent and recommend mapping strategy",
+    "preview - Preview what would be generated",
+    "validate - Check if agent can be fully transpiled",
+    "list_connectors - Show available connector mappings",
+    "batch_transpile - Convert multiple agents at once",
+    "package - Create downloadable ZIP solution"
+  ],
+  "sample_prompts": [
+    "Analyze the carrier_case_analyzer agent for Copilot Studio",
+    "Transpile the zurnelkay_drains_ci_agent to Copilot Studio",
+    "Batch transpile all zurnelkay agents",
+    "Create a package for the zurnelkay_drains_ci_agent",
+    "List available connector mappings",
+    "What connectors are supported for transpilation?"
+  ],
+  "output": {
+    "location": "transpiled/copilot_studio_native/{agent_name}/",
+    "files": [
+      "agent_manifest.json - Copilot Studio agent definition",
+      "instructions.md - System prompt and guidelines",
+      "topics/*.yaml - Topic definitions for intents",
+      "flows/*.json - Power Automate cloud flows",
+      "DEPLOYMENT_GUIDE.md - Step-by-step deployment"
+    ]
+  },
+  "connector_mappings": {
+    "cosmos_db": "Microsoft Dataverse",
+    "salesforce": "Salesforce connector",
+    "sharepoint": "SharePoint connector", 
+    "azure_openai": "Native Generative AI",
+    "outlook": "Office 365 Outlook connector"
+  }
+}

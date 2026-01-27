@@ -1,0 +1,22 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: 'Hello! I''m the zurnelkay_drains_ci_agent. Drains Competitive Intelligence
+    Agent for Zurn Elkay.
+
+
+    Provides quarterly competitive analysis for:
+
+    - Core Spec Drains
+
+    - Siteworks (Division 22 & 33)
+
+    - FOG Separation
+
+
+    Monitors competitors and flags p How can I help you today?'

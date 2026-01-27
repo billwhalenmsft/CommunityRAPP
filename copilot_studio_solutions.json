@@ -1,0 +1,42 @@
+{
+  "solutions": {
+    "zurnelkay_competitive_intelligence": {
+      "name": "zurnelkay_competitive_intelligence",
+      "display_name": "Zurn Elkay Competitive Intelligence",
+      "description": "Multi-agent competitive intelligence system for Zurn Elkay with orchestrated BU-specific agents and cross-BU synthesis capabilities.",
+      "publisher": "RAPP",
+      "version": "1.0.0",
+      "agents": [
+        "zurnelkay_ci_orchestrator_agent",
+        "zurnelkay_drains_ci_agent",
+        "zurnelkay_drinking_water_ci_agent",
+        "zurnelkay_sinks_ci_agent",
+        "zurnelkay_commercial_brass_ci_agent",
+        "zurnelkay_wilkins_ci_agent",
+        "zurnelkay_crossbu_synthesizer_agent"
+      ],
+      "created_at": "2026-01-27T09:40:01.115243",
+      "updated_at": "2026-01-27T09:56:40.787180",
+      "deployments": [
+        {
+          "environment_url": "https://org6feab6b5.crm.dynamics.com",
+          "deployed_at": "2026-01-27T09:45:42.697361",
+          "agents_deployed": 0,
+          "agents_failed": 7
+        },
+        {
+          "environment_url": "https://org6feab6b5.crm.dynamics.com",
+          "deployed_at": "2026-01-27T09:46:41.772589",
+          "agents_deployed": 0,
+          "agents_failed": 7
+        },
+        {
+          "environment_url": "https://org6feab6b5.crm.dynamics.com",
+          "deployed_at": "2026-01-27T09:56:40.819745",
+          "agents_deployed": 7,
+          "agents_failed": 0
+        }
+      ]
+    }
+  }
+}

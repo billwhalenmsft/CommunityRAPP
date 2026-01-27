@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_prioritize_enterprise_signals
+displayName: Prioritize Enterprise Signals
+triggers:
+- kind: OnRecognizedIntent
+  intent: prioritize_enterprise_signals
+  triggerQueries:
+  - prioritize enterprise signals
+  - run prioritize enterprise signals
+  - execute prioritize enterprise signals
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_prioritize_enterprise_signals
+  inputs:
+    action: prioritize_enterprise_signals
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

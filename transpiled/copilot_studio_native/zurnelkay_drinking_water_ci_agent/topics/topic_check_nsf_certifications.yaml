@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_check_nsf_certifications
+displayName: Check Nsf Certifications
+triggers:
+- kind: OnRecognizedIntent
+  intent: check_nsf_certifications
+  triggerQueries:
+  - check nsf certifications
+  - run check nsf certifications
+  - execute check nsf certifications
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_check_nsf_certifications
+  inputs:
+    action: check_nsf_certifications
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

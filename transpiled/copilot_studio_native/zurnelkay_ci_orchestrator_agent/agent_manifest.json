@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.2",
+  "name": "zurnelkay_ci_orchestrator_agent",
+  "displayName": "Zurnelkay Ci Orchestrator Agent",
+  "description": "Level 0 Orchestrator for Zurn Elkay Competitive Intelligence System.\n\nResponsibilities:\n- Coordinate execution of all 5 BU agents\n- Manage the Synthesizer agent\n- Perform quality assurance validation\n- Handle errors and retries gracefully\n- Produce audit logs and system status\n- Execute quarterly and on-demand workflows",
+  "icon": "robot",
+  "primaryLanguage": "en-US",
+  "isGenerativeActionsEnabled": true,
+  "isOrchestrationEnabled": true,
+  "knowledgeSources": [],
+  "instructions": "See instructions.md for full agent instructions.",
+  "capabilities": {
+    "generativeAnswers": true,
+    "powerAutomateFlows": false,
+    "customConnectors": false
+  },
+  "topics": [],
+  "metadata": {
+    "source": "RAPP Transpiler",
+    "transpiled_at": "2026-01-26T16:24:09.254216",
+    "original_agent": "ZurnElkayCIOrchestratorAgent"
+  }
+}

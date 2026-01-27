@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zurn Elkay CI - Copilot Studio Demo Guide</title>
+    <style>
+        :root {
+            --primary: #0078d4;
+            --primary-dark: #106ebe;
+            --success: #107c10;
+            --warning: #ffb900;
+            --danger: #d83b01;
+            --bg-light: #f5f5f5;
+            --bg-prompt: #e8f4fd;
+            --border: #d1d1d1;
+            --text: #323130;
+            --text-light: #605e5c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: #fff;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        header .meta {
+            margin-top: 20px;
+            font-size: 0.95em;
+            opacity: 0.85;
+        }
+        
+        .toc {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .toc h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 10px;
+        }
+        
+        .toc a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: block;
+            transition: background 0.2s;
+        }
+        
+        .toc a:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .toc .time {
+            color: var(--text-light);
+            font-size: 0.85em;
+        }
+        
+        section {
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        section h2 {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            font-size: 1.4em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        section h2 .duration {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: normal;
+        }
+        
+        .section-content {
+            padding: 25px;
+        }
+        
+        h3 {
+            color: var(--primary-dark);
+            margin: 25px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--bg-light);
+        }
+        
+        h3:first-child {
+            margin-top: 0;
+        }
+        
+        .talking-point {
+            background: #fff8e5;
+            border-left: 4px solid var(--warning);
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+        
+        .talking-point::before {
+            content: "🎤 Say:";
+            display: block;
+            font-weight: 600;
+            font-style: normal;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .prompt-box {
+            background: var(--bg-prompt);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .prompt-box::before {
+            content: "💬 Type this prompt:";
+            display: block;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        
+        .prompt-text {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.05em;
+            color: var(--text);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .prompt-text:hover {
+            border-color: var(--primary);
+        }
+        
+        .prompt-text::after {
+            content: "📋 Click to copy";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75em;
+            color: var(--text-light);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .prompt-text:hover::after {
+            opacity: 1;
+        }
+        
+        .prompt-text.copied::after {
+            content: "✓ Copied!";
+            color: var(--success);
+            opacity: 1;
+        }
+        
+        .expected-response {
+            background: #f0fff0;
+            border-left: 4px solid var(--success);
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .expected-response::before {
+            content: "✅ Expected Response:";
+            display: block;
+            font-weight: 600;
+            color: var(--success);
+            margin-bottom: 8px;
+        }
+        
+        .expected-response ul {
+            margin-left: 20px;
+        }
+        
+        .expected-response li {
+            margin: 5px 0;
+        }
+        
+        .tip {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success);
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .tip::before {
+            content: "💡 Tip:";
+            display: block;
+            font-weight: 600;
+            color: var(--success);
+            margin-bottom: 5px;
+        }
+        
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid var(--danger);
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning::before {
+            content: "⚠️ Note:";
+            display: block;
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 5px;
+        }
+        
+        .diagram {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            white-space: pre;
+            margin: 15px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--bg-light);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #fafafa;
+        }
+        
+        .checklist {
+            list-style: none;
+            margin: 15px 0;
+        }
+        
+        .checklist li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .checklist li::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 1.2em;
+        }
+        
+        .agent-card {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .agent-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .agent-badge {
+            background: var(--primary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: normal;
+        }
+        
+        .qna {
+            margin: 20px 0;
+        }
+        
+        .qna details {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .qna summary {
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            background: var(--bg-light);
+        }
+        
+        .qna summary:hover {
+            background: #e8e8e8;
+        }
+        
+        .qna .answer {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+        
+        .quick-prompts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .quick-prompt {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-prompt:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,120,212,0.15);
+        }
+        
+        .quick-prompt .label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .quick-prompt .text {
+            color: var(--text);
+            font-size: 0.95em;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+        
+        @media print {
+            body {
+                max-width: 100%;
+                padding: 10px;
+            }
+            
+            section {
+                break-inside: avoid;
+            }
+            
+            .prompt-text::after {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 25px;
+            }
+            
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-prompts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏭 Zurn Elkay Competitive Intelligence</h1>
+        <div class="subtitle">Copilot Studio / M365 Copilot Demo Guide</div>
+        <div class="meta">
+            <strong>Duration:</strong> 30-45 minutes &nbsp;|&nbsp;
+            <strong>Audience:</strong> VP Strategy, BU GMs, Product Managers, CI Team
+        </div>
+    </header>
+
+    <nav class="toc">
+        <h2>📋 Demo Flow</h2>
+        <div class="toc-grid">
+            <a href="#pre-demo">Pre-Demo Checklist</a>
+            <a href="#opening">Opening <span class="time">(2 min)</span></a>
+            <a href="#architecture">Architecture Overview <span class="time">(3 min)</span></a>
+            <a href="#drains">Drains BU Deep Dive <span class="time">(8 min)</span></a>
+            <a href="#wilkins">Wilkins Digital Focus <span class="time">(5 min)</span></a>
+            <a href="#drinking">Drinking Water Sources <span class="time">(4 min)</span></a>
+            <a href="#sinks">Sinks Healthcare <span class="time">(4 min)</span></a>
+            <a href="#brass">Commercial Brass <span class="time">(5 min)</span></a>
+            <a href="#synthesizer">Cross-BU Synthesis <span class="time">(5 min)</span></a>
+            <a href="#closing">Closing & Q&A <span class="time">(3 min)</span></a>
+            <a href="#quick-ref">Quick Reference Prompts</a>
+            <a href="#recovery">Recovery Paths</a>
+        </div>
+    </nav>
+
+    <section id="pre-demo">
+        <h2>Pre-Demo Checklist</h2>
+        <div class="section-content">
+            <ul class="checklist">
+                <li>Copilot Studio environment open with ZE CI Orchestrator agent</li>
+                <li>Verify agent shows "Ready" status in Test pane</li>
+                <li>Sub-agents configured (Drains, Wilkins, Drinking Water, Sinks, Commercial Brass, Synthesizer)</li>
+                <li>Browser zoom set to appropriate level for screen sharing</li>
+                <li>Have this guide open on second monitor or printed</li>
+                <li>Demo recovery files ready (pre-generated responses)</li>
+            </ul>
+            
+            <div class="tip">
+                Test the orchestrator with a simple prompt before the demo: "What agents do you have available?"
+            </div>
+        </div>
+    </section>
+
+    <section id="opening">
+        <h2>Opening <span class="duration">2 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                Today I'm going to show you how we've built a competitive intelligence system specifically designed for Zurn Elkay's multi-BU structure.
+                <br><br>
+                The system addresses three challenges you mentioned:
+                <br><br>
+                <strong>1. Time</strong> - Your CI analysts spend weeks manually gathering data<br>
+                <strong>2. Consistency</strong> - Each BU does CI differently, making roll-ups difficult<br>
+                <strong>3. Coordination blindspots</strong> - You're missing when competitors like Watts or Morris Group make coordinated moves across their portfolios
+                <br><br>
+                Let me show you how we solve each of these.
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture">
+        <h2>Architecture Overview <span class="duration">3 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                First, let me explain how the system is structured. We have a three-level architecture with specialized agents for each business unit.
+            </div>
+            
+            <div class="diagram">┌─────────────────────────────────────────────────────────────────┐
+│               LEVEL 0: CI ORCHESTRATOR                          │
+│   • Coordinates all agents • Validates quality • Manages QA     │
+│   • Executes quarterly workflows • Handles errors & retries     │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│               LEVEL 2: CROSS-BU SYNTHESIZER                     │
+│   • Aggregates 5 BU reports • Detects cross-BU patterns        │
+│   • Generates executive briefings • Parent company analysis     │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────┬─────────┼─────────┬─────────┐
+        ▼         ▼         ▼         ▼         ▼
+┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
+│ DRAINS  │ │ WILKINS │ │DRINKING │ │  SINKS  │ │COMMERCIAL│
+│   CI    │ │   CI    │ │ WATER   │ │   CI    │ │  BRASS   │
+│  Agent  │ │  Agent  │ │   CI    │ │  Agent  │ │   CI     │
+└─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘
+   JR Smith   Watts       Elkay       Just Mfg    Sloan
+   Watts      Caleffi     Oasis       T&S Brass   Kohler
+   MiFab      Honeywell   Halsey      Kohler      Bradley
+   Schier     Apollo      3M/Cuno     Bradley     TOTO</div>
+
+            <div class="talking-point">
+                Each BU has its own dedicated agent that knows:
+                <br><br>
+                • The specific competitors in that category<br>
+                • Which parent companies own those competitors<br>
+                • What signals matter most - certifications, product launches, leadership changes<br>
+                • The trade publications and data sources relevant to that space
+                <br><br>
+                This is NOT a generic CI tool. It's purpose-built for your business.
+            </div>
+
+            <h3>Parent Companies Tracked</h3>
+            <table>
+                <tr>
+                    <th>Parent Company</th>
+                    <th>BUs Affected</th>
+                </tr>
+                <tr>
+                    <td><strong>Watts Water Technologies</strong></td>
+                    <td>Drains, Wilkins, Drinking Water, Commercial Brass</td>
+                </tr>
+                <tr>
+                    <td><strong>Morris Group</strong></td>
+                    <td>Sinks, Commercial Brass</td>
+                </tr>
+                <tr>
+                    <td><strong>Lixil</strong></td>
+                    <td>Commercial Brass, Sinks</td>
+                </tr>
+                <tr>
+                    <td><strong>Geberit</strong></td>
+                    <td>Commercial Brass, Drains</td>
+                </tr>
+                <tr>
+                    <td><strong>Aalberts</strong></td>
+                    <td>Wilkins</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+    <section id="drains">
+        <h2>Section 2: Drains BU Deep Dive <span class="duration">8 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                Let me show you the Drains agent in action. I'll ask for a quarterly competitive analysis.
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Run a quarterly competitive intelligence analysis for the Drains business unit
+                </div>
+            </div>
+
+            <div class="expected-response">
+                <ul>
+                    <li><strong>Report Type:</strong> Quarterly Competitive Intelligence</li>
+                    <li><strong>Business Unit:</strong> Drains</li>
+                    <li><strong>Product Families:</strong> Core Spec Drains, Siteworks, FOG Separation with product launches</li>
+                    <li><strong>Top 3 Significant Changes:</strong> Prioritized competitive moves with confidence levels</li>
+                    <li><strong>Implications:</strong> Near-term and mid-term strategic implications</li>
+                </ul>
+            </div>
+
+            <div class="talking-point">
+                Notice a few things about this output:
+                <br><br>
+                <strong>1. Highlights by Product Family</strong> - Core Spec Drains, Siteworks, FOG Separation each get their own analysis. The agent knows your category structure.
+                <br><br>
+                <strong>2. Top 3 Significant Changes</strong> - These are prioritized by signal importance, not just recency. A certification change might matter more than a press release.
+                <br><br>
+                <strong>3. Confidence Calibration</strong> - See how each item has 'high', 'medium', or 'low' confidence? We're honest about what we know vs. what we're inferring.
+            </div>
+
+            <h3>Parent Company Coordination</h3>
+            <div class="talking-point">
+                Now let me show you something your current process probably misses. Let's check for coordinated moves by Watts Water Technologies across their drain brands.
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Check for coordinated competitive activity by Watts Water Technologies in the Drains space. Look at all their brands including Josam, Wade, and Blucher.
+                </div>
+            </div>
+
+            <div class="expected-response">
+                <ul>
+                    <li><strong>Parent Company:</strong> Watts Water Technologies</li>
+                    <li><strong>Brands Monitored:</strong> Watts, Josam, Ames, Febco, Powers, Bradley, Haws</li>
+                    <li><strong>Signals:</strong> Recent coordinated activity across Watts brands</li>
+                    <li><strong>Coordination Patterns:</strong> Similar product launches, shared technology</li>
+                </ul>
+            </div>
+
+            <div class="talking-point">
+                See this? Josam, Wade, Blucher - they're all Watts. When you see similar product launches or shared technology across these brands, that's not coincidence. That's portfolio strategy. The system flags these patterns automatically.
+            </div>
+        </div>
+    </section>
+
+    <section id="wilkins">
+        <h2>Section 3: Wilkins Digital Focus <span class="duration">5 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                Each BU agent is specialized. Let me show you Wilkins, which has a particular focus on digital and smart valve technology.
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    What digital innovations and smart valve technology are our competitors developing in the Wilkins space?
+                </div>
+            </div>
+
+            <div class="expected-response">
+                <ul>
+                    <li><strong>Digital Category:</strong> Smart Water Control</li>
+                    <li><strong>Innovations:</strong> List of digital features by competitor</li>
+                    <li><strong>Feature Comparison Matrix:</strong> Bluetooth, cloud, mobile app capabilities</li>
+                    <li><strong>Market Assessment:</strong> Analysis of digital adoption trends</li>
+                </ul>
+            </div>
+
+            <div class="talking-point">
+                The Wilkins agent tracks:<br><br>
+                • Which competitors have Bluetooth connectivity<br>
+                • Who has cloud dashboards<br>
+                • Mobile app capabilities<br>
+                • Building management system integration
+                <br><br>
+                It even gives you a feature comparison matrix. This is the kind of competitive tracking that would take your team days to compile manually.
+            </div>
+
+            <h3>Deep Dive: Watts as a Competitor</h3>
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Give me a comprehensive competitive analysis of Watts in the backflow prevention and PRV market
+                </div>
+            </div>
+
+            <div class="talking-point">
+                Because Watts is a portfolio player with coordinated strategy, we don't just analyze Watts as a single competitor. We analyze their portfolio strategy - brand consolidation, digital platform investments, healthcare vertical focus. This is the context your PMs need.
+            </div>
+        </div>
+    </section>
+
+    <section id="drinking">
+        <h2>Section 4: Drinking Water - Source Transparency <span class="duration">4 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                You mentioned that your executives want to know WHERE the intelligence comes from. Let me show you the Drinking Water agent.
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    What NSF certifications have our drinking water competitors received recently? Include the sources for each certification.
+                </div>
+            </div>
+
+            <div class="expected-response">
+                <ul>
+                    <li><strong>Certifications:</strong> List with competitor, certification type, date</li>
+                    <li><strong>Sources:</strong> NSF database links, verification URLs</li>
+                    <li><strong>Confidence:</strong> High, Medium, or Low for each item</li>
+                </ul>
+            </div>
+
+            <div class="talking-point">
+                Every certification is verified against the official NSF database. Every product launch is sourced to a trade publication or press release. Every leadership change has a LinkedIn or company announcement reference.
+                <br><br>
+                We prioritize third-party sources over company PR. When we only have company sources, confidence is marked as 'medium' or 'low'.
+            </div>
+
+            <h3>Executive Report with Sources</h3>
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Generate an executive briefing for the Drinking Water business unit. Make sure to include all sources at the end.
+                </div>
+            </div>
+
+            <div class="talking-point">
+                The executive report explicitly lists sources at the bottom. Your VPs can trust this isn't just scraped marketing content.
+            </div>
+        </div>
+    </section>
+
+    <section id="sinks">
+        <h2>Section 5: Sinks - Healthcare Focus <span class="duration">4 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                Let me show you how the Sinks agent handles the healthcare vertical, which I know is strategic for you.
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    What healthcare-specific innovations are our competitors launching in the sinks market? Focus on antimicrobial, touchless, and infection control features.
+                </div>
+            </div>
+
+            <div class="expected-response">
+                <ul>
+                    <li><strong>Segment:</strong> Healthcare Sinks</li>
+                    <li><strong>Innovations:</strong> Antimicrobial features, touchless, infection control</li>
+                    <li><strong>Active Competitors:</strong> Just Manufacturing, Bradley, T&S Brass</li>
+                </ul>
+            </div>
+
+            <div class="talking-point">
+                The agent tracks:<br><br>
+                • Antimicrobial surface innovations<br>
+                • Touchless and infection control features<br>
+                • FDA and healthcare facility requirements
+                <br><br>
+                And critically - it watches Morris Group coordination.
+            </div>
+
+            <h3>Morris Group Coordination</h3>
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Check for coordinated activity between Just Manufacturing and T&S Brass. They're both owned by Morris Group - are they bundling solutions?
+                </div>
+            </div>
+
+            <div class="talking-point">
+                Morris owns Just Manufacturing AND T&S Brass. When Just launches a healthcare sink with T&S faucetry integration, that's a coordinated bundled solution play. Your reps need to know they're competing against packages, not products.
+            </div>
+        </div>
+    </section>
+
+    <section id="brass">
+        <h2>Section 6: Commercial Brass - Platform Competition <span class="duration">5 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                Finally, let me show you the Commercial Brass agent, where there's a major strategic shift happening.
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    What platform and connected restroom solutions are Sloan and Kohler launching? I want to understand their shift from products to platforms.
+                </div>
+            </div>
+
+            <div class="expected-response">
+                <ul>
+                    <li><strong>Platform Launches:</strong> Sloan Connect, Kohler Portfolio</li>
+                    <li><strong>Business Model Shift:</strong> Hardware + SaaS subscription analysis</li>
+                    <li><strong>Strategic Implications:</strong> Platform vs. product competition</li>
+                </ul>
+            </div>
+
+            <div class="talking-point">
+                Sloan and Kohler have both launched enterprise restroom management platforms. This isn't just product competition anymore - it's platform competition.
+                <br><br>
+                The agent tracks these platform moves specifically because they represent a different kind of competitive threat.
+            </div>
+
+            <h3>Sloan Deep Dive</h3>
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Give me a strategic analysis of Sloan. I want to understand their platform strategy, not just their product lineup.
+                </div>
+            </div>
+
+            <div class="talking-point">
+                When you ask about Sloan, you don't get a product list. You get a platform strategy analysis:
+                <br><br>
+                • What's in Sloan Connect<br>
+                • What's the business model (hardware + SaaS subscription)<br>
+                • What talent are they hiring (Honeywell building automation experts)<br>
+                • What this means for your competitive position
+                <br><br>
+                This is the kind of strategic context that changes how you plan, not just react.
+            </div>
+        </div>
+    </section>
+
+    <section id="synthesizer">
+        <h2>Section 7: Cross-BU Synthesis <span class="duration">5 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                Now let me show you the real power - the ability to see across ALL business units simultaneously.
+            </div>
+
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Generate a quarterly synthesis report across all five business units. I want to see cross-BU patterns and enterprise-level competitive signals.
+                </div>
+            </div>
+
+            <div class="expected-response">
+                <ul>
+                    <li><strong>Enterprise Summary:</strong> High-level cross-BU overview</li>
+                    <li><strong>Cross-BU Patterns:</strong> Patterns invisible to individual BUs</li>
+                    <li><strong>Top 5 Enterprise Signals:</strong> Portfolio-level prioritized signals</li>
+                    <li><strong>BU Reports:</strong> Aggregated data from all 5 BUs</li>
+                </ul>
+            </div>
+
+            <div class="talking-point">
+                The Synthesizer:<br><br>
+                1. <strong>Aggregates</strong> all five BU reports into a single enterprise view<br>
+                2. <strong>Identifies cross-BU patterns</strong> - Is Watts making coordinated moves across Drains AND Wilkins AND Commercial Brass?<br>
+                3. <strong>Prioritizes portfolio-level signals</strong> - What matters most for Zurn Elkay as a whole?
+            </div>
+
+            <h3>Executive Briefing</h3>
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Create a CEO-ready executive briefing with the top findings and strategic recommendations. Keep it concise.
+                </div>
+            </div>
+
+            <div class="talking-point">
+                This is CEO-ready. Drop it straight into your quarterly strategy review.
+            </div>
+
+            <h3>Parent Company Deep Dive</h3>
+            <div class="prompt-box">
+                <div class="prompt-text" onclick="copyPrompt(this)">
+                    Show me everything Watts Water Technologies is doing across ALL our business units. I want to see their full competitive footprint.
+                </div>
+            </div>
+
+            <div class="talking-point">
+                Want to know what Watts is doing across your entire competitive landscape? One question gives you:<br><br>
+                • All BUs where Watts competes<br>
+                • Combined signals across all their brands<br>
+                • Coordination patterns suggesting enterprise strategy
+            </div>
+        </div>
+    </section>
+
+    <section id="closing">
+        <h2>Closing: Value Summary <span class="duration">3 minutes</span></h2>
+        <div class="section-content">
+            <div class="talking-point">
+                Let me recap what this system does for you:
+            </div>
+
+            <table>
+                <tr>
+                    <th>Challenge</th>
+                    <th>Solution</th>
+                </tr>
+                <tr>
+                    <td><strong>Time</strong></td>
+                    <td>Weeks → Hours. Automated data gathering with human review</td>
+                </tr>
+                <tr>
+                    <td><strong>Consistency</strong></td>
+                    <td>All 5 BUs use same framework, same confidence calibration</td>
+                </tr>
+                <tr>
+                    <td><strong>Coordination Blindspots</strong></td>
+                    <td>Parent company tracking: Watts, Morris, Lixil, Geberit, Aalberts</td>
+                </tr>
+                <tr>
+                    <td><strong>Source Quality</strong></td>
+                    <td>Third-party prioritized, every item attributed</td>
+                </tr>
+                <tr>
+                    <td><strong>Executive Ready</strong></td>
+                    <td>BU reports + enterprise synthesis ready for distribution</td>
+                </tr>
+                <tr>
+                    <td><strong>QA Built-In</strong></td>
+                    <td>Orchestrator validates all outputs before delivery</td>
+                </tr>
+            </table>
+
+            <div class="talking-point">
+                Questions?
+            </div>
+        </div>
+    </section>
+
+    <section id="quick-ref">
+        <h2>Quick Reference: All Prompts</h2>
+        <div class="section-content">
+            <h3>Level 1: BU-Specific Prompts</h3>
+            
+            <div class="agent-card">
+                <h4>🚿 Drains <span class="agent-badge">Level 1</span></h4>
+                <div class="quick-prompts">
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Quarterly Analysis</div>
+                        <div class="text">Run a quarterly competitive intelligence analysis for the Drains business unit</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Parent Company</div>
+                        <div class="text">Check for coordinated competitive activity by Watts Water Technologies in the Drains space</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Product Launches</div>
+                        <div class="text">What new drain products have competitors launched in the past quarter?</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agent-card">
+                <h4>🔧 Wilkins <span class="agent-badge">Level 1</span></h4>
+                <div class="quick-prompts">
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Digital Innovation</div>
+                        <div class="text">What digital innovations and smart valve technology are our competitors developing in the Wilkins space?</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Watts Analysis</div>
+                        <div class="text">Give me a comprehensive competitive analysis of Watts in the backflow prevention and PRV market</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Certifications</div>
+                        <div class="text">What certification changes have occurred for backflow preventers and pressure regulators?</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agent-card">
+                <h4>💧 Drinking Water <span class="agent-badge">Level 1</span></h4>
+                <div class="quick-prompts">
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">NSF Certifications</div>
+                        <div class="text">What NSF certifications have our drinking water competitors received recently? Include sources.</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Executive Report</div>
+                        <div class="text">Generate an executive briefing for the Drinking Water business unit with all sources</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Public Sector</div>
+                        <div class="text">What public sector and K-12 wins have our drinking water competitors announced?</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agent-card">
+                <h4>🏥 Sinks <span class="agent-badge">Level 1</span></h4>
+                <div class="quick-prompts">
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Healthcare Innovations</div>
+                        <div class="text">What healthcare-specific innovations are our competitors launching in the sinks market?</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Morris Group</div>
+                        <div class="text">Check for coordinated activity between Just Manufacturing and T&S Brass (Morris Group)</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">ADA Compliance</div>
+                        <div class="text">What ADA compliance updates are affecting our sinks competitors?</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agent-card">
+                <h4>🚽 Commercial Brass <span class="agent-badge">Level 1</span></h4>
+                <div class="quick-prompts">
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Platform Launches</div>
+                        <div class="text">What platform and connected restroom solutions are Sloan and Kohler launching?</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Sloan Strategy</div>
+                        <div class="text">Give me a strategic analysis of Sloan's platform strategy, not just their products</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Touchless Tech</div>
+                        <div class="text">What touchless technology innovations are happening in commercial restrooms?</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Level 2: Cross-BU Synthesis</h3>
+            <div class="agent-card">
+                <h4>📊 Synthesizer <span class="agent-badge">Level 2</span></h4>
+                <div class="quick-prompts">
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Quarterly Synthesis</div>
+                        <div class="text">Generate a quarterly synthesis report across all five business units with cross-BU patterns</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Executive Briefing</div>
+                        <div class="text">Create a CEO-ready executive briefing with top findings and strategic recommendations</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Watts Footprint</div>
+                        <div class="text">Show me everything Watts Water Technologies is doing across ALL our business units</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Competitive Pressure</div>
+                        <div class="text">Compare the competitive pressure across all five BUs - which BU is under the most threat?</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Level 0: Orchestrator Commands</h3>
+            <div class="agent-card">
+                <h4>🎛️ Orchestrator <span class="agent-badge">Level 0</span></h4>
+                <div class="quick-prompts">
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">System Status</div>
+                        <div class="text">What's the current status of all agents in the CI system?</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Quarterly Workflow</div>
+                        <div class="text">Run the complete quarterly CI workflow for Q4 2025</div>
+                    </div>
+                    <div class="quick-prompt" onclick="copyPrompt(this.querySelector('.text'))">
+                        <div class="label">Parent Company Alert</div>
+                        <div class="text">Run a parent company intelligence alert for Watts Water Technologies</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="recovery">
+        <h2>Demo Recovery Paths</h2>
+        <div class="section-content">
+            <h3>If the agent doesn't respond as expected:</h3>
+            <div class="warning">
+                Try rephrasing the prompt to be more specific about the business unit or use simpler language.
+            </div>
+            
+            <table>
+                <tr>
+                    <th>Issue</th>
+                    <th>Recovery</th>
+                </tr>
+                <tr>
+                    <td>Agent seems confused about which BU</td>
+                    <td>Add "for the [Drains/Wilkins/etc.] business unit" to your prompt</td>
+                </tr>
+                <tr>
+                    <td>Response is too generic</td>
+                    <td>Ask a follow-up: "Can you be more specific about competitor names and dates?"</td>
+                </tr>
+                <tr>
+                    <td>Missing sources</td>
+                    <td>Follow up with: "Include the sources for each of those findings"</td>
+                </tr>
+                <tr>
+                    <td>Agent times out</td>
+                    <td>Say: "Let me show you the structure of what this produces" and describe the expected output</td>
+                </tr>
+            </table>
+
+            <h3>If customer asks for feature not built:</h3>
+            <div class="talking-point">
+                That's on our roadmap. Let me show you what we have today, and we can discuss timeline for that enhancement.
+            </div>
+
+            <h3>If customer wants to see their actual competitors:</h3>
+            <div class="talking-point">
+                We've loaded simulated data that mirrors your competitive landscape. In production deployment, we'd configure the exact competitors your team identifies and connect to your preferred data sources.
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Anticipated Questions & Answers</h2>
+        <div class="section-content">
+            <div class="qna">
+                <details>
+                    <summary>"How do we keep the competitor lists current?"</summary>
+                    <div class="answer">
+                        The agents have configurable competitor dictionaries. When you acquire a competitor or a new player emerges, it's a simple configuration update - no code changes needed. We'd recommend a quarterly review of the competitor lists.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>"What if we want to add a data source?"</summary>
+                    <div class="answer">
+                        The agents are designed to integrate with additional APIs. We've stubbed in trade publication searches - adding PM Engineer, Supply House Times, or your own internal databases is straightforward integration work.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>"How does this integrate with Power BI / our existing dashboards?"</summary>
+                    <div class="answer">
+                        Every agent returns structured data. That data can feed directly into Power BI, your data warehouse, or any BI tool. We can also generate CSV exports if that's your preferred format.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>"What about real-time alerts vs. quarterly reports?"</summary>
+                    <div class="answer">
+                        The system supports both. Quarterly is the batch mode we've shown. The same agents can be triggered on-demand or connected to RSS feeds for real-time monitoring. The architecture supports both use cases.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>"How confident should we be in the intelligence?"</summary>
+                    <div class="answer">
+                        That's exactly why we built confidence calibration in. High confidence = verified against official databases or multiple sources. Medium = single reliable source. Low = inference or unverified. Your team knows exactly what weight to give each item.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>"Can we customize the signal priorities?"</summary>
+                    <div class="answer">
+                        Absolutely. Right now, certifications and product launches are typically Priority 1-2, leadership changes are Priority 3. But if certifications matter more to Wilkins than to Drains, we can tune that per-BU.
+                    </div>
+                </details>
+                
+                <details>
+                    <summary>"What's the difference between Level 0, 1, and 2?"</summary>
+                    <div class="answer">
+                        Level 1 agents are the source of truth for each BU - they own the data. Level 2 (Synthesizer) aggregates and finds cross-BU patterns. Level 0 (Orchestrator) manages the workflow and quality control. Each level has a distinct responsibility.
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>
+            <strong>Zurn Elkay Competitive Intelligence System</strong><br>
+            Demo Version 1.0 | Last Updated: January 27, 2026
+        </p>
+        <p style="margin-top: 10px;">
+            💡 Click any prompt to copy it to clipboard
+        </p>
+    </footer>
+
+    <script>
+        function copyPrompt(element) {
+            const text = element.textContent || element.innerText;
+            navigator.clipboard.writeText(text.trim()).then(() => {
+                element.classList.add('copied');
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // Make quick-prompt cards copyable too
+        document.querySelectorAll('.quick-prompt').forEach(card => {
+            card.addEventListener('click', function() {
+                const textEl = this.querySelector('.text');
+                if (textEl) {
+                    copyPrompt(textEl);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

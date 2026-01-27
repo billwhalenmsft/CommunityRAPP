@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_certification_changes
+displayName: Get Certification Changes
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_certification_changes
+  triggerQueries:
+  - get certification changes
+  - run get certification changes
+  - execute get certification changes
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get certification changes'

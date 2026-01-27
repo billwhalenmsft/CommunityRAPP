@@ -1,0 +1,223 @@
+{
+  "agent": {
+    "id": "zurnelkay_wilkins_ci_agent",
+    "name": "Wilkins Competitive Intelligence",
+    "version": "1.0.0",
+    "category": "competitive-intelligence",
+    "icon": "fa-faucet-drip",
+    "description": "Quarterly competitive intelligence agent for Zurn Elkay Wilkins business unit. Covers Backflow Prevention, PRVs (Pressure Reducing Valves), and TMVs (Thermostatic Mixing Valves). Monitors Watts portfolio as primary threat and tracks certification/standards activity.",
+    "tokens": 2400,
+    "author": "Zurn Elkay CI Team",
+    "customer": "Zurn Elkay",
+    "business_unit": "Wilkins",
+    "created": "2026-01-23",
+    "updated": "2026-01-23"
+  },
+  "metadata": {
+    "name": "WilkinsCIAgent",
+    "description": "Authoritative competitive intelligence interpreter for Wilkins category. Monitors Backflow Prevention, PRVs, and TMVs. Treats Watts Water Technologies moves as portfolio-level strategy signals.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "run_quarterly_analysis",
+            "analyze_competitor",
+            "check_parent_company_coordination",
+            "get_signal_summary",
+            "search_trade_publications",
+            "get_certification_changes",
+            "get_digital_innovation",
+            "get_leadership_changes",
+            "generate_bu_report"
+          ],
+          "description": "The competitive intelligence action to perform"
+        },
+        "competitor": {
+          "type": "string",
+          "description": "Specific competitor to analyze (e.g., 'Watts', 'Caleffi', 'Apollo')"
+        },
+        "parent_company": {
+          "type": "string",
+          "enum": ["Watts Water Technologies", "Aalberts", "Reliance", "A.O. Smith"],
+          "description": "Parent company to check for coordinated moves"
+        },
+        "product_family": {
+          "type": "string",
+          "enum": ["backflow", "prvs", "tmvs"],
+          "description": "Product family to focus analysis on"
+        },
+        "time_period": {
+          "type": "string",
+          "enum": ["last_quarter", "last_90_days", "last_6_months", "ytd"],
+          "description": "Time period for analysis (default: last_quarter)"
+        },
+        "query": {
+          "type": "string",
+          "description": "Search query for trade publications"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "scope": {
+    "product_families": {
+      "backflow": {
+        "description": "Backflow prevention devices and assemblies for potable water protection",
+        "primary_competitors": ["Watts (Watts WWT)", "Ames (Watts WWT)", "Febco (Watts WWT)", "Powers (Watts WWT)"],
+        "secondary_competitors": ["Apollo (Aalberts)", "Beeco (MiFab)"]
+      },
+      "prvs": {
+        "description": "Pressure Reducing Valves for commercial and residential applications",
+        "primary_competitors": ["Watts (WWT)", "Cash Acme (Reliance)", "Caleffi", "Apollo (Aalberts)"],
+        "secondary_competitors": []
+      },
+      "tmvs": {
+        "description": "Thermostatic Mixing Valves for scald protection and temperature control",
+        "primary_competitors": ["Watts (WWT)", "Powers (WWT)", "Bradley (WWT)", "Leonard (A.O. Smith)", "Lawler", "Armstrong"],
+        "secondary_competitors": []
+      }
+    }
+  },
+  "parent_company_mapping": {
+    "Watts Water Technologies": ["Watts", "Ames", "Febco", "Powers", "Bradley", "Josam", "Haws"],
+    "Aalberts": ["Apollo", "Lasco"],
+    "Reliance": ["Cash Acme"],
+    "A.O. Smith": ["Leonard"]
+  },
+  "signal_priorities": [
+    {
+      "priority": 1,
+      "signal": "Certification or standards changes",
+      "description": "ASSE, CSA, NSF certifications; code adoptions; regulatory compliance updates",
+      "confidence_boost": true
+    },
+    {
+      "priority": 2,
+      "signal": "Digital / monitoring / control features",
+      "description": "Smart valve technology, IoT integration, remote monitoring, predictive maintenance",
+      "confidence_boost": true
+    },
+    {
+      "priority": 3,
+      "signal": "Senior engineering, product, or regulatory hires",
+      "description": "Key personnel moves that signal strategic direction",
+      "confidence_boost": false
+    },
+    {
+      "priority": 4,
+      "signal": "Platform convergence across brands",
+      "description": "Watts WWT consolidating multiple brands into unified platforms",
+      "confidence_boost": true
+    },
+    {
+      "priority": 5,
+      "signal": "Partnerships, acquisitions, GTM shifts",
+      "description": "Strategic alliances, M&A activity, distribution changes",
+      "confidence_boost": false
+    }
+  ],
+  "ignore_signals": [
+    "Incremental mechanical SKUs unless tied to compliance",
+    "Routine price adjustments",
+    "Minor packaging or documentation updates"
+  ],
+  "confidence_calibration": {
+    "high": {
+      "criteria": "Primary source + third-party corroboration",
+      "examples": ["ASSE database + trade publication", "SEC filing with analyst coverage", "Code body announcement"]
+    },
+    "medium": {
+      "criteria": "Primary source only, or reputable secondary source",
+      "examples": ["Company press release alone", "Trade publication without company confirmation"]
+    },
+    "low": {
+      "criteria": "Indirect, inferred, or weakly substantiated",
+      "examples": ["LinkedIn observation", "Unconfirmed industry rumor", "Marketing claim without certification proof"]
+    }
+  },
+  "source_preference": {
+    "rule": "When third-party source exists, cross-reference and blend perspectives with preference to third-party framing",
+    "third_party_sources": [
+      "PM Engineer",
+      "Plumbing & Mechanical",
+      "PHCP Pros",
+      "Contractor Magazine",
+      "ASSE Newsletter",
+      "IAPMO Updates"
+    ],
+    "primary_sources": [
+      "Company press releases",
+      "SEC filings (10-K, 10-Q, 8-K)",
+      "Investor presentations",
+      "Company websites"
+    ],
+    "standards_bodies": [
+      "ASSE (American Society of Sanitary Engineering)",
+      "IAPMO",
+      "CSA",
+      "NSF International",
+      "UPC/IPC code updates"
+    ]
+  },
+  "actions": [
+    {
+      "name": "run_quarterly_analysis",
+      "description": "Execute full quarterly competitive intelligence analysis across all Wilkins product families",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "run_quarterly_analysis", "time_period": "last_quarter" },
+        "output": "**🔍 Wilkins Competitive Intelligence - Q4 2025**\n\n**HIGHLIGHTS BY PRODUCT FAMILY:**\n\n**Backflow Prevention:**\n• Watts announced ASSE 1013 certification for new reduced pressure zone assembly (High confidence)\n• Apollo (Aalberts) launched compact double-check valve targeting retrofit market\n• Febco brand architecture change: products now appearing under 'Watts Backflow' umbrella\n\n**PRVs:**\n• Caleffi introduced digital PRV with Bluetooth monitoring capability (High confidence)\n• Cash Acme (Reliance) received NSF/ANSI 61 certification for lead-free line expansion\n\n**TMVs:**\n• Powers (Watts) + Bradley coordinated healthcare TMV solution launch\n• Leonard (A.O. Smith) hired former Watts regulatory affairs director\n\n**TOP 3 MOST SIGNIFICANT CHANGES:**\n1. Watts WWT digital valve strategy: Bluetooth/IoT across backflow and PRV lines\n2. Caleffi aggressive digital positioning challenges Watts smart valve dominance\n3. Watts brand consolidation: Febco → Watts Backflow migration accelerating\n\n**IMPLICATIONS:**\n• Near-term: Digital/smart valve features becoming table stakes for spec\n• Mid-term: Watts consolidation may create rep/distributor disruption opportunities"
+      }
+    },
+    {
+      "name": "analyze_competitor",
+      "description": "Deep dive analysis on a specific competitor",
+      "parameters": ["competitor", "time_period"],
+      "example": {
+        "input": { "action": "analyze_competitor", "competitor": "Watts", "time_period": "last_quarter" },
+        "output": "**📊 Watts (Watts Water Technologies) - Q4 2025 Analysis**\n\n**Parent Company:** Watts Water Technologies (NYSE: WTS)\n**Relevant Brands:** Watts, Ames, Febco, Powers, Bradley\n\n**PORTFOLIO-LEVEL STRATEGY SIGNALS:**\n\n1. **Brand Consolidation** (High confidence)\n   • Febco products migrating to 'Watts Backflow' branding\n   • Ames maintaining separate identity for now\n   Sources: WTS Q3 earnings call, Supply House Times\n\n2. **Digital/IoT Push** (High confidence)\n   • Connected Products division revenue +18% YoY\n   • New Bluetooth-enabled backflow assemblies\n   Sources: WTS 10-Q, PM Engineer coverage\n\n3. **Healthcare Focus** (Medium confidence)\n   • Powers + Bradley coordinated TMV launches\n   • Joint marketing targeting hospital bathroom renovations\n   Source: Watts press release only\n\n**FINANCIAL INDICATORS:**\n• Water Safety segment revenue: $XXM (+X% YoY)\n• R&D spend increase noted in 10-K\n• Inventory build suggesting new product launches\n\n**STRATEGIC INTERPRETATION:**\nWatts executing three-pronged strategy: (1) brand simplification, (2) digital differentiation, (3) vertical market focus. Wilkins faces pressure on smart valve features and healthcare positioning."
+      }
+    },
+    {
+      "name": "get_certification_changes",
+      "description": "Track certification and standards changes affecting the category",
+      "parameters": ["product_family", "time_period"],
+      "example": {
+        "input": { "action": "get_certification_changes", "product_family": "backflow" },
+        "output": "**📜 Backflow Certification & Standards Update - Q4 2025**\n\n**NEW CERTIFICATIONS:**\n| Competitor | Standard | Product | Date | Confidence |\n|------------|----------|---------|------|------------|\n| Watts | ASSE 1013 | 009M3 Series | Nov 2025 | High |\n| Apollo | ASSE 1015 | 4A-500 | Oct 2025 | High |\n\n**CODE UPDATES:**\n• California adopting stricter backflow testing requirements (2026 effective)\n• IAPMO UPC Amendment A-2025: New provisions for reduced pressure zones\n\n**PENDING CERTIFICATIONS:**\n• Beeco (MiFab) - ASSE 1013 application in progress (Low confidence - industry rumor)\n\n**IMPLICATION:**\nCertification velocity at Watts suggests dedicated regulatory resources. California code change creates retrofit opportunity."
+      }
+    },
+    {
+      "name": "get_digital_innovation",
+      "description": "Track digital, IoT, and smart product developments",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "get_digital_innovation" },
+        "output": "**🔌 Digital Innovation Tracker - Wilkins Competitors**\n\n**SMART VALVE DEVELOPMENTS:**\n\n1. **Caleffi** - Digital PRV with Bluetooth (High confidence)\n   • Mobile app for pressure monitoring\n   • Predictive maintenance alerts\n   • Targeting facility managers\n   Source: Caleffi press + PHCP Pros review\n\n2. **Watts** - Connected Backflow Platform (High confidence)\n   • Cloud-based test record management\n   • Automated compliance reporting\n   • Integration with building management systems\n   Source: Watts investor day, PM Engineer\n\n3. **Apollo** - Evaluating IoT partnership (Low confidence)\n   • LinkedIn posting for IoT product manager\n   • No official announcement\n\n**DIGITAL FEATURE COMPARISON:**\n| Feature | Caleffi | Watts | Wilkins Gap? |\n|---------|---------|-------|-------------|\n| Bluetooth | ✓ | ✓ | Assess |\n| Cloud Dashboard | ○ | ✓ | Priority |\n| Mobile App | ✓ | ✓ | Assess |\n| BMS Integration | ○ | ✓ | Priority |"
+      }
+    },
+    {
+      "name": "generate_bu_report",
+      "description": "Generate formatted BU report for GM/PM distribution",
+      "parameters": ["time_period"],
+      "example": {
+        "input": { "action": "generate_bu_report", "time_period": "last_quarter" },
+        "output": "**WILKINS COMPETITIVE INTELLIGENCE REPORT**\n**Q4 2025 | Prepared for GM/PM Review**\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n**EXECUTIVE SUMMARY**\nWatts Water Technologies continues portfolio consolidation while accelerating digital/smart valve capabilities. Caleffi emerging as credible digital challenger. Standards activity elevated with California code changes creating market dynamics.\n\n**KEY STRATEGIC OBSERVATION**\nWatts treating their valve portfolio as an integrated platform play - brand consolidation + digital features + healthcare vertical focus. This is coordinated enterprise strategy, not BU-level tactical moves.\n\n**HIGHLIGHTS BY PRODUCT FAMILY**\n[Detailed breakout]\n\n**TOP 3 MOST SIGNIFICANT CHANGES**\n1. Watts digital platform maturity exceeds market (High confidence)\n2. Caleffi Bluetooth PRV challenges price/feature assumptions (High confidence)\n3. Febco → Watts brand migration affecting rep relationships (Medium confidence)\n\n**POTENTIAL IMPLICATIONS**\n• Near-term: Spec pressure on digital monitoring features\n• Mid-term: Watts brand consolidation creates distributor relationship opportunities\n\n**WATCH LIST FOR NEXT QUARTER**\n• Watts Q4 earnings (Feb) - digital revenue breakout\n• California code implementation timeline\n• Apollo IoT product announcement (if any)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      }
+    }
+  ],
+  "output_template": {
+    "required_sections": [
+      "highlights_by_product_family",
+      "top_3_significant_changes",
+      "potential_implications",
+      "confidence_ratings",
+      "sources"
+    ],
+    "implication_timeframes": ["near_term", "mid_term"],
+    "source_format": "Numbered list with third-party preference indicated"
+  },
+  "systemPrompt": "You are the Wilkins Competitive Intelligence Agent for Zurn Elkay Water Solutions. Your role is to be the authoritative interpreter of competitive activity in the Wilkins category, covering Backflow Prevention, PRVs (Pressure Reducing Valves), and TMVs (Thermostatic Mixing Valves).\n\n**CRITICAL RULES:**\n1. You are a LEVEL 1 domain agent - do NOT try to infer enterprise-wide themes\n2. Always cite sources - no uncited claims ever\n3. Prefer fewer, higher-signal items over comprehensive noise\n4. Treat Watts Water Technologies moves as portfolio-level strategy - they coordinate across brands\n5. Marketing-only claims without external corroboration = Medium or Low confidence\n6. Certification and standards changes are HIGH PRIORITY signals\n\n**CONFIDENCE CALIBRATION:**\n- High: Primary source + third-party corroboration (especially ASSE/code body + trade pub)\n- Medium: Primary source only, or reputable secondary\n- Low: Indirect, inferred, or weakly substantiated\n\n**INTERPRETATION DISCIPLINE:**\nFor each significant finding, explicitly separate:\n1. What happened (fact)\n2. Why it matters (context)\n3. What it could mean for Wilkins (implication - label speculation)\n\n**SPECIAL FOCUS: DIGITAL/SMART VALVES**\nThis is a rapidly evolving competitive dimension. Track:\n- Bluetooth/IoT capabilities\n- Mobile apps and dashboards\n- Cloud connectivity and BMS integration\n- Predictive maintenance features\n\n**IGNORE:** Incremental mechanical SKUs (unless compliance-tied), routine pricing, documentation updates.\n\n**PRIMARY COMPETITORS:**\n- Backflow: Watts, Ames, Febco, Powers (all Watts WWT), Apollo (Aalberts), Beeco\n- PRVs: Watts, Cash Acme (Reliance), Caleffi, Apollo\n- TMVs: Watts, Powers, Bradley (Watts WWT), Leonard (A.O. Smith), Lawler, Armstrong\n\n**PARENT COMPANY COORDINATION FLAGS:**\n- Watts Water Technologies: Multiple brands, watch for platform consolidation\n- Aalberts: Apollo + Lasco coordination\n\nYour output feeds the Cross-BU Synthesizer - keep findings domain-specific and well-sourced."
+}

@@ -1,0 +1,28 @@
+digraph "RAPP Platform Architecture" {
+	graph [bgcolor=white fontcolor="#2D3436" fontname="Sans-Serif" fontsize=15 label="RAPP Platform Architecture" nodesep=0.60 pad=0.5 rankdir=LR ranksep=0.75 splines=spline]
+	node [fixedsize=true fontcolor="#2D3436" fontname="Sans-Serif" fontsize=12 height=1.4 imagescale=true labelloc=b shape=box style=rounded width=1.4]
+	edge [color="#7B8894" fontsize=10]
+	subgraph "cluster_Presentation Layer" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Presentation Layer" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"78d7e950868a4763848539777f2fa2e3" [label="Web UI" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/web\app-services.png" shape=none]
+	}
+	subgraph "cluster_Compute Layer" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Compute Layer" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"5437a35781614e879aeef85b509308ca" [label="RAPP Core" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/compute\function-apps.png" shape=none]
+	}
+	subgraph "cluster_AI Services" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="AI Services" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		cae16a64f5fc4ecdbf8272893b7bdf7c [label="Azure OpenAI" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/ml\cognitive-services.png" shape=none]
+	}
+	subgraph "cluster_Data Layer" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Data Layer" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"62776d4de96a4cbd8757c000213233aa" [label="Cosmos DB" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/database\cosmos-db.png" shape=none]
+		"99e834b50e1e4f6eac70c3c8bd34834a" [label="Blob Storage" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/storage\blob-storage.png" shape=none]
+	}
+	d594bf34c0aa4ce8af473cbef858791f [label=User height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/onprem/client\users.png" shape=none]
+	d594bf34c0aa4ce8af473cbef858791f -> "78d7e950868a4763848539777f2fa2e3" [label=HTTPS dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"78d7e950868a4763848539777f2fa2e3" -> "5437a35781614e879aeef85b509308ca" [label="REST API" dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"5437a35781614e879aeef85b509308ca" -> cae16a64f5fc4ecdbf8272893b7bdf7c [label="Chat Completion" dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"5437a35781614e879aeef85b509308ca" -> "62776d4de96a4cbd8757c000213233aa" [label=State dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"5437a35781614e879aeef85b509308ca" -> "99e834b50e1e4f6eac70c3c8bd34834a" [label=Documents dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+}

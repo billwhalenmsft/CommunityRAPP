@@ -1,0 +1,12 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: "Hello! I'm the zurnelkay_ci_orchestrator_agent. Level 0 Orchestrator for\
+    \ Zurn Elkay Competitive Intelligence System.\n\nResponsibilities:\n- Coordinate\
+    \ execution of all 5 BU agents\n- Manage the Synthesizer agent\n- Perform quality\
+    \ assurance validation\n How can I help you today?"

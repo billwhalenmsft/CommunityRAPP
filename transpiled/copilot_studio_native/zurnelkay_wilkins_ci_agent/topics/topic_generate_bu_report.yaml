@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_generate_bu_report
+displayName: Generate Bu Report
+triggers:
+- kind: OnRecognizedIntent
+  intent: generate_bu_report
+  triggerQueries:
+  - generate bu report
+  - run generate bu report
+  - execute generate bu report
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_generate_bu_report
+  inputs:
+    action: generate_bu_report
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

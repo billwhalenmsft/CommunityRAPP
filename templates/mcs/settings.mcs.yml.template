@@ -1,0 +1,50 @@
+# Copilot Studio MCS Template - Agent Settings
+# This file configures authentication, channels, and AI settings
+
+displayName: ${AGENT_NAME}
+schemaName: ${SCHEMA_NAME}
+
+# Authentication mode: Integrated, CustomAzureAD, or None
+authenticationMode: Integrated
+
+# GPT Settings - links to the agent.mcs.yml
+gPTSettings:
+  defaultSchemaName: ${SCHEMA_NAME}.gpt.default
+
+# AI Settings - control generative AI behavior
+# CRITICAL: These settings determine if the agent can use AI for queries that don't match topics
+aISettings:
+  # REQUIRED: Enable AI to use general knowledge for unmatched queries
+  # Without this, agents will say "Sorry, I am not able to find a related topic"
+  useModelKnowledge: true
+  # Enable semantic search across knowledge sources
+  isSemanticSearchEnabled: true
+  # Enable file analysis for document processing
+  isFileAnalysisEnabled: true
+  # Content moderation level: Low, Medium, High
+  contentModeration: Medium
+  # Use latest AI models when available
+  optInUseLatestModels: true
+  # Enable generative answers for conversational coverage
+  generativeAnswersEnabled: true
+  # Enable boosted conversations for better AI responses
+  boostedConversationsEnabled: true
+
+# Orchestration settings
+settings:
+  # Use generative orchestration for better query handling
+  orchestrationType: Generative
+
+# Channels - where the agent can be accessed
+channels:
+  - channelId: MsTeams
+  # Add more channels as needed:
+  # - channelId: DirectLine
+  # - channelId: WebChat
+
+# Analytics settings
+analyticsSettings:
+  roiCalculation:
+    currencyCode: USD
+    savedCost: 149
+    savedTimeInSeconds: 600

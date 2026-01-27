@@ -1,0 +1,16 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: 'Hello! I''m the zurnelkay_wilkins_ci_agent. Wilkins Competitive Intelligence
+    Agent for Zurn Elkay.
+
+
+    Monitors Backflow Prevention, PRVs, and TMVs.
+
+    Special focus on digital/smart valve technology and certification changes. How
+    can I help you today?'

@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_ada_compliance_updates
+displayName: Get Ada Compliance Updates
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_ada_compliance_updates
+  triggerQueries:
+  - get ada compliance updates
+  - run get ada compliance updates
+  - execute get ada compliance updates
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get ada compliance updates'

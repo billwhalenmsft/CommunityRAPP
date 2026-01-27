@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.2",
+  "name": "zurnelkay_crossbu_synthesizer_agent",
+  "displayName": "Zurnelkay Crossbu Synthesizer Agent",
+  "description": "Cross-BU CI Synthesizer for Zurn Elkay.\n\nAggregates intelligence from all 5 BU agents and identifies\nportfolio-level patterns invisible to individual BUs.",
+  "icon": "robot",
+  "primaryLanguage": "en-US",
+  "isGenerativeActionsEnabled": true,
+  "isOrchestrationEnabled": true,
+  "knowledgeSources": [],
+  "instructions": "See instructions.md for full agent instructions.",
+  "capabilities": {
+    "generativeAnswers": false,
+    "powerAutomateFlows": true,
+    "customConnectors": false
+  },
+  "topics": [
+    "topic_synthesize_quarterly_report",
+    "topic_detect_cross_bu_patterns",
+    "topic_generate_executive_briefing",
+    "topic_prioritize_enterprise_signals",
+    "topic_compare_bu_competitive_pressure",
+    "topic_get_parent_company_summary",
+    "topic_get_all_bu_reports"
+  ],
+  "metadata": {
+    "source": "RAPP Transpiler",
+    "transpiled_at": "2026-01-26T16:24:09.385375",
+    "original_agent": "ZurnElkayCrossbuSynthesizerAgent"
+  }
+}

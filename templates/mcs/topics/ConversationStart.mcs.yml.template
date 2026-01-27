@@ -1,0 +1,24 @@
+# Copilot Studio MCS Template - Conversation Start Topic
+# This is the ONLY system topic that should remain active
+# It initializes conversation variables when a new conversation begins
+
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    # Initialize conversation history for context tracking
+    - kind: SetVariable
+      id: setVariable_initHistory
+      variable: Global.VarConversationHistory
+      value: "\"[]\""
+
+    # Optional: Send a welcome message
+    # Comment out if you want silent initialization
+    - kind: SendActivity
+      id: sendMessage_welcome
+      activity:
+        text:
+          - "Hello! I'm ${AGENT_NAME}. How can I help you today?"
+        speak:
+          - "Hello! How can I help you?"

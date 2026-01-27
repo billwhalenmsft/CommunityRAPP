@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.2",
+  "name": "carrier_case_analyzer",
+  "displayName": "Carrier Case Analyzer",
+  "description": "Analyzes case text to extract key information using AI.\n\nExtraction capabilities:\n- Issue type classification\n- Urgency/severity detection\n- Product identification (models, serial numbers)\n- Symptom extraction\n- Customer sentiment analysis\n- Key entity extraction (locations, contacts, dates)\n\nDemo Mode: Returns intelligent mock analysis\nProduction: Uses Azure OpenAI GPT-4o for extraction",
+  "icon": "robot",
+  "primaryLanguage": "en-US",
+  "isGenerativeActionsEnabled": true,
+  "isOrchestrationEnabled": true,
+  "knowledgeSources": [],
+  "instructions": "See instructions.md for full agent instructions.",
+  "capabilities": {
+    "generativeAnswers": true,
+    "powerAutomateFlows": false,
+    "customConnectors": false
+  },
+  "topics": [],
+  "metadata": {
+    "source": "RAPP Transpiler",
+    "transpiled_at": "2026-01-26T16:15:45.903178",
+    "original_agent": "CarrierCaseAnalyzerAgent"
+  }
+}

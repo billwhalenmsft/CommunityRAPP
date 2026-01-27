@@ -1,0 +1,35 @@
+digraph "RAPP Platform Architecture" {
+	graph [bgcolor=white dpi=300 fontcolor="#2D3436" fontname="Segoe UI Semibold" fontsize=18 label="RAPP Platform Architecture" nodesep=1.2 pad=1.0 rankdir=LR ranksep=1.5 splines=ortho]
+	node [fixedsize=true fontcolor="#2D3436" fontname="Segoe UI" fontsize=14 height=1.4 imagescale=true labelloc=b shape=box style=rounded width=1.4]
+	edge [color="#0078D4" fontname="Segoe UI" fontsize=12 penwidth=2.0]
+	subgraph "cluster_API Gateway" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="API Gateway" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		f9f7231284b44c9087218dfa605d9320 [label="API Management" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/integration\api-management.png" shape=none]
+	}
+	subgraph "cluster_Compute Layer" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Compute Layer" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"04f4bb621fe049fdb59a9acb7fc80a57" [label="RAPP Core" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/compute\function-apps.png" shape=none]
+	}
+	subgraph "cluster_AI Services" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="AI Services" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"51977393fb68437c83574202690d4f22" [label="Azure OpenAI" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/ml\cognitive-services.png" shape=none]
+	}
+	subgraph "cluster_Data Layer" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Data Layer" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"1e4deb4e0a4d49f188efce2cdf5a9698" [label="Cosmos DB" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/database\cosmos-db.png" shape=none]
+		"6fcb55ac86db4bd1a076c3a80283c447" [label="Blob Storage" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/storage\blob-storage.png" shape=none]
+	}
+	subgraph cluster_Security {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label=Security labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"969f34a4c7de4ae689d52f99b25f6821" [label="Key Vault" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/azure/security\key-vaults.png" shape=none]
+	}
+	b52cf3a46d274125808905fb33a13d0f [label=User height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/onprem/client\users.png" shape=none]
+	"2f1824b93c1c4919bbef8c016ef8355b" [label="MS Teams" height=1.9 image="C:\Users\billwhalen\AppData\Roaming\Python\Python314\site-packages\resources/saas/chat\teams.png" shape=none]
+	b52cf3a46d274125808905fb33a13d0f -> "2f1824b93c1c4919bbef8c016ef8355b" [label=Chat dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"2f1824b93c1c4919bbef8c016ef8355b" -> f9f7231284b44c9087218dfa605d9320 [label=Webhook dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	f9f7231284b44c9087218dfa605d9320 -> "04f4bb621fe049fdb59a9acb7fc80a57" [label=REST dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"04f4bb621fe049fdb59a9acb7fc80a57" -> "51977393fb68437c83574202690d4f22" [label=Completion dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"04f4bb621fe049fdb59a9acb7fc80a57" -> "1e4deb4e0a4d49f188efce2cdf5a9698" [label=State dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"04f4bb621fe049fdb59a9acb7fc80a57" -> "6fcb55ac86db4bd1a076c3a80283c447" [label=Files dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"04f4bb621fe049fdb59a9acb7fc80a57" -> "969f34a4c7de4ae689d52f99b25f6821" [label=Secrets dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+}
