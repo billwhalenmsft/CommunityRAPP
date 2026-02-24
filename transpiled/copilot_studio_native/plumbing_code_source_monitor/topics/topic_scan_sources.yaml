@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_scan_sources
+displayName: Scan Sources
+triggers:
+- kind: OnRecognizedIntent
+  intent: scan_sources
+  triggerQueries:
+  - scan sources
+  - run scan sources
+  - execute scan sources
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_scan_sources
+  inputs:
+    action: scan_sources
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

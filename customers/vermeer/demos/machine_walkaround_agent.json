@@ -1,0 +1,261 @@
+{
+  "agent": {
+    "id": "machine_walkaround_agent",
+    "name": "Machine Walkaround",
+    "version": "1.0.0",
+    "category": "field-operations",
+    "icon": "fa-camera",
+    "description": "AI-powered machine walkaround inspection assistant for Vermeer Manufacturing. Uses Azure OpenAI Vision to analyze equipment photos, identify components, detect wear/damage, and guide pre-operation inspections.",
+    "tokens": 1500,
+    "author": "RAPP Pipeline",
+    "created": "2026-02-18",
+    "updated": "2026-02-18",
+    "customer": "Vermeer Manufacturing",
+    "customer_url": "https://www.vermeer.com/na"
+  },
+  "metadata": {
+    "name": "MachineWalkaround",
+    "description": "AI-powered machine walkaround inspection assistant for Vermeer equipment. Analyzes photos using Azure OpenAI Vision to identify components, detect wear/damage, guide inspections, and answer equipment questions. Supports trenchers, brush chippers, stump cutters, and horizontal directional drills.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["analyze_image", "start_inspection", "inspect_checkpoint", "get_checklist", "identify_component", "check_wear", "read_label", "compare_condition", "get_machine_info", "generate_report"],
+          "description": "The walkaround action to perform"
+        },
+        "image_base64": {
+          "type": "string",
+          "description": "Base64-encoded image from camera"
+        },
+        "question": {
+          "type": "string",
+          "description": "User question about the image or machine"
+        },
+        "machine_type": {
+          "type": "string",
+          "enum": ["trencher", "chipper", "stump_cutter", "horizontal_directional_drill"],
+          "description": "Type of Vermeer machine"
+        },
+        "machine_model": {
+          "type": "string",
+          "description": "Specific model number (e.g., S925TX)"
+        },
+        "inspection_type": {
+          "type": "string",
+          "enum": ["pre_operation", "post_operation", "maintenance"],
+          "description": "Type of inspection"
+        },
+        "checkpoint_id": {
+          "type": "string",
+          "description": "Inspection checkpoint ID"
+        }
+      },
+      "required": ["action"]
+    }
+  },
+  "actions": [
+    {
+      "name": "analyze_image",
+      "description": "General-purpose image analysis — send a photo of any machine component and get AI analysis",
+      "parameters": ["image_base64", "question", "machine_type"],
+      "example": {
+        "input": { "action": "analyze_image", "question": "What component is this and does it show any wear?", "machine_type": "trencher" },
+        "output": "**Component:** Hydraulic hose assembly (main boom cylinder supply line)\n\n**Condition:** ⚠️ Monitor\n\n**Observations:**\n- Hose shows minor surface weathering but no cracks\n- Fitting at the cylinder end appears tight with no visible seepage\n- Hose routing is clear of pinch points\n- Minor abrasion mark at the midpoint where it contacts the frame bracket\n\n**Recommendation:** Acceptable for operation. Add a hose guard at the frame contact point to prevent further abrasion. Re-check at next 250-hour service."
+      }
+    },
+    {
+      "name": "start_inspection",
+      "description": "Begin a guided walkaround inspection with step-by-step checkpoints",
+      "parameters": ["machine_type", "machine_model", "inspection_type"],
+      "example": {
+        "input": { "action": "start_inspection", "machine_type": "trencher", "machine_model": "S925TX", "inspection_type": "pre_operation" },
+        "output": "# 🔍 Pre-Operation Walkaround\n**Machine:** Vermeer Trencher (S925TX)\n**Session:** insp_20260218_091500\n\n## Inspection Checkpoints (7 items)\n\n### 1. Overall Machine Condition 🔴\n📸 Stand back and take a photo of the entire machine from each side...\n\n### 2. Engine Compartment 🔴\n📸 Open the engine compartment and take a photo..."
+      }
+    },
+    {
+      "name": "inspect_checkpoint",
+      "description": "Submit a photo for a specific inspection checkpoint and get pass/fail assessment",
+      "parameters": ["image_base64", "checkpoint_id", "machine_type", "inspection_type"],
+      "example": {
+        "input": { "action": "inspect_checkpoint", "checkpoint_id": "hydraulic_system", "machine_type": "trencher", "inspection_type": "pre_operation" },
+        "output": "## Checkpoint: Hydraulic System\n\n**Status:** ✅ PASS\n\n**Observations:**\n- All visible hoses in good condition, no bulging or cracks\n- Fittings appear tight, no active leaks\n- Hydraulic fluid reservoir is at proper level (visible in sight glass)\n- Cylinder rods show normal chrome finish, no scoring\n\n**Issues Found:** None\n\n**Confidence:** High"
+      }
+    },
+    {
+      "name": "get_checklist",
+      "description": "View the full inspection checklist for a machine type",
+      "parameters": ["machine_type", "inspection_type"],
+      "example": {
+        "input": { "action": "get_checklist", "machine_type": "chipper", "inspection_type": "pre_operation" },
+        "output": "# 📋 Pre-Operation Walkaround — Vermeer Brush Chipper\n\n1. Overall Machine Condition 🔴 critical\n2. Engine Compartment 🔴 critical\n3. Hydraulic System 🔴 critical\n4. Undercarriage / Tires 🟠 high\n5. Safety Devices & Decals 🔴 critical\n6. Work Attachment / Tool 🟠 high\n7. Operator Station 🟠 high"
+      }
+    },
+    {
+      "name": "identify_component",
+      "description": "Point camera at any component and get identification, function, and inspection guidance",
+      "parameters": ["image_base64", "machine_type", "question"],
+      "example": {
+        "input": { "action": "identify_component", "machine_type": "stump_cutter", "question": "What is this part?" },
+        "output": "**Component:** Cutting Tooth (carbide-tipped)\n\n**Function:** Primary cutting element mounted on the cutting wheel. Carbide tip performs the actual wood cutting while the steel body transfers cutting force.\n\n**Inspection Points:**\n- Check carbide tip for chips or missing pieces\n- Verify tooth is seated fully in pocket\n- Check retaining bolt torque\n- Look for excessive wear on the steel body behind the carbide\n\n**Common Failure:** Carbide tip fracture from striking rocks or metal objects in the stump area. Replace immediately if tip is missing."
+      }
+    },
+    {
+      "name": "check_wear",
+      "description": "Assess wear condition of a component from a photo with condition rating",
+      "parameters": ["image_base64", "machine_type", "question"],
+      "example": {
+        "input": { "action": "check_wear", "machine_type": "trencher", "question": "How are these digging teeth?" },
+        "output": "**Wear Assessment: Digging Teeth**\n\n**Condition:** 🔶 Service Soon\n\n**Observations:**\n- Teeth are approximately 60-70% worn\n- Carbide tips still present but significantly reduced\n- Two teeth on the left side show uneven wear (possible chain alignment issue)\n- No broken or missing teeth observed\n\n**Recommendation:**\n- Plan tooth replacement within the next 20-30 operating hours\n- Check chain tension and alignment — uneven wear suggests possible misalignment\n- Inspect sprocket teeth for matching wear pattern\n- Order replacement teeth: Vermeer Part# [from manual]"
+      }
+    },
+    {
+      "name": "read_label",
+      "description": "OCR — read serial plates, model labels, warning decals, or gauge readings",
+      "parameters": ["image_base64", "question"],
+      "example": {
+        "input": { "action": "read_label", "question": "Read this serial plate" },
+        "output": "**Serial Plate Reading:**\n\n| Field | Value |\n|---|---|\n| Manufacturer | Vermeer Manufacturing |\n| Model | S925TX |\n| Serial No. | 1VRH092RXP1002847 |\n| Year | 2025 |\n| Weight | 9,250 lbs |\n| Engine | Deutz TD2.9 L4 |\n| Power | 74.3 HP |\n\n**Note:** This serial number indicates a 2025 production unit from the Pella, Iowa facility."
+      }
+    },
+    {
+      "name": "get_machine_info",
+      "description": "Get information about Vermeer machine types, models, and components",
+      "parameters": ["machine_type", "machine_model", "question"],
+      "example": {
+        "input": { "action": "get_machine_info", "machine_type": "trencher" },
+        "output": "# 🏗️ Vermeer Trencher\n\n**Models:** S925TX, RTX1250i2, RTX550, RT450\n\n## Key Components\n- Digging chain/boom\n- Teeth and sprockets\n- Hydraulic hoses and fittings\n...\n\n## Common Wear Items\n- ⚠️ Digging teeth\n- ⚠️ Chain links\n- ⚠️ Sprocket teeth\n..."
+      }
+    },
+    {
+      "name": "generate_report",
+      "description": "Generate an inspection summary report for a completed walkaround",
+      "parameters": ["machine_type", "machine_model", "inspection_type", "inspection_session_id"],
+      "example": {
+        "input": { "action": "generate_report", "machine_type": "trencher", "machine_model": "S925TX", "inspection_type": "pre_operation" },
+        "output": "# 📊 Inspection Report\n\n| Field | Value |\n|---|---|\n| Machine | Vermeer Trencher (S925TX) |\n| Inspection | Pre-Operation Walkaround |\n| Date | February 18, 2026 |\n| Checkpoints | 7 |\n\n## Results\n| # | Checkpoint | Status |\n|---|---|---|\n| 1 | Overall Condition | ✅ Pass |\n| 2 | Engine Compartment | ✅ Pass |\n| 3 | Hydraulic System | ⚠️ Caution |"
+      }
+    }
+  ],
+  "useCases": [
+    "Pre-operation daily machine walkaround inspections",
+    "Component identification from camera photos",
+    "Wear and damage assessment with condition ratings",
+    "Serial plate and label OCR reading",
+    "Guided inspection checklists with photo verification",
+    "Maintenance planning based on visual condition",
+    "Inspection report generation with photo documentation",
+    "Field technician knowledge assistance",
+    "Safety hazard identification",
+    "Fleet condition monitoring and trending"
+  ],
+  "integrations": [
+    "Azure OpenAI GPT-4o Vision (image analysis)",
+    "Azure Computer Vision (supplementary OCR)",
+    "Azure AI Search (Vermeer manuals and parts catalogs)",
+    "Copilot Studio (conversation orchestration)",
+    "Power Apps (camera/mobile UI)",
+    "Power Automate (workflow integration)",
+    "Azure Blob Storage (inspection photos)",
+    "Azure Cosmos DB (inspection history)",
+    "Dynamics 365 Field Service (work order creation)"
+  ],
+  "demoConversation": [
+    {
+      "role": "user",
+      "content": "I need to do a pre-operation walkaround on our S925TX trencher."
+    },
+    {
+      "role": "agent",
+      "content": "# 🔍 Pre-Operation Walkaround\n**Machine:** Vermeer Trencher (S925TX)\n**Date:** February 18, 2026 at 9:15 AM\n\n## Inspection Checkpoints (7 items)\n\n### 1. Overall Machine Condition 🔴\n📸 **Stand back and take a photo of the entire machine from each side. Look for obvious damage, fluid puddles underneath, or anything out of place.**\n\n### 2. Engine Compartment 🔴\n📸 **Open the engine compartment and take a photo. Check fluid levels, belt condition, and look for leaks.**\n\n### 3. Hydraulic System 🔴\n📸 **Inspect the hydraulic hoses, fittings, and cylinders.**\n\n...\n\n📱 **How to proceed:** Point your camera at checkpoint #1 and take a photo. Say \"Check the overall condition\" to begin."
+    },
+    {
+      "role": "user",
+      "content": "Here's a photo of the hydraulic hoses. [IMAGE ATTACHED] Do any of these look like they need replacing?"
+    },
+    {
+      "role": "agent",
+      "content": "## Checkpoint: Hydraulic System\n\n**Status:** 🔶 Service Soon\n\n**Observations:**\n- The main pressure hose (top) shows surface cracking consistent with UV exposure and age\n- The return line (bottom) appears in good condition\n- I can see a slight weep at the fitting where the hose connects to the control valve — this is early-stage seepage\n- Hose routing looks correct with no sharp bends or chafe points\n\n**Issues Found:**\n1. 🔶 Main pressure hose surface cracking — plan replacement at next scheduled service\n2. ⚠️ Minor seepage at control valve fitting — monitor daily, tighten fitting if accessible\n\n**Recommendation:**\n- Schedule hose replacement within the next 2 weeks / 50 operating hours\n- Clean the weeping fitting and recheck after 8 hours of operation\n- If seepage worsens to an active drip, shut down and replace immediately\n\n**Confidence:** High — the cracking pattern and seepage are clearly visible in the image."
+    },
+    {
+      "role": "user",
+      "content": "Can you read this serial plate for me? [IMAGE ATTACHED]"
+    },
+    {
+      "role": "agent",
+      "content": "📋 **Serial Plate Reading:**\n\n| Field | Value |\n|---|---|\n| **Manufacturer** | Vermeer Manufacturing Co. |\n| **Model** | S925TX |\n| **Serial Number** | 1VRH092RXP1002847 |\n| **Year** | 2025 |\n| **Gross Weight** | 9,250 lbs (4,196 kg) |\n| **Engine** | Deutz TD2.9 L4 Tier 4 Final |\n| **Net Power** | 74.3 HP (55.4 kW) |\n| **Manufactured** | Pella, Iowa, USA |\n\n**Decoded:** This is a 2025 production S925TX from Vermeer's Pella facility. The 'P' in the serial number indicates 2025 model year. Machine is within standard warranty period."
+    },
+    {
+      "role": "user",
+      "content": "What are the digging teeth supposed to look like when they're new vs when they need replacing?"
+    },
+    {
+      "role": "agent",
+      "content": "# Digging Teeth — Wear Guide (S925TX Trencher)\n\n## New Condition ✅\n- Full carbide tip height (typically 1.5-2 inches exposed)\n- Sharp cutting edges with no rounding\n- Tight fit in tooth pocket, no play\n- Retaining bolt properly torqued\n\n## Monitor ⚠️ (~50% wear)\n- Carbide tip worn to approximately half original height\n- Slight rounding of cutting edges\n- Still effective but reduced cutting efficiency\n- Plan for replacement parts ordering\n\n## Service Soon 🔶 (~70% wear)\n- Carbide tip significantly reduced\n- Noticeable decrease in cutting speed\n- May see uneven wear patterns\n- Order replacement teeth now\n\n## Replace Now 🔴 (>80% wear or damage)\n- Carbide tip nearly flush with steel body\n- Cracked, chipped, or missing carbide\n- Excessive play in tooth pocket\n- Steel body wearing against the rock\n\n**📸 Send me a photo of your teeth and I'll tell you where they fall on this scale!**\n\n**Tip:** Rotate or replace teeth in complete sets to maintain even cutting and chain balance."
+    }
+  ],
+  "sampleScenarios": [
+    {
+      "name": "Daily Pre-Op Walkaround",
+      "description": "Standard daily pre-operation inspection",
+      "prompts": [
+        "Start a pre-operation inspection on the S925TX",
+        "Here's a photo of the engine compartment [IMAGE]",
+        "Check the hydraulic hoses [IMAGE]",
+        "Are these digging teeth still good? [IMAGE]",
+        "Generate my inspection report"
+      ]
+    },
+    {
+      "name": "Component Identification",
+      "description": "Identify unknown components in the field",
+      "prompts": [
+        "What is this component? [IMAGE]",
+        "I see a part that looks damaged, what is it? [IMAGE]",
+        "Read this part number label [IMAGE]",
+        "What's the function of this assembly?"
+      ]
+    },
+    {
+      "name": "Wear Assessment",
+      "description": "Evaluate component wear and remaining life",
+      "prompts": [
+        "How worn are these digging teeth? [IMAGE]",
+        "Does this belt need replacing? [IMAGE]",
+        "Check the track pad condition [IMAGE]",
+        "Is this hydraulic hose safe to use? [IMAGE]"
+      ]
+    },
+    {
+      "name": "Safety Inspection",
+      "description": "Safety-focused equipment check",
+      "prompts": [
+        "Check all the safety decals [IMAGE]",
+        "Is the emergency stop working?",
+        "Are the guards properly installed? [IMAGE]",
+        "Check the ROPS structure [IMAGE]"
+      ]
+    },
+    {
+      "name": "Maintenance Planning",
+      "description": "Use inspection findings to plan maintenance",
+      "prompts": [
+        "Based on my walkaround, what maintenance should I schedule?",
+        "When should I replace these teeth based on the wear I showed you?",
+        "Create a work order for the issues we found",
+        "What parts should I order?"
+      ]
+    }
+  ],
+  "technicalNotes": {
+    "visionModel": "Azure OpenAI GPT-4o (or GPT-4.1/GPT-5) with vision capability",
+    "imageFormat": "Base64-encoded JPEG/PNG/WEBP, max 10MB per image",
+    "detailLevel": "Uses 'high' detail mode for equipment inspection accuracy",
+    "maxImagesPerRequest": 10,
+    "recommendedImageResolution": "1280x960 or higher for component detail",
+    "latency": "Typically 3-8 seconds per image analysis depending on complexity",
+    "costPerImage": "~$0.01-0.03 per image analysis (GPT-4o pricing, high detail mode)",
+    "offlineCapability": "Capture images offline, analyze when connectivity is restored",
+    "enterpriseSecurity": "All data stays within Azure tenant, no consumer API dependency"
+  }
+}

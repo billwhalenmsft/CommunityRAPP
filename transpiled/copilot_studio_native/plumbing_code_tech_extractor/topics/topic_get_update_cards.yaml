@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_update_cards
+displayName: Get Update Cards
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_update_cards
+  triggerQueries:
+  - get update cards
+  - run get update cards
+  - execute get update cards
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get update cards'

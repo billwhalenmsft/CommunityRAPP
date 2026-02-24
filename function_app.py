@@ -574,6 +574,9 @@ class Assistant:
         # Set the default user GUID instead of None
         self.user_guid = DEFAULT_USER_GUID
         
+        # Image data from request (injected for vision-enabled agents)
+        self.image_base64 = None
+        
         self.shared_memory = None
         self.user_memory = None
         self.storage_manager = get_storage_manager()
@@ -1226,6 +1229,11 @@ Revenue's up 12 percent and customers are happier - looking good for Q3.
                 if agent_name in ['ManageMemory', 'ContextMemory']:
                     sanitized_parameters['user_guid'] = self.user_guid
 
+                # Inject image_base64 from request body if the agent expects it
+                # OpenAI can't pass actual base64 data, so we substitute it here
+                if self.image_base64 and 'image_base64' in agent_parameters:
+                    sanitized_parameters['image_base64'] = self.image_base64
+
                 # Always perform agent call - no caching
                 result = agent.perform(**sanitized_parameters)
 
@@ -1440,6 +1448,455 @@ def health_check(req: func.HttpRequest) -> func.HttpResponse:
             headers=cors_headers
         )
 
+
+# =============================================================================
+# EVENT-DRIVEN TRIGGERS
+# =============================================================================
+# These endpoints enable agents to be triggered by external events:
+# - Webhooks from external systems (Salesforce, ServiceNow, etc.)
+# - Timer triggers for scheduled tasks
+# - Manual triggers for testing
+# 
+# Compatible with Copilot Studio event triggers - payloads can be sent
+# TO Copilot Studio agents or received FROM Copilot Studio flows.
+# =============================================================================
+
+# Initialize trigger system
+_trigger_router = None
+_trigger_registry = None
+
+def _get_trigger_system():
+    """Get or initialize the trigger system components"""
+    global _trigger_router, _trigger_registry
+    
+    if _trigger_router is None:
+        try:
+            from utils.triggers import TriggerRouter, TriggerRegistry, get_trigger_registry, get_trigger_router
+            
+            # Initialize registry and load configs
+            _trigger_registry = get_trigger_registry()
+            triggers_dir = os.path.join(os.path.dirname(__file__), 'triggers')
+            if os.path.exists(triggers_dir):
+                _trigger_registry.load_from_directory(triggers_dir)
+            
+            # Initialize router with RAPP agent executor
+            _trigger_router = get_trigger_router()
+            _trigger_router.set_agent_executor(_execute_agent_for_trigger)
+            
+            logging.info(f"Trigger system initialized with {len(_trigger_registry.get_all())} triggers")
+        except Exception as e:
+            logging.error(f"Failed to initialize trigger system: {e}")
+            return None, None
+    
+    return _trigger_router, _trigger_registry
+
+
+def _execute_agent_for_trigger(agent_name: str, action: str, parameters: dict) -> str:
+    """Execute a RAPP agent for a trigger - bridges trigger system to agent execution"""
+    try:
+        agents = _get_cached_agents()
+        
+        if agent_name not in agents:
+            raise ValueError(f"Agent not found: {agent_name}")
+        
+        agent = agents[agent_name]
+        result = agent.perform(**parameters)
+        return str(result)
+    except Exception as e:
+        logging.error(f"Agent execution failed for trigger: {e}")
+        raise
+
+
+@app.route(route="trigger/webhook/{source}", auth_level=func.AuthLevel.FUNCTION, methods=["POST"])
+async def webhook_trigger(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Webhook endpoint for external event triggers.
+    
+    This endpoint receives webhooks from external systems (Salesforce, ServiceNow, etc.)
+    and routes them to the appropriate RAPP agents based on configured triggers.
+    
+    URL Pattern: /api/trigger/webhook/{source}
+    
+    Query Parameters:
+        event (optional): Event type (e.g., "case.created"). Can also be in headers.
+    
+    Headers:
+        X-Event-Type: Event type if not in query params
+        X-Signature: Webhook signature for validation (if configured)
+    
+    Body:
+        JSON payload from the webhook source
+    
+    Example:
+        POST /api/trigger/webhook/salesforce?event=case.created
+        {
+            "case_id": "12345",
+            "priority": "High",
+            "subject": "HVAC system failure"
+        }
+    
+    Copilot Studio Integration:
+        This endpoint is compatible with Power Automate HTTP triggers.
+        You can configure a Power Automate flow in Copilot Studio to call this
+        endpoint, allowing Copilot Studio to trigger RAPP agents.
+    """
+    import asyncio
+    
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+    
+    try:
+        router, registry = _get_trigger_system()
+        if not router:
+            return func.HttpResponse(
+                json.dumps({"error": "Trigger system not initialized"}),
+                status_code=500,
+                mimetype="application/json",
+                headers=cors_headers
+            )
+        
+        # Extract parameters
+        source = req.route_params.get('source', 'unknown')
+        event_type = (
+            req.params.get('event') or 
+            req.headers.get('X-Event-Type') or 
+            req.headers.get('X-GitHub-Event') or  # GitHub webhook header
+            'default'
+        )
+        
+        # Parse body
+        try:
+            payload = req.get_json()
+        except ValueError:
+            payload = {"raw_body": req.get_body().decode('utf-8', errors='replace')}
+        
+        # Get client IP for validation
+        client_ip = (
+            req.headers.get('X-Forwarded-For', '').split(',')[0].strip() or
+            req.headers.get('X-Real-IP') or
+            'unknown'
+        )
+        
+        # Route the webhook
+        event = await router.route_webhook(
+            source=source,
+            event_type=event_type,
+            payload=payload,
+            headers=dict(req.headers),
+            client_ip=client_ip
+        )
+        
+        # Return result
+        status_code = 200 if event.status.value == 'success' else 500
+        
+        return func.HttpResponse(
+            json.dumps({
+                "event_id": event.id,
+                "status": event.status.value,
+                "trigger_name": event.trigger_name,
+                "agent_response": event.agent_response,
+                "error": event.error_message
+            }),
+            status_code=status_code,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+        
+    except Exception as e:
+        logging.error(f"Webhook trigger error: {e}")
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+
+
+@app.route(route="trigger/manual/{trigger_name}", auth_level=func.AuthLevel.FUNCTION, methods=["POST"])
+async def manual_trigger(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Manually trigger an agent action for testing.
+    
+    URL Pattern: /api/trigger/manual/{trigger_name}
+    
+    Body:
+        Optional JSON payload to pass to the trigger
+    
+    Example:
+        POST /api/trigger/manual/daily_ci_report
+        {"force_full_report": true}
+    """
+    import asyncio
+    
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+    
+    try:
+        router, registry = _get_trigger_system()
+        if not router:
+            return func.HttpResponse(
+                json.dumps({"error": "Trigger system not initialized"}),
+                status_code=500,
+                mimetype="application/json",
+                headers=cors_headers
+            )
+        
+        trigger_name = req.route_params.get('trigger_name')
+        
+        try:
+            payload = req.get_json()
+        except ValueError:
+            payload = {}
+        
+        event = await router.route_manual(trigger_name, payload)
+        
+        status_code = 200 if event.status.value == 'success' else 500
+        
+        return func.HttpResponse(
+            json.dumps({
+                "event_id": event.id,
+                "status": event.status.value,
+                "trigger_name": event.trigger_name,
+                "agent_response": event.agent_response,
+                "error": event.error_message
+            }),
+            status_code=status_code,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+        
+    except Exception as e:
+        logging.error(f"Manual trigger error: {e}")
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+
+
+@app.route(route="triggers", auth_level=func.AuthLevel.FUNCTION, methods=["GET"])
+def list_triggers(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    List all configured triggers.
+    
+    Returns:
+        JSON array of trigger configurations
+    """
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+    
+    try:
+        router, registry = _get_trigger_system()
+        if not registry:
+            return func.HttpResponse(
+                json.dumps({"error": "Trigger system not initialized", "triggers": []}),
+                status_code=200,
+                mimetype="application/json",
+                headers=cors_headers
+            )
+        
+        triggers = registry.list_triggers()
+        
+        return func.HttpResponse(
+            json.dumps({"triggers": triggers, "count": len(triggers)}),
+            status_code=200,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+        
+    except Exception as e:
+        logging.error(f"List triggers error: {e}")
+        return func.HttpResponse(
+            json.dumps({"error": str(e), "triggers": []}),
+            status_code=500,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+
+
+@app.route(route="triggers/stats", auth_level=func.AuthLevel.FUNCTION, methods=["GET"])
+def trigger_stats(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Get trigger execution statistics.
+    
+    Returns:
+        JSON with trigger stats (total events, success rate, by-trigger breakdown)
+    """
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+    
+    try:
+        router, registry = _get_trigger_system()
+        if not router:
+            return func.HttpResponse(
+                json.dumps({"error": "Trigger system not initialized"}),
+                status_code=200,
+                mimetype="application/json",
+                headers=cors_headers
+            )
+        
+        stats = router.get_stats()
+        
+        return func.HttpResponse(
+            json.dumps(stats),
+            status_code=200,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+        
+    except Exception as e:
+        logging.error(f"Trigger stats error: {e}")
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+
+
+# =============================================================================
+# COPILOT STUDIO INBOUND TRIGGER
+# =============================================================================
+# This endpoint receives events FROM Copilot Studio flows.
+# When an event trigger fires in Copilot Studio, it can call this endpoint
+# to execute RAPP agents as part of the Copilot Studio workflow.
+# =============================================================================
+
+@app.route(route="trigger/copilot-studio", auth_level=func.AuthLevel.FUNCTION, methods=["POST"])
+async def copilot_studio_trigger(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Receive trigger events from Copilot Studio.
+    
+    This endpoint allows Copilot Studio event triggers and Power Automate flows
+    to invoke RAPP agents. The payload format matches Copilot Studio's event
+    trigger output format.
+    
+    Expected Payload Format:
+    {
+        "trigger_name": "salesforce_case_created",  // Or use agent + action directly
+        "agent": "carrier_case_triage_orchestrator",
+        "action": "triage_case",
+        "parameters": {
+            "case_id": "12345",
+            ...
+        },
+        "copilot_studio_context": {
+            "conversation_id": "...",
+            "activity_id": "...",
+            "bot_id": "..."
+        }
+    }
+    
+    Returns:
+        JSON response that can be used in Copilot Studio flow
+    """
+    import asyncio
+    
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+    
+    try:
+        payload = req.get_json()
+        
+        # Option 1: Use a configured trigger
+        if 'trigger_name' in payload:
+            router, registry = _get_trigger_system()
+            if router:
+                event = await router.route_manual(
+                    payload['trigger_name'],
+                    payload.get('parameters', {})
+                )
+                
+                return func.HttpResponse(
+                    json.dumps({
+                        "status": event.status.value,
+                        "response": event.agent_response,
+                        "error": event.error_message,
+                        "copilot_studio_format": {
+                            "type": "event",
+                            "name": "rapp.response",
+                            "value": {
+                                "success": event.status.value == 'success',
+                                "message": event.agent_response or event.error_message
+                            }
+                        }
+                    }),
+                    status_code=200,
+                    mimetype="application/json",
+                    headers=cors_headers
+                )
+        
+        # Option 2: Direct agent invocation
+        if 'agent' in payload and 'action' in payload:
+            agent_name = payload['agent']
+            action = payload['action']
+            parameters = payload.get('parameters', {})
+            parameters['action'] = action
+            
+            response = _execute_agent_for_trigger(agent_name, action, parameters)
+            
+            return func.HttpResponse(
+                json.dumps({
+                    "status": "success",
+                    "response": response,
+                    "copilot_studio_format": {
+                        "type": "event",
+                        "name": "rapp.response",
+                        "value": {
+                            "success": True,
+                            "message": response
+                        }
+                    }
+                }),
+                status_code=200,
+                mimetype="application/json",
+                headers=cors_headers
+            )
+        
+        return func.HttpResponse(
+            json.dumps({"error": "Missing trigger_name or agent/action in payload"}),
+            status_code=400,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+        
+    except Exception as e:
+        logging.error(f"Copilot Studio trigger error: {e}")
+        return func.HttpResponse(
+            json.dumps({
+                "status": "error",
+                "error": str(e),
+                "copilot_studio_format": {
+                    "type": "event",
+                    "name": "rapp.error",
+                    "value": {
+                        "success": False,
+                        "message": str(e)
+                    }
+                }
+            }),
+            status_code=500,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+
+
 @app.route(route="businessinsightbot_function", auth_level=func.AuthLevel.FUNCTION)
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
@@ -1484,6 +1941,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # Extract user_guid if provided in the request
     user_guid = req_body.get('user_guid')
 
+    # Extract image_base64 if provided (for vision-enabled agents like MachineWalkaround)
+    image_base64 = req_body.get('image_base64')
+
     # Skip validation if input is just a GUID to load memory
     is_guid_only = re.match(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', user_input.strip(), re.IGNORECASE)
 
@@ -1513,6 +1973,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             assistant._initialize_context_memory(user_input.strip())
         # Otherwise, the default GUID will be used (already set in __init__)
             
+        # Pass image_base64 to the assistant so vision agents can use it
+        if image_base64:
+            assistant.image_base64 = image_base64
+
         assistant_response, voice_response, agent_logs = assistant.get_response(
             user_input, conversation_history)
 

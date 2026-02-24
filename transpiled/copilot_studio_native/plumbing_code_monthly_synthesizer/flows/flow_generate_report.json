@@ -1,0 +1,54 @@
+{
+  "name": "flow_generate_report",
+  "displayName": "Generate Report Flow",
+  "description": "Power Automate flow for generate_report",
+  "trigger": {
+    "kind": "PowerVirtualAgents",
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "actions": [
+    {
+      "kind": "Dataverse_ListRows",
+      "connection": "dataverse_connection",
+      "inputs": {
+        "entityName": "rapp_data"
+      },
+      "outputs": {
+        "rows": "dataverseRows"
+      }
+    },
+    {
+      "kind": "AzureOpenAI_ChatCompletion",
+      "connection": "azure_openai_connection",
+      "inputs": {
+        "prompt": "Process the data for generate_report",
+        "systemMessage": "Commercial Plumbing Code Monthly Synthesizer \u2014 Agent 3 of the Code Intelligence Pipeline.\n\nReads UPDATE_CARDS from Agent 2 and produces a structured monthly report\norganized by topic tag. Neutral, factual, no impact ranking.\n\nInput:  plumbing_intel/{YYYY-MM}/update_cards.json   (UPDATE_CARDS)\nOutput: plumbing_intel/{YYYY-MM}/monthly_report.json (MONTHLY_REPORT)"
+      },
+      "outputs": {
+        "response": "aiResponse"
+      }
+    },
+    {
+      "kind": "Response",
+      "inputs": {
+        "result": "@{variables('aiResponse') ?? 'Action completed successfully'}"
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "string",
+      "description": "Result of the action"
+    }
+  }
+}

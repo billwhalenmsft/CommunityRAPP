@@ -1,0 +1,45 @@
+# Daily Competitive Intelligence Report Trigger
+# This scheduled trigger runs daily to generate CI reports
+# for the Zurnelkay business units.
+
+name: daily_ci_report
+description: Generate daily competitive intelligence summary
+trigger_type: timer
+enabled: true
+
+# Timer configuration (Azure Functions CRON format)
+# Format: {second} {minute} {hour} {day} {month} {day-of-week}
+schedule: "0 0 8 * * 1-5"  # 8:00 AM UTC, Monday through Friday
+timezone: America/Chicago  # Central Time
+
+# Target agent
+target_agent: zurnelkay_ci_orchestrator
+target_action: generate_daily_report
+
+# Parameters to pass to the agent
+parameters:
+  report_type: daily_summary
+  include_all_bus: true
+  output_format: markdown
+
+# Message template
+message_template: |
+  Generate the daily competitive intelligence summary report.
+  Include insights from all business units and highlight any 
+  significant market movements or competitor activities.
+
+# Retry configuration
+max_retries: 2
+retry_delay_seconds: 300  # 5 minutes
+
+# Notifications
+on_success:
+  - type: teams
+    webhook_url: ${TEAMS_CI_CHANNEL_WEBHOOK}
+    
+on_failure:
+  - type: email
+    to: ci-team@company.com
+
+# Copilot Studio integration
+copilot_studio_enabled: true

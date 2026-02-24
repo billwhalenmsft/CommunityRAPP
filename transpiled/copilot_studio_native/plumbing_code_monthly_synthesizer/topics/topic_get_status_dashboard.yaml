@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_status_dashboard
+displayName: Get Status Dashboard
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_status_dashboard
+  triggerQueries:
+  - get status dashboard
+  - run get status dashboard
+  - execute get status dashboard
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get status dashboard'

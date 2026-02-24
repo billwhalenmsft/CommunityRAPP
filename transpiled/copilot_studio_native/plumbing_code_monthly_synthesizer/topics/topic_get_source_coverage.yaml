@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_source_coverage
+displayName: Get Source Coverage
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_source_coverage
+  triggerQueries:
+  - get source coverage
+  - run get source coverage
+  - execute get source coverage
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get source coverage'

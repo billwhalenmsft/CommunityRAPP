@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_topic_tags
+displayName: Get Topic Tags
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_topic_tags
+  triggerQueries:
+  - get topic tags
+  - run get topic tags
+  - execute get topic tags
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get topic tags'

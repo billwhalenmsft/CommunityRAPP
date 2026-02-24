@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_extract_single
+displayName: Extract Single
+triggers:
+- kind: OnRecognizedIntent
+  intent: extract_single
+  triggerQueries:
+  - extract single
+  - run extract single
+  - execute extract single
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_extract_single
+  inputs:
+    action: extract_single
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_generate_report
+displayName: Generate Report
+triggers:
+- kind: OnRecognizedIntent
+  intent: generate_report
+  triggerQueries:
+  - generate report
+  - run generate report
+  - execute generate report
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_generate_report
+  inputs:
+    action: generate_report
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

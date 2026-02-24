@@ -37,6 +37,16 @@
           "agents_failed": 0
         }
       ]
+    },
+    "plumbing_code_intelligence": {
+      "name": "plumbing_code_intelligence",
+      "display_name": "Plumbing Code Intelligence",
+      "description": "Commercial plumbing code monitoring pipeline with source scanning, technical extraction, and monthly synthesis.",
+      "publisher": "RAPP",
+      "version": "1.0.0",
+      "agents": ["plumbing_code_source_monitor", "plumbing_code_tech_extractor", "plumbing_code_monthly_synthesizer"],
+      "created_at": "2026-02-17T12:16:43.379566",
+      "updated_at": "2026-02-17T12:16:43.379586"
     }
   }
 }

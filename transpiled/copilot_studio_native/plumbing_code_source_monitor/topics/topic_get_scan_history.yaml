@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_scan_history
+displayName: Get Scan History
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_scan_history
+  triggerQueries:
+  - get scan history
+  - run get scan history
+  - execute get scan history
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get scan history'

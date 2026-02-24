@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_last_scan
+displayName: Get Last Scan
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_last_scan
+  triggerQueries:
+  - get last scan
+  - run get last scan
+  - execute get last scan
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get last scan'

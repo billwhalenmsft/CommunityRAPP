@@ -1,0 +1,61 @@
+# Salesforce Case Created Trigger
+# This trigger fires when a new case is created in Salesforce
+# and routes it to the Carrier case triage system.
+
+name: salesforce_case_created
+description: Route new Salesforce cases to the triage agent
+trigger_type: webhook
+enabled: true
+
+# Webhook configuration
+source: salesforce
+event_type: case.created
+
+# Target agent
+target_agent: carrier_case_triage_orchestrator
+target_action: triage_case
+
+# Message template for the agent
+# Use {{field_name}} to inject values from the webhook payload
+message_template: |
+  A new case has been created in Salesforce that needs triage.
+  
+  Case ID: {{Id}}
+  Subject: {{Subject}}
+  Priority: {{Priority}}
+  Status: {{Status}}
+  Customer: {{Account.Name}}
+  
+  Please analyze this case and route it to the appropriate team.
+
+# Map webhook fields to agent parameters
+body_mapping:
+  case_id: Id
+  subject: Subject
+  priority: Priority
+  status: Status
+  customer_name: Account.Name
+  description: Description
+
+# Only trigger for high priority cases
+filters:
+  - field: Priority
+    operator: in
+    value: ["High", "Critical"]
+
+# Retry configuration
+max_retries: 3
+retry_delay_seconds: 30
+
+# Notifications
+on_success:
+  - type: teams
+    webhook_url: ${TEAMS_CASE_CHANNEL_WEBHOOK}
+    
+on_failure:
+  - type: email
+    to: support-ops@company.com
+
+# Copilot Studio integration
+# When enabled, this trigger can also be used in Copilot Studio
+copilot_studio_enabled: true

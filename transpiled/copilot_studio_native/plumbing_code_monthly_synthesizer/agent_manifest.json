@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.2",
+  "name": "PlumbingCodeMonthlySynthesizer",
+  "displayName": "PC Monthly Synthesizer",
+  "description": "Commercial Plumbing Code Monthly Synthesizer \u2014 Agent 3 of the Code Intelligence Pipeline.\n\nReads UPDATE_CARDS from Agent 2 and produces a structured monthly report\norganized by topic tag. Neutral, factual, no impact ranking.\n\nInput:  plumbing_intel/{YYYY-MM}/update_cards.json   (UPDATE_CARDS)\nOutput: plumbing_intel/{YYYY-MM}/monthly_report.json (MONTHLY_REPORT)",
+  "icon": "robot",
+  "primaryLanguage": "en-US",
+  "isGenerativeActionsEnabled": true,
+  "isOrchestrationEnabled": true,
+  "knowledgeSources": [],
+  "instructions": "You are PC Monthly Synthesizer. Commercial Plumbing Code Monthly Synthesizer \u2014 Agent 3 of the Code Intelligence Pipeline.\n\nReads UPDATE_CARDS from Agent 2 and produces a structured monthly report\norganized by topic tag. Neutral, factual, no impact ranking.\n\nInput:  plumbing_intel/{YYYY-MM}/update_cards.json   (UPDATE_CARDS)\nOutput: plumbing_intel/{YYYY-MM}/monthly_report.json (MONTHLY_REPORT)",
+  "systemPrompt": "You are PC Monthly Synthesizer. Commercial Plumbing Code Monthly Synthesizer \u2014 Agent 3 of the Code Intelligence Pipeline.\n\nReads UPDATE_CARDS from Agent 2 and produces a structured monthly report\norganized by topic tag. Neutral, factual, no impact ranking.\n\nInput:  plumbing_intel/{YYYY-MM}/update_cards.json   (UPDATE_CARDS)\nOutput: plumbing_intel/{YYYY-MM}/monthly_report.json (MONTHLY_REPORT)",
+  "capabilities": {
+    "generativeAnswers": true,
+    "powerAutomateFlows": true,
+    "customConnectors": false
+  },
+  "topics": [
+    "topic_generate_report",
+    "topic_get_report",
+    "topic_get_status_dashboard",
+    "topic_get_source_coverage",
+    "topic_get_topic_section"
+  ],
+  "metadata": {
+    "source": "RAPP Transpiler",
+    "transpiled_at": "2026-02-17T12:16:43.350345",
+    "original_agent": "PlumbingCodeMonthlySynthesizerAgent"
+  }
+}

@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+id: topic_scan_single_source
+displayName: Scan Single Source
+triggers:
+- kind: OnRecognizedIntent
+  intent: scan_single_source
+  triggerQueries:
+  - scan single source
+  - run scan single source
+  - execute scan single source
+actions:
+- kind: InvokeFlowAction
+  flowId: flow_scan_single_source
+  inputs:
+    action: scan_single_source
+  outputs:
+    result: flowResult
+- kind: SendMessage
+  message: ${flowResult}

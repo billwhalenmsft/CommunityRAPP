@@ -1,0 +1,44 @@
+# Dataverse Record Update Trigger (Copilot Studio Native)
+# This trigger is designed for Copilot Studio deployment.
+# When transpiled to Copilot Studio, it uses the native
+# Dataverse "When a row is added, modified or deleted" trigger.
+
+name: dataverse_account_updated
+description: Respond to account updates in Dataverse/D365
+trigger_type: dataverse
+enabled: true
+
+# Dataverse-specific configuration
+table_name: account
+change_type: update  # create, update, delete
+filter_expression: "statecode eq 0"  # Only active accounts
+select_columns:
+  - accountid
+  - name
+  - revenue
+  - ownerid
+  - modifiedon
+
+# Target agent
+target_agent: account_intelligence_agent
+target_action: analyze_account_change
+
+# Message template
+message_template: |
+  An account record has been updated in Dataverse.
+  Analyze the changes and determine if any follow-up actions are needed.
+  
+  Account: {{name}}
+  Modified: {{modifiedon}}
+
+# Map Dataverse fields to agent parameters
+body_mapping:
+  account_id: accountid
+  account_name: name
+  revenue: revenue
+  owner_id: ownerid
+
+# Copilot Studio integration
+copilot_studio_enabled: true
+copilot_studio_bot_id: ${COPILOT_STUDIO_BOT_ID}
+copilot_studio_environment_url: ${DATAVERSE_ENVIRONMENT_URL}

@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_topic_section
+displayName: Get Topic Section
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_topic_section
+  triggerQueries:
+  - get topic section
+  - run get topic section
+  - execute get topic section
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get topic section'

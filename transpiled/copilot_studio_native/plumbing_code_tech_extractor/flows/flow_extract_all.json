@@ -1,0 +1,54 @@
+{
+  "name": "flow_extract_all",
+  "displayName": "Extract All Flow",
+  "description": "Power Automate flow for extract_all",
+  "trigger": {
+    "kind": "PowerVirtualAgents",
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "actions": [
+    {
+      "kind": "Dataverse_ListRows",
+      "connection": "dataverse_connection",
+      "inputs": {
+        "entityName": "rapp_data"
+      },
+      "outputs": {
+        "rows": "dataverseRows"
+      }
+    },
+    {
+      "kind": "AzureOpenAI_ChatCompletion",
+      "connection": "azure_openai_connection",
+      "inputs": {
+        "prompt": "Process the data for extract_all",
+        "systemMessage": "Commercial Plumbing Code Technical Extractor \u2014 Agent 2 of the Code Intelligence Pipeline.\n\nReads SOURCE_LOG from Agent 1 and converts each entry into a standardized\nUpdate Card with topic tags, status, and neutral technical extraction.\n\nInput:  plumbing_intel/{YYYY-MM}/source_log.json  (SOURCE_LOG)\nOutput: plumbing_intel/{YYYY-MM}/update_cards.json (UPDATE_CARDS)\nDownstream consumer: PlumbingCodeMonthlySynthesizerAgent (Agent 3)"
+      },
+      "outputs": {
+        "response": "aiResponse"
+      }
+    },
+    {
+      "kind": "Response",
+      "inputs": {
+        "result": "@{variables('aiResponse') ?? 'Action completed successfully'}"
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "string",
+      "description": "Result of the action"
+    }
+  }
+}

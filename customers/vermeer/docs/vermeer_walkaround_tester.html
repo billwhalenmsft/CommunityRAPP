@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Vermeer Machine Walkaround - AI Inspector</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --vermeer-yellow: #FDB913;
+      --vermeer-dark: #1a1a1a;
+      --vermeer-gray: #2d2d2d;
+      --vermeer-light-gray: #3a3a3a;
+      --vermeer-text: #e8e8e8;
+      --vermeer-text-dim: #999;
+      --vermeer-success: #4caf50;
+      --vermeer-warning: #ff9800;
+      --vermeer-danger: #f44336;
+      --vermeer-info: #2196f3;
+      --radius: 12px;
+      --radius-small: 8px;
+      --transition: all 0.2s ease;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--vermeer-dark);
+      color: var(--vermeer-text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Header ─────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, var(--vermeer-gray), var(--vermeer-dark));
+      border-bottom: 2px solid var(--vermeer-yellow);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 100;
+    }
+
+    .header-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--vermeer-yellow);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--vermeer-dark);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+
+    .header-title {
+      flex: 1;
+    }
+
+    .header-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--vermeer-yellow);
+    }
+
+    .header-title p {
+      font-size: 11px;
+      color: var(--vermeer-text-dim);
+      margin-top: 1px;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--vermeer-text-dim);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--vermeer-success);
+    }
+
+    .status-dot.offline { background: var(--vermeer-danger); }
+    .status-dot.connecting { background: var(--vermeer-warning); animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ─── Main Layout ────────────────────────────── */
+    .main-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ─── Left Panel: Camera + Inspection ────────── */
+    .camera-panel {
+      width: 420px;
+      min-width: 350px;
+      background: var(--vermeer-gray);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--vermeer-light-gray);
+    }
+
+    .camera-section {
+      position: relative;
+      background: #000;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+    }
+
+    .camera-section video,
+    .camera-section canvas,
+    .camera-section img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #camera-canvas { display: none; }
+
+    .camera-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .camera-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: var(--transition);
+    }
+
+    .camera-btn.capture {
+      width: 56px;
+      height: 56px;
+      background: var(--vermeer-yellow);
+      color: var(--vermeer-dark);
+      font-size: 22px;
+      box-shadow: 0 0 0 3px rgba(253,185,19,0.3);
+    }
+
+    .camera-btn.capture:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 5px rgba(253,185,19,0.4);
+    }
+
+    .camera-btn.secondary {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      backdrop-filter: blur(8px);
+    }
+
+    .camera-btn.secondary:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    .camera-btn.danger {
+      background: rgba(244,67,54,0.8);
+      color: white;
+    }
+
+    /* Captured image preview */
+    .capture-preview {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 80px;
+      height: 60px;
+      border-radius: 6px;
+      border: 2px solid var(--vermeer-yellow);
+      overflow: hidden;
+      cursor: pointer;
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .capture-preview.visible { opacity: 1; }
+
+    .capture-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .capture-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: var(--vermeer-yellow);
+      color: var(--vermeer-dark);
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* ─── Inspection Panel ───────────────────────── */
+    .inspection-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .inspection-panel::-webkit-scrollbar { width: 4px; }
+    .inspection-panel::-webkit-scrollbar-thumb { background: var(--vermeer-light-gray); border-radius: 2px; }
+
+    .panel-section {
+      background: var(--vermeer-dark);
+      border-radius: var(--radius-small);
+      padding: 12px;
+      border: 1px solid var(--vermeer-light-gray);
+    }
+
+    .panel-section h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vermeer-yellow);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel-section h3 i { font-size: 13px; }
+
+    /* Machine selector */
+    .machine-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .machine-option {
+      padding: 8px;
+      background: var(--vermeer-gray);
+      border: 1px solid var(--vermeer-light-gray);
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 11px;
+      transition: var(--transition);
+    }
+
+    .machine-option:hover {
+      border-color: var(--vermeer-yellow);
+    }
+
+    .machine-option.active {
+      border-color: var(--vermeer-yellow);
+      background: rgba(253,185,19,0.1);
+      color: var(--vermeer-yellow);
+    }
+
+    .machine-option i {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    /* Quick actions */
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .quick-action {
+      padding: 6px 10px;
+      background: var(--vermeer-gray);
+      border: 1px solid var(--vermeer-light-gray);
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--vermeer-text);
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .quick-action:hover {
+      border-color: var(--vermeer-yellow);
+      color: var(--vermeer-yellow);
+    }
+
+    .quick-action i { margin-right: 4px; }
+
+    /* Checklist */
+    .checklist { display: flex; flex-direction: column; gap: 6px; }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: var(--vermeer-gray);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 12px;
+    }
+
+    .checklist-item:hover { background: var(--vermeer-light-gray); }
+
+    .checklist-item.active {
+      border-left: 3px solid var(--vermeer-yellow);
+      background: rgba(253,185,19,0.05);
+    }
+
+    .checklist-status {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--vermeer-light-gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    .checklist-status.pass { border-color: var(--vermeer-success); color: var(--vermeer-success); background: rgba(76,175,80,0.1); }
+    .checklist-status.fail { border-color: var(--vermeer-danger); color: var(--vermeer-danger); background: rgba(244,67,54,0.1); }
+    .checklist-status.warn { border-color: var(--vermeer-warning); color: var(--vermeer-warning); background: rgba(255,152,0,0.1); }
+    .checklist-status.active { border-color: var(--vermeer-yellow); animation: pulse 1.5s infinite; }
+
+    .checklist-label { flex: 1; }
+    .checklist-severity {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .severity-critical { background: rgba(244,67,54,0.2); color: var(--vermeer-danger); }
+    .severity-high { background: rgba(255,152,0,0.2); color: var(--vermeer-warning); }
+    .severity-medium { background: rgba(255,193,7,0.2); color: #ffc107; }
+    .severity-low { background: rgba(76,175,80,0.2); color: var(--vermeer-success); }
+
+    /* ─── Right Panel: Chat ──────────────────────── */
+    .chat-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .chat-header {
+      padding: 10px 16px;
+      background: var(--vermeer-gray);
+      border-bottom: 1px solid var(--vermeer-light-gray);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    .chat-header .title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-header .title i { color: var(--vermeer-yellow); }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-messages::-webkit-scrollbar { width: 6px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--vermeer-light-gray); border-radius: 3px; }
+
+    /* Messages */
+    .message {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: var(--vermeer-yellow);
+      color: var(--vermeer-dark);
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.user .message-image {
+      margin-top: 8px;
+      border-radius: 8px;
+      max-width: 200px;
+      border: 2px solid rgba(0,0,0,0.2);
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      background: var(--vermeer-gray);
+      border: 1px solid var(--vermeer-light-gray);
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.assistant .agent-name {
+      font-size: 10px;
+      color: var(--vermeer-yellow);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .message.system {
+      align-self: center;
+      background: rgba(253,185,19,0.1);
+      border: 1px solid rgba(253,185,19,0.2);
+      color: var(--vermeer-yellow);
+      font-size: 12px;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    .message.error {
+      align-self: center;
+      background: rgba(244,67,54,0.1);
+      border: 1px solid rgba(244,67,54,0.2);
+      color: var(--vermeer-danger);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    /* Markdown in messages */
+    .message.assistant h1 { font-size: 18px; margin: 8px 0 6px; color: var(--vermeer-yellow); }
+    .message.assistant h2 { font-size: 15px; margin: 8px 0 4px; color: var(--vermeer-yellow); }
+    .message.assistant h3 { font-size: 13px; margin: 6px 0 3px; color: var(--vermeer-text); }
+    .message.assistant strong { color: var(--vermeer-yellow); }
+    .message.assistant ul, .message.assistant ol { margin: 4px 0 4px 16px; }
+    .message.assistant li { margin: 2px 0; }
+    .message.assistant code {
+      background: rgba(0,0,0,0.3);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+    .message.assistant pre {
+      background: rgba(0,0,0,0.4);
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 6px 0;
+    }
+    .message.assistant pre code { background: none; padding: 0; }
+    .message.assistant table { border-collapse: collapse; margin: 6px 0; width: 100%; font-size: 12px; }
+    .message.assistant th { background: rgba(253,185,19,0.15); padding: 6px 10px; text-align: left; border: 1px solid var(--vermeer-light-gray); font-weight: 600; }
+    .message.assistant td { padding: 6px 10px; border: 1px solid var(--vermeer-light-gray); }
+    .message.assistant hr { border: none; border-top: 1px solid var(--vermeer-light-gray); margin: 8px 0; }
+    .message.assistant blockquote { border-left: 3px solid var(--vermeer-yellow); padding-left: 10px; color: var(--vermeer-text-dim); margin: 6px 0; }
+    .message.assistant a { color: var(--vermeer-yellow); text-decoration: underline; }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 8px 0;
+    }
+
+    .typing-indicator span {
+      width: 6px;
+      height: 6px;
+      background: var(--vermeer-yellow);
+      border-radius: 50%;
+      animation: typingBounce 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ─── Input Area ─────────────────────────────── */
+    .chat-input-area {
+      padding: 12px 16px;
+      background: var(--vermeer-gray);
+      border-top: 1px solid var(--vermeer-light-gray);
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--vermeer-dark);
+      border: 1px solid var(--vermeer-light-gray);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      color: var(--vermeer-text);
+      font-size: 13px;
+      font-family: inherit;
+      resize: none;
+      min-height: 42px;
+      max-height: 120px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .chat-input:focus { border-color: var(--vermeer-yellow); }
+
+    .chat-input::placeholder { color: var(--vermeer-text-dim); }
+
+    .send-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--vermeer-yellow);
+      color: var(--vermeer-dark);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover { transform: scale(1.05); }
+    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .input-hint {
+      font-size: 10px;
+      color: var(--vermeer-text-dim);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .input-hint span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .image-attached-badge {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: rgba(253,185,19,0.15);
+      border: 1px solid rgba(253,185,19,0.3);
+      border-radius: 12px;
+      font-size: 11px;
+      color: var(--vermeer-yellow);
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .image-attached-badge.visible { display: inline-flex; }
+    .image-attached-badge i { font-size: 10px; }
+
+    /* ─── Settings Modal ─────────────────────────── */
+    .settings-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .settings-overlay.visible { display: flex; }
+
+    .settings-modal {
+      background: var(--vermeer-gray);
+      border: 1px solid var(--vermeer-light-gray);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 400px;
+      max-width: 90vw;
+    }
+
+    .settings-modal h2 {
+      font-size: 16px;
+      color: var(--vermeer-yellow);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .settings-field { margin-bottom: 14px; }
+
+    .settings-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--vermeer-text-dim);
+      margin-bottom: 4px;
+    }
+
+    .settings-field input, .settings-field select {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--vermeer-dark);
+      border: 1px solid var(--vermeer-light-gray);
+      border-radius: 6px;
+      color: var(--vermeer-text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .settings-field input:focus, .settings-field select:focus {
+      border-color: var(--vermeer-yellow);
+    }
+
+    .settings-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .btn-primary { background: var(--vermeer-yellow); color: var(--vermeer-dark); }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-secondary { background: var(--vermeer-light-gray); color: var(--vermeer-text); }
+
+    /* ─── Mobile Responsive ──────────────────────── */
+    @media (max-width: 768px) {
+      .main-container { flex-direction: column; }
+      .camera-panel {
+        width: 100%;
+        min-width: 0;
+        max-height: 50vh;
+        border-right: none;
+        border-bottom: 1px solid var(--vermeer-light-gray);
+      }
+      .camera-section { aspect-ratio: 16/9; }
+      .inspection-panel { display: none; }
+      .message { max-width: 95%; }
+    }
+
+    /* ─── File upload hidden input ─────────────── */
+    #file-upload { display: none; }
+  </style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">VMR</div>
+    <div class="header-title">
+      <h1>Machine Walkaround Inspector</h1>
+      <p>Vermeer AI-Powered Equipment Inspection</p>
+    </div>
+    <div class="header-status">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Connecting...</span>
+    </div>
+    <button class="camera-btn secondary" style="width:32px;height:32px;font-size:14px" onclick="openSettings()" title="Settings">
+      <i class="fas fa-gear"></i>
+    </button>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main-container">
+    <!-- LEFT: Camera + Inspection -->
+    <div class="camera-panel">
+      <!-- Camera View -->
+      <div class="camera-section">
+        <video id="camera-video" autoplay playsinline></video>
+        <canvas id="camera-canvas"></canvas>
+        <div id="camera-placeholder" style="display:none; background:#111; align-items:center; justify-content:center; flex-direction:column; gap:12px; color:var(--vermeer-text-dim); font-size:14px; width:100%; height:100%;">
+          <i class="fas fa-camera" style="font-size:48px; opacity:0.3;"></i>
+          <span>No camera detected</span>
+          <span style="font-size:11px;">Use the <i class="fas fa-image"></i> upload button to select an image</span>
+        </div>
+
+        <div class="capture-preview" id="capture-preview">
+          <img id="preview-thumb" src="" alt="Captured" />
+          <div class="capture-badge" id="capture-count">1</div>
+        </div>
+
+        <div class="camera-overlay">
+          <button class="camera-btn secondary" onclick="toggleCamera()" title="Switch camera">
+            <i class="fas fa-rotate"></i>
+          </button>
+          <button class="camera-btn capture" id="capture-btn" onclick="captureImage()" title="Capture photo">
+            <i class="fas fa-camera"></i>
+          </button>
+          <button class="camera-btn secondary" onclick="uploadImage()" title="Upload image">
+            <i class="fas fa-image"></i>
+          </button>
+          <input type="file" id="file-upload" accept="image/*" onchange="handleFileUpload(event)" />
+        </div>
+      </div>
+
+      <!-- Inspection Panel -->
+      <div class="inspection-panel">
+        <!-- Machine Selector -->
+        <div class="panel-section">
+          <h3><i class="fas fa-truck-monster"></i> Machine Type</h3>
+          <div class="machine-selector">
+            <div class="machine-option active" data-type="trencher" onclick="selectMachine('trencher', this)">
+              <i class="fas fa-arrow-down-long"></i> Trencher
+            </div>
+            <div class="machine-option" data-type="chipper" onclick="selectMachine('chipper', this)">
+              <i class="fas fa-tree"></i> Chipper
+            </div>
+            <div class="machine-option" data-type="stump_cutter" onclick="selectMachine('stump_cutter', this)">
+              <i class="fas fa-circle-notch"></i> Stump Cutter
+            </div>
+            <div class="machine-option" data-type="horizontal_directional_drill" onclick="selectMachine('horizontal_directional_drill', this)">
+              <i class="fas fa-arrows-left-right"></i> HDD
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="panel-section">
+          <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+          <div class="quick-actions">
+            <div class="quick-action" onclick="quickAction('start_inspection')">
+              <i class="fas fa-clipboard-check"></i> Start Inspection
+            </div>
+            <div class="quick-action" onclick="quickAction('identify_component')">
+              <i class="fas fa-search"></i> ID Component
+            </div>
+            <div class="quick-action" onclick="quickAction('check_wear')">
+              <i class="fas fa-exclamation-triangle"></i> Check Wear
+            </div>
+            <div class="quick-action" onclick="quickAction('read_label')">
+              <i class="fas fa-barcode"></i> Read Label
+            </div>
+            <div class="quick-action" onclick="quickAction('get_machine_info')">
+              <i class="fas fa-info-circle"></i> Machine Info
+            </div>
+            <div class="quick-action" onclick="quickAction('generate_report')">
+              <i class="fas fa-file-pdf"></i> Report
+            </div>
+          </div>
+        </div>
+
+        <!-- Inspection Checklist -->
+        <div class="panel-section" id="checklist-section" style="display:none">
+          <h3><i class="fas fa-list-check"></i> Inspection Checklist</h3>
+          <div class="checklist" id="checklist-items"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Chat -->
+    <div class="chat-panel">
+      <div class="chat-header">
+        <div class="title">
+          <i class="fas fa-robot"></i>
+          <span>Walkaround Assistant</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="camera-btn secondary" style="width:28px;height:28px;font-size:12px" onclick="clearChat()" title="Clear chat">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chat-messages">
+        <div class="message system">
+          <strong>🔍 Vermeer Machine Walkaround Inspector</strong><br />
+          Select a machine type on the left, then use the camera to capture images.
+          I'll analyze your equipment and guide you through inspections.<br /><br />
+          <em>Tip: Capture a photo first, then ask me a question about what you see.</em>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="image-attached-badge" id="image-badge" onclick="clearAttachedImage()">
+          <i class="fas fa-image"></i>
+          <span>Image attached</span>
+          <i class="fas fa-times" style="margin-left:4px"></i>
+        </div>
+        <div class="input-row">
+          <textarea class="chat-input" id="chat-input" placeholder="Ask about the machine or describe what you see..." rows="1"
+            onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        <div class="input-hint">
+          <span><i class="fas fa-camera"></i> Capture photo + ask question</span>
+          <span><i class="fas fa-keyboard"></i> Enter to send</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="settings-overlay" id="settings-overlay" onclick="closeSettingsOutside(event)">
+    <div class="settings-modal">
+      <h2><i class="fas fa-gear"></i> Settings</h2>
+      <div class="settings-field">
+        <label>API Endpoint URL</label>
+        <input type="text" id="setting-endpoint" placeholder="http://localhost:7071/api/businessinsightbot_function" />
+      </div>
+      <div class="settings-field">
+        <label>Function Key (optional)</label>
+        <input type="password" id="setting-key" placeholder="Leave blank for local development" />
+      </div>
+      <div class="settings-field">
+        <label>Machine Model (optional)</label>
+        <input type="text" id="setting-model" placeholder="e.g., S925TX, BC1800XL" />
+      </div>
+      <div class="settings-field">
+        <label>Inspection Type</label>
+        <select id="setting-inspection-type">
+          <option value="pre_operation">Pre-Operation Walkaround</option>
+          <option value="post_operation">Post-Operation Inspection</option>
+          <option value="maintenance">Scheduled Maintenance</option>
+        </select>
+      </div>
+      <div class="settings-actions">
+        <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIBRARIES -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <script>
+    // ─── State ──────────────────────────────────────────────────────────
+    const state = {
+      endpoint: localStorage.getItem('vmr_endpoint') || 'http://localhost:7071/api/businessinsightbot_function',
+      apiKey: localStorage.getItem('vmr_apiKey') || '',
+      machineType: localStorage.getItem('vmr_machineType') || 'trencher',
+      machineModel: localStorage.getItem('vmr_machineModel') || '',
+      inspectionType: localStorage.getItem('vmr_inspectionType') || 'pre_operation',
+      capturedImage: null,       // base64 string (no prefix)
+      capturedImageFull: null,   // data URL for display
+      conversationHistory: [],
+      isProcessing: false,
+      cameraStream: null,
+      facingMode: 'environment',  // rear camera default for field use
+      inspectionSession: null,
+      checklistState: {},
+      captureCount: 0
+    };
+
+    // ─── Init ───────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      initCamera();
+      checkEndpointHealth();
+      
+      // Restore machine selection
+      document.querySelectorAll('.machine-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.type === state.machineType);
+      });
+
+      // Configure marked for markdown rendering
+      marked.setOptions({
+        breaks: true,
+        gfm: true,
+        highlight: (code, lang) => {
+          if (lang && hljs.getLanguage(lang)) {
+            return hljs.highlight(code, { language: lang }).value;
+          }
+          return hljs.highlightAuto(code).value;
+        }
+      });
+    });
+
+    // ─── Camera ─────────────────────────────────────────────────────────
+    async function initCamera() {
+      try {
+        if (state.cameraStream) {
+          state.cameraStream.getTracks().forEach(t => t.stop());
+        }
+
+        const constraints = {
+          video: {
+            facingMode: state.facingMode,
+            width: { ideal: 1280 },
+            height: { ideal: 960 }
+          }
+        };
+
+        state.cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+        const video = document.getElementById('camera-video');
+        video.srcObject = state.cameraStream;
+        video.style.display = 'block';
+        document.getElementById('camera-placeholder').style.display = 'none';
+        updateStatus('ready');
+      } catch (err) {
+        console.warn('Camera not available:', err);
+        // Show placeholder
+        document.getElementById('camera-video').style.display = 'none';
+        const ph = document.getElementById('camera-placeholder');
+        ph.style.display = 'flex';
+        ph.textContent = '';
+        updateStatus('ready');
+      }
+    }
+
+    function toggleCamera() {
+      state.facingMode = state.facingMode === 'environment' ? 'user' : 'environment';
+      initCamera();
+    }
+
+    function captureImage() {
+      const video = document.getElementById('camera-video');
+      if (!video.srcObject) {
+        addMessage('system', '📸 Camera not available. Use the upload button to select an image file.');
+        return;
+      }
+
+      const canvas = document.getElementById('camera-canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+
+      // Get base64 (strip the data URL prefix for the API)
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      state.capturedImageFull = dataUrl;
+      state.capturedImage = dataUrl.split(',')[1];
+      state.captureCount++;
+
+      // Update preview
+      const preview = document.getElementById('capture-preview');
+      document.getElementById('preview-thumb').src = dataUrl;
+      document.getElementById('capture-count').textContent = state.captureCount;
+      preview.classList.add('visible');
+
+      // Show badge in chat input
+      document.getElementById('image-badge').classList.add('visible');
+
+      // Flash effect
+      const btn = document.getElementById('capture-btn');
+      btn.style.transform = 'scale(0.9)';
+      setTimeout(() => { btn.style.transform = ''; }, 150);
+
+      addMessage('system', `📸 Photo captured! Type a question or use a Quick Action to analyze it.`);
+    }
+
+    function uploadImage() {
+      document.getElementById('file-upload').click();
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.capturedImageFull = e.target.result;
+        state.capturedImage = e.target.result.split(',')[1];
+        state.captureCount++;
+
+        const preview = document.getElementById('capture-preview');
+        document.getElementById('preview-thumb').src = e.target.result;
+        document.getElementById('capture-count').textContent = state.captureCount;
+        preview.classList.add('visible');
+        document.getElementById('image-badge').classList.add('visible');
+
+        addMessage('system', `📸 Image uploaded: ${file.name}`);
+      };
+      reader.readAsDataURL(file);
+      event.target.value = ''; // Reset input
+    }
+
+    function clearAttachedImage() {
+      state.capturedImage = null;
+      state.capturedImageFull = null;
+      document.getElementById('image-badge').classList.remove('visible');
+      document.getElementById('capture-preview').classList.remove('visible');
+    }
+
+    // ─── Machine Selection ──────────────────────────────────────────────
+    function selectMachine(type, el) {
+      state.machineType = type;
+      localStorage.setItem('vmr_machineType', type);
+      document.querySelectorAll('.machine-option').forEach(o => o.classList.remove('active'));
+      el.classList.add('active');
+      addMessage('system', `🏗️ Machine type set to <strong>${el.textContent.trim()}</strong>`);
+    }
+
+    // ─── Quick Actions ──────────────────────────────────────────────────
+    function quickAction(action) {
+      const prompts = {
+        'start_inspection': `Start a ${state.inspectionType.replace('_', ' ')} inspection on ${state.machineType.replace('_', ' ')}`,
+        'identify_component': state.capturedImage
+          ? 'What component am I looking at? What should I check during inspection?'
+          : 'I need to identify a component — let me capture a photo first.',
+        'check_wear': state.capturedImage
+          ? 'Assess the wear condition of what you see in this image. Rate it and give me recommendations.'
+          : 'I need to check wear — let me capture a photo first.',
+        'read_label': state.capturedImage
+          ? 'Read all text and labels visible in this image.'
+          : 'I need to read a label — let me capture a photo first.',
+        'get_machine_info': `Tell me about the Vermeer ${state.machineType.replace('_', ' ')}${state.machineModel ? ' ' + state.machineModel : ''}`,
+        'generate_report': `Generate an inspection report for the ${state.machineType.replace('_', ' ')}${state.machineModel ? ' ' + state.machineModel : ''}`
+      };
+
+      const msg = prompts[action] || action;
+      document.getElementById('chat-input').value = msg;
+      autoResize(document.getElementById('chat-input'));
+
+      // If starting inspection, show checklist
+      if (action === 'start_inspection') {
+        showChecklist(state.machineType, state.inspectionType);
+      }
+
+      // Auto-send
+      sendMessage();
+    }
+
+    // ─── Checklist UI ───────────────────────────────────────────────────
+    const CHECKLISTS = {
+      pre_operation: [
+        { id: 'overall_condition', name: 'Overall Machine Condition', severity: 'critical' },
+        { id: 'engine_compartment', name: 'Engine Compartment', severity: 'critical' },
+        { id: 'hydraulic_system', name: 'Hydraulic System', severity: 'critical' },
+        { id: 'undercarriage_tires', name: 'Undercarriage / Tires', severity: 'high' },
+        { id: 'safety_devices', name: 'Safety Devices & Decals', severity: 'critical' },
+        { id: 'work_attachment', name: 'Work Attachment / Tool', severity: 'high' },
+        { id: 'operator_station', name: 'Operator Station', severity: 'high' }
+      ],
+      post_operation: [
+        { id: 'post_fluid_check', name: 'Fluid Leak Check', severity: 'high' },
+        { id: 'post_wear_items', name: 'Wear Item Assessment', severity: 'medium' },
+        { id: 'post_damage', name: 'New Damage Check', severity: 'high' },
+        { id: 'post_cleanup', name: 'Machine Cleanliness', severity: 'low' }
+      ],
+      maintenance: [
+        { id: 'maint_fluids', name: 'All Fluid Levels & Condition', severity: 'critical' },
+        { id: 'maint_filters', name: 'Filters & Filtration', severity: 'high' },
+        { id: 'maint_structural', name: 'Structural Integrity', severity: 'critical' },
+        { id: 'maint_electrical', name: 'Electrical System', severity: 'high' }
+      ]
+    };
+
+    function showChecklist(machineType, inspectionType) {
+      const items = CHECKLISTS[inspectionType] || CHECKLISTS.pre_operation;
+      const container = document.getElementById('checklist-items');
+      container.innerHTML = '';
+
+      items.forEach((item, i) => {
+        const status = state.checklistState[item.id] || 'pending';
+        const statusClass = status === 'pass' ? 'pass' : status === 'fail' ? 'fail' : status === 'warn' ? 'warn' : '';
+        const statusIcon = status === 'pass' ? '✓' : status === 'fail' ? '✗' : status === 'warn' ? '!' : (i + 1);
+
+        const el = document.createElement('div');
+        el.className = `checklist-item ${i === 0 && status === 'pending' ? 'active' : ''}`;
+        el.innerHTML = `
+          <div class="checklist-status ${statusClass}">${statusIcon}</div>
+          <div class="checklist-label">${item.name}</div>
+          <div class="checklist-severity severity-${item.severity}">${item.severity}</div>
+        `;
+        el.onclick = () => inspectCheckpoint(item);
+        container.appendChild(el);
+      });
+
+      document.getElementById('checklist-section').style.display = 'block';
+    }
+
+    function inspectCheckpoint(item) {
+      if (!state.capturedImage) {
+        addMessage('system', `📸 Capture a photo of the <strong>${item.name}</strong> area first, then click this checkpoint again.`);
+        return;
+      }
+      const input = document.getElementById('chat-input');
+      input.value = `Inspect checkpoint: ${item.name}`;
+      autoResize(input);
+      // The message will carry the image and be routed to inspect_checkpoint
+      sendMessage(item.id);
+    }
+
+    function updateChecklistItem(checkpointId, status) {
+      state.checklistState[checkpointId] = status;
+      // Re-render
+      if (document.getElementById('checklist-section').style.display !== 'none') {
+        showChecklist(state.machineType, state.inspectionType);
+      }
+    }
+
+    // ─── Chat ───────────────────────────────────────────────────────────
+    function addMessage(role, content, imageDataUrl = null) {
+      const container = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = `message ${role}`;
+
+      if (role === 'assistant') {
+        const agentLabel = document.createElement('div');
+        agentLabel.className = 'agent-name';
+        agentLabel.textContent = '🔍 Walkaround Inspector';
+        div.appendChild(agentLabel);
+
+        const body = document.createElement('div');
+        body.innerHTML = marked.parse(content);
+        div.appendChild(body);
+      } else if (role === 'user') {
+        div.textContent = content;
+        if (imageDataUrl) {
+          const img = document.createElement('img');
+          img.className = 'message-image';
+          img.src = imageDataUrl;
+          div.appendChild(img);
+        }
+      } else {
+        div.innerHTML = content;
+      }
+
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function addTypingIndicator() {
+      const container = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'message assistant';
+      div.id = 'typing-msg';
+      div.innerHTML = `
+        <div class="agent-name">🔍 Walkaround Inspector</div>
+        <div class="typing-indicator"><span></span><span></span><span></span></div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const el = document.getElementById('typing-msg');
+      if (el) el.remove();
+    }
+
+    function clearChat() {
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = '';
+      state.conversationHistory = [];
+      state.checklistState = {};
+      state.inspectionSession = null;
+      document.getElementById('checklist-section').style.display = 'none';
+      addMessage('system', '🔍 Chat cleared. Ready for a new inspection.');
+    }
+
+    // ─── Send Message ───────────────────────────────────────────────────
+    async function sendMessage(checkpointId = null) {
+      const input = document.getElementById('chat-input');
+      let userText = input.value.trim();
+      if (!userText && !state.capturedImage) return;
+      if (state.isProcessing) return;
+
+      state.isProcessing = true;
+      document.getElementById('send-btn').disabled = true;
+      updateStatus('processing');
+
+      // Show user message
+      const displayText = userText || '(Image sent for analysis)';
+      addMessage('user', displayText, state.capturedImage ? state.capturedImageFull : null);
+
+      // Build the message for the API
+      // We compose a natural language prompt that includes the image context
+      let apiMessage = userText;
+
+      // If there's an image, we'll pass it as a parameter hint in the message
+      // The actual base64 will go in the API call
+      if (state.capturedImage) {
+        if (!userText) {
+          apiMessage = `Analyze this equipment image. Machine type: ${state.machineType}`;
+        }
+        
+        // Augment the message with machine context
+        apiMessage += ` [Machine: ${state.machineType}${state.machineModel ? ' ' + state.machineModel : ''}]`;
+        
+        if (checkpointId) {
+          apiMessage += ` [Checkpoint: ${checkpointId}]`;
+        }
+        apiMessage += ` [IMAGE_ATTACHED: The user has attached a base64 image for vision analysis. Call the MachineWalkaround agent with action='${checkpointId ? 'inspect_checkpoint' : 'analyze_image'}', pass the image_base64 parameter, machine_type='${state.machineType}'${checkpointId ? ", checkpoint_id='" + checkpointId + "'" : ''}]`;
+      }
+
+      // Update conversation history
+      state.conversationHistory.push({ role: 'user', content: apiMessage });
+
+      // Clear input
+      input.value = '';
+      autoResize(input);
+
+      // Build request body - include the image_base64 at the top level for the function to use
+      const reqBody = {
+        user_input: apiMessage,
+        conversation_history: state.conversationHistory.slice(-10) // Last 10 messages
+      };
+
+      // If we have a captured image, add it so agents can access it
+      if (state.capturedImage) {
+        reqBody.image_base64 = state.capturedImage;
+      }
+
+      // Clear attached image after sending
+      const sentImageFull = state.capturedImageFull;
+      clearAttachedImage();
+
+      // Show typing indicator
+      addTypingIndicator();
+
+      try {
+        const url = state.apiKey
+          ? `${state.endpoint}?code=${state.apiKey}`
+          : state.endpoint;
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(reqBody)
+        });
+
+        removeTypingIndicator();
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`API error ${response.status}: ${errText}`);
+        }
+
+        const data = await response.json();
+        const assistantResponse = data.assistant_response || 'No response received.';
+
+        // Add to conversation history
+        state.conversationHistory.push({ role: 'assistant', content: assistantResponse });
+
+        // Display
+        addMessage('assistant', assistantResponse);
+
+        // Try to detect pass/fail/caution from response to update checklist
+        if (checkpointId) {
+          if (/✅\s*PASS/i.test(assistantResponse)) {
+            updateChecklistItem(checkpointId, 'pass');
+          } else if (/🔴\s*FAIL/i.test(assistantResponse)) {
+            updateChecklistItem(checkpointId, 'fail');
+          } else if (/⚠️\s*CAUTION|🔶\s*Service/i.test(assistantResponse)) {
+            updateChecklistItem(checkpointId, 'warn');
+          }
+        }
+
+        // Detect if an inspection was started (contains "Session")
+        const sessionMatch = assistantResponse.match(/Session.*?:\s*`?(\w+)`?/);
+        if (sessionMatch) {
+          state.inspectionSession = sessionMatch[1];
+        }
+
+        updateStatus('ready');
+      } catch (error) {
+        removeTypingIndicator();
+        console.error('Send error:', error);
+        addMessage('error', `⚠️ ${error.message}`);
+        updateStatus('error');
+      }
+
+      state.isProcessing = false;
+      document.getElementById('send-btn').disabled = false;
+      input.focus();
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────
+    function handleKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function updateStatus(status) {
+      const dot = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+      dot.className = 'status-dot';
+
+      switch (status) {
+        case 'ready':
+          text.textContent = 'Ready';
+          break;
+        case 'connecting':
+          dot.classList.add('connecting');
+          text.textContent = 'Connecting...';
+          break;
+        case 'processing':
+          dot.classList.add('connecting');
+          text.textContent = 'Analyzing...';
+          break;
+        case 'offline':
+          dot.classList.add('offline');
+          text.textContent = 'Offline';
+          break;
+        case 'error':
+          dot.classList.add('offline');
+          text.textContent = 'Error';
+          setTimeout(() => updateStatus('ready'), 5000);
+          break;
+      }
+    }
+
+    // ─── Health Check ────────────────────────────────────────────────────
+    async function checkEndpointHealth() {
+      updateStatus('connecting');
+      try {
+        const url = state.apiKey
+          ? `${state.endpoint}?code=${state.apiKey}`
+          : state.endpoint;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_input: 'health_check', conversation_history: [] }),
+          signal: AbortSignal.timeout(30000)
+        });
+        if (response.ok || response.status === 400) {
+          // 400 still means the endpoint is reachable and responding
+          updateStatus('ready');
+          addMessage('system', '✅ Connected to RAPP endpoint. Ready to inspect!');
+        } else {
+          updateStatus('error');
+          addMessage('error', `⚠️ Endpoint returned status ${response.status}. Check Settings (⚙️) to verify the URL.`);
+        }
+      } catch (err) {
+        updateStatus('offline');
+        addMessage('error', `⚠️ Cannot reach endpoint at <code>${state.endpoint}</code>.<br/>Make sure <code>func start</code> is running, then click ⚙️ to check settings.`);
+      }
+    }
+
+    // ─── Settings ───────────────────────────────────────────────────────
+    function openSettings() {
+      document.getElementById('setting-endpoint').value = state.endpoint;
+      document.getElementById('setting-key').value = state.apiKey;
+      document.getElementById('setting-model').value = state.machineModel;
+      document.getElementById('setting-inspection-type').value = state.inspectionType;
+      document.getElementById('settings-overlay').classList.add('visible');
+    }
+
+    function closeSettings() {
+      document.getElementById('settings-overlay').classList.remove('visible');
+    }
+
+    function closeSettingsOutside(e) {
+      if (e.target === e.currentTarget) closeSettings();
+    }
+
+    function saveSettings() {
+      state.endpoint = document.getElementById('setting-endpoint').value.trim() || state.endpoint;
+      state.apiKey = document.getElementById('setting-key').value.trim();
+      state.machineModel = document.getElementById('setting-model').value.trim();
+      state.inspectionType = document.getElementById('setting-inspection-type').value;
+
+      localStorage.setItem('vmr_endpoint', state.endpoint);
+      localStorage.setItem('vmr_apiKey', state.apiKey);
+      localStorage.setItem('vmr_machineModel', state.machineModel);
+      localStorage.setItem('vmr_inspectionType', state.inspectionType);
+
+      closeSettings();
+      addMessage('system', '⚙️ Settings saved.');
+    }
+  </script>
+</body>
+</html>

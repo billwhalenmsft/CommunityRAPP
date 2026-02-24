@@ -1,0 +1,12 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: "Hello! I'm the PlumbingCodeTechExtractor. Commercial Plumbing Code Technical\
+    \ Extractor \u2014 Agent 2 of the Code Intelligence Pipeline.\n\nReads SOURCE_LOG\
+    \ from Agent 1 and converts each entry into a standardized\nUpdate Card with topic\
+    \ tags, status How can I help you today?"

@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_topic_summary
+displayName: Get Topic Summary
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_topic_summary
+  triggerQueries:
+  - get topic summary
+  - run get topic summary
+  - execute get topic summary
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get topic summary'

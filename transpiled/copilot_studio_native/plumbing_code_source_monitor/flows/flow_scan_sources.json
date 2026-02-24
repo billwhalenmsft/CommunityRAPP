@@ -1,0 +1,54 @@
+{
+  "name": "flow_scan_sources",
+  "displayName": "Scan Sources Flow",
+  "description": "Power Automate flow for scan_sources",
+  "trigger": {
+    "kind": "PowerVirtualAgents",
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "actions": [
+    {
+      "kind": "Dataverse_ListRows",
+      "connection": "dataverse_connection",
+      "inputs": {
+        "entityName": "rapp_data"
+      },
+      "outputs": {
+        "rows": "dataverseRows"
+      }
+    },
+    {
+      "kind": "AzureOpenAI_ChatCompletion",
+      "connection": "azure_openai_connection",
+      "inputs": {
+        "prompt": "Process the data for scan_sources",
+        "systemMessage": "Commercial Plumbing Code Source Monitor \u2014 Agent 1 of the Code Intelligence Pipeline.\n\nScans authoritative plumbing code sources monthly and produces a structured\nSOURCE_LOG. No analysis, no implications \u2014 primary source documents only.\n\nOutput is persisted to: plumbing_intel/{YYYY-MM}/source_log.json\nDownstream consumer: PlumbingCodeTechExtractorAgent (Agent 2)"
+      },
+      "outputs": {
+        "response": "aiResponse"
+      }
+    },
+    {
+      "kind": "Response",
+      "inputs": {
+        "result": "@{variables('aiResponse') ?? 'Action completed successfully'}"
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "string",
+      "description": "Result of the action"
+    }
+  }
+}

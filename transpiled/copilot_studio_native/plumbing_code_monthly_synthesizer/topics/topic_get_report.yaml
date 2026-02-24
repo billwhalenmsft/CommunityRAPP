@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_report
+displayName: Get Report
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_report
+  triggerQueries:
+  - get report
+  - run get report
+  - execute get report
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get report'

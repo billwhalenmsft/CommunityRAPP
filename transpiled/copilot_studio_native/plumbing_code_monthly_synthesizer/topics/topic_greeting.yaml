@@ -1,0 +1,12 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: "Hello! I'm the PlumbingCodeMonthlySynthesizer. Commercial Plumbing Code\
+    \ Monthly Synthesizer \u2014 Agent 3 of the Code Intelligence Pipeline.\n\nReads\
+    \ UPDATE_CARDS from Agent 2 and produces a structured monthly report\norganized\
+    \ by topic tag. Neutral, fac How can I help you today?"

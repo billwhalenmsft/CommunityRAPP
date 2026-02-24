@@ -1,0 +1,13 @@
+kind: AdaptiveDialog
+id: topic_get_source_list
+displayName: Get Source List
+triggers:
+- kind: OnRecognizedIntent
+  intent: get_source_list
+  triggerQueries:
+  - get source list
+  - run get source list
+  - execute get source list
+actions:
+- kind: GenerativeAnswer
+  prompt: 'Help the user with: get source list'

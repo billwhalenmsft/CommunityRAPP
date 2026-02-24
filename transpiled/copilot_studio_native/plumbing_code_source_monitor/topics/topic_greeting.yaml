@@ -1,0 +1,12 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: SendMessage
+  message: "Hello! I'm the PlumbingCodeSourceMonitor. Commercial Plumbing Code Source\
+    \ Monitor \u2014 Agent 1 of the Code Intelligence Pipeline.\n\nScans authoritative\
+    \ plumbing code sources monthly and produces a structured\nSOURCE_LOG. No analysis,\
+    \ no implicatio How can I help you today?"
