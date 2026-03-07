@@ -7,6 +7,14 @@
         "server",
         "start"
       ]
+    },
+    "azureDiagramMcp": {
+      "command": "c:\\Users\\billwhalen\\OneDrive - Microsoft\\Documents\\GitHub\\RAPP\\CommunityRAPP-main\\.venv\\Scripts\\python.exe",
+      "args": [
+        "-m",
+        "azure_diagram_mcp_server.server"
+      ],
+      "cwd": "c:\\Users\\billwhalen\\OneDrive - Microsoft\\Documents\\GitHub\\RAPP\\CommunityRAPP-main\\.tools\\azure-diagram-mcp"
     }
   }
 }
