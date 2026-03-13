@@ -1,0 +1,738 @@
+Screens:
+  scrWarrantyLookup:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      Height: =800
+      OnVisible: |-
+        =Set(varSerialSearched, false);
+        Set(varClaimSubmitted, false);
+        Set(varClaimError, "");
+        Set(varShowClaimForm, false);
+        Set(varWarrantyActive, false);
+        Set(varActionMessage, "");
+        Set(varShowClaimHistory, false);
+        Clear(colSerialResult);
+        Clear(colClaimHistory);
+        // Auto-search if serial was passed from case form (parsed in scrHome)
+        If(
+            !IsBlank(varPassedSerial),
+            ClearCollect(
+                colSerialResult,
+                Filter('Product Serials', 'Serial ID' = varPassedSerial)
+            );
+            Set(varSerialSearched, true);
+            If(
+                CountRows(colSerialResult) > 0 && !IsBlank(First(colSerialResult).'Warranty End'),
+                Set(
+                    varWarrantyActive,
+                    DateDiff(Today(), First(colSerialResult).'Warranty End', TimeUnit.Days) > 0
+                ),
+                Set(varWarrantyActive, false)
+            )
+        )
+      Width: =380
+    Children:
+      - rectWarrBar:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =6
+            Width: =Parent.Width
+      - icoWarrIcon:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            Height: =32
+            Icon: =Icon.Lock
+            Width: =32
+            X: =16
+            Y: =18
+      - lblWarrTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =34
+            Size: =20
+            Text: ="Warranty Lookup"
+            Width: =322
+            X: =44
+            Y: =16
+      - lblWarrSubtitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =22
+            Size: =11
+            Text: ="Search by serial number"
+            Width: =Parent.Width - 74
+            X: =51
+            Y: =48
+      - btnHomeIcon_5:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 120, 212, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 120, 212, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =32
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+            Size: =10
+            Text: ="Home"
+            Width: =52
+            X: =Parent.Width - 68
+            Y: =22
+      - rectWarrDivider1:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =78
+      - lblSerialLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =18
+            Size: =11
+            Text: ="Serial Number"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =88
+      - txtSerialNum:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            Default: =varPassedSerial
+            FocusedBorderColor: =RGBA(0, 78, 140, 1)
+            Height: =36
+            HintText: ="Enter serial number..."
+            Size: =12
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =110
+      - btnSerialSearch:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledFill: =RGBA(200, 198, 196, 1)
+            DisplayMode: =If(Trim(txtSerialNum.Text) = "", DisplayMode.Disabled, DisplayMode.Edit)
+            Fill: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =36
+            HoverFill: =RGBA(0, 58, 120, 1)
+            OnSelect: |-
+              =Set(varClaimSubmitted, false);
+              Set(varClaimError, "");
+              Set(varShowClaimForm, false);
+              Set(varShowClaimHistory, false);
+              Set(varActionMessage, "");
+              ClearCollect(
+                  colSerialResult,
+                  Filter('Product Serials', 'Serial ID' = Trim(txtSerialNum.Text))
+              );
+              Set(varSerialSearched, true);
+              If(
+                  CountRows(colSerialResult) > 0 && !IsBlank(First(colSerialResult).'Warranty End'),
+                  Set(
+                      varWarrantyActive,
+                      DateDiff(Today(), First(colSerialResult).'Warranty End', TimeUnit.Days) > 0
+                  ),
+                  Set(varWarrantyActive, false)
+              )
+            PressedFill: =RGBA(0, 38, 100, 1)
+            Size: =12
+            Text: ="Search"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =154
+      - rectWarrDivider2:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Visible: =varSerialSearched
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =198
+      - lblNotFound:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(97, 96, 96, 1)
+            Size: =11
+            Text: ="No serial number found matching '" & Trim(txtSerialNum.Text) & "'."
+            Visible: =varSerialSearched && CountRows(colSerialResult) = 0
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =210
+      - rectResultCard:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(237, 235, 233, 1)
+            BorderThickness: =1
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =180
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =206
+      - lblResProdLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =11
+            Text: ="Product"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =100
+            X: =24
+            Y: =214
+      - lblResProdVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =36
+            Size: =11
+            Text: =First(colSerialResult).'Product Name'
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =Parent.Width - 148
+            X: =128
+            Y: =214
+      - lblResSerialLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =11
+            Text: ="Serial ID"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =100
+            X: =24
+            Y: =283
+      - lblResSerialVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: =First(colSerialResult).'Serial ID'
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =Parent.Width - 148
+            X: =128
+            Y: =283
+      - lblResOrderLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =11
+            Text: |-
+              ="Orig. Order #"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =100
+            X: =24
+            Y: =307
+      - lblResOrderVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =If(
+                  IsBlank(First(colSerialResult).'Original Order Number'),
+                  "—",
+                  First(colSerialResult).'Original Order Number'
+              )
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =Parent.Width - 148
+            X: =128
+            Y: =307
+      - lblResWStartLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =11
+            Text: ="Warr. Start"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =100
+            X: =24
+            Y: =331
+      - lblResWStartVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =If(
+                  IsBlank(First(colSerialResult).'Warranty Start'),
+                  "—",
+                  Text(First(colSerialResult).'Warranty Start', "mm/dd/yyyy")
+              )
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =Parent.Width - 148
+            X: =128
+            Y: =331
+      - lblResWEndLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =11
+            Text: ="Warr. End"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =100
+            X: =24
+            Y: =355
+      - lblResWEndVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =If(
+                  IsBlank(First(colSerialResult).'Warranty End'),
+                  "—",
+                  Text(First(colSerialResult).'Warranty End', "mm/dd/yyyy")
+              )
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =Parent.Width - 148
+            X: =128
+            Y: =355
+      - lblWarrStatus:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: |-
+              =If(
+                  IsBlank(First(colSerialResult).'Warranty End'),
+                  RGBA(97, 96, 96, 1),
+                  If(
+                      DateDiff(Today(), First(colSerialResult).'Warranty End', TimeUnit.Days) > 0,
+                      RGBA(16, 124, 16, 1),
+                      RGBA(197, 54, 1, 1)
+                  )
+              )
+            Fill: |-
+              =If(
+                  IsBlank(First(colSerialResult).'Warranty End'),
+                  RGBA(237, 235, 233, 1),
+                  If(
+                      DateDiff(Today(), First(colSerialResult).'Warranty End', TimeUnit.Days) > 0,
+                      RGBA(223, 246, 221, 1),
+                      RGBA(253, 231, 233, 1)
+                  )
+              )
+            FontWeight: =FontWeight.Bold
+            Height: =93
+            Size: =10
+            Text: |-
+              =If(
+                  IsBlank(First(colSerialResult).'Warranty End'),
+                  "NO WARRANTY",
+                  If(
+                      DateDiff(Today(), First(colSerialResult).'Warranty End', TimeUnit.Days) > 0,
+                      "ACTIVE",
+                      "EXPIRED"
+                  )
+              )
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0
+            Width: =101
+            X: =256
+            Y: =282
+      - rectClaimDivider:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varClaimSubmitted
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =396
+      - lblClaimSection:
+          Control: Label@2.5.1
+          Properties:
+            Color: |-
+              =If(varActionMessage <> "", RGBA(16, 124, 16, 1), RGBA(0, 78, 140, 1))
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =12
+            Text: |-
+              =If(
+                  varActionMessage <> "", varActionMessage,
+                  If(varShowClaimForm, "File a Warranty Claim",
+                      If(varShowClaimHistory, "Claim History",
+                          If(varWarrantyActive, "Warranty Actions", "Service Options")
+                      )
+                  )
+              )
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varClaimSubmitted
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =404
+      - btnProcessClaim:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(255, 255, 255, 1)
+            Fill: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =38
+            HoverFill: =RGBA(0, 58, 120, 1)
+            OnSelect: |-
+              =Set(varShowClaimForm, true);
+              Set(varActionMessage, "")
+            PressedFill: =RGBA(0, 38, 100, 1)
+            Size: =12
+            Text: ="Process Warranty Claim"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted && varWarrantyActive
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =430
+      - btnSendReplacement:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Patch(
+                  'Email Activities',
+                  Defaults('Email Activities'),
+                  {
+                      Subject: "Replacement Part — " & First(colSerialResult).'Product Name' & " — SN: " & First(colSerialResult).'Serial ID',
+                      Description: "<html><body style='font-family:Segoe UI,sans-serif;font-size:14px;color:#333'>"
+                          & "<p>A replacement part has been initiated for the following product under active warranty:</p>"
+                          & "<table style='border-collapse:collapse;margin:12px 0'>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Product:</td><td style='padding:4px 0;font-weight:600'>" & First(colSerialResult).'Product Name' & "</td></tr>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Serial:</td><td style='padding:4px 0;font-weight:600'>" & First(colSerialResult).'Serial ID' & "</td></tr>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Warranty Exp:</td><td style='padding:4px 0;font-weight:600'>" & Text(First(colSerialResult).'Warranty End', "mm/dd/yyyy") & "</td></tr>"
+                          & "</table>"
+                          & "<p>The replacement will be shipped to the customer address on file within <b>3-5 business days</b>.</p>"
+                          & "<p>Please review this draft and send when ready.</p>"
+                          & "</body></html>"
+                  }
+              );
+              Set(varActionMessage, "✓ Replacement part email drafted")
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Send Replacement Part"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted && varWarrantyActive
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =472
+      - btnScheduleFieldSvc:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Set(varActionMessage,
+                  "✓ Field service scheduled for "
+                  & Text(DateAdd(Today(), 3, TimeUnit.Days), "mm/dd/yyyy")
+              )
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Schedule Field Service"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted && varWarrantyActive
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =514
+      - btnGoodwillReplace:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(255, 255, 255, 1)
+            Fill: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =38
+            HoverFill: =RGBA(0, 58, 120, 1)
+            OnSelect: =Set(varActionMessage, "✓ Goodwill replacement submitted for approval")
+            PressedFill: =RGBA(0, 38, 100, 1)
+            Size: =12
+            Text: ="Offer Goodwill Replacement"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted && !varWarrantyActive
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =430
+      - btnPaidRepairQuote:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Patch(
+                  'Email Activities',
+                  Defaults('Email Activities'),
+                  {
+                      Subject: "Paid Repair Quote — " & First(colSerialResult).'Product Name' & " — SN: " & First(colSerialResult).'Serial ID',
+                      Description: "<html><body style='font-family:Segoe UI,sans-serif;font-size:14px;color:#333'>"
+                          & "<p>Your product warranty has expired, but we are happy to help with a paid repair option.</p>"
+                          & "<table style='border-collapse:collapse;margin:12px 0'>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Product:</td><td style='padding:4px 0;font-weight:600'>" & First(colSerialResult).'Product Name' & "</td></tr>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Serial:</td><td style='padding:4px 0;font-weight:600'>" & First(colSerialResult).'Serial ID' & "</td></tr>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Warranty Expired:</td><td style='padding:4px 0;font-weight:600;color:#c53601'>" & Text(First(colSerialResult).'Warranty End', "mm/dd/yyyy") & "</td></tr>"
+                          & "</table>"
+                          & "<p><b>Estimated Repair Cost:</b> $485.00 (parts + labor)</p>"
+                          & "<p>Please reply to approve or contact us with questions.</p>"
+                          & "</body></html>"
+                  }
+              );
+              Set(varActionMessage, "✓ Paid repair quote drafted — $485.00")
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Create Paid Repair Quote"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted && !varWarrantyActive
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =472
+      - btnTradeInUpgrade:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Set(varActionMessage, "✓ Trade-in/upgrade offer sent to customer")
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Offer Trade-In / Upgrade"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted && !varWarrantyActive
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =514
+      - rectUnivDivider:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =556
+      - btnLogFeedback:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Set(varActionMessage,
+                  "✓ Feedback logged — " & First(colSerialResult).'Product Name'
+              )
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Log Product Feedback"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =564
+      - btnViewHistory:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =ClearCollect(
+                  colClaimHistory,
+                  Filter(
+                      'Warranty Claims',
+                      'Product Serial'.'Serial ID' = First(colSerialResult).'Serial ID'
+                  )
+              );
+              Set(varShowClaimHistory, true);
+              Set(varActionMessage, "")
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="View Claim History"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && !varShowClaimForm && !varShowClaimHistory && !varClaimSubmitted
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =606
+      - lblClaimDescLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =18
+            Size: =11
+            Text: ="Claim Description"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && varShowClaimForm && !varClaimSubmitted
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =430
+      - txtClaimDesc:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            FocusedBorderColor: =RGBA(0, 78, 140, 1)
+            Height: =70
+            HintText: ="Describe the issue or claim..."
+            Mode: =TextMode.MultiLine
+            Size: =11
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && varShowClaimForm && !varClaimSubmitted
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =452
+      - btnSubmitClaim:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledFill: =RGBA(200, 198, 196, 1)
+            DisplayMode: =If(Trim(txtClaimDesc.Text) = "", DisplayMode.Disabled, DisplayMode.Edit)
+            Fill: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =38
+            HoverFill: =RGBA(0, 58, 120, 1)
+            OnSelect: |-
+              =Set(varClaimError, "");
+              IfError(
+                  Patch(
+                      'Warranty Claims',
+                      Defaults('Warranty Claims'),
+                      {
+                          'Product Serial': LookUp('Product Serials', 'Serial ID' = First(colSerialResult).'Serial ID'),
+                          Description: txtClaimDesc.Text,
+                          'Claim Date': Now()
+                      }
+                  );
+                  Set(varClaimSubmitted, true);
+                  Set(varShowClaimForm, false),
+                  Set(varClaimError, "Error filing claim: " & FirstError.Message)
+              )
+            PressedFill: =RGBA(0, 38, 100, 1)
+            Size: =12
+            Text: ="Submit Claim"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && varShowClaimForm && !varClaimSubmitted
+            Width: =(Parent.Width - 40) / 2
+            X: =16
+            Y: =530
+      - btnCancelClaim:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            BorderThickness: =1
+            Color: =RGBA(96, 94, 92, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(245, 245, 245, 1)
+            OnSelect: =Set(varShowClaimForm, false)
+            PressedFill: =RGBA(237, 235, 233, 1)
+            Size: =12
+            Text: ="Cancel"
+            Visible: =varSerialSearched && CountRows(colSerialResult) > 0 && varShowClaimForm && !varClaimSubmitted
+            Width: =(Parent.Width - 40) / 2
+            X: =(Parent.Width + 8) / 2
+            Y: =530
+      - lblClaimError:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(197, 54, 1, 1)
+            Size: =11
+            Text: =varClaimError
+            Visible: =varClaimError <> ""
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =576
+      - lblClaimSuccess:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(16, 124, 16, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =24
+            Size: =12
+            Text: ="✓ Warranty claim submitted successfully"
+            Visible: =varClaimSubmitted
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =404
+      - lblHistorySummary:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            Height: =150
+            Size: =11
+            Text: |-
+              =If(
+                  CountRows(colClaimHistory) = 0,
+                  "No claims found for serial " & First(colSerialResult).'Serial ID' & ".",
+                  CountRows(colClaimHistory) & " claim(s) found:"
+                  & Char(10) & Char(10)
+                  & Concat(
+                      colClaimHistory,
+                      "• " & If(!IsBlank('Claim Number'), 'Claim Number', "—")
+                      & "  |  " & Text('Claim Date', "mm/dd/yyyy")
+                      & "  |  " & If(!IsBlank(Description), Left(Description, 30) & "...", "—"),
+                      Char(10)
+                  )
+              )
+            Visible: =varShowClaimHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =430
+      - btnBackFromHistory:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Set(varShowClaimHistory, false)
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: |-
+              ="← Back to Actions"
+            Visible: =varShowClaimHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =588
+      - btnWarrBackHome:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Back to Service Toolkit"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =Parent.Height - 50

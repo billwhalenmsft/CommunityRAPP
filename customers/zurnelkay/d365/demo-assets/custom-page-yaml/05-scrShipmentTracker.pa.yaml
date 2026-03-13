@@ -1,0 +1,495 @@
+# ============================================
+#  SHIPMENT TRACKER (scrShipmentTracker)
+#  Format: Power Apps pa.yaml SchemaV3
+# ============================================
+#
+#  Single-screen shipment tracking tool.
+#  Auto-populates carrier & tracking # from
+#  varSelectedOrder if available, or allows
+#  manual entry. Calls ShipEngine custom
+#  connector for live tracking status & events.
+#
+#  Prerequisites:
+#    - ShipEngine custom connector imported
+#    - Connection created with ShipEngine API key
+#    - 'ShipEngine' added as data source
+#    - 'Sales Orders' data source refreshed
+#      (to pick up bw_trackingnumber, bw_carriercode)
+#
+#  Variables used (initialized in scrHome):
+#    varTrackingResult   - connector response record
+#    varTrackingError    - error message text
+#    varTrackingLoading  - boolean, disables button
+#    colTrackingEvents   - events collection (typed)
+# ============================================
+
+Screens:
+  scrShipmentTracker:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      OnVisible: |-
+        =Set(varTrackingResult, Blank());
+        Set(varTrackingError, "");
+        Set(varTrackingLoading, false);
+        Clear(colTrackingEvents)
+    Children:
+      # -- Blue accent bar --
+      - rectShipBar:
+          Control: Rectangle
+          Properties:
+            X: =0
+            Y: =0
+            Width: =Parent.Width
+            Height: =6
+            Fill: =RGBA(0, 120, 212, 1)
+
+      # -- Send icon (truck) --
+      - icoShipIcon:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Send
+            X: =16
+            Y: =18
+            Width: =32
+            Height: =32
+            Color: =RGBA(0, 120, 212, 1)
+
+      # -- Title --
+      - lblShipTitle:
+          Control: Label
+          Properties:
+            Text: ="Shipment Tracker"
+            X: =58
+            Y: =16
+            Width: =200
+            Height: =30
+            Size: =20
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Home button (top right) --
+      - btnShipHome:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Home
+            X: =Parent.Width - 52
+            Y: =16
+            Width: =32
+            Height: =32
+            Color: =RGBA(96, 94, 92, 1)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+
+      # -- Subtitle --
+      - lblShipSubtitle:
+          Control: Label
+          Properties:
+            Text: ="Real-time tracking via ShipEngine"
+            X: =58
+            Y: =48
+            Width: =Parent.Width - 74
+            Height: =22
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+
+      # -- Divider --
+      - rectShipDivider1:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =78
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  INPUT SECTION
+      # =============================================
+
+      # -- Carrier label --
+      - lblCarrierLbl:
+          Control: Label
+          Properties:
+            Text: ="Carrier"
+            X: =16
+            Y: =88
+            Width: =Parent.Width - 32
+            Height: =22
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Carrier dropdown --
+      - ddCarrier:
+          Control: Classic/DropDown
+          Properties:
+            Items: |-
+              =["FedEx", "UPS", "USPS", "DHL Express"]
+            Default: |-
+              =If(
+                  !IsBlank(varSelectedOrder.'Carrier Code'),
+                  Switch(
+                      varSelectedOrder.'Carrier Code',
+                      "fedex", "FedEx",
+                      "ups", "UPS",
+                      "usps", "USPS",
+                      "dhl_express", "DHL Express",
+                      "FedEx"
+                  ),
+                  "FedEx"
+              )
+            X: =16
+            Y: =110
+            Width: =Parent.Width - 32
+            Height: =36
+            Size: =12
+            BorderColor: =RGBA(200, 198, 196, 1)
+
+      # -- Tracking Number label --
+      - lblTrackingLbl:
+          Control: Label
+          Properties:
+            Text: ="Tracking Number"
+            X: =16
+            Y: =154
+            Width: =Parent.Width - 32
+            Height: =22
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Tracking Number input --
+      - txtTrackingNum:
+          Control: Classic/TextInput
+          Properties:
+            Default: |-
+              =If(
+                  !IsBlank(varSelectedOrder.'Tracking Number'),
+                  varSelectedOrder.'Tracking Number',
+                  ""
+              )
+            HintText: ="Enter tracking number"
+            X: =16
+            Y: =176
+            Width: =Parent.Width - 32
+            Height: =36
+            Size: =12
+            BorderColor: =RGBA(200, 198, 196, 1)
+
+      # -- Track button --
+      - btnTrack:
+          Control: Classic/Button
+          Properties:
+            Text: |-
+              =If(varTrackingLoading, "Tracking...", "Track Shipment")
+            X: =16
+            Y: =222
+            Width: =Parent.Width - 32
+            Height: =40
+            Fill: =RGBA(0, 120, 212, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Size: =13
+            FontWeight: =FontWeight.Bold
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 100, 190, 1)
+            PressedFill: =RGBA(0, 80, 170, 1)
+            DisabledFill: =RGBA(200, 198, 196, 1)
+            DisplayMode: |-
+              =If(
+                  varTrackingLoading || Len(Trim(txtTrackingNum.Text)) = 0,
+                  DisplayMode.Disabled,
+                  DisplayMode.Edit
+              )
+            OnSelect: |-
+              =Set(varTrackingLoading, true);
+              Set(varTrackingError, "");
+              Set(
+                  varTrackingResult,
+                  IfError(
+                      ShipEngine.GetTrackingInfo(
+                          Substitute(Lower(ddCarrier.Selected.Value), " ", "_"),
+                          Trim(txtTrackingNum.Text)
+                      ),
+                      Set(varTrackingError, "Connector error: " & FirstError.Message);
+                      Blank()
+                  )
+              );
+              If(
+                  IsBlank(varTrackingResult) && varTrackingError = "",
+                  Set(varTrackingError, "No tracking data returned. Check carrier and tracking number.");
+                  Clear(colTrackingEvents),
+                  !IsBlank(varTrackingResult),
+                  ClearCollect(colTrackingEvents, varTrackingResult.events);
+                  Set(varTrackingError, "")
+              );
+              Set(varTrackingLoading, false)
+
+      # =============================================
+      #  ERROR MESSAGE (visible when error)
+      # =============================================
+      - lblTrackError:
+          Control: Label
+          Properties:
+            Text: =varTrackingError
+            X: =16
+            Y: =270
+            Width: =Parent.Width - 32
+            Height: =60
+            Size: =11
+            Color: =RGBA(197, 54, 1, 1)
+            Visible: =varTrackingError <> ""
+            Overflow: =Overflow.Scroll
+
+      # =============================================
+      #  STATUS BANNER (visible when result)
+      # =============================================
+      - rectStatusBanner:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =270
+            Width: =Parent.Width - 32
+            Height: =60
+            Fill: |-
+              =Switch(
+                  varTrackingResult.status_code,
+                  "DE", RGBA(16, 124, 16, 0.1),
+                  "IT", RGBA(0, 120, 212, 0.1),
+                  "AC", RGBA(0, 120, 212, 0.1),
+                  "EX", RGBA(197, 54, 1, 0.1),
+                  "AT", RGBA(255, 170, 0, 0.1),
+                  RGBA(96, 94, 92, 0.1)
+              )
+            BorderColor: |-
+              =Switch(
+                  varTrackingResult.status_code,
+                  "DE", RGBA(16, 124, 16, 0.3),
+                  "IT", RGBA(0, 120, 212, 0.3),
+                  "AC", RGBA(0, 120, 212, 0.3),
+                  "EX", RGBA(197, 54, 1, 0.3),
+                  "AT", RGBA(255, 170, 0, 0.3),
+                  RGBA(96, 94, 92, 0.3)
+              )
+            BorderThickness: =1
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      - lblStatusText:
+          Control: Label
+          Properties:
+            Text: |-
+              =Switch(
+                  varTrackingResult.status_code,
+                  "DE", "DELIVERED",
+                  "IT", "IN TRANSIT",
+                  "AC", "ACCEPTED",
+                  "EX", "EXCEPTION",
+                  "AT", "DELIVERY ATTEMPT",
+                  "NY", "NOT YET SHIPPED",
+                  "UN", "UNKNOWN",
+                  ""
+              )
+            X: =24
+            Y: =278
+            Width: =Parent.Width - 48
+            Height: =24
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: |-
+              =Switch(
+                  varTrackingResult.status_code,
+                  "DE", RGBA(16, 124, 16, 1),
+                  "IT", RGBA(0, 120, 212, 1),
+                  "AC", RGBA(0, 120, 212, 1),
+                  "EX", RGBA(197, 54, 1, 1),
+                  "AT", RGBA(255, 170, 0, 1),
+                  RGBA(96, 94, 92, 1)
+              )
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      - lblStatusDetail:
+          Control: Label
+          Properties:
+            Text: =varTrackingResult.status_description
+            X: =24
+            Y: =300
+            Width: =Parent.Width - 48
+            Height: =22
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      # =============================================
+      #  DETAILS SECTION (visible when result)
+      # =============================================
+      - rectShipDivider2:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =338
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      - lblShipDate:
+          Control: Label
+          Properties:
+            Text: |-
+              ="Shipped: " & If(!IsBlank(varTrackingResult.ship_date), Text(DateTimeValue(Substitute(varTrackingResult.ship_date, "Z", "")), "mmm dd, yyyy"), "--")
+            X: =16
+            Y: =348
+            Width: =Parent.Width - 32
+            Height: =22
+            Size: =11
+            Color: =RGBA(50, 49, 48, 1)
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      - lblETADate:
+          Control: Label
+          Properties:
+            Text: |-
+              ="Est. Delivery: " & If(!IsBlank(varTrackingResult.estimated_delivery_date), Text(DateTimeValue(Substitute(varTrackingResult.estimated_delivery_date, "Z", "")), "mmm dd, yyyy"), "--")
+            X: =16
+            Y: =368
+            Width: =Parent.Width - 32
+            Height: =22
+            Size: =11
+            Color: =RGBA(50, 49, 48, 1)
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      - lblDeliveredDate:
+          Control: Label
+          Properties:
+            Text: |-
+              ="Delivered: " & If(!IsBlank(varTrackingResult.actual_delivery_date), Text(DateTimeValue(Substitute(varTrackingResult.actual_delivery_date, "Z", "")), "mmm dd, yyyy"), "--")
+            X: =16
+            Y: =388
+            Width: =Parent.Width - 32
+            Height: =22
+            Size: =11
+            Color: |-
+              =If(varTrackingResult.status_code = "DE", RGBA(16, 124, 16, 1), RGBA(50, 49, 48, 1))
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      - lblCarrierStatus:
+          Control: Label
+          Properties:
+            Text: |-
+              ="Carrier: " & varTrackingResult.carrier_status_description
+            X: =16
+            Y: =408
+            Width: =Parent.Width - 32
+            Height: =22
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      # =============================================
+      #  TRACKING EVENTS
+      # =============================================
+      - rectShipDivider3:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =438
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+
+      - lblEventsTitle:
+          Control: Label
+          Properties:
+            Text: ="Tracking Events"
+            X: =16
+            Y: =448
+            Width: =Parent.Width - 32
+            Height: =24
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+            Visible: |-
+              =!IsBlank(varTrackingResult) && varTrackingError = "" && CountRows(colTrackingEvents) > 0
+
+      # -- Events gallery (vertical, blank template) --
+      - galEvents:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            Items: =colTrackingEvents
+            X: =0
+            Y: =474
+            Width: =Parent.Width
+            Height: =Parent.Height - 524
+            TemplateSize: =72
+            TemplatePadding: =0
+            Fill: =RGBA(250, 250, 250, 1)
+            Visible: =!IsBlank(varTrackingResult) && varTrackingError = ""
+          Children:
+            - lblEventTime:
+                Control: Label
+                Properties:
+                  Text: |-
+                    =Text(DateTimeValue(Substitute(ThisItem.occurred_at, "Z", "")), "mmm dd, yyyy  h:mm AM/PM")
+                  X: =16
+                  Y: =6
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =20
+                  Size: =10
+                  FontWeight: =FontWeight.Bold
+                  Color: =RGBA(50, 49, 48, 1)
+                  OnSelect: =Select(Parent)
+
+            - lblEventDesc:
+                Control: Label
+                Properties:
+                  Text: =ThisItem.description
+                  X: =16
+                  Y: =26
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =20
+                  Size: =10
+                  Color: =RGBA(50, 49, 48, 1)
+                  OnSelect: =Select(Parent)
+
+            - lblEventLoc:
+                Control: Label
+                Properties:
+                  Text: |-
+                    =ThisItem.city_locality & If(!IsBlank(ThisItem.state_province), ", " & ThisItem.state_province, "") & If(!IsBlank(ThisItem.postal_code), " " & ThisItem.postal_code, "")
+                  X: =16
+                  Y: =46
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =18
+                  Size: =9
+                  Color: =RGBA(96, 94, 92, 1)
+                  OnSelect: =Select(Parent)
+
+            - rectEventDivider:
+                Control: Rectangle
+                Properties:
+                  X: =16
+                  Y: =Parent.TemplateHeight - 1
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =1
+                  Fill: =RGBA(237, 235, 233, 1)
+                  OnSelect: =Select(Parent)
+
+      # =============================================
+      #  FOOTER - BACK BUTTON
+      # =============================================
+      - btnBackToHome:
+          Control: Classic/Button
+          Properties:
+            Text: ="Back to Service Toolkit"
+            X: =16
+            Y: =Parent.Height - 50
+            Width: =Parent.Width - 32
+            Height: =38
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(0, 120, 212, 1)
+            BorderColor: =RGBA(0, 120, 212, 1)
+            BorderThickness: =1
+            Size: =12
+            HoverFill: =RGBA(0, 120, 212, 0.05)
+            PressedFill: =RGBA(0, 120, 212, 0.1)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)

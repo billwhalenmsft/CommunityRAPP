@@ -1,0 +1,632 @@
+# ============================================
+#  HOME SCREEN - Service Toolkit (scrHome)
+#  Format: Power Apps pa.yaml SchemaV3
+# ============================================
+#
+#  Launcher screen for CSR productivity tools.
+#  Paste this screen FIRST, then paste each
+#  tool's screens afterward.
+# ============================================
+
+Screens:
+  scrHome:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      OnVisible: |-
+        =// Initialize all global variables
+        Set(varSelectedOrder, Blank());
+        Set(varAgentNotes, "");
+        Set(varTimelineAdded, false);
+        Set(varShowAddLine, false);
+        // Initialize collections with typed schemas so Power Apps
+        // can resolve column names on all downstream screens.
+        ClearCollect(
+            colQtyChanges,
+            {
+                OrderProduct: GUID("00000000-0000-0000-0000-000000000000"),
+                OrigQty: 0,
+                NewQty: 0,
+                Delta: 0,
+                AdjAmount: 0,
+                ProductName: "",
+                LineNum: 0
+            }
+        );
+        Clear(colQtyChanges);
+        ClearCollect(
+            colNewLines,
+            {
+                ProductName: "",
+                Qty: 0,
+                UnitPrice: 0,
+                LineAmount: 0
+            }
+        );
+        Clear(colNewLines);
+        ClearCollect(
+            colDateChanges,
+            {
+                LineId: Blank(),
+                NewDate: Now()
+            }
+        );
+        Clear(colDateChanges);
+        ClearCollect(
+            colDatePatchLines,
+            {
+                LineId: Blank(),
+                NewDate: Now()
+            }
+        );
+        Clear(colDatePatchLines);
+        // Shipment Tracker variables
+        Set(varTrackingResult, Blank());
+        Set(varTrackingError, "");
+        Set(varTrackingLoading, false);
+        ClearCollect(
+            colTrackingEvents,
+            {
+                occurred_at: "",
+                description: "",
+                city_locality: "",
+                state_province: "",
+                postal_code: "",
+                country_code: "",
+                event_code: "",
+                status_code: ""
+            }
+        );
+        Clear(colTrackingEvents);
+        // Quick Quote variables
+        Set(varQuoteBrand, "Zurn");
+        Set(varQuoteAccount, Blank());
+        Set(varQuoteSaved, false);
+        Set(varQuoteError, "");
+        Set(varQuoteNumber, "");
+        // varSavedQuote is set by the save Patch on scrQuoteReview;
+        // do NOT init with Blank() — Custom Pages cannot type an
+        // untyped blank for a record variable.
+        Set(varTempPrice, 0);
+        ClearCollect(
+            colQuoteLines,
+            {
+                ProductName: "",
+                ProductNum: "",
+                Qty: 0,
+                UnitPrice: 0,
+                LineAmount: 0
+            }
+        );
+        Clear(colQuoteLines);
+        // Return / RMA variables
+        Set(varRMACreated, false);
+        Set(varRMANumber, "");
+        Set(varRMAError, "");
+        // Warranty Lookup variables
+        Set(varSerialSearched, false);
+        Set(varClaimSubmitted, false);
+        Set(varClaimError, "");
+        Set(varClaimNumber, "");
+        // Parse serial (4th pipe segment) from JS loader param
+        Set(
+            varPassedSerial,
+            With(
+                { raw: Param("recordId") },
+                If(
+                    !IsBlank(raw) && CountRows(Split(raw, "|")) >= 4,
+                    Last(FirstN(Split(raw, "|"), 4)).Value,
+                    ""
+                )
+            )
+        );
+        ClearCollect(
+            colSerialResult,
+            {
+                'Product Name': "",
+                'Serial ID': "",
+                'Warranty Start': Now(),
+                'Warranty End': Now(),
+                'Original Order Number': ""
+            }
+        );
+        Clear(colSerialResult)
+    Children:
+      # -- Orange accent bar --
+      - rectHomeBar:
+          Control: Rectangle
+          Properties:
+            X: =0
+            Y: =0
+            Width: =Parent.Width
+            Height: =6
+            Fill: =RGBA(216, 59, 1, 1)
+
+      # -- Headset icon --
+      - icoToolkit:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Phone
+            X: =16
+            Y: =22
+            Width: =36
+            Height: =36
+            Color: =RGBA(216, 59, 1, 1)
+
+      # -- Title --
+      - lblHomeTitle:
+          Control: Label
+          Properties:
+            Text: ="Service Toolkit"
+            X: =58
+            Y: =18
+            Width: =Parent.Width - 74
+            Height: =32
+            Size: =20
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Subtitle --
+      - lblHomeSubtitle:
+          Control: Label
+          Properties:
+            Text: ="Zurn Elkay CSR Productivity Tools"
+            X: =58
+            Y: =50
+            Width: =Parent.Width - 74
+            Height: =22
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+
+      # -- Divider --
+      - rectHomeDivider:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =82
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  CARD 1: Order Management (ACTIVE)
+      # =============================================
+      - rectCard1:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =98
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(255, 255, 255, 1)
+            BorderColor: =RGBA(237, 235, 233, 1)
+            BorderThickness: =1
+      - rectCard1Accent:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =98
+            Width: =4
+            Height: =118
+            Fill: =RGBA(216, 59, 1, 1)
+      - icoCard1:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Edit
+            X: =36
+            Y: =122
+            Width: =32
+            Height: =32
+            Color: =RGBA(216, 59, 1, 1)
+      - lblCard1Title:
+          Control: Label
+          Properties:
+            Text: ="Order Management"
+            X: =76
+            Y: =110
+            Width: =Parent.Width - 130
+            Height: =26
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+      - lblCard1Desc:
+          Control: Label
+          Properties:
+            Text: ="Cancel, modify, or add order lines"
+            X: =76
+            Y: =134
+            Width: =Parent.Width - 130
+            Height: =34
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+      - lblCard1Badge:
+          Control: Label
+          Properties:
+            Text: ="Active"
+            X: =76
+            Y: =170
+            Width: =60
+            Height: =18
+            Size: =10
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(16, 124, 16, 1)
+      - icoCard1Arrow:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.ChevronRight
+            X: =Parent.Width - 52
+            Y: =142
+            Width: =20
+            Height: =20
+            Color: =RGBA(200, 198, 196, 1)
+      - btnCard1:
+          Control: Classic/Button
+          Properties:
+            Text: =""
+            X: =16
+            Y: =98
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(0, 0, 0, 0)
+            Color: =RGBA(0, 0, 0, 0)
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 0, 0, 0.03)
+            PressedFill: =RGBA(0, 0, 0, 0.06)
+            OnSelect: =Navigate(scrOrderLookup, ScreenTransition.None)
+
+      # =============================================
+      #  CARD 2: Shipment Tracker (COMING SOON)
+      # =============================================
+      - rectCard2:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =226
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(255, 255, 255, 1)
+            BorderColor: =RGBA(237, 235, 233, 1)
+            BorderThickness: =1
+      - rectCard2Accent:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =226
+            Width: =4
+            Height: =118
+            Fill: =RGBA(0, 120, 212, 1)
+      - icoCard2:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Send
+            X: =36
+            Y: =250
+            Width: =32
+            Height: =32
+            Color: =RGBA(0, 120, 212, 1)
+      - lblCard2Title:
+          Control: Label
+          Properties:
+            Text: ="Shipment Tracker"
+            X: =76
+            Y: =238
+            Width: =Parent.Width - 130
+            Height: =26
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+      - lblCard2Desc:
+          Control: Label
+          Properties:
+            Text: |-
+              ="Where's my order - tracking #, carrier & ETA"
+            X: =76
+            Y: =262
+            Width: =Parent.Width - 130
+            Height: =34
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+      - lblCard2Badge:
+          Control: Label
+          Properties:
+            Text: ="Active"
+            X: =76
+            Y: =298
+            Width: =60
+            Height: =18
+            Size: =10
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(16, 124, 16, 1)
+      - icoCard2Arrow:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.ChevronRight
+            X: =Parent.Width - 52
+            Y: =270
+            Width: =20
+            Height: =20
+            Color: =RGBA(200, 198, 196, 1)
+      - btnCard2:
+          Control: Classic/Button
+          Properties:
+            Text: =""
+            X: =16
+            Y: =226
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(0, 0, 0, 0)
+            Color: =RGBA(0, 0, 0, 0)
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 0, 0, 0.03)
+            PressedFill: =RGBA(0, 0, 0, 0.06)
+            OnSelect: =Navigate(scrShipmentTracker, ScreenTransition.None)
+
+      # =============================================
+      #  CARD 3: Quick Quote (COMING SOON)
+      # =============================================
+      - rectCard3:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =354
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(255, 255, 255, 1)
+            BorderColor: =RGBA(237, 235, 233, 1)
+            BorderThickness: =1
+      - rectCard3Accent:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =354
+            Width: =4
+            Height: =118
+            Fill: =RGBA(0, 133, 117, 1)
+      - icoCard3:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Document
+            X: =36
+            Y: =378
+            Width: =32
+            Height: =32
+            Color: =RGBA(0, 133, 117, 1)
+      - lblCard3Title:
+          Control: Label
+          Properties:
+            Text: ="Quick Quote"
+            X: =76
+            Y: =366
+            Width: =Parent.Width - 130
+            Height: =26
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+      - lblCard3Desc:
+          Control: Label
+          Properties:
+            Text: ="Rapid quote builder with product picker"
+            X: =76
+            Y: =390
+            Width: =Parent.Width - 130
+            Height: =34
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+      - lblCard3Badge:
+          Control: Label
+          Properties:
+            Text: ="Active"
+            X: =76
+            Y: =426
+            Width: =80
+            Height: =18
+            Size: =10
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(16, 124, 16, 1)
+      - icoCard3Arrow:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.ChevronRight
+            X: =Parent.Width - 52
+            Y: =398
+            Width: =20
+            Height: =20
+            Color: =RGBA(0, 133, 117, 1)
+      - btnCard3:
+          Control: Classic/Button
+          Properties:
+            Text: =""
+            X: =16
+            Y: =354
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(0, 0, 0, 0)
+            Color: =RGBA(0, 0, 0, 0)
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 0, 0, 0.03)
+            PressedFill: =RGBA(0, 0, 0, 0.06)
+            OnSelect: =Navigate(scrQuickQuote, ScreenTransition.None)
+
+      # =============================================
+      #  CARD 4: Return / RMA (COMING SOON)
+      # =============================================
+      - rectCard4:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =482
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(255, 255, 255, 1)
+            BorderColor: =RGBA(237, 235, 233, 1)
+            BorderThickness: =1
+      - rectCard4Accent:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =482
+            Width: =4
+            Height: =118
+            Fill: =RGBA(135, 100, 184, 1)
+      - icoCard4:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Reload
+            X: =36
+            Y: =506
+            Width: =32
+            Height: =32
+            Color: =RGBA(135, 100, 184, 1)
+      - lblCard4Title:
+          Control: Label
+          Properties:
+            Text: ="Return / RMA"
+            X: =76
+            Y: =494
+            Width: =Parent.Width - 130
+            Height: =26
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+      - lblCard4Desc:
+          Control: Label
+          Properties:
+            Text: ="Initiate returns & generate RMA numbers"
+            X: =76
+            Y: =518
+            Width: =Parent.Width - 130
+            Height: =34
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+      - lblCard4Badge:
+          Control: Label
+          Properties:
+            Text: ="Live"
+            X: =76
+            Y: =554
+            Width: =50
+            Height: =18
+            Size: =10
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(135, 100, 184, 1)
+      - icoCard4Arrow:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.ChevronRight
+            X: =Parent.Width - 52
+            Y: =526
+            Width: =20
+            Height: =20
+            Color: =RGBA(200, 198, 196, 1)
+      - btnCard4:
+          Control: Classic/Button
+          Properties:
+            Text: =""
+            X: =16
+            Y: =482
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(0, 0, 0, 0)
+            Color: =RGBA(0, 0, 0, 0)
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 0, 0, 0.03)
+            PressedFill: =RGBA(0, 0, 0, 0.06)
+            OnSelect: =Navigate(scrReturnRMA, ScreenTransition.None)
+
+      # =============================================
+      #  CARD 5: Warranty Lookup (COMING SOON)
+      # =============================================
+      - rectCard5:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =610
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(255, 255, 255, 1)
+            BorderColor: =RGBA(237, 235, 233, 1)
+            BorderThickness: =1
+      - rectCard5Accent:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =610
+            Width: =4
+            Height: =118
+            Fill: =RGBA(0, 78, 140, 1)
+      - icoCard5:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Lock
+            X: =36
+            Y: =634
+            Width: =32
+            Height: =32
+            Color: =RGBA(0, 78, 140, 1)
+      - lblCard5Title:
+          Control: Label
+          Properties:
+            Text: ="Warranty Lookup"
+            X: =76
+            Y: =622
+            Width: =Parent.Width - 130
+            Height: =26
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+      - lblCard5Desc:
+          Control: Label
+          Properties:
+            Text: ="Check warranty status by serial or product"
+            X: =76
+            Y: =646
+            Width: =Parent.Width - 130
+            Height: =34
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+      - lblCard5Badge:
+          Control: Label
+          Properties:
+            Text: ="Live"
+            X: =76
+            Y: =682
+            Width: =50
+            Height: =18
+            Size: =10
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(0, 78, 140, 1)
+      - icoCard5Arrow:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.ChevronRight
+            X: =Parent.Width - 52
+            Y: =654
+            Width: =20
+            Height: =20
+            Color: =RGBA(200, 198, 196, 1)
+      - btnCard5:
+          Control: Classic/Button
+          Properties:
+            Text: =""
+            X: =16
+            Y: =610
+            Width: =Parent.Width - 32
+            Height: =118
+            Fill: =RGBA(0, 0, 0, 0)
+            Color: =RGBA(0, 0, 0, 0)
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 0, 0, 0.03)
+            PressedFill: =RGBA(0, 0, 0, 0.06)
+            OnSelect: =Navigate(scrWarrantyLookup, ScreenTransition.None)
+
+      # -- Version label --
+      - lblVersion:
+          Control: Label
+          Properties:
+            Text: ="v1.0 | Zurn Elkay Water Solutions"
+            X: =16
+            Y: =Parent.Height - 28
+            Width: =Parent.Width - 32
+            Height: =20
+            Size: =9
+            Align: =Align.Center
+            Color: =RGBA(200, 198, 196, 1)

@@ -1,5 +1,6 @@
-# Name: Conversation Start
-# This system topic triggers when the agent receives an Activity indicating the beginning of a new conversation. If you do not want the agent to initiate the conversation, disable this topic.
+mcs.metadata:
+  componentName: Conversation Start
+  description: This system topic triggers when the agent receives an Activity indicating the beginning of a new conversation. If you do not want the agent to initiate the conversation, disable this topic.
 kind: AdaptiveDialog
 beginDialog:
   kind: OnConversationStart
@@ -22,7 +23,7 @@ beginDialog:
             - Integrating with external data sources like CRMs
             - Building a business glossary
             - Leveraging context-aware memory for personalized experiences
-            
+
             To get started, you can:
             1. Onboard new business information
             2. Analyze business data
@@ -31,7 +32,7 @@ beginDialog:
             5. Integrate CRM data
             6. Define business terms
             7. Provide feedback
-            
+
             Please choose an option by typing the number.
         speak:
           - Thanks for calling, how can I help?

@@ -1,0 +1,64 @@
+{
+    "environment": {
+        "name": "Mfg Gold Template",
+        "url": "https://orgecbce8ef.crm.dynamics.com",
+        "apiVersion": "v9.2"
+    },
+    "demo": {
+        "brands": [
+            "Zurn",
+            "Elkay"
+        ],
+        "customerTiers": {
+            "1": {
+                "label": "Tier 1 - Strategic",
+                "priority": 8000,
+                "color": "#e74c3c"
+            },
+            "2": {
+                "label": "Tier 2 - Key",
+                "priority": 6000,
+                "color": "#e67e22"
+            },
+            "3": {
+                "label": "Tier 3 - Standard",
+                "priority": 10000,
+                "color": "#3498db"
+            },
+            "4": {
+                "label": "Tier 4 - Basic",
+                "priority": 1000,
+                "color": "#95a5a6"
+            }
+        },
+        "hotWords": [
+            "Urgent",
+            "Next Day Air",
+            "Emergency",
+            "Recall",
+            "Safety",
+            "Legal"
+        ],
+        "hotWordPriorityBoost": 10000,
+        "sla": {
+            "firstResponseMinutes": 240,
+            "resolutionMinutes": 480,
+            "businessHoursStart": "08:00",
+            "businessHoursEnd": "17:00",
+            "workDays": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ]
+        },
+        "caseOrigins": {
+            "email": 2,
+            "phone": 1,
+            "web": 3
+        },
+        "agentCount": 200,
+        "zurnAgentCount": 110
+    }
+}

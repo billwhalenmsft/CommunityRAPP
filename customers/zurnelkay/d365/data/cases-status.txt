@@ -1,0 +1,44 @@
+﻿Total Zurn/Elkay Cases: 38
+Active: 27 | Resolved: 11 | Cancelled: 0
+
+--- Active Cases ---
+  [1] URGENT - Ferguson PO #82991 - Incorrect flush valve shipment
+  [1] Ferguson - Next Day Air request for Wilkins double check valves
+  [1] Ferguson - Bulk pricing request for Q2 hydration products
+  [1] Ferguson - Wilkins 975XL backflow preventer sizing question
+  [1] Hajoca - Return authorization for damaged trench drains
+  [1] Hajoca - AquaSense faucet not activating after install
+  [1] EMERGENCY - Hajoca - Water damage from failed backflow preventer
+  [1] Winsupply - Floor drain strainer finish options
+  [2] Wolseley - Cross-border shipping delays on Zurn drainage products
+  [2] Consolidated Supply - Winterization guidance for bottle fillers
+  [2] Consolidated Supply - Drainage product lead time inquiry
+  [2] Consolidated Supply - Replacement filter bulk order
+  [2] Pacific Plumbing - eCommerce order payment failed
+  [2] Midwest Pipe - Order discrepancy - wrong quantities received
+  [2] Southern Pipe - Warranty claim on flush valve solenoid
+  [1] URGENT - Southern Pipe - Recall inquiry on flush valve model
+  [2] Gateway Supply - Elkay cooler making noise after 6 months
+  [2] Greenfield SD - Drinking fountain not cooling
+  [2] Greenfield SD - Quote request for bottle fillers in all buildings
+  [3] Homeowner - Flush valve running continuously
+  [3] Metro Building - Elkay sink rough-in dimensions
+  [3] Metro Building - Account setup and first order assistance
+  [3] ABC Plumbing - Zurn AquaSpec faucet leaking at base
+  [2] HD Supply - Elkay undermount sink scratched on delivery
+  [2] HD Supply - Order #HD-44210 status inquiry
+  [2] City of Mesa - Zurn roof drain spec for flat-roof water treatment facility
+  [2] City of Mesa - Backflow preventer compliance question
+
+--- Resolved Cases ---
+  Winsupply - Product spec sheets needed for bid package
+  Wolseley - Elkay filter replacement schedule recommendation
+  Pacific Plumbing - Roof drain compatibility question
+  Midwest Pipe - AquaSpec faucet aerator replacement part number
+  Gateway Supply - Bottle filler counter reset procedure
+  Marriott Milwaukee - Sensor faucet battery replacement program
+  Homeowner - Winterization question for outdoor Elkay bottle filler
+  Emergency HVAC Failure – Retail Location
+  Lakeside Parts - Return policy question
+  ABC Plumbing - General product catalog request
+  HD Supply - Lustertone sink installation template request

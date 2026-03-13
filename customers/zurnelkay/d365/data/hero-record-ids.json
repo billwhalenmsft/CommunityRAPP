@@ -1,0 +1,49 @@
+﻿{
+    "HeroAccount":  {
+                        "Name":  "Ferguson Enterprises",
+                        "Id":  "ee8604af-8912-f111-8342-000d3a316172",
+                        "Tier":  1
+                    },
+    "HeroContacts":  {
+                         "RachelChen":  {
+                                            "Email":  "rachel.chen@ferguson.com",
+                                            "Id":  "e328b748-8d12-f111-8407-7ced8d18c8d7",
+                                            "Phone":  "(757) 555-2002",
+                                            "Role":  "Purchasing Director"
+                                        },
+                         "TomHarrison":  {
+                                             "Email":  "tom.harrison@ferguson.com",
+                                             "Id":  "deb81d49-8d12-f111-8407-7c1e520a58a1",
+                                             "Phone":  "(757) 555-2001",
+                                             "Role":  "Plumbing Category Manager"
+                                         },
+                         "MikeReynolds":  {
+                                              "Email":  "mike.reynolds@ferguson.com",
+                                              "Id":  "d6835cdd-a618-f111-8341-7ced8dceb26a",
+                                              "Phone":  "(713) 555-0184",
+                                              "Role":  "Field Operations Manager - Houston DC"
+                                          }
+                     },
+    "Orders":  {
+                   "PO-94820":  {
+                                    "Lines":  [
+                                                  "EK-BF-5001 x120 Bottle Filling Stations",
+                                                  "EK-WC-5002 x60 Wall Mount Coolers",
+                                                  "EK-FL-6003 x200 Replacement Filters",
+                                                  "EK-DF-5003 x25 Drinking Fountains (CANCEL)",
+                                                  "EK-SS-6001 x40 Stainless Sinks (CANCEL)"
+                                              ],
+                                    "Id":  "e624146a-a718-f111-8342-7c1e520a58a1",
+                                    "Desc":  "Hydration Products Q1 - 5 lines - DEMO ORDER"
+                                },
+                   "PO-95102":  {
+                                    "Id":  "5667fe76-a718-f111-8342-7ced8d18c8d7",
+                                    "Desc":  "Flush Valves Replenishment - 3 lines"
+                                },
+                   "PO-93201":  {
+                                    "Id":  "82017270-a718-f111-8342-7ced8d18c8d7",
+                                    "Desc":  "Zurn Backflow Q4 - 5 lines - delivered"
+                                }
+               },
+    "PhoneCaseId":  "41739b76-a718-f111-8342-7c1e520a58a1"
+}

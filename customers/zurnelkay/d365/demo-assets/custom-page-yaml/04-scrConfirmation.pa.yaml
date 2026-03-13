@@ -1,0 +1,316 @@
+﻿# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  SCREEN 4 â€” Confirmation (scrConfirmation)
+#  Format: Power Apps pa.yaml SchemaV3
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+Screens:
+    scrConfirmation:
+        Properties:
+            Fill: =RGBA(250, 250, 250, 1)
+            OnVisible: |-
+                =If(
+                    !varTimelineAdded && !IsBlank(varCaseRecord),
+                    Patch(
+                        Notes,
+                        Defaults(Notes),
+                        {
+                            'Is Document': false,
+                            Title: "Order Modification - PO " & varSelectedOrder.'Order ID',
+                            Description:
+                                If(CountRows(colQtyChanges) > 0,
+                                    "Adjusted qty on " & CountRows(colQtyChanges) &
+                                    " lines. Net: " &
+                                    If(Sum(colQtyChanges, AdjAmount) >= 0, "+", "") &
+                                    "$" & Text(Sum(colQtyChanges, AdjAmount), "#,##0.00") & ". ",
+                                    ""
+                                ) &
+                                If(CountRows(colNewLines) > 0,
+                                    "Added " & CountRows(colNewLines) & " new line(s). ",
+                                    ""
+                                ) &
+                                If(
+                                    !IsBlank(varAgentNotes),
+                                    "Agent notes: " & varAgentNotes,
+                                    ""
+                                ),
+                            Regarding: varCaseRecord
+                        }
+                    );
+                    Set(varTimelineAdded, true)
+                )
+        Children:
+            # â”€â”€ Green accent bar â”€â”€
+            - rectTopBar4:
+                  Control: Rectangle
+                  Properties:
+                      X: =0
+                      Y: =0
+                      Width: =Parent.Width
+                      Height: =6
+                      Fill: =RGBA(16, 124, 16, 1)
+
+            # â”€â”€ Green success background â”€â”€
+            - rectSuccessBg:
+                  Control: Rectangle
+                  Properties:
+                      X: =0
+                      Y: =6
+                      Width: =Parent.Width
+                      Height: =220
+                      Fill: =RGBA(223, 246, 221, 1)
+
+            # â”€â”€ Checkmark icon (large, centered) â”€â”€
+            - icoCheckmark:
+                  Control: Classic/Icon
+                  Properties:
+                      Icon: =Icon.Check
+                      X: =(Parent.Width - 64) / 2
+                      Y: =30
+                      Width: =64
+                      Height: =64
+                      Color: =RGBA(16, 124, 16, 1)
+
+            # â”€â”€ Success title â”€â”€
+            - lblSuccessTitle:
+                  Control: Label
+                  Properties:
+                      Text: ="Order Updated Successfully"
+                      X: =16
+                      Y: =104
+                      Width: =Parent.Width - 32
+                      Height: =36
+                      Size: =18
+                      FontWeight: =FontWeight.Bold
+                      Align: =Align.Center
+                      Color: =RGBA(11, 106, 11, 1)
+
+            # â”€â”€ PO detail line â”€â”€
+            - lblSuccessDetail:
+                  Control: Label
+                  Properties:
+                      Text: ="PO " & varSelectedOrder.'Order ID' & " has been modified"
+                      X: =16
+                      Y: =140
+                      Width: =Parent.Width - 32
+                      Height: =28
+                      Size: =12
+                      Align: =Align.Center
+                      Color: =RGBA(96, 94, 92, 1)
+
+            # â”€â”€ Summary line â”€â”€
+            - lblSuccessSummary:
+                  Control: Label
+                  Properties:
+                      Text: |-
+                          =If(CountRows(colQtyChanges) > 0,
+                              CountRows(colQtyChanges) & " line(s) adjusted", "") &
+                          If(CountRows(colQtyChanges) > 0 && CountRows(colNewLines) > 0, " | ", "") &
+                          If(CountRows(colNewLines) > 0,
+                              CountRows(colNewLines) & " new line(s) added", "")
+                      X: =16
+                      Y: =168
+                      Width: =Parent.Width - 32
+                      Height: =28
+                      Size: =12
+                      Align: =Align.Center
+                      Color: =RGBA(96, 94, 92, 1)
+
+            # â”€â”€ Credit amount (large, red, centered) â”€â”€
+            - lblSuccessCredit:
+                  Control: Label
+                  Properties:
+                      Text: |-
+                          ="Net: " &
+                          If(Sum(colQtyChanges, AdjAmount) >= 0, "+", "") &
+                          "$" & Text(Sum(colQtyChanges, AdjAmount), "#,##0.00")
+                      X: =16
+                      Y: =196
+                      Width: =Parent.Width - 32
+                      Height: =30
+                      Size: =18
+                      FontWeight: =FontWeight.Bold
+                      Align: =Align.Center
+                      Color: =RGBA(164, 38, 44, 1)
+                      Visible: =CountRows(colQtyChanges) > 0
+
+            # â”€â”€ Divider below success area â”€â”€
+            - rectDivider4a:
+                  Control: Rectangle
+                  Properties:
+                      X: =16
+                      Y: =248
+                      Width: =Parent.Width - 32
+                      Height: =1
+                      Fill: =RGBA(237, 235, 233, 1)
+
+            # â”€â”€ "Next Actions" heading â”€â”€
+            - lblActionsTitle:
+                  Control: Label
+                  Properties:
+                      Text: ="Next Actions"
+                      X: =16
+                      Y: =260
+                      Width: =Parent.Width - 32
+                      Height: =28
+                      Size: =14
+                      FontWeight: =FontWeight.Bold
+                      Color: =RGBA(50, 49, 48, 1)
+
+            # â”€â”€ "Add to Case Timeline" button (teal) â”€â”€
+            - btnAddTimeline:
+                  Control: Classic/Button
+                  Properties:
+                      Text: ="Add to Case Timeline"
+                      X: =16
+                      Y: =296
+                      Width: =Parent.Width - 32
+                      Height: =52
+                      Size: =13
+                      FontWeight: =FontWeight.Semibold
+                      Color: =RGBA(255, 255, 255, 1)
+                      Fill: =RGBA(0, 133, 117, 1)
+                      OnSelect: |-
+                          =Patch(
+                              Notes,
+                              Defaults(Notes),
+                              {
+                                  'Is Document': false,
+                                  Title: "Order Modification - PO " & varSelectedOrder.'Order ID',
+                                  Description:
+                                      If(CountRows(colQtyChanges) > 0,
+                                          "Adjusted qty on " & CountRows(colQtyChanges) &
+                                          " lines. Net: " &
+                                          If(Sum(colQtyChanges, AdjAmount) >= 0, "+", "") &
+                                          "$" & Text(Sum(colQtyChanges, AdjAmount), "#,##0.00") & ". ",
+                                          ""
+                                      ) &
+                                      If(CountRows(colNewLines) > 0,
+                                          "Added " & CountRows(colNewLines) & " new line(s). ",
+                                          ""
+                                      ) &
+                                      If(
+                                          !IsBlank(varAgentNotes),
+                                          "Agent notes: " & varAgentNotes,
+                                          ""
+                                      ),
+                                  Regarding: varCaseRecord
+                              }
+                          );
+                          Notify("Note added to case timeline", NotificationType.Success);
+                          Set(varTimelineAdded, true)
+
+            # â”€â”€ "Draft Confirmation Email" button (blue) â”€â”€
+            - btnDraftEmail:
+                  Control: Classic/Button
+                  Properties:
+                      Text: ="Draft Confirmation Email"
+                      X: =16
+                      Y: =360
+                      Width: =Parent.Width - 32
+                      Height: =52
+                      Size: =13
+                      FontWeight: =FontWeight.Semibold
+                      Color: =RGBA(255, 255, 255, 1)
+                      Fill: =RGBA(0, 120, 212, 1)
+                      OnSelect: |-
+                          =With(
+                              {
+                                  accountName: If(
+                                      !IsBlank(varCaseRecord) && IsType(varCaseRecord.Customer, Accounts),
+                                      AsType(varCaseRecord.Customer, Accounts).'Account Name',
+                                      ""
+                                  )
+                              },
+                              Launch(
+                                  "mailto:?subject=" &
+                                  EncodeUrl("PO " & varSelectedOrder.'Order ID' & " Modification Confirmation — " & accountName) &
+                                  "&body=" &
+                                  EncodeUrl(
+                                      "Hi " & If(!IsBlank(accountName), accountName & " Team", "Team") & "," & Char(10) & Char(10) &
+                                      "This confirms the following changes to PO " & varSelectedOrder.'Order ID' & ":" & Char(10) & Char(10) &
+                                      If(CountRows(colQtyChanges) > 0,
+                                          "QUANTITY ADJUSTMENTS" & Char(10) &
+                                          Concat(
+                                              colQtyChanges,
+                                              "  Ln " & LineNum & " — " & ProductName & ": " & OrigQty & " → " & NewQty &
+                                              " (" & If(Delta > 0, "+", "") & Delta & " units, " &
+                                              If(AdjAmount >= 0, "+", "-") & "$" & Text(Abs(AdjAmount), "#,##0.00") & ")" & Char(10)
+                                          ) &
+                                          "  Net impact: " & If(Sum(colQtyChanges, AdjAmount) >= 0, "+", "-") & "$" &
+                                          Text(Abs(Sum(colQtyChanges, AdjAmount)), "#,##0.00") & Char(10) & Char(10),
+                                          ""
+                                      ) &
+                                      If(CountRows(colNewLines) > 0,
+                                          "NEW LINES ADDED" & Char(10) &
+                                          Concat(
+                                              colNewLines,
+                                              "  " & ProductName & " x" & Qty & " @ $" & Text(UnitPrice, "#,##0.00") &
+                                              " = $" & Text(LineAmount, "#,##0.00") & Char(10)
+                                          ) & Char(10),
+                                          ""
+                                      ) &
+                                      If(!IsBlank(varAgentNotes),
+                                          "NOTES" & Char(10) & "  " & varAgentNotes & Char(10) & Char(10),
+                                          ""
+                                      ) &
+                                      "Please let us know if you have any questions." & Char(10) & Char(10) &
+                                      "Best regards"
+                                  )
+                              )
+                          )
+
+            # â”€â”€ Divider before "Start New" â”€â”€
+            - rectDivider4b:
+                  Control: Rectangle
+                  Properties:
+                      X: =16
+                      Y: =432
+                      Width: =Parent.Width - 32
+                      Height: =1
+                      Fill: =RGBA(237, 235, 233, 1)
+
+            # -- "Start New Modification" button (outlined blue) --
+            - btnStartNew:
+                  Control: Classic/Button
+                  Properties:
+                      Text: ="Start New Modification"
+                      X: =16
+                      Y: =450
+                      Width: =Parent.Width - 32
+                      Height: =44
+                      Size: =12
+                      Color: =RGBA(0, 120, 212, 1)
+                      Fill: =RGBA(255, 255, 255, 1)
+                      BorderColor: =RGBA(0, 120, 212, 1)
+                      BorderThickness: =1
+                      OnSelect: =Navigate(scrOrderLookup, ScreenTransition.None)
+
+            # -- "Back to Tools" button (subtle gray) --
+            - btnBackToHome:
+                  Control: Classic/Button
+                  Properties:
+                      Text: ="Back to Service Toolkit"
+                      X: =16
+                      Y: =504
+                      Width: =Parent.Width - 32
+                      Height: =36
+                      Size: =11
+                      Color: =RGBA(96, 94, 92, 1)
+                      Fill: =RGBA(255, 255, 255, 1)
+                      BorderColor: =RGBA(200, 198, 196, 1)
+                      BorderThickness: =1
+                      OnSelect: =Navigate(scrHome, ScreenTransition.None)
+
+            # â”€â”€ Timeline confirmation message (appears after posting) â”€â”€
+            - lblTimelineConfirm:
+                  Control: Label
+                  Properties:
+                      Text: ="Timeline note added successfully"
+                      X: =16
+                      Y: =548
+                      Width: =Parent.Width - 32
+                      Height: =28
+                      Size: =11
+                      FontWeight: =FontWeight.Semibold
+                      Color: =RGBA(11, 106, 11, 1)
+                      Visible: =varTimelineAdded

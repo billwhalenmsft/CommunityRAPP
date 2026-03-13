@@ -1,0 +1,74 @@
+﻿{
+    "PO-94820": {
+        "customer": "Ferguson Enterprises",
+        "name": "Ferguson PO #94820 - Hydration Products Q1",
+        "id": "e624146a-a718-f111-8342-7c1e520a58a1",
+        "total": 258150.00
+    },
+    "PO-95102": {
+        "customer": "Ferguson Enterprises",
+        "name": "Ferguson PO #95102 - Flush Valves Replenishment",
+        "id": "5667fe76-a718-f111-8342-7ced8d18c8d7",
+        "total": 94550.00
+    },
+    "PO-93201": {
+        "customer": "Ferguson Enterprises",
+        "name": "Ferguson PO #93201 - Zurn Backflow Q4",
+        "id": "82017270-a718-f111-8342-7ced8d18c8d7",
+        "total": 108125.00
+    },
+    "PO-HD-7845": {
+        "customer": "HD Supply",
+        "name": "HD Supply PO #HD-7845 - Sensor Products Q1",
+        "id": "226887ae-dc18-f111-8342-7ced8d18c8d7",
+        "total": 53450.00
+    },
+    "PO-PP-2241": {
+        "customer": "Pacific Plumbing Supply",
+        "name": "Pacific Plumbing PO #PP-2241 - Flush Valve Repair Kits",
+        "id": "628becbd-a51c-f111-8341-6045bda80a72",
+        "total": 8064.00,
+        "lines": 4,
+        "type": "aftermarket-parts"
+    },
+    "PO-WS-8830": {
+        "customer": "Winsupply Inc.",
+        "name": "Winsupply PO #WS-8830 - Elkay Filter Cartridge Restock",
+        "id": "3f9d96ba-a51c-f111-8342-7c1e520a58a1",
+        "total": 13550.00,
+        "lines": 4,
+        "type": "aftermarket-parts"
+    },
+    "PO-HJ-4412": {
+        "customer": "Hajoca Corporation",
+        "name": "Hajoca PO #HJ-4412 - Backflow Preventer Parts",
+        "id": "61e1caba-a51c-f111-8342-7c1e52143136",
+        "total": 14700.00,
+        "lines": 4,
+        "type": "aftermarket-parts"
+    },
+    "PO-CS-1198": {
+        "customer": "Consolidated Supply Co.",
+        "name": "Consolidated Supply PO #CS-1198 - Sensor Faucet Components",
+        "id": "86e1caba-a51c-f111-8342-7c1e52143136",
+        "total": 11640.00,
+        "lines": 4,
+        "type": "aftermarket-parts"
+    },
+    "PO-ABC-5567": {
+        "customer": "ABC Plumbing Wholesale",
+        "name": "ABC Plumbing PO #ABC-5567 - Hydration Station Service Parts",
+        "id": "97e1caba-a51c-f111-8342-7c1e52143136",
+        "total": 6160.00,
+        "lines": 4,
+        "type": "aftermarket-parts"
+    },
+    "PO-GW-3310": {
+        "customer": "Gateway Supply Company",
+        "name": "Gateway Supply PO #GW-3310 - Drain Components Service Stock",
+        "id": "8af193c0-a51c-f111-8342-7c1e520a58a1",
+        "total": 8440.00,
+        "lines": 4,
+        "type": "aftermarket-parts"
+    }
+}

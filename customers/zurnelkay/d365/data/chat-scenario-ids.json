@@ -1,0 +1,44 @@
+﻿{
+    "ScenarioB":  {
+                      "Account":  {
+                                      "Name":  "Ferguson Enterprises",
+                                      "Id":  "ee8604af-8912-f111-8342-000d3a316172",
+                                      "Tier":  1
+                                  },
+                      "Contacts":  {
+                                       "RachelChen":  {
+                                                          "Email":  "rachel.chen@ferguson.com",
+                                                          "Id":  "e328b748-8d12-f111-8407-7ced8d18c8d7",
+                                                          "Phone":  "(757) 555-2002",
+                                                          "Role":  "Purchasing Director"
+                                                      }
+                                   },
+                      "ChatCase":  "Ferguson - WaterSentry Plus filter defect batch WS-2026-0217",
+                      "ChatCaseId":  "b078bc55-bd18-f111-8342-7c1e52143136",
+                      "Topic":  "Defective filter batch -- warranty RMA -- potential recall"
+                  },
+    "ScenarioA":  {
+                      "Account":  {
+                                      "Name":  "HD Supply",
+                                      "Id":  "f48604af-8912-f111-8342-000d3a316172",
+                                      "Tier":  2
+                                  },
+                      "Contacts":  {
+                                       "DerekLawson":  {
+                                                           "Email":  "derek.lawson@hdsupply.com",
+                                                           "Id":  "ffcaf2ba-b918-f111-8341-6045bda80a72",
+                                                           "Phone":  "(770) 555-2305",
+                                                           "Role":  "Facilities Maintenance Supervisor"
+                                                       },
+                                       "JamesMorales":  {
+                                                            "Email":  "james.morales@hdsupply.com",
+                                                            "Id":  "0116b04e-8d12-f111-8407-7ced8d18c8d7",
+                                                            "Phone":  "(770) 555-2301",
+                                                            "Role":  "Commercial Accounts Manager"
+                                                        }
+                                   },
+                      "ChatCase":  "HD Supply - AquaVantage sensor flush intermittent activation at Hilton Midtown",
+                      "ChatCaseId":  "55220543-ba18-f111-8341-7ced8dceb26a",
+                      "Topic":  "Phantom flush on sensor valves -- firmware issue -- warranty replacement"
+                  }
+}

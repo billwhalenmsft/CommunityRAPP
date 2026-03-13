@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280, height=720">
+    <title>Zurn Elkay — Unified Routing &amp; AI Architecture</title>
+    <style>
+        /* ── Slide Canvas ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F0F0F5;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Outer dashed frame ── */
+        .frame {
+            position: absolute;
+            top: 74px;
+            left: 30px;
+            right: 30px;
+            bottom: 38px;
+            border: 2px dashed #5B9BD5;
+            border-radius: 16px;
+        }
+
+        .frame-label-left {
+            position: absolute;
+            bottom: 10px;
+            left: 42px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5B9BD5;
+            letter-spacing: 0.5px;
+        }
+
+        .frame-label-right {
+            position: absolute;
+            bottom: 10px;
+            right: 42px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5B9BD5;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Title ── */
+        .slide-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 300;
+            color: #1B1B1B;
+            padding: 18px 0 0;
+            letter-spacing: -0.3px;
+        }
+
+        /* ── Copilot + Agents pill ── */
+        .copilot-pill {
+            position: absolute;
+            top: 62px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border: 2px solid #5B9BD5;
+            border-radius: 24px;
+            padding: 8px 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1B1B1B;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            z-index: 10;
+        }
+
+        .copilot-pill .rainbow {
+            width: 28px;
+            height: 28px;
+            background: conic-gradient(from 45deg, #E74C3C, #F39C12, #2ECC71, #3498DB, #9B59B6, #E74C3C);
+            border-radius: 6px;
+        }
+
+        .copilot-pill .sparkle {
+            font-size: 22px;
+            color: #7B68EE;
+        }
+
+        /* ── Customers bubble ── */
+        .customers-area {
+            position: absolute;
+            left: 44px;
+            top: 150px;
+            width: 160px;
+            height: 220px;
+        }
+
+        .customer-circle {
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6B4FBB 0%, #0078D4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .customer-circle svg {
+            width: 56px;
+            height: 56px;
+            fill: #fff;
+        }
+
+        .customer-circle::after {
+            content: 'Distributors & End Users';
+            position: absolute;
+            bottom: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 13px;
+            font-weight: 700;
+            color: #6B4FBB;
+        }
+
+        .customer-circle-outer {
+            width: 130px;
+            height: 130px;
+            border: 2px dashed #7B9FCC;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        /* ── Channel list ── */
+        .channel-list {
+            position: absolute;
+            left: 186px;
+            top: 146px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #444;
+        }
+
+        .channel-icon {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #5B5FC7;
+        }
+
+        /* ── Main flow area ── */
+        .flow-area {
+            position: absolute;
+            left: 280px;
+            top: 126px;
+            right: 40px;
+            bottom: 136px;
+        }
+
+        /* ── Flow line (Self-service → Routing → Assisted) ── */
+        .flow-line {
+            position: absolute;
+            top: 36px;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #D0D0D8 0%, #5B9BD5 50%, #D0D0D8 100%);
+            border-radius: 4px;
+        }
+
+        .flow-dot {
+            position: absolute;
+            top: 32px;
+            width: 16px;
+            height: 16px;
+            background: #5B9BD5;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #5B9BD5;
+        }
+
+        .flow-dot.left {
+            left: 10px;
+        }
+
+        .flow-dot.mid {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .flow-dot.right {
+            right: 10px;
+        }
+
+        /* ── Stage labels ── */
+        .stage-label {
+            position: absolute;
+            top: -4px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1B1B1B;
+        }
+
+        .stage-label.left {
+            left: 0;
+        }
+
+        .stage-label.center {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .stage-label.right {
+            right: 0;
+        }
+
+        .routing-label {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 700;
+            color: #1B1B1B;
+            white-space: nowrap;
+        }
+
+        /* ── Stage columns ── */
+        .stage-col {
+            position: absolute;
+            top: 68px;
+            width: 250px;
+        }
+
+        .stage-col.left {
+            left: -20px;
+        }
+
+        .stage-col.center {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .stage-col.right {
+            right: -20px;
+        }
+
+        .stage-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 2px solid #D0D0D8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 26px;
+            background: #fff;
+        }
+
+        .stage-icon.blue {
+            border-color: #5B9BD5;
+        }
+
+        .stage-details {
+            text-align: center;
+            font-size: 11.5px;
+            color: #555;
+            line-height: 1.55;
+        }
+
+        .stage-details strong {
+            color: #1B1B1B;
+            font-weight: 600;
+        }
+
+        /* ── Arrow between routing stages ── */
+        .flow-arrow {
+            position: absolute;
+            top: 84px;
+            width: 42px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5B9BD5;
+            font-size: 22px;
+        }
+
+        .flow-arrow.a1 {
+            left: calc(33% - 20px);
+        }
+
+        .flow-arrow.a2 {
+            left: calc(67% - 20px);
+        }
+
+        /* ── Queue badges (above ops bar) ── */
+        .queue-row {
+            position: absolute;
+            bottom: 92px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px 6px;
+            z-index: 5;
+        }
+
+        .queue-badge {
+            background: #fff;
+            border: 1px solid #D0D0D8;
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-size: 10px;
+            color: #444;
+            white-space: nowrap;
+        }
+
+        .queue-badge.zurn {
+            border-color: #0078D4;
+            color: #0078D4;
+        }
+
+        .queue-badge.elkay {
+            border-color: #00B7C3;
+            color: #00897B;
+        }
+
+        .queue-badge.general {
+            border-color: #8A8886;
+            color: #605E5C;
+        }
+
+        /* ── Operations bar ── */
+        .ops-bar {
+            position: absolute;
+            bottom: 50px;
+            left: 60px;
+            right: 60px;
+            background: #fff;
+            border: 2px solid #5B9BD5;
+            border-radius: 12px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+            color: #333;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .ops-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6B4FBB, #0078D4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ops-icon span {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .ops-label {
+            font-weight: 700;
+            font-size: 14px;
+            color: #1B1B1B;
+            margin-right: 8px;
+        }
+
+        .ops-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px 6px;
+        }
+
+        .ops-sep {
+            color: #B0B0B0;
+        }
+
+        /* ── Hot word callout ── */
+        .hot-word-callout {
+            position: absolute;
+            background: #FFF3CD;
+            border: 1.5px solid #FFB900;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 10.5px;
+            color: #7A5500;
+            max-width: 240px;
+            line-height: 1.4;
+        }
+
+        .hot-word-callout::before {
+            content: '⚡';
+            margin-right: 4px;
+        }
+
+        /* ── Tier badges ── */
+        .tier-row {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin-top: 6px;
+        }
+
+        .tier-pip {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .tier-pip.t1 {
+            background: #E74C3C;
+        }
+
+        .tier-pip.t2 {
+            background: #E67E22;
+        }
+
+        .tier-pip.t3 {
+            background: #3498DB;
+        }
+
+        .tier-pip.t4 {
+            background: #95A5A6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Title -->
+    <div class="slide-title">Zurn Elkay — Unified Routing &amp; AI Architecture</div>
+
+    <!-- Copilot + Agents pill -->
+    <div class="copilot-pill">
+        <div class="rainbow"></div>
+        Copilot + Agents
+        <span class="sparkle">✦</span>
+    </div>
+
+    <!-- Outer dashed frame -->
+    <div class="frame"></div>
+    <div class="frame-label-left">Connected data &amp; insights</div>
+    <div class="frame-label-right">Trusted AI</div>
+
+    <!-- ── Customers ── -->
+    <div class="customers-area">
+        <div class="customer-circle-outer">
+            <div class="customer-circle">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Channel List ── -->
+    <div class="channel-list">
+        <div class="channel-item"><span class="channel-icon">📧</span> Email</div>
+        <div class="channel-item"><span class="channel-icon">📞</span> Phone / Voice</div>
+        <div class="channel-item"><span class="channel-icon">🌐</span> Web Portal</div>
+        <div class="channel-item"><span class="channel-icon">💬</span> Live Chat</div>
+        <div class="channel-item"><span class="channel-icon">🤖</span> Copilot Studio</div>
+        <div class="channel-item"><span class="channel-icon">👥</span> Teams</div>
+    </div>
+
+    <!-- ── Flow Area ── -->
+    <div class="flow-area">
+        <!-- Flow labels -->
+        <div class="stage-label left">Self-service</div>
+        <div class="routing-label">Unified, intelligent routing</div>
+        <div class="stage-label right">Assisted service</div>
+
+        <!-- Flow line -->
+        <div class="flow-line"></div>
+        <div class="flow-dot left"></div>
+        <div class="flow-dot mid"></div>
+        <div class="flow-dot right"></div>
+
+        <!-- Arrows -->
+        <div class="flow-arrow a1">➜</div>
+        <div class="flow-arrow a2">➜</div>
+
+        <!-- ── Self-service column ── -->
+        <div class="stage-col left">
+            <div class="stage-icon">🤖</div>
+            <div class="stage-details">
+                <strong>Copilot Studio Agent</strong><br>
+                Power Pages self-service portal<br>
+                KB article deflection<br>
+                Automated intent discovery<br>
+                Order status &amp; warranty lookup
+            </div>
+        </div>
+
+        <!-- ── Routing column ── -->
+        <div class="stage-col center">
+            <div class="stage-icon blue">🔀</div>
+            <div class="stage-details">
+                <strong>Hot-word escalation</strong><br>
+                <em style="font-size:10px;color:#B8860B">"Urgent · Recall · Safety · Legal · Emergency"</em><br>
+                Brand classification (Zurn / Elkay)<br>
+                Product routing (Hydration · Sinks · Drains)<br>
+                Channel + priority matching<br>
+                <strong>Customer tier priority (1–4)</strong>
+                <div class="tier-row">
+                    <div class="tier-pip t1" title="Tier 1 Strategic"></div>
+                    <div class="tier-pip t2" title="Tier 2 Key"></div>
+                    <div class="tier-pip t3" title="Tier 3 Standard"></div>
+                    <div class="tier-pip t4" title="Tier 4 Basic"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Assisted service column ── -->
+        <div class="stage-col right">
+            <div class="stage-icon">🎧</div>
+            <div class="stage-details">
+                <strong>CS Workspace (unified desktop)</strong><br>
+                Customer 360 dashboard<br>
+                Service Toolkit (orders · warranty · RMA)<br>
+                Knowledge management &amp; Copilot<br>
+                Customer Intent Agent guidance
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Queue badges (positioned on body, above ops bar) ── -->
+    <div class="queue-row">
+        <span class="queue-badge zurn">Zurn Phone – Tier 1</span>
+        <span class="queue-badge zurn">Zurn Phone – General</span>
+        <span class="queue-badge zurn">Commercial Email</span>
+        <span class="queue-badge zurn">Drainage</span>
+        <span class="queue-badge elkay">Elkay Hydration</span>
+        <span class="queue-badge elkay">Elkay Sinks &amp; Fixtures</span>
+        <span class="queue-badge general">General Support</span>
+    </div>
+
+    <!-- ── Hot Word Callout ── -->
+    <div class="hot-word-callout" style="top:430px; left:440px;">
+        Hot words auto-escalate to Tier 1 queue<br>
+        <strong>First-match evaluation · 13 rules</strong>
+    </div>
+
+    <!-- ── Operations bar ── -->
+    <div class="ops-bar">
+        <div class="ops-icon"><span>⚙</span></div>
+        <span class="ops-label">Operations</span>
+        <div class="ops-items">
+            One system, one vendor
+            <span class="ops-sep">|</span>
+            SLA: 4hr response · 8hr resolution
+            <span class="ops-sep">|</span>
+            Workforce management
+            <span class="ops-sep">|</span>
+            Quality management
+            <span class="ops-sep">|</span>
+            Analytics &amp; reporting
+            <span class="ops-sep">|</span>
+            AI controls
+        </div>
+    </div>
+
+</body>
+
+</html>

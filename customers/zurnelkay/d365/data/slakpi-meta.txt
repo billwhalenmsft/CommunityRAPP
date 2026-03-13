@@ -1,0 +1,18 @@
+﻿slakpiinstance entity set: slakpiinstances
+
+SLA Item attributes with 'kpi': 2
+  msdyn_slakpiid (Lookup)
+  msdyn_slakpiidname (String)
+
+SLA Item attributes with 'sla': 6
+  msdyn_slakpiid (Lookup)
+  msdyn_slakpiidname (String)
+  slaid (Lookup)
+  slaidname (String)
+  slaitemid (Uniqueidentifier)
+  slaitemidunique (Uniqueidentifier)
+
+msdyn_slakpis records: 3
+  First Response By | id=680ca024-0c71-ef11-a671-7c1e520b7f56
+  Escalated By | id=2cf89166-0c71-ef11-a671-7c1e520b7f56
+  Resolved By | id=0c94637a-0c71-ef11-a671-7c1e520b7f56

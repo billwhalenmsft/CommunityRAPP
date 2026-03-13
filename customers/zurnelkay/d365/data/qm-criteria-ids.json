@@ -1,0 +1,74 @@
+﻿{
+    "criteriaId":  "b05da127-071c-f111-8341-6045bda80a72",
+    "sections":  [
+                     {
+                         "questions":  [
+                                           "acb856fb-071c-f111-8342-7ced8dceb433",
+                                           "201536fc-071c-f111-8342-7c1e520a58a1",
+                                           "4e1c51fd-071c-f111-8341-6045bda80a72"
+                                       ],
+                         "weight":  15,
+                         "categoryId":  "c4988efb-071c-f111-8341-7ced8dceb26a"
+                     },
+                     {
+                         "questions":  [
+                                           "eb553302-081c-f111-8342-7c1e520a58a1",
+                                           "67d67603-081c-f111-8342-7c1e52143136",
+                                           "5159bd04-081c-f111-8342-7ced8d18c8d7",
+                                           "24347003-081c-f111-8341-6045bda80a72"
+                                       ],
+                         "weight":  25,
+                         "categoryId":  "611c51fd-071c-f111-8341-6045bda80a72"
+                     },
+                     {
+                         "questions":  [
+                                           "2a4e6309-081c-f111-8341-7ced8dceb26a",
+                                           "6d777609-081c-f111-8342-7c1e52143136",
+                                           "2b623308-081c-f111-8342-7c1e520a58a1",
+                                           "374e6309-081c-f111-8341-7ced8dceb26a"
+                                       ],
+                         "weight":  20,
+                         "categoryId":  "87d67603-081c-f111-8342-7c1e52143136"
+                     },
+                     {
+                         "questions":  [
+                                           "be7c2610-081c-f111-8342-7c1e52143136",
+                                           "dc7c2610-081c-f111-8342-7c1e52143136",
+                                           "e7ecde12-081c-f111-8342-7ced8d18c8d7",
+                                           "fdecde12-081c-f111-8342-7ced8d18c8d7"
+                                       ],
+                         "weight":  20,
+                         "categoryId":  "484e6309-081c-f111-8341-7ced8dceb26a"
+                     },
+                     {
+                         "questions":  [
+                                           "753fb314-081c-f111-8342-7c1e520a58a1",
+                                           "5dd40916-081c-f111-8341-6045bda80a72",
+                                           "10edde12-081c-f111-8342-7ced8d18c8d7"
+                                       ],
+                         "weight":  10,
+                         "categoryId":  "80c59e0f-081c-f111-8341-7ced8dceb26a"
+                     },
+                     {
+                         "questions":  [
+                                           "7b2a1a19-081c-f111-8342-7ced8d18c8d7",
+                                           "972a1a19-081c-f111-8342-7ced8d18c8d7",
+                                           "9866dc1b-081c-f111-8341-7ced8dceb26a"
+                                       ],
+                         "weight":  10,
+                         "categoryId":  "4b8a9715-081c-f111-8341-7ced8dceb26a"
+                     }
+                 ],
+    "plans":  [
+                  {
+                      "name":  "Daily Case Quality Review",
+                      "planId":  null
+                  },
+                  {
+                      "name":  "Conversation Quality Review",
+                      "planId":  null
+                  }
+              ],
+    "versionId":  "c8108a1c-081c-f111-8341-6045bda80a72",
+    "criteriaName":  "Manufacturing Service Quality Standard"
+}

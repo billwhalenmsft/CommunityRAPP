@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zurn Elkay Demo - Data Overview</title>
+  <style>
+    :root {
+      --zurn-blue: #003B71;
+      --elkay-teal: #00838F;
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text-muted: #718096;
+      --success: #38a169;
+      --warning: #d69e2e;
+      --danger: #e53e3e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--zurn-blue) 0%, var(--elkay-teal) 100%);
+      color: white;
+      padding: 2rem 2rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .header p {
+      opacity: 0.85;
+      font-size: 0.95rem;
+    }
+
+    .header .env-info {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      opacity: 0.7;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+    }
+
+    .stat-card .number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--zurn-blue);
+    }
+
+    .stat-card .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+
+    .section-header h2 {
+      font-size: 1.25rem;
+      color: var(--zurn-blue);
+    }
+
+    .section-header .count {
+      background: var(--zurn-blue);
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .section-header .toggle {
+      color: var(--text-muted);
+      transition: transform 0.2s;
+      font-size: 0.8rem;
+    }
+
+    .section-header .toggle.collapsed {
+      transform: rotate(-90deg);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    thead {
+      background: #f8fafc;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge.active {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .badge.draft {
+      background: #fefcbf;
+      color: #744210;
+    }
+
+    .badge.resolved,
+    .badge.state-resolved {
+      background: #bee3f8;
+      color: #2a4365;
+    }
+
+    .badge.state-active {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .badge.state-other {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .badge.priority-high {
+      background: #fed7d7;
+      color: #9b2c2c;
+    }
+
+    .badge.priority-normal {
+      background: #fefcbf;
+      color: #744210;
+    }
+
+    .badge.priority-low {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .badge.tier-1 {
+      background: #fed7d7;
+      color: #9b2c2c;
+    }
+
+    .badge.tier-2 {
+      background: #fefcbf;
+      color: #744210;
+    }
+
+    .badge.tier-3 {
+      background: #bee3f8;
+      color: #2a4365;
+    }
+
+    .badge.tier-4 {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .sla-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: 1.25rem;
+    }
+
+    .sla-detail {}
+
+    .sla-detail .label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sla-detail .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    .mini-stats {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1rem 1.25rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .mini-stat .num {
+      font-weight: 700;
+      color: var(--zurn-blue);
+    }
+
+    .mini-stat .lbl {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-left: 0.25rem;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .collapsible-content {
+      max-height: 2000px;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .collapsible-content.collapsed {
+      max-height: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>Zurn Elkay Demo Environment</h1>
+    <p>D365 Customer Service â€” Demo Data Overview</p>
+    <div class="env-info">
+      Environment: orgecbce8ef.crm.dynamics.com &nbsp;|&nbsp; Generated: February 26, 2026 at 6:45 AM
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Summary Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="number">17</div>
+        <div class="label">Accounts</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">23</div>
+        <div class="label">Contacts</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">16</div>
+        <div class="label">Products</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">20</div>
+        <div class="label">Queues</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">87</div>
+        <div class="label">Cases</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">15</div>
+        <div class="label">Subjects</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">2</div>
+        <div class="label">SLA KPIs</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">14</div>
+        <div class="label">WFM Agents</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">1,196</div>
+        <div class="label">Shift Bookings</div>
+      </div>
+    </div>
+
+    <!-- Accounts -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('accounts')">
+        <span class="toggle" id="toggle-accounts">&#9660;</span>
+        <h2>Accounts</h2>
+        <span class="count">17</span>
+      </div>
+      <div id="accounts" class="collapsible-content">
+        <div class="card">
+          <div class="mini-stats">
+            <span class="mini-stat"><span class="num">2</span><span class="lbl">Manufacturers</span></span>
+            <span class="mini-stat"><span class="num">11</span><span class="lbl">Distributors</span></span>
+            <span class="mini-stat"><span class="num">4</span><span class="lbl">End Users</span></span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Phone</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Zurn Industries</td>
+                <td>Manufacturer </td>
+                <td>Milwaukee, WI</td>
+                <td>(855) 663-9876</td>
+              </tr>
+              <tr>
+                <td>Elkay Manufacturing</td>
+                <td>Manufacturer </td>
+                <td>Downers Grove, IL</td>
+                <td>(630) 572-3192</td>
+              </tr>
+              <tr>
+                <td>Ferguson Enterprises</td>
+                <td>Distributor <span class='badge tier-1'>Tier 1</span></td>
+                <td>Newport News, VA</td>
+                <td>(757) 874-7795</td>
+              </tr>
+              <tr>
+                <td>Hajoca Corporation</td>
+                <td>Distributor <span class='badge tier-1'>Tier 1</span></td>
+                <td>Ardmore, PA</td>
+                <td>(610) 649-3600</td>
+              </tr>
+              <tr>
+                <td>Winsupply Inc.</td>
+                <td>Distributor <span class='badge tier-1'>Tier 1</span></td>
+                <td>Dayton, OH</td>
+                <td>(937) 222-3071</td>
+              </tr>
+              <tr>
+                <td>HD Supply</td>
+                <td>Distributor <span class='badge tier-2'>Tier 2</span></td>
+                <td>Atlanta, GA</td>
+                <td>(770) 852-9000</td>
+              </tr>
+              <tr>
+                <td>Wolseley Industrial Group</td>
+                <td>Distributor <span class='badge tier-2'>Tier 2</span></td>
+                <td>Burlington, ON</td>
+                <td>(905) 335-2410</td>
+              </tr>
+              <tr>
+                <td>Consolidated Supply Co.</td>
+                <td>Distributor <span class='badge tier-2'>Tier 2</span></td>
+                <td>Portland, OR</td>
+                <td>(503) 234-4181</td>
+              </tr>
+              <tr>
+                <td>Pacific Plumbing Supply</td>
+                <td>Distributor <span class='badge tier-3'>Tier 3</span></td>
+                <td>Seattle, WA</td>
+                <td>(206) 762-6050</td>
+              </tr>
+              <tr>
+                <td>Gateway Supply Company</td>
+                <td>Distributor <span class='badge tier-3'>Tier 3</span></td>
+                <td>Columbia, SC</td>
+                <td>(803) 779-3200</td>
+              </tr>
+              <tr>
+                <td>ABC Plumbing Wholesale</td>
+                <td>Distributor <span class='badge tier-4'>Tier 4</span></td>
+                <td>Denver, CO</td>
+                <td>(303) 555-0101</td>
+              </tr>
+              <tr>
+                <td>Metro Building Supply</td>
+                <td>Distributor <span class='badge tier-4'>Tier 4</span></td>
+                <td>Phoenix, AZ</td>
+                <td>(602) 555-0202</td>
+              </tr>
+              <tr>
+                <td>Lakeside Plumbing Parts</td>
+                <td>Distributor <span class='badge tier-4'>Tier 4</span></td>
+                <td>Cleveland, OH</td>
+                <td>(216) 555-0303</td>
+              </tr>
+              <tr>
+                <td>Greenfield School District</td>
+                <td>End User </td>
+                <td>Greenfield, WI</td>
+                <td>(414) 555-0401</td>
+              </tr>
+              <tr>
+                <td>City of Mesa Water Dept</td>
+                <td>End User </td>
+                <td>Mesa, AZ</td>
+                <td>(480) 555-0501</td>
+              </tr>
+              <tr>
+                <td>Marriott Downtown Milwaukee</td>
+                <td>End User </td>
+                <td>Milwaukee, WI</td>
+                <td>(414) 555-0601</td>
+              </tr>
+              <tr>
+                <td>Johnson Residence</td>
+                <td>End User </td>
+                <td>Madison, WI</td>
+                <td>(608) 555-0701</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contacts -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('contacts')">
+        <span class="toggle" id="toggle-contacts">&#9660;</span>
+        <h2>Contacts</h2>
+        <span class="count">23</span>
+      </div>
+      <div id="contacts" class="collapsible-content">
+        <div class="card">
+          <div class="mini-stats">
+            <span class="mini-stat"><span class="num">5</span><span class="lbl">Stakeholders</span></span>
+            <span class="mini-stat"><span class="num">14</span><span class="lbl">Distributor</span></span>
+            <span class="mini-stat"><span class="num">4</span><span class="lbl">End User</span></span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Account</th>
+                <th>Category</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Lisa Kume</td>
+                <td>Customer Care Manager</td>
+                <td>Zurn Industries</td>
+                <td>Stakeholder</td>
+                <td>lisa.kume@zurn.com</td>
+              </tr>
+              <tr>
+                <td>Chad Didriksen</td>
+                <td>IT Manager</td>
+                <td>Zurn Industries</td>
+                <td>Stakeholder</td>
+                <td>chad.didriksen@zurn.com</td>
+              </tr>
+              <tr>
+                <td>Darin Volpe</td>
+                <td>Salesforce Admin</td>
+                <td>Zurn Industries</td>
+                <td>Stakeholder</td>
+                <td>darin.volpe@zurn.com</td>
+              </tr>
+              <tr>
+                <td>Mike Schmidt</td>
+                <td>Director of CRM and BI</td>
+                <td>Zurn Industries</td>
+                <td>Stakeholder</td>
+                <td>mike.schmidt@zurn.com</td>
+              </tr>
+              <tr>
+                <td>Steve Krupp</td>
+                <td>Infrastructure & Voice Manager</td>
+                <td>Zurn Industries</td>
+                <td>Stakeholder</td>
+                <td>steve.krupp@zurn.com</td>
+              </tr>
+              <tr>
+                <td>Tom Harrison</td>
+                <td>Plumbing Category Manager</td>
+                <td>Ferguson Enterprises</td>
+                <td>Distributor</td>
+                <td>tom.harrison@ferguson.com</td>
+              </tr>
+              <tr>
+                <td>Rachel Chen</td>
+                <td>Purchasing Director</td>
+                <td>Ferguson Enterprises</td>
+                <td>Distributor</td>
+                <td>rachel.chen@ferguson.com</td>
+              </tr>
+              <tr>
+                <td>Mark Sullivan</td>
+                <td>Branch Manager</td>
+                <td>Hajoca Corporation</td>
+                <td>Distributor</td>
+                <td>mark.sullivan@hajoca.com</td>
+              </tr>
+              <tr>
+                <td>Karen Ostrowski</td>
+                <td>Product Specialist</td>
+                <td>Winsupply Inc.</td>
+                <td>Distributor</td>
+                <td>karen.ostrowski@winsupply.com</td>
+              </tr>
+              <tr>
+                <td>James Morales</td>
+                <td>Commercial Accounts Manager</td>
+                <td>HD Supply</td>
+                <td>Distributor</td>
+                <td>james.morales@hdsupply.com</td>
+              </tr>
+              <tr>
+                <td>Sarah Tremblay</td>
+                <td>Procurement Lead</td>
+                <td>Wolseley Industrial Group</td>
+                <td>Distributor</td>
+                <td>sarah.tremblay@wolseley.com</td>
+              </tr>
+              <tr>
+                <td>David Park</td>
+                <td>Inside Sales</td>
+                <td>Consolidated Supply Co.</td>
+                <td>Distributor</td>
+                <td>david.park@consupply.com</td>
+              </tr>
+              <tr>
+                <td>Linda Nguyen</td>
+                <td>Operations Manager</td>
+                <td>Pacific Plumbing Supply</td>
+                <td>Distributor</td>
+                <td>linda.nguyen@pacificps.com</td>
+              </tr>
+              <tr>
+                <td>Brian Kowalski</td>
+                <td>Branch Buyer</td>
+                <td>Midwest Pipe & Supply</td>
+                <td>Distributor</td>
+                <td>brian.kowalski@midwestpipe.com</td>
+              </tr>
+              <tr>
+                <td>Angela Foster</td>
+                <td>Customer Service Lead</td>
+                <td>Southern Pipe & Supply</td>
+                <td>Distributor</td>
+                <td>angela.foster@southernpipe.com</td>
+              </tr>
+              <tr>
+                <td>Eric Hammond</td>
+                <td>Purchasing Agent</td>
+                <td>Gateway Supply Company</td>
+                <td>Distributor</td>
+                <td>eric.hammond@gatewaysupply.com</td>
+              </tr>
+              <tr>
+                <td>Tony Reeves</td>
+                <td>Owner</td>
+                <td>ABC Plumbing Wholesale</td>
+                <td>Distributor</td>
+                <td>tony.reeves@abcplumbing.com</td>
+              </tr>
+              <tr>
+                <td>Carmen Diaz</td>
+                <td>Counter Sales</td>
+                <td>Metro Building Supply</td>
+                <td>Distributor</td>
+                <td>carmen.diaz@metrobldg.com</td>
+              </tr>
+              <tr>
+                <td>Ryan Brooks</td>
+                <td>Owner / Buyer</td>
+                <td>Lakeside Plumbing Parts</td>
+                <td>Distributor</td>
+                <td>ryan.brooks@lakesideparts.com</td>
+              </tr>
+              <tr>
+                <td>Pat Kelley</td>
+                <td>Facilities Director</td>
+                <td>Greenfield School District</td>
+                <td>End User</td>
+                <td>pkelley@greenfieldsd.edu</td>
+              </tr>
+              <tr>
+                <td>Maria Gutierrez</td>
+                <td>Utilities Supervisor</td>
+                <td>City of Mesa Water Dept</td>
+                <td>End User</td>
+                <td>mgutierrez@mesaaz.gov</td>
+              </tr>
+              <tr>
+                <td>Kevin Strand</td>
+                <td>Chief Engineer</td>
+                <td>Marriott Downtown Milwaukee</td>
+                <td>End User</td>
+                <td>kevin.strand@marriott.com</td>
+              </tr>
+              <tr>
+                <td>Robert Johnson</td>
+                <td></td>
+                <td>Johnson Residence</td>
+                <td>End User</td>
+                <td>rjohnson247@gmail.com</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products & Price Lists -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('products')">
+        <span class="toggle" id="toggle-products">&#9660;</span>
+        <h2>Products</h2>
+        <span class="count">16</span>
+      </div>
+      <div id="products" class="collapsible-content">
+        <div class="two-col">
+          <div class="card">
+            <div class="mini-stats">
+              <span class="mini-stat"><span class="num">10</span><span class="lbl">Zurn / Wilkins</span></span>
+              <span class="mini-stat"><span class="num">6</span><span class="lbl">Elkay</span></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Product</th>
+                  <th>Brand</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>EK-BF-5001</td>
+                  <td>Elkay EZH2O Bottle Filling Station</td>
+                  <td>Elkay</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>EK-DF-5003</td>
+                  <td>Elkay LZSTL8 Bi-Level Drinking Fountain</td>
+                  <td>Elkay</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>EK-FL-6003</td>
+                  <td>Elkay EWF3000 Water Sentry Filter</td>
+                  <td>Elkay</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>EK-SS-6001</td>
+                  <td>Elkay Lustertone DLRS3322 Sink</td>
+                  <td>Elkay</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>EK-UM-6002</td>
+                  <td>Elkay ELUH3120R Undermount Sink</td>
+                  <td>Elkay</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>EK-WC-5002</td>
+                  <td>Elkay EZS8L Cooler</td>
+                  <td>Elkay</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>WK-DC-4002</td>
+                  <td>Wilkins 350XL Double Check Valve</td>
+                  <td>Wilkins</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>WK-RP-4001</td>
+                  <td>Wilkins 975XL RPZ Assembly</td>
+                  <td>Wilkins</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>ZN-AS-2002</td>
+                  <td>Zurn Z86300 AquaSpec Faucet</td>
+                  <td>Zurn</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>ZN-AV-1001</td>
+                  <td>Zurn AquaVantage AV Flush Valve</td>
+                  <td>Zurn</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>ZN-EZ-1002</td>
+                  <td>Zurn AquaSense E-Z Flush Valve</td>
+                  <td>Zurn</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>ZN-FD-3001</td>
+                  <td>Zurn Z415 Floor Drain</td>
+                  <td>Zurn</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>ZN-RD-3003</td>
+                  <td>Zurn Z100 Roof Drain</td>
+                  <td>Zurn</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>ZN-SF-2001</td>
+                  <td>Zurn AquaSense Sensor Faucet</td>
+                  <td>Zurn</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>ZN-TD-3002</td>
+                  <td>Zurn Z886 Trench Drain</td>
+                  <td>Zurn</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+                <tr>
+                  <td>ZN-UR-1003</td>
+                  <td>Zurn ZER6000AV Urinal Flush Valve</td>
+                  <td>Zurn</td>
+                  <td><span class='badge active'>Active</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:1rem;">
+              <div style="padding:1.25rem;">
+                <h3 style="font-size:1rem;color:var(--zurn-blue);margin-bottom:0.75rem;">Price Lists</h3>
+                <div style='margin-bottom:0.5rem;'><strong>Zurn Standard Price List</strong> <span
+                    class='badge active'>Active</span></div>
+                <div style='margin-bottom:0.5rem;'><strong>Elkay Standard Price List</strong> <span
+                    class='badge active'>Active</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div style="padding:1.25rem;">
+                <h3 style="font-size:1rem;color:var(--zurn-blue);margin-bottom:0.75rem;">Calendar</h3>
+                <div><strong>Zurn Elkay Business Hours</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Queues -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('queues')">
+        <span class="toggle" id="toggle-queues">&#9660;</span>
+        <h2>Queues</h2>
+        <span class="count">20</span>
+      </div>
+      <div id="queues" class="collapsible-content">
+        <div class="card">
+          <div class="mini-stats">
+            <span class="mini-stat"><span class="num">8</span><span class="lbl">Zurn</span></span>
+            <span class="mini-stat"><span class="num">12</span><span class="lbl">Elkay</span></span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Queue Name</th>
+                <th>Brand</th>
+                <th>Channel</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Elkay General Support</td>
+                <td>Elkay</td>
+                <td>Email</td>
+                <td>elkaygeneralsupport@zurnelkay-demo.com</td>
+              </tr>
+              <tr>
+                <td>Elkay General Support</td>
+                <td>Elkay</td>
+                <td>Email</td>
+                <td>elkaygeneralsupport@zurnelkay-demo.com</td>
+              </tr>
+              <tr>
+                <td>Elkay Hydration Support</td>
+                <td>Elkay</td>
+                <td>Email</td>
+                <td>elkayhydrationsupport@zurnelkay-demo.com</td>
+              </tr>
+              <tr>
+                <td>Elkay Hydration Support</td>
+                <td>Elkay</td>
+                <td>Email</td>
+                <td>elkayhydrationsupport@zurnelkay-demo.com</td>
+              </tr>
+              <tr>
+                <td>Elkay Orders</td>
+                <td>Elkay</td>
+                <td>Email</td>
+                <td>elkayorders@zurnelkay-demo.com</td>
+              </tr>
+              <tr>
+                <td>Elkay Orders</td>
+                <td>Elkay</td>
+                <td>Email</td>
+                <td>elkayorders@zurnelkay-demo.com</td>
+              </tr>
+              <tr>
+                <td>Elkay Phone - General</td>
+                <td>Elkay</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Elkay Phone - General</td>
+                <td>Elkay</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Elkay Phone - Tech</td>
+                <td>Elkay</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Elkay Phone - Tech</td>
+                <td>Elkay</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Elkay Sinks & Fixtures</td>
+                <td>Elkay</td>
+                <td>Email</td>
+                <td>elkaysinksfixtures@zurnelkay-demo.com</td>
+              </tr>
+              <tr>
+                <td>Elkay Sinks & Fixtures</td>
+                <td>Elkay</td>
+                <td>Email</td>
+                <td>elkaysinksfixtures@zurnelkay-demo.com</td>
+              </tr>
+              <tr>
+                <td>Zurn Phone - Backflow/Wilkins</td>
+                <td>Zurn</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Zurn Phone - Backflow/Wilkins</td>
+                <td>Zurn</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Zurn Phone - General</td>
+                <td>Zurn</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Zurn Phone - General</td>
+                <td>Zurn</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Zurn Phone - Tech Support</td>
+                <td>Zurn</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Zurn Phone - Tech Support</td>
+                <td>Zurn</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Zurn Phone - Tier 1</td>
+                <td>Zurn</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Zurn Phone - Tier 1</td>
+                <td>Zurn</td>
+                <td>Phone</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subjects & SLA -->
+    <div class="two-col">
+      <!-- Subjects -->
+      <div class="section">
+        <div class="section-header" onclick="toggle('subjects')">
+          <span class="toggle" id="toggle-subjects">&#9660;</span>
+          <h2>Case Subjects</h2>
+          <span class="count">15</span>
+        </div>
+        <div id="subjects" class="collapsible-content">
+          <div class="card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Backflow / Wilkins</td>
+                  <td>Wilkins backflow preventers - tech support, sizing, compliance, repairs</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Backflow / Wilkins</td>
+                  <td>Wilkins backflow preventers - tech support, sizing, compliance, repairs</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Drainage</td>
+                  <td>Floor drains, trench drains, roof drains - specifications and troubleshooting</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Drainage</td>
+                  <td>Floor drains, trench drains, roof drains - specifications and troubleshooting</td>
+                </tr>
+                <tr>
+                  <td><strong>Elkay</strong></td>
+                  <td>Elkay Manufacturing product and service subjects</td>
+                </tr>
+                <tr>
+                  <td><strong>Elkay</strong></td>
+                  <td>Elkay Manufacturing product and service subjects</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Filters & Replacement</td>
+                  <td>Water Sentry filters, replacement parts, maintenance</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Filters & Replacement</td>
+                  <td>Water Sentry filters, replacement parts, maintenance</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Hydration Products</td>
+                  <td>Bottle fillers, drinking fountains, water coolers - tech support and specs</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Hydration Products</td>
+                  <td>Bottle fillers, drinking fountains, water coolers - tech support and specs</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Sinks & Fixtures</td>
+                  <td>Stainless steel sinks, faucets, accessories</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;Sinks & Fixtures</td>
+                  <td>Stainless steel sinks, faucets, accessories</td>
+                </tr>
+                <tr>
+                  <td><strong>Water supply</strong></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><strong>Zurn</strong></td>
+                  <td>Zurn Industries product and service subjects</td>
+                </tr>
+                <tr>
+                  <td><strong>Zurn</strong></td>
+                  <td>Zurn Industries product and service subjects</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLA -->
+      <div class="section">
+        <div class="section-header">
+          <span class="toggle">&#9660;</span>
+          <h2>Service Level Agreement</h2>
+        </div>
+        <div class="card">
+          <div class="sla-grid">
+            <div class="sla-detail">
+              <div class="label">SLA Name</div>
+              <div class="value">Zurn Elkay Standard SLA</div>
+            </div>
+            <div class="sla-detail">
+              <div class="label">Status</div>
+              <div class="value"><span class="badge draft">Draft</span></div>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>KPI</th>
+                <th>Failure</th>
+                <th>Warning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Resolution - 8 Hours</td>
+                <td>8h</td>
+                <td>6h</td>
+              </tr>
+              <tr>
+                <td>First Response - 4 Hours</td>
+                <td>4h</td>
+                <td>3h</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workforce Management -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('wfm')">
+        <span class="toggle" id="toggle-wfm">&#9660;</span>
+        <h2>Workforce Management</h2>
+        <span class="count">1,196 bookings</span>
+      </div>
+      <div id="wfm" class="collapsible-content">
+        <div class="card">
+          <div class="mini-stats">
+            <span class="mini-stat"><span class="num">5</span><span class="lbl">Shift Plans</span></span>
+            <span class="mini-stat"><span class="num">14</span><span class="lbl">Agents</span></span>
+            <span class="mini-stat"><span class="num">6</span><span class="lbl">Activity Types</span></span>
+            <span class="mini-stat"><span class="num">7</span><span class="lbl">Time-Off Types</span></span>
+            <span class="mini-stat"><span class="num">5</span><span class="lbl">Time-Off Requests</span></span>
+          </div>
+
+          <div style="padding:1.25rem 1rem 0.5rem;">
+            <h3 style="font-size:1rem;color:var(--zurn-blue);margin-bottom:0.75rem;">Shift Plans</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Shift</th>
+                <th>Hours</th>
+                <th>Days</th>
+                <th>Staff</th>
+                <th>Bookings</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Morning</td>
+                <td>6:00 AM &ndash; 2:00 PM</td>
+                <td>Mon&ndash;Fri</td>
+                <td>4</td>
+                <td>360</td>
+                <td><span class='badge active'>Published</span></td>
+              </tr>
+              <tr>
+                <td>Day</td>
+                <td>8:00 AM &ndash; 5:00 PM</td>
+                <td>Mon&ndash;Fri</td>
+                <td>6</td>
+                <td>330</td>
+                <td><span class='badge active'>Published</span></td>
+              </tr>
+              <tr>
+                <td>Afternoon</td>
+                <td>2:00 PM &ndash; 10:00 PM</td>
+                <td>Mon&ndash;Fri</td>
+                <td>3</td>
+                <td>270</td>
+                <td><span class='badge active'>Published</span></td>
+              </tr>
+              <tr>
+                <td>Staggered</td>
+                <td>7:00 AM &ndash; 3:00 PM</td>
+                <td>Mon&ndash;Fri</td>
+                <td>2</td>
+                <td>180</td>
+                <td><span class='badge active'>Published</span></td>
+              </tr>
+              <tr>
+                <td>Weekend</td>
+                <td>8:00 AM &ndash; 2:00 PM</td>
+                <td>Sat&ndash;Sun</td>
+                <td>2</td>
+                <td>56</td>
+                <td><span class='badge active'>Published</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="padding:1.25rem 1rem 0.5rem;">
+            <h3 style="font-size:1rem;color:var(--zurn-blue);margin-bottom:0.75rem;">Agent Shift Assignments</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Shift</th>
+                <th>Agents</th>
+                <th>Bookings</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Morning (4)</td>
+                <td>Alicia Thomber, Claudia Mazzanti, Tyler Stein, Riley Ramirez</td>
+                <td>360</td>
+              </tr>
+              <tr>
+                <td>Day (6)</td>
+                <td>Alan Steiner, Alex Baker, Bill Technician, David So, Enrico Cattaneo, Spencer Low</td>
+                <td>330</td>
+              </tr>
+              <tr>
+                <td>Afternoon (3)</td>
+                <td>Jamie Reding, Markus Long, Renee Lo</td>
+                <td>270</td>
+              </tr>
+              <tr>
+                <td>Staggered (2)</td>
+                <td>Molly Clark, Riley Ramirez</td>
+                <td>180</td>
+              </tr>
+              <tr>
+                <td>Weekend (2)</td>
+                <td>Tyler Stein, Riley Ramirez</td>
+                <td>56</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="padding:0.5rem 1rem 0.75rem;font-size:0.8rem;color:var(--text-muted);">
+            Tyler Stein &amp; Riley Ramirez are dual-shift (weekday + weekend). Weekdays: Mar 2&ndash;6, 9&ndash;13.
+            Weekends: Mar 1, 7&ndash;8, 14.
+          </div>
+
+          <div style="padding:1.25rem 1rem 0.5rem;">
+            <h3 style="font-size:1rem;color:var(--zurn-blue);margin-bottom:0.75rem;">Activity Types</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Activity</th>
+                <th>Duration</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Case Work</td>
+                <td>Shift-length</td>
+                <td>Primary case handling activity</td>
+              </tr>
+              <tr>
+                <td>Break</td>
+                <td>15 min</td>
+                <td>Short break</td>
+              </tr>
+              <tr>
+                <td>Lunch</td>
+                <td>30 min</td>
+                <td>Meal period</td>
+              </tr>
+              <tr>
+                <td>Training</td>
+                <td>60 min</td>
+                <td>Product/system training</td>
+              </tr>
+              <tr>
+                <td>Team Meeting</td>
+                <td>30 min</td>
+                <td>Huddle or stand-up</td>
+              </tr>
+              <tr>
+                <td>Coaching</td>
+                <td>30 min</td>
+                <td>1:1 supervisor coaching</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="padding:1.25rem 1rem 0.5rem;">
+            <h3 style="font-size:1rem;color:var(--zurn-blue);margin-bottom:0.75rem;">Time-Off Requests</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Duration</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Molly Clark</td>
+                <td>Vacation</td>
+                <td>Mar 10&ndash;11</td>
+                <td>2 days</td>
+                <td><span class='badge active'>Approved</span></td>
+              </tr>
+              <tr>
+                <td>Jamie Reding</td>
+                <td>Personal</td>
+                <td>Mar 7</td>
+                <td>1 day</td>
+                <td><span class='badge active'>Approved</span></td>
+              </tr>
+              <tr>
+                <td>Enrico Cattaneo</td>
+                <td>Training</td>
+                <td>Mar 12 (PM)</td>
+                <td>Half day</td>
+                <td><span class='badge active'>Approved</span></td>
+              </tr>
+              <tr>
+                <td>Alicia Thomber</td>
+                <td>Sick</td>
+                <td>Mar 5</td>
+                <td>1 day</td>
+                <td><span class='badge draft'>Pending</span></td>
+              </tr>
+              <tr>
+                <td>Spencer Low</td>
+                <td>Jury Duty</td>
+                <td>Mar 13&ndash;14</td>
+                <td>2 days</td>
+                <td><span class='badge active'>Approved</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quality Management -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('qm')">
+        <span class="toggle" id="toggle-qm">&#9660;</span>
+        <h2>Quality Management</h2>
+        <span class="count">21 questions</span>
+      </div>
+      <div id="qm" class="collapsible-content">
+        <div class="card">
+          <div class="mini-stats">
+            <span class="mini-stat"><span class="num">1</span><span class="lbl">Criteria</span></span>
+            <span class="mini-stat"><span class="num">6</span><span class="lbl">Sections</span></span>
+            <span class="mini-stat"><span class="num">21</span><span class="lbl">Questions</span></span>
+            <span class="mini-stat"><span class="num">2</span><span class="lbl">Evaluation Plans</span></span>
+          </div>
+
+          <h3 style="margin: 1em 0 0.5em;">Evaluation Criteria</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Criteria Name</th>
+                <th>Sections</th>
+                <th>Questions</th>
+                <th>AI Scoring</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Manufacturing Service Quality Standard</strong></td>
+                <td>6</td>
+                <td>21</td>
+                <td>All questions AI-enabled</td>
+                <td><span class='badge active'>Published</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 style="margin: 1.2em 0 0.5em;">Sections &amp; Weights</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Section</th>
+                <th>Weight</th>
+                <th>Questions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Customer Identification &amp; Account Handling</td>
+                <td>15%</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>Technical Accuracy &amp; Product Knowledge</td>
+                <td>25%</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>Process Compliance &amp; Escalation Handling</td>
+                <td>20%</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>Resolution Effectiveness</td>
+                <td>20%</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>Communication &amp; Professionalism</td>
+                <td>10%</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>Tool Adoption &amp; Efficiency</td>
+                <td>10%</td>
+                <td>3</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 style="margin: 1.2em 0 0.5em;">Evaluation Plans</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Plan Name</th>
+                <th>Type</th>
+                <th>Frequency</th>
+                <th>Scope</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Daily Case Quality Review</strong></td>
+                <td>Recurring</td>
+                <td>Daily</td>
+                <td>All resolved cases</td>
+                <td><span class='badge active'>Published</span></td>
+              </tr>
+              <tr>
+                <td><strong>Conversation Quality Review</strong></td>
+                <td>Trigger</td>
+                <td>On closed conversation</td>
+                <td>All closed chat/voice interactions</td>
+                <td><span class='badge active'>Published</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div
+            style="margin-top: 1em; padding: 0.8em; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 4px;">
+            <strong>Navigation:</strong> Customer Service admin center &rarr; Quality Management &rarr; Evaluation
+            criteria / Evaluation plans
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cases -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('cases')">
+        <span class="toggle" id="toggle-cases">&#9660;</span>
+        <h2>Demo Cases</h2>
+        <span class="count">87</span>
+      </div>
+      <div id="cases" class="collapsible-content">
+        <div class="card">
+          <div class="mini-stats">
+            <span class="mini-stat"><span class="num">27</span><span class="lbl">Active</span></span>
+            <span class="mini-stat"><span class="num">43</span><span class="lbl">Resolved</span></span>
+            <span class="mini-stat"><span class="num">33</span><span class="lbl">High Priority</span></span>
+            <span class="mini-stat"><span class="num">29</span><span class="lbl">Normal Priority</span></span>
+            <span class="mini-stat"><span class="num">25</span><span class="lbl">Low Priority</span></span>
+            <span class="mini-stat"><span class="num">39</span><span class="lbl">Email</span></span>
+            <span class="mini-stat"><span class="num">24</span><span class="lbl">Phone</span></span>
+            <span class="mini-stat"><span class="num">11</span><span class="lbl">Web</span></span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket #</th>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Origin</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CAS-18285-W6X7X7</td>
+                <td>EMERGENCY - Hajoca - Water damage from failed backflow preventer</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18254-B2H1N0</td>
+                <td>Ferguson - Bulk pricing request for Q2 hydration products</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18279-F7M8F0</td>
+                <td>Ferguson - Next Day Air request for Wilkins double check valves</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18255-Z1L8V1</td>
+                <td>Ferguson - Wilkins 975XL backflow preventer sizing question</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18256-T9C0P6</td>
+                <td>Hajoca - AquaSense faucet not activating after install</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18257-P9C5Q8</td>
+                <td>Hajoca - Return authorization for damaged trench drains</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18253-F2B3V9</td>
+                <td>URGENT - Ferguson PO #82991 - Incorrect flush valve shipment</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18268-M4Z9T1</td>
+                <td>URGENT - Southern Pipe - Recall inquiry on flush valve model</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18281-X2J0R9</td>
+                <td>Winsupply - Floor drain strainer finish options</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18275-Y9H0D6</td>
+                <td>City of Mesa - Backflow preventer compliance question</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18286-N7J1L1</td>
+                <td>City of Mesa - Zurn roof drain spec for flat-roof water treatment facility</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18284-D6P1R5</td>
+                <td>Consolidated Supply - Drainage product lead time inquiry</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18263-S3R6P4</td>
+                <td>Consolidated Supply - Replacement filter bulk order</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18262-X7H2B9</td>
+                <td>Consolidated Supply - Winterization guidance for bottle fillers</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18269-G1F8X4</td>
+                <td>Gateway Supply - Elkay cooler making noise after 6 months</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18273-Y6Q2M6</td>
+                <td>Greenfield SD - Drinking fountain not cooling</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18274-X4T7X7</td>
+                <td>Greenfield SD - Quote request for bottle fillers in all buildings</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18280-T9J2J7</td>
+                <td>HD Supply - Elkay undermount sink scratched on delivery</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18259-R5J5T3</td>
+                <td>HD Supply - Order #HD-44210 status inquiry</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18265-J6B3B5</td>
+                <td>Midwest Pipe - Order discrepancy - wrong quantities received</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18282-B0W2B3</td>
+                <td>Pacific Plumbing - eCommerce order payment failed</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Web</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18267-D3P0C7</td>
+                <td>Southern Pipe - Warranty claim on flush valve solenoid</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18261-D3V5M6</td>
+                <td>Wolseley - Cross-border shipping delays on Zurn drainage products</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18289-Q7L7P5</td>
+                <td>ABC Plumbing - Zurn AquaSpec faucet leaking at base</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18277-Z8Q8J2</td>
+                <td>Homeowner - Flush valve running continuously</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18271-T5C2L0</td>
+                <td>Metro Building - Account setup and first order assistance</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Web</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18288-S7Z7G5</td>
+                <td>Metro Building - Elkay sink rough-in dimensions</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-active'>Active</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16141-S1T4F6</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Other</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16850-X3L1L4</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Web</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16156-Y5N7V4</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17486-V0G7J1</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17141-D3F0Q5</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17582-Z0P2M5</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Web</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16739-H6Y1C9</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Other</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17820-Q3Z6T7</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Other</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16307-L1M8P5</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16391-N8Z2R6</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Other</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-13936-L1K5W0</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16272-W7B9N7</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Other</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-13949-Z1K4H0</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-15375-N9F5K3</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17430-V5M3V5</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18258-X0X7V6</td>
+                <td>Winsupply - Product spec sheets needed for bid package</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16366-M3L0Q9</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Web</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17263-Z8W4J9</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Other</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-13937-H3P2H3</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Web</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16593-N2C1T4</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17461-P9Z8V3</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16274-Y0F7K7</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-14000-D6P2W2</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16055-H2K1H7</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Other</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18283-M8R9N5</td>
+                <td>Gateway Supply - Bottle filler counter reset procedure</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18260-H5K3K2</td>
+                <td>HD Supply - Lustertone sink installation template request</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18266-T7V3D1</td>
+                <td>Midwest Pipe - AquaSpec faucet aerator replacement part number</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18264-K9Q9X9</td>
+                <td>Pacific Plumbing - Roof drain compatibility question</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18287-X7Z3M4</td>
+                <td>Wolseley - Elkay filter replacement schedule recommendation</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18270-W4Z5Y7</td>
+                <td>ABC Plumbing - General product catalog request</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17079-F1B6Q8</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17256-Q4M2X6</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17519-K2V2G2</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Other</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16028-V6K6J9</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17427-F4R5L1</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-14952-D4P5S5</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16251-V3C3C8</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16635-V4M1D3</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17819-N7R9Q0</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16271-S9N7X9</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18278-S5K6L9</td>
+                <td>Homeowner - Winterization question for outdoor Elkay bottle filler</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Web</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18272-P9B1D9</td>
+                <td>Lakeside Parts - Return policy question</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-18276-K7S8C5</td>
+                <td>Marriott Milwaukee - Sensor faucet battery replacement program</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-resolved'>Resolved</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16568-B4Y7S0</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-15312-H1Y0B5</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Web</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16565-S0B3P2</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-15299-J5Y9G1</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Other</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16984-N1W4V2</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Other</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16450-Y6F6J5</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16161-M0C8Q1</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16877-T4H5B0</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-high'>High</span></td>
+                <td>Email</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16683-Y5F3L0</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Other</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16262-T1W3H6</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-normal'>Normal</span></td>
+                <td>Other</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-15992-P2Y9N3</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Phone</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17050-L2N3Q0</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Web</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17197-M7G6W6</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Web</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17269-J0F1Y9</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-16106-B5L5N7</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Email</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17332-S3T6X5</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Other</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+              <tr>
+                <td>CAS-17025-X7J6S4</td>
+                <td>Emergency HVAC Failure – Retail Location</td>
+                <td><span class='badge priority-low'>Low</span></td>
+                <td>Web</td>
+                <td><span class='badge state-other'>Cancelled</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Zurn Elkay D365 Customer Service Demo &mdash; Data provisioned via PowerShell automation scripts
+    </div>
+
+  </div>
+
+  <script>
+    function toggle(id) {
+      const el = document.getElementById(id);
+      const arrow = document.getElementById('toggle-' + id);
+      el.classList.toggle('collapsed');
+      if (arrow) arrow.classList.toggle('collapsed');
+    }
+  </script>
+
+</body>
+
+</html>

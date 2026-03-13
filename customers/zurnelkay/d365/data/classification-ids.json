@@ -1,0 +1,17 @@
+﻿{
+    "ArcRuleId":  "6047627b-f317-f111-8342-7ced8d18c8d7",
+    "RulesConfigured":  13,
+    "DecisionRulesetId":  "0b5f6f47-f417-f111-8342-7ced8d18c8d7",
+    "TargetWorkstreamName":  "QS_Customer Service_Case workstream",
+    "HotWords":  [
+                     "urgent",
+                     "emergency",
+                     "recall",
+                     "safety",
+                     "legal",
+                     "next day air"
+                 ],
+    "OldWorkstreamStatus":  "Deactivated",
+    "TargetWorkstreamId":  "59dae7d0-bd92-2d84-31db-bc73d24ffd12",
+    "OldWorkstreamId":  "375fec57-ee17-f111-8341-7ced8dceb26a"
+}

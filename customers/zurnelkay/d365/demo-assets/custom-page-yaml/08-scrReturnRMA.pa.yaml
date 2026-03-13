@@ -1,0 +1,529 @@
+# ============================================
+#  RETURN / RMA (scrReturnRMA)
+#  Format: Power Apps pa.yaml SchemaV3
+# ============================================
+#
+#  Creates a Credit Memo and RMA record in D365
+#  (cra1f_creditmemoandrma). Agents enter the
+#  account name, product, order number, quantity,
+#  dollar amount, reason for return, and optional
+#  lot number. Return Date defaults to Now().
+#
+#  Prerequisites (data sources to add):
+#    - 'Credit Memo and RMAs'  (cra1f_creditmemoandrma)
+#
+#  Variables initialized in scrHome.OnVisible:
+#    varRMACreated  - boolean (false)
+#    varRMANumber   - string ("")
+#    varRMAError    - string ("")
+#
+#  Column name notes (cra1f_creditmemoandrma):
+#    - 'Product Name'         cra1f_productname       (String, primary)
+#    - 'Account Name'         cra1f_accountname       (String)
+#    - 'Order Number'         cra1f_ordernumber       (String)
+#    - 'Quantity Returned'    cra1f_quantityreturned  (Integer)
+#    - 'Reason for Return'    cra1f_reasonforreturn   (Memo)
+#    - 'Dollar Amount'        cra1f_dollaramount      (Money)
+#    - 'Lot Number'           cra1f_lotnumber         (String)
+#    - 'Return Date'          cra1f_returndate        (DateTime)
+# ============================================
+
+Screens:
+  scrReturnRMA:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      OnVisible: |-
+        =Set(varRMACreated, false);
+        Set(varRMANumber, "");
+        Set(varRMAError, "")
+    Children:
+      # -- Purple accent bar --
+      - rectRMABar:
+          Control: Rectangle
+          Properties:
+            X: =0
+            Y: =0
+            Width: =Parent.Width
+            Height: =6
+            Fill: =RGBA(135, 100, 184, 1)
+
+      # -- Return/RMA icon --
+      - icoRMAIcon:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Reload
+            X: =16
+            Y: =18
+            Width: =32
+            Height: =32
+            Color: =RGBA(135, 100, 184, 1)
+
+      # -- Title --
+      - lblRMATitle:
+          Control: Label
+          Properties:
+            Text: ="Return / RMA"
+            X: =58
+            Y: =16
+            Width: =200
+            Height: =30
+            Size: =20
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Home button (top right) --
+      - btnRMAHome:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Home
+            X: =Parent.Width - 52
+            Y: =16
+            Width: =32
+            Height: =32
+            Color: =RGBA(96, 94, 92, 1)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+
+      # -- Subtitle --
+      - lblRMASubtitle:
+          Control: Label
+          Properties:
+            Text: ="Create a credit memo / return authorization"
+            X: =58
+            Y: =48
+            Width: =Parent.Width - 74
+            Height: =22
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+
+      # -- Divider --
+      - rectRMADivider1:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =78
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  FORM FIELDS
+      # =============================================
+
+      # -- Account Name label --
+      - lblRMAAccountLbl:
+          Control: Label
+          Properties:
+            Text: ="Account Name *"
+            X: =16
+            Y: =88
+            Width: =Parent.Width - 32
+            Height: =18
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Account Name input --
+      - txtRMAAccount:
+          Control: Classic/TextInput
+          Properties:
+            HintText: ="e.g. Ferguson Enterprises"
+            X: =16
+            Y: =108
+            Width: =Parent.Width - 32
+            Height: =36
+            BorderColor: =RGBA(200, 198, 196, 1)
+            FocusedBorderColor: =RGBA(135, 100, 184, 1)
+            Size: =11
+
+      # -- Product Name label --
+      - lblRMAProductLbl:
+          Control: Label
+          Properties:
+            Text: ="Product Name *"
+            X: =16
+            Y: =152
+            Width: =Parent.Width - 32
+            Height: =18
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Product Name input --
+      - txtRMAProduct:
+          Control: Classic/TextInput
+          Properties:
+            HintText: ="e.g. ELK-LZS8WSLP"
+            X: =16
+            Y: =172
+            Width: =Parent.Width - 32
+            Height: =36
+            BorderColor: =RGBA(200, 198, 196, 1)
+            FocusedBorderColor: =RGBA(135, 100, 184, 1)
+            Size: =11
+
+      # -- Order Number label --
+      - lblRMAOrderLbl:
+          Control: Label
+          Properties:
+            Text: ="Order Number"
+            X: =16
+            Y: =216
+            Width: =Parent.Width - 32
+            Height: =18
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Order Number input --
+      - txtRMAOrder:
+          Control: Classic/TextInput
+          Properties:
+            HintText: ="e.g. SO-10045"
+            X: =16
+            Y: =236
+            Width: =Parent.Width - 32
+            Height: =36
+            BorderColor: =RGBA(200, 198, 196, 1)
+            FocusedBorderColor: =RGBA(135, 100, 184, 1)
+            Size: =11
+
+      # -- Qty + Dollar Amount (side by side) --
+      - lblRMAQtyLbl:
+          Control: Label
+          Properties:
+            Text: ="Qty Returned *"
+            X: =16
+            Y: =280
+            Width: =(Parent.Width - 40) / 2
+            Height: =18
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      - txtRMAQty:
+          Control: Classic/TextInput
+          Properties:
+            HintText: ="0"
+            X: =16
+            Y: =300
+            Width: =(Parent.Width - 40) / 2
+            Height: =36
+            BorderColor: =RGBA(200, 198, 196, 1)
+            FocusedBorderColor: =RGBA(135, 100, 184, 1)
+            Size: =11
+            Format: =TextFormat.Number
+
+      - lblRMAAmtLbl:
+          Control: Label
+          Properties:
+            Text: ="Dollar Amount"
+            X: =(Parent.Width + 8) / 2
+            Y: =280
+            Width: =(Parent.Width - 40) / 2
+            Height: =18
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      - txtRMAAmt:
+          Control: Classic/TextInput
+          Properties:
+            HintText: ="0.00"
+            X: =(Parent.Width + 8) / 2
+            Y: =300
+            Width: =(Parent.Width - 40) / 2
+            Height: =36
+            BorderColor: =RGBA(200, 198, 196, 1)
+            FocusedBorderColor: =RGBA(135, 100, 184, 1)
+            Size: =11
+            Format: =TextFormat.Number
+
+      # -- Lot Number label --
+      - lblRMALotLbl:
+          Control: Label
+          Properties:
+            Text: ="Lot Number"
+            X: =16
+            Y: =344
+            Width: =Parent.Width - 32
+            Height: =18
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Lot Number input --
+      - txtRMALot:
+          Control: Classic/TextInput
+          Properties:
+            HintText: ="Optional"
+            X: =16
+            Y: =364
+            Width: =Parent.Width - 32
+            Height: =36
+            BorderColor: =RGBA(200, 198, 196, 1)
+            FocusedBorderColor: =RGBA(135, 100, 184, 1)
+            Size: =11
+
+      # -- Reason for Return label --
+      - lblRMAReasonLbl:
+          Control: Label
+          Properties:
+            Text: ="Reason for Return *"
+            X: =16
+            Y: =408
+            Width: =Parent.Width - 32
+            Height: =18
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Reason for Return input (multiline) --
+      - txtRMAReason:
+          Control: Classic/TextInput
+          Properties:
+            HintText: ="Describe the reason for the return..."
+            X: =16
+            Y: =428
+            Width: =Parent.Width - 32
+            Height: =70
+            Mode: =TextMode.MultiLine
+            BorderColor: =RGBA(200, 198, 196, 1)
+            FocusedBorderColor: =RGBA(135, 100, 184, 1)
+            Size: =11
+
+      # -- Divider before button --
+      - rectRMADivider2:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =508
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  ACTION BUTTONS
+      # =============================================
+
+      # -- Create Credit Memo / RMA button --
+      # All fields are plain text/number — no lookup columns needed.
+      # 'Product Name' is the primary name field.
+      - btnCreateRMA:
+          Control: Classic/Button
+          Properties:
+            Text: ="Submit Return / Credit Memo"
+            X: =16
+            Y: =518
+            Width: =Parent.Width - 32
+            Height: =40
+            Fill: =RGBA(135, 100, 184, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Size: =12
+            FontWeight: =FontWeight.Bold
+            BorderThickness: =0
+            HoverFill: =RGBA(115, 80, 164, 1)
+            PressedFill: =RGBA(95, 60, 144, 1)
+            DisabledFill: =RGBA(200, 198, 196, 1)
+            DisplayMode: |-
+              =If(
+                  varRMACreated ||
+                  Trim(txtRMAAccount.Text) = "" ||
+                  Trim(txtRMAProduct.Text) = "" ||
+                  Value(txtRMAQty.Text) <= 0 ||
+                  Trim(txtRMAReason.Text) = "",
+                  DisplayMode.Disabled,
+                  DisplayMode.Edit
+              )
+            OnSelect: |-
+              =Set(varRMAError, "");
+              Set(varRMANumber, "");
+              IfError(
+                  Set(
+                      varRMANumber,
+                      Patch(
+                          'Credit Memo and RMAs',
+                          Blank(),
+                          {
+                              'Product Name': txtRMAProduct.Text,
+                              'Account Name': txtRMAAccount.Text,
+                              'Order Number': txtRMAOrder.Text,
+                              'Quantity Returned': Value(txtRMAQty.Text),
+                              'Reason for Return': txtRMAReason.Text,
+                              'Dollar Amount': Value(txtRMAAmt.Text),
+                              'Lot Number': txtRMALot.Text,
+                              'Return Date': Now()
+                          }
+                      ).'Product Name'
+                  ),
+                  Set(varRMAError, "Error creating return: " & FirstError.Message)
+              );
+              Set(varRMACreated, varRMANumber <> "")
+
+      # -- Error message --
+      - lblRMAError:
+          Control: Label
+          Properties:
+            Text: =varRMAError
+            X: =16
+            Y: =566
+            Width: =Parent.Width - 32
+            Height: =40
+            Size: =11
+            Color: =RGBA(197, 54, 1, 1)
+            Visible: =varRMAError <> ""
+
+      # -- Success --
+      - lblRMASuccess:
+          Control: Label
+          Properties:
+            Text: |-
+              ="✓ Return submitted — " & varRMANumber
+            X: =16
+            Y: =160
+            Width: =Parent.Width - 32
+            Height: =24
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(16, 124, 16, 1)
+            Visible: =varRMACreated
+
+      # -- Shipping Label Preview (HtmlViewer) --
+      - htmlShippingLabel:
+          Control: HtmlViewer
+          Properties:
+            X: =16
+            Y: =190
+            Width: =Parent.Width - 32
+            Height: =310
+            Visible: =varRMACreated
+            BorderThickness: =0
+            HtmlText: |-
+              ="<div style='font-family:Segoe UI,sans-serif;border:2px solid #323130;border-radius:8px;overflow:hidden;'>" &
+              "<div style='background:#323130;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;'>" &
+              "<div style='font-size:16px;font-weight:700;letter-spacing:1px;'>⬡ RETURN SHIPPING LABEL</div>" &
+              "<div style='font-size:11px;opacity:0.8;'>" & Text(Now(), "mm/dd/yyyy") & "</div></div>" &
+              "<div style='padding:14px;'>" &
+              "<div style='display:flex;justify-content:space-between;margin-bottom:12px;'>" &
+              "<div><div style='font-size:9px;color:#605E5C;text-transform:uppercase;letter-spacing:1px;'>From</div>" &
+              "<div style='font-size:12px;font-weight:600;'>" & txtRMAAccount_1.Text & "</div>" &
+              "<div style='font-size:11px;color:#605E5C;'>Ship-From Address on File</div></div>" &
+              "<div style='text-align:right;'><div style='font-size:9px;color:#605E5C;text-transform:uppercase;letter-spacing:1px;'>RMA #</div>" &
+              "<div style='font-size:16px;font-weight:700;color:#8764B8;'>" & varRMANumber & "</div></div></div>" &
+              "<div style='border:2px solid #8764B8;border-radius:6px;padding:12px;margin-bottom:12px;background:#FAF9F8;'>" &
+              "<div style='font-size:9px;color:#605E5C;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;'>Ship To — Zurn Elkay Returns Center</div>" &
+              "<div style='font-size:14px;font-weight:700;'>Zurn Elkay Water Solutions</div>" &
+              "<div style='font-size:12px;'>Returns Processing — Dock 4</div>" &
+              "<div style='font-size:12px;'>1801 Pittsburgh Avenue</div>" &
+              "<div style='font-size:12px;font-weight:600;'>Erie, PA 16502</div></div>" &
+              "<div style='display:flex;justify-content:space-between;margin-bottom:10px;'>" &
+              "<div><div style='font-size:9px;color:#605E5C;text-transform:uppercase;letter-spacing:1px;'>Product</div>" &
+              "<div style='font-size:11px;font-weight:600;'>" & cbRMAProduct_1.Selected.Name & "</div></div>" &
+              "<div><div style='font-size:9px;color:#605E5C;text-transform:uppercase;letter-spacing:1px;'>Qty</div>" &
+              "<div style='font-size:11px;font-weight:600;'>" & txtRMAQty_1.Text & "</div></div>" &
+              "<div style='text-align:right;'><div style='font-size:9px;color:#605E5C;text-transform:uppercase;letter-spacing:1px;'>Weight (est.)</div>" &
+              "<div style='font-size:11px;font-weight:600;'>" & Text(Value(txtRMAQty_1.Text) * 12, "#,##0") & " lbs</div></div></div>" &
+              "<div style='text-align:center;padding:8px 0 4px;border-top:1px dashed #C8C6C4;'>" &
+              "<div style='font-family:monospace;font-size:20px;letter-spacing:6px;font-weight:700;'>" &
+              "▮▯▮▮▯▮▯▯▮▮▯▮▮▯▮▯▮▮</div>" &
+              "<div style='font-family:monospace;font-size:11px;letter-spacing:3px;color:#605E5C;'>" & varRMANumber & "</div></div>" &
+              "</div></div>"
+
+      # -- Draft Return Email button (blue) --
+      - btnDraftReturnEmail:
+          Control: Classic/Button
+          Properties:
+            Text: ="✉ Draft Return Email"
+            X: =16
+            Y: =510
+            Width: =Parent.Width - 32
+            Height: =48
+            Fill: =RGBA(0, 120, 212, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Size: =13
+            FontWeight: =FontWeight.Semibold
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 100, 192, 1)
+            PressedFill: =RGBA(0, 80, 172, 1)
+            Visible: =varRMACreated
+            OnSelect: |-
+              =Patch(
+                  'Email Activities',
+                  Defaults('Email Activities'),
+                  {
+                      Subject: "Return Authorization " & varRMANumber & " — " & txtRMAAccount_1.Text,
+                      Description: "<html><body style='font-family:Segoe UI,sans-serif;font-size:14px;color:#333'>"
+                          & "<p>Hi " & txtRMAAccount_1.Text & " Team,</p>"
+                          & "<p>Your return has been authorized. Please find the details below.</p>"
+                          & "<h3 style='color:#004e8c;border-bottom:2px solid #004e8c;padding-bottom:4px'>Return Authorization</h3>"
+                          & "<table style='border-collapse:collapse;margin:8px 0 16px 0'>"
+                          & "<tr><td style='padding:4px 16px 4px 0;color:#666'>RMA Number:</td><td style='padding:4px 0;font-weight:600'>" & varRMANumber & "</td></tr>"
+                          & "<tr><td style='padding:4px 16px 4px 0;color:#666'>Product:</td><td style='padding:4px 0;font-weight:600'>" & cbRMAProduct_1.Selected.Name & "</td></tr>"
+                          & "<tr><td style='padding:4px 16px 4px 0;color:#666'>Quantity:</td><td style='padding:4px 0;font-weight:600'>" & txtRMAQty_1.Text & "</td></tr>"
+                          & "<tr><td style='padding:4px 16px 4px 0;color:#666'>Credit Amount:</td><td style='padding:4px 0;font-weight:600'>$" & Text(Value(txtRMAAmt_1.Text), "#,##0.00") & "</td></tr>"
+                          & If(!IsBlank(txtRMAOrder_1.Text),
+                              "<tr><td style='padding:4px 16px 4px 0;color:#666'>Order Ref:</td><td style='padding:4px 0;font-weight:600'>" & txtRMAOrder_1.Text & "</td></tr>", "")
+                          & If(!IsBlank(txtRMALot_1.Text),
+                              "<tr><td style='padding:4px 16px 4px 0;color:#666'>Lot Number:</td><td style='padding:4px 0;font-weight:600'>" & txtRMALot_1.Text & "</td></tr>", "")
+                          & "<tr><td style='padding:4px 16px 4px 0;color:#666'>Return Date:</td><td style='padding:4px 0;font-weight:600'>" & Text(Now(), "mmmm d, yyyy") & "</td></tr>"
+                          & "</table>"
+                          & "<h3 style='color:#004e8c;border-bottom:2px solid #004e8c;padding-bottom:4px'>Shipping Instructions</h3>"
+                          & "<p style='margin:4px 0'><b>Ship To:</b></p>"
+                          & "<p style='margin:0 0 0 16px'>Zurn Elkay Water Solutions<br>Returns Processing — Dock 4<br>1801 Pittsburgh Avenue<br>Erie, PA 16502</p>"
+                          & "<ul style='margin:12px 0'>"
+                          & "<li>Write RMA # <b>" & varRMANumber & "</b> on all boxes</li>"
+                          & "<li>Use original packaging when possible</li>"
+                          & "<li>A prepaid shipping label is attached</li>"
+                          & "</ul>"
+                          & "<p>Credit will be applied within <b>5–7 business days</b> of receipt.</p>"
+                          & "<p>Please let us know if you have any questions.</p>"
+                          & "<p>Best regards,<br>Zurn Elkay Customer Service</p>"
+                          & "</body></html>"
+                  }
+              )
+
+      # -- New Return button (visible after creation) --
+      - btnRMANew:
+          Control: Classic/Button
+          Properties:
+            Text: ="+ Start New Return"
+            X: =16
+            Y: =566
+            Width: =Parent.Width - 32
+            Height: =38
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(135, 100, 184, 1)
+            BorderColor: =RGBA(135, 100, 184, 1)
+            BorderThickness: =1
+            Size: =12
+            HoverFill: =RGBA(135, 100, 184, 0.05)
+            PressedFill: =RGBA(135, 100, 184, 0.1)
+            Visible: =varRMACreated
+            OnSelect: |-
+              =Set(varRMACreated, false);
+              Set(varRMANumber, "");
+              Set(varRMAError, "");
+              Reset(txtRMAAccount);
+              Reset(txtRMAProduct);
+              Reset(txtRMAOrder);
+              Reset(txtRMAQty);
+              Reset(txtRMAAmt);
+              Reset(txtRMALot);
+              Reset(txtRMAReason)
+
+      # -- Back to Service Toolkit --
+      - btnRMABackHome:
+          Control: Classic/Button
+          Properties:
+            Text: ="Back to Service Toolkit"
+            X: =16
+            Y: =Parent.Height - 50
+            Width: =Parent.Width - 32
+            Height: =38
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(135, 100, 184, 1)
+            BorderColor: =RGBA(135, 100, 184, 1)
+            BorderThickness: =1
+            Size: =12
+            HoverFill: =RGBA(135, 100, 184, 0.05)
+            PressedFill: =RGBA(135, 100, 184, 0.1)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)

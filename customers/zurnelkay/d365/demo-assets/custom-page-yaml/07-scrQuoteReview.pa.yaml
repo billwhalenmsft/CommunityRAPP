@@ -1,0 +1,449 @@
+# ============================================
+#  QUOTE REVIEW (scrQuoteReview)
+#  Format: Power Apps pa.yaml SchemaV3
+# ============================================
+#
+#  Screen 2 of 2 for the Quick Quote tool.
+#  Shows quote summary with all line items
+#  and grand total. Optionally saves as a
+#  D365 Quote record with Quote Products.
+#
+#  Prerequisites (beyond scrQuickQuote):
+#    - 'Quotes' data source added
+#    - 'Quote Lines' data source added
+#    - 'Price Lists' data source added
+#
+#  Variables from scrQuickQuote:
+#    varQuoteAccount  - selected Accounts record
+#    varQuoteBrand    - "Zurn" or "Elkay"
+#    colQuoteLines    - line items collection
+#    varQuoteSaved    - boolean
+#    varQuoteError    - error text
+#    varSavedQuote    - saved Quote record
+#    varQuoteNumber   - saved quote name
+#
+#  NOTE: The Save button creates a real D365
+#  Quote + Quote Products via Patch(). If the
+#  'Quotes'/'Quote Products' data sources are
+#  not added, the calculator still works — just
+#  skip the Save button.
+#
+#  Column name notes:
+#    - Quote customer: 'Quote Customers'
+#      (may be 'Potential Customer' in some environments)
+#    - Price list column: 'Price List'
+#    - Quote Lines product: 'Existing Product'
+#    - Quote Lines qty: 'Quantity'
+#    - Quote Lines price: 'Price Per Unit'
+# ============================================
+
+Screens:
+  scrQuoteReview:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      OnVisible: |-
+        =Set(varQuoteSaved, false);
+        Set(varQuoteError, "");
+        Set(varQuoteNumber, "")
+    Children:
+      # -- Teal accent bar --
+      - rectReviewBar:
+          Control: Rectangle
+          Properties:
+            X: =0
+            Y: =0
+            Width: =Parent.Width
+            Height: =6
+            Fill: =RGBA(0, 133, 117, 1)
+
+      # -- Detail list icon --
+      - icoReviewIcon:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.DetailList
+            X: =16
+            Y: =18
+            Width: =32
+            Height: =32
+            Color: =RGBA(0, 133, 117, 1)
+
+      # -- Title --
+      - lblReviewTitle:
+          Control: Label
+          Properties:
+            Text: ="Quote Summary"
+            X: =58
+            Y: =16
+            Width: =200
+            Height: =30
+            Size: =20
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Home button (top right) --
+      - btnReviewHome:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Home
+            X: =Parent.Width - 52
+            Y: =16
+            Width: =32
+            Height: =32
+            Color: =RGBA(96, 94, 92, 1)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+
+      # -- Subtitle --
+      - lblReviewSubtitle:
+          Control: Label
+          Properties:
+            Text: ="Review lines and optionally save to D365"
+            X: =58
+            Y: =48
+            Width: =Parent.Width - 74
+            Height: =22
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+
+      # -- Divider --
+      - rectReviewDivider1:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =78
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  CUSTOMER + BRAND INFO
+      # =============================================
+
+      # -- Customer row --
+      - lblRevCustLbl:
+          Control: Label
+          Properties:
+            Text: ="Customer"
+            X: =16
+            Y: =86
+            Width: =90
+            Height: =20
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+
+      - lblRevCustVal:
+          Control: Label
+          Properties:
+            Text: =varQuoteAccount.'Account Name'
+            X: =110
+            Y: =86
+            Width: =Parent.Width - 126
+            Height: =20
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Brand row --
+      - lblRevBrandLbl:
+          Control: Label
+          Properties:
+            Text: ="Brand"
+            X: =16
+            Y: =108
+            Width: =90
+            Height: =20
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+
+      - lblRevBrandVal:
+          Control: Label
+          Properties:
+            Text: |-
+              =varQuoteBrand & " Standard Price List"
+            X: =110
+            Y: =108
+            Width: =Parent.Width - 126
+            Height: =20
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Lines count row --
+      - lblRevLinesLbl:
+          Control: Label
+          Properties:
+            Text: ="Lines"
+            X: =16
+            Y: =130
+            Width: =90
+            Height: =20
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+
+      - lblRevLinesVal:
+          Control: Label
+          Properties:
+            Text: =Text(CountRows(colQuoteLines))
+            X: =110
+            Y: =130
+            Width: =Parent.Width - 126
+            Height: =20
+            Size: =11
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Divider --
+      - rectReviewDivider2:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =158
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  LINE ITEMS (read-only gallery)
+      # =============================================
+      - lblRevLinesTitle:
+          Control: Label
+          Properties:
+            Text: ="Line Items"
+            X: =16
+            Y: =166
+            Width: =Parent.Width - 32
+            Height: =22
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      - galReviewLines:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            Items: =colQuoteLines
+            X: =0
+            Y: =192
+            Width: =Parent.Width
+            Height: =Parent.Height - 450
+            TemplateSize: =52
+            TemplatePadding: =0
+            Fill: =RGBA(250, 250, 250, 1)
+          Children:
+            - lblRevLineProd:
+                Control: Label
+                Properties:
+                  Text: =ThisItem.ProductName
+                  X: =16
+                  Y: =4
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =20
+                  Size: =11
+                  FontWeight: =FontWeight.Semibold
+                  Color: =RGBA(50, 49, 48, 1)
+                  OnSelect: =Select(Parent)
+
+            - lblRevLineCalc:
+                Control: Label
+                Properties:
+                  Text: |-
+                    =ThisItem.ProductNum & "  ·  " & ThisItem.Qty & " × " & Text(ThisItem.UnitPrice, "$#,##0.00") & " = " & Text(ThisItem.LineAmount, "$#,##0.00")
+                  X: =16
+                  Y: =24
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =20
+                  Size: =10
+                  Color: =RGBA(96, 94, 92, 1)
+                  OnSelect: =Select(Parent)
+
+            - rectRevLineDivider:
+                Control: Rectangle
+                Properties:
+                  X: =16
+                  Y: =Parent.TemplateHeight - 1
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =1
+                  Fill: =RGBA(237, 235, 233, 1)
+                  OnSelect: =Select(Parent)
+
+      # =============================================
+      #  GRAND TOTAL
+      # =============================================
+      - rectReviewDivider3:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =Parent.Height - 256
+            Width: =Parent.Width - 32
+            Height: =2
+            Fill: =RGBA(0, 133, 117, 1)
+
+      - lblRevTotalLbl:
+          Control: Label
+          Properties:
+            Text: ="GRAND TOTAL"
+            X: =16
+            Y: =Parent.Height - 248
+            Width: =140
+            Height: =32
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+
+      - lblRevTotalVal:
+          Control: Label
+          Properties:
+            Text: |-
+              =Text(Sum(colQuoteLines, LineAmount), "$#,##0.00")
+            X: =160
+            Y: =Parent.Height - 248
+            Width: =Parent.Width - 176
+            Height: =32
+            Size: =18
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(0, 133, 117, 1)
+            Align: =Align.Right
+
+      # =============================================
+      #  SAVE SECTION
+      # =============================================
+
+      # -- Save as D365 Quote button --
+      # Creates a Quote header + Quote Products
+      # for each line. Requires Quotes, Quote
+      # Products, and Price Lists data sources.
+      - btnSaveQuote:
+          Control: Classic/Button
+          Properties:
+            Text: |-
+              =If(varQuoteSaved, "✓ Saved to D365", "Save as D365 Quote")
+            X: =16
+            Y: =Parent.Height - 206
+            Width: =Parent.Width - 32
+            Height: =40
+            Fill: |-
+              =If(varQuoteSaved, RGBA(16, 124, 16, 1), RGBA(0, 133, 117, 1))
+            Color: =RGBA(255, 255, 255, 1)
+            Size: =12
+            FontWeight: =FontWeight.Bold
+            BorderThickness: =0
+            HoverFill: |-
+              =If(varQuoteSaved, RGBA(16, 124, 16, 1), RGBA(0, 113, 97, 1))
+            PressedFill: |-
+              =If(varQuoteSaved, RGBA(16, 124, 16, 1), RGBA(0, 93, 77, 1))
+            DisabledFill: =RGBA(200, 198, 196, 1)
+            DisplayMode: |-
+              =If(varQuoteSaved, DisplayMode.Disabled, DisplayMode.Edit)
+            OnSelect: |-
+              =Set(varQuoteError, "");
+              Set(varQuoteNumber, "");
+              // Step 1: Create the Quote header
+              // Store the Name from Patch immediately — varSavedQuote is untyped
+              // Record so we use varQuoteNumber (a plain string) for the LookUp below.
+              IfError(
+                  Set(
+                      varQuoteNumber,
+                      Patch(
+                          Quotes,
+                          Blank(),
+                          {
+                              Name: "QQ - " & varQuoteAccount.'Account Name' & " " & Text(Now(), "mm/dd/yyyy"),
+                              'Quote Customers': LookUp(Accounts, 'Account Name' = varQuoteAccount.'Account Name'),
+                              'Price List': LookUp('Price Lists', Name = varQuoteBrand & " Standard Price List")
+                          }
+                      ).Name
+                  ),
+                  Set(varQuoteError, "Error creating quote: " & FirstError.Message)
+              );
+              // Step 2: Create Quote Lines for each product line
+              // LookUp by Name returns a typed DataEntity — avoids 'Record' type error
+              If(
+                  varQuoteNumber <> "",
+                  ForAll(
+                      colQuoteLines As line,
+                      Patch(
+                          'Quote Lines',
+                          Blank(),
+                          {
+                              Quote: LookUp(Quotes, Name = varQuoteNumber),
+                              'Existing Product': LookUp(Products, 'Product ID' = line.ProductNum),
+                              Quantity: line.Qty,
+                              'Price Per Unit': line.UnitPrice
+                          }
+                      )
+                  );
+                  Set(varQuoteSaved, true)
+              )
+
+      # -- Error message --
+      - lblQuoteError:
+          Control: Label
+          Properties:
+            Text: =varQuoteError
+            X: =16
+            Y: =Parent.Height - 160
+            Width: =Parent.Width - 32
+            Height: =40
+            Size: =11
+            Color: =RGBA(197, 54, 1, 1)
+            Visible: =varQuoteError <> ""
+
+      # -- Quote name (visible after save) --
+      - lblQuoteNumber:
+          Control: Label
+          Properties:
+            Text: |-
+              ="Quote saved: " & varQuoteNumber
+            X: =16
+            Y: =Parent.Height - 160
+            Width: =Parent.Width - 32
+            Height: =24
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(16, 124, 16, 1)
+            Visible: =varQuoteSaved
+
+      # =============================================
+      #  FOOTER BUTTONS
+      # =============================================
+
+      # -- Edit Quote (back to picker screen) --
+      - btnEditQuote:
+          Control: Classic/Button
+          Properties:
+            Text: |-
+              ="← Edit Quote"
+            X: =16
+            Y: =Parent.Height - 96
+            Width: =Parent.Width - 32
+            Height: =38
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(0, 133, 117, 1)
+            BorderColor: =RGBA(0, 133, 117, 1)
+            BorderThickness: =1
+            Size: =12
+            HoverFill: =RGBA(0, 133, 117, 0.05)
+            PressedFill: =RGBA(0, 133, 117, 0.1)
+            DisabledFill: =RGBA(243, 242, 241, 1)
+            DisabledColor: =RGBA(200, 198, 196, 1)
+            DisabledBorderColor: =RGBA(200, 198, 196, 1)
+            DisplayMode: |-
+              =If(varQuoteSaved, DisplayMode.Disabled, DisplayMode.Edit)
+            OnSelect: =Navigate(scrQuickQuote, ScreenTransition.None)
+
+      # -- Back to Service Toolkit --
+      - btnReviewBackHome:
+          Control: Classic/Button
+          Properties:
+            Text: ="Back to Service Toolkit"
+            X: =16
+            Y: =Parent.Height - 50
+            Width: =Parent.Width - 32
+            Height: =38
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(0, 133, 117, 1)
+            BorderColor: =RGBA(0, 133, 117, 1)
+            BorderThickness: =1
+            Size: =12
+            HoverFill: =RGBA(0, 133, 117, 0.05)
+            PressedFill: =RGBA(0, 133, 117, 0.1)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)

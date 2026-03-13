@@ -433,6 +433,70 @@ config = json.dumps(enabled_agents)
 storage.write_file('agent_config/USER_GUID', 'enabled_agents.json', config)
 ```
 
+## D365 Demo Prep Engine
+
+The `d365/` directory contains a complete Dynamics 365 Customer Service demo provisioning engine. It includes PowerShell scripts for Dataverse data creation and Python utilities for validation and config management.
+
+### Directory Structure
+
+```
+d365/
+  scripts/           — 25 numbered PowerShell provisioning scripts + utilities
+    DataverseHelper.psm1  — Shared module (auth, CRUD, Find-OrCreate-Record)
+    00-Setup.ps1          — Orchestrator (supports -From N, -Only N, -Customer name)
+    01-Accounts.ps1 … 25-ServiceToolkitForms.ps1
+    check-*.ps1, fix-*.ps1, debug-*.ps1  — Diagnostic utilities
+  templates/         — Jinja2 templates for demo script generation
+  utils/             — Python utilities (config_loader, dataverse_auth)
+```
+
+### Customer D365 Assets
+
+Each customer can have D365-specific assets under `customers/<name>/d365/`:
+
+```
+customers/zurnelkay/d365/
+  config/environment.json    — Brands, tiers, SLA timings, org URL
+  data/                      — Exported record IDs from provisioning
+  demo-assets/               — Demo scripts, guides, custom page YAML, web resources
+  copilot-studio/            — Copilot Studio agent YAML topics
+```
+
+### D365DemoPrep Agent
+
+The `D365DemoPrep` agent (in `agents/d365_demo_prep_agent.py`) provides:
+
+| Action | Description |
+|--------|-------------|
+| `list_customers` | Show customers with D365 configurations |
+| `get_config` | Return a customer's environment.json |
+| `validate_environment` | Check D365 org for expected demo data |
+| `provision_data` | Create core demo records (accounts, contacts) |
+| `run_powershell` | Execute a numbered provisioning step (1-25) |
+
+**Prerequisites:** `az login` must be completed for Dataverse token acquisition.
+
+**Example usage via chat:**
+- "Use D365DemoPrep to list customers"
+- "Validate the D365 environment for zurnelkay"
+- "Provision demo data for zurnelkay"
+- "Run PowerShell step 7 for zurnelkay"
+
+### Running PowerShell Scripts Directly
+
+```powershell
+cd d365/scripts
+
+# Full setup (all steps)
+.\00-Setup.ps1 -Customer zurnelkay
+
+# Resume from step 7
+.\00-Setup.ps1 -From 7 -Customer zurnelkay
+
+# Run only step 5
+.\00-Setup.ps1 -Only 5 -Customer zurnelkay
+```
+
 ## Deployment
 
 The project uses Azure Resource Manager (ARM) template deployment:

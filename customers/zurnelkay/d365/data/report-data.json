@@ -1,0 +1,1826 @@
+﻿{
+    "slaItems":  [
+                     {
+                         "warnafter":  360,
+                         "description":  null,
+                         "name":  "Resolution - 8 Hours",
+                         "failureafter":  480,
+                         "slaitemid":  "385b22dc-9912-f111-8406-6045bda80a72"
+                     },
+                     {
+                         "warnafter":  180,
+                         "description":  null,
+                         "name":  "First Response - 4 Hours",
+                         "failureafter":  240,
+                         "slaitemid":  "9a2743da-9912-f111-8407-7c1e52143136"
+                     }
+                 ],
+    "queues":  [
+                   {
+                       "@odata.etag":  "W/\"81948156\"",
+                       "emailaddress":  "elkaygeneralsupport@zurnelkay-demo.com",
+                       "queueid":  "0a16cf5d-8f12-f111-8406-7ced8dceb26a",
+                       "name":  "Elkay General Support",
+                       "description":  "Elkay | Email | General Elkay customer support"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944726\"",
+                       "emailaddress":  "elkaygeneralsupport@zurnelkay-demo.com",
+                       "queueid":  "8e633706-8e12-f111-8407-7ced8dceb433",
+                       "name":  "Elkay General Support",
+                       "description":  "Elkay | Email | General Elkay customer support"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944707\"",
+                       "emailaddress":  "elkayhydrationsupport@zurnelkay-demo.com",
+                       "queueid":  "84633706-8e12-f111-8407-7ced8dceb433",
+                       "name":  "Elkay Hydration Support",
+                       "description":  "Elkay | Email | Bottle fillers, drinking fountains, water coolers"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81947898\"",
+                       "emailaddress":  "elkayhydrationsupport@zurnelkay-demo.com",
+                       "queueid":  "1272165c-8f12-f111-8407-7ced8dceb433",
+                       "name":  "Elkay Hydration Support",
+                       "description":  "Elkay | Email | Bottle fillers, drinking fountains, water coolers"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944737\"",
+                       "emailaddress":  "elkayorders@zurnelkay-demo.com",
+                       "queueid":  "64aab605-8e12-f111-8407-7ced8d18c8d7",
+                       "name":  "Elkay Orders",
+                       "description":  "Elkay | Email | Elkay order management and status inquiries"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81948170\"",
+                       "emailaddress":  "elkayorders@zurnelkay-demo.com",
+                       "queueid":  "1a72165c-8f12-f111-8407-7ced8dceb433",
+                       "name":  "Elkay Orders",
+                       "description":  "Elkay | Email | Elkay order management and status inquiries"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81948181\"",
+                       "emailaddress":  null,
+                       "queueid":  "4a359b59-8f12-f111-8407-7ced8d18c8d7",
+                       "name":  "Elkay Phone - General",
+                       "description":  "Elkay | Phone | General Elkay phone support"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944755\"",
+                       "emailaddress":  null,
+                       "queueid":  "dbddcb07-8e12-f111-8406-7ced8dceb26a",
+                       "name":  "Elkay Phone - General",
+                       "description":  "Elkay | Phone | General Elkay phone support"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81948188\"",
+                       "emailaddress":  null,
+                       "queueid":  "c2f4775d-8f12-f111-8407-7c1e52143136",
+                       "name":  "Elkay Phone - Tech",
+                       "description":  "Elkay | Phone | Elkay technical support calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944763\"",
+                       "emailaddress":  null,
+                       "queueid":  "69aab605-8e12-f111-8407-7ced8d18c8d7",
+                       "name":  "Elkay Phone - Tech",
+                       "description":  "Elkay | Phone | Elkay technical support calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81948048\"",
+                       "emailaddress":  "elkaysinksfixtures@zurnelkay-demo.com",
+                       "queueid":  "39359b59-8f12-f111-8407-7ced8d18c8d7",
+                       "name":  "Elkay Sinks \u0026 Fixtures",
+                       "description":  "Elkay | Email | Stainless steel sinks, faucets, accessories"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944715\"",
+                       "emailaddress":  "elkaysinksfixtures@zurnelkay-demo.com",
+                       "queueid":  "89633706-8e12-f111-8407-7ced8dceb433",
+                       "name":  "Elkay Sinks \u0026 Fixtures",
+                       "description":  "Elkay | Email | Stainless steel sinks, faucets, accessories"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944698\"",
+                       "emailaddress":  null,
+                       "queueid":  "a7133808-8e12-f111-8406-7c1e5218592b",
+                       "name":  "Zurn Phone - Backflow/Wilkins",
+                       "description":  "Zurn | Phone | Phone queue for Wilkins backflow product calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81947740\"",
+                       "emailaddress":  null,
+                       "queueid":  "1f359b59-8f12-f111-8407-7ced8d18c8d7",
+                       "name":  "Zurn Phone - Backflow/Wilkins",
+                       "description":  "Zurn | Phone | Phone queue for Wilkins backflow product calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81947421\"",
+                       "emailaddress":  null,
+                       "queueid":  "4c0a7d57-8f12-f111-8407-7c1e52143136",
+                       "name":  "Zurn Phone - General",
+                       "description":  "Zurn | Phone | Phone queue for general incoming calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944684\"",
+                       "emailaddress":  null,
+                       "queueid":  "53aab605-8e12-f111-8407-7ced8d18c8d7",
+                       "name":  "Zurn Phone - General",
+                       "description":  "Zurn | Phone | Phone queue for general incoming calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81947589\"",
+                       "emailaddress":  null,
+                       "queueid":  "7aab965a-8f12-f111-8407-7c1e520a58a1",
+                       "name":  "Zurn Phone - Tech Support",
+                       "description":  "Zurn | Phone | Phone queue for technical troubleshooting calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944691\"",
+                       "emailaddress":  null,
+                       "queueid":  "57aab605-8e12-f111-8407-7ced8d18c8d7",
+                       "name":  "Zurn Phone - Tech Support",
+                       "description":  "Zurn | Phone | Phone queue for technical troubleshooting calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81947269\"",
+                       "emailaddress":  null,
+                       "queueid":  "f3349b59-8f12-f111-8407-7ced8d18c8d7",
+                       "name":  "Zurn Phone - Tier 1",
+                       "description":  "Zurn | Phone | Phone queue for Tier 1 strategic distributor calls"
+                   },
+                   {
+                       "@odata.etag":  "W/\"81944677\"",
+                       "emailaddress":  null,
+                       "queueid":  "76633706-8e12-f111-8407-7ced8dceb433",
+                       "name":  "Zurn Phone - Tier 1",
+                       "description":  "Zurn | Phone | Phone queue for Tier 1 strategic distributor calls"
+                   }
+               ],
+    "slas":  [
+                 {
+                     "slaversion":  100000001,
+                     "slaid":  "f8c8c488-9912-f111-8407-7c1e52143136",
+                     "statecode":  0,
+                     "name":  "Zurn Elkay Standard SLA",
+                     "description":  "Zurn Elkay CS SLA. First Response: 4h, Resolution: 8h business hours."
+                 }
+             ],
+    "priceLists":  [
+                       {
+                           "@odata.etag":  "W/\"81944250\"",
+                           "description":  "Standard pricing for Zurn Industries products",
+                           "pricelevelid":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                           "statecode":  0,
+                           "name":  "Zurn Standard Price List"
+                       },
+                       {
+                           "@odata.etag":  "W/\"81944253\"",
+                           "description":  "Standard pricing for Elkay Manufacturing products",
+                           "pricelevelid":  "6cfa0c6e-8d12-f111-8407-7c1e520a58a1",
+                           "statecode":  0,
+                           "name":  "Elkay Standard Price List"
+                       }
+                   ],
+    "cases":  [
+                  {
+                      "@odata.etag":  "W/\"81965290\"",
+                      "incidentid":  "9a1e117d-8f12-f111-8406-7ced8dceb26a",
+                      "ticketnumber":  "CAS-18253-F2B3V9",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "URGENT - Ferguson PO #82991 - Incorrect flush valve shipment",
+                      "createdon":  "2026-02-25T21:18:15Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81971051\"",
+                      "incidentid":  "428304a8-8f12-f111-8406-7ced8dceb26a",
+                      "ticketnumber":  "CAS-18279-F7M8F0",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Ferguson - Next Day Air request for Wilkins double check valves",
+                      "createdon":  "2026-02-25T21:19:27Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81966730\"",
+                      "incidentid":  "e9556181-8f12-f111-8407-7ced8dceb433",
+                      "ticketnumber":  "CAS-18254-B2H1N0",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Ferguson - Bulk pricing request for Q2 hydration products",
+                      "createdon":  "2026-02-25T21:18:20Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81967669\"",
+                      "incidentid":  "06566181-8f12-f111-8407-7ced8dceb433",
+                      "ticketnumber":  "CAS-18255-Z1L8V1",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "Ferguson - Wilkins 975XL backflow preventer sizing question",
+                      "createdon":  "2026-02-25T21:18:24Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81968090\"",
+                      "incidentid":  "77078c85-8f12-f111-8407-7c1e520a58a1",
+                      "ticketnumber":  "CAS-18257-P9C5Q8",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Hajoca - Return authorization for damaged trench drains",
+                      "createdon":  "2026-02-25T21:18:30Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81967994\"",
+                      "incidentid":  "0e6d0781-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18256-T9C0P6",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "Hajoca - AquaSense faucet not activating after install",
+                      "createdon":  "2026-02-25T21:18:27Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81971956\"",
+                      "incidentid":  "feeaf6b1-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18285-W6X7X7",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "EMERGENCY - Hajoca - Water damage from failed backflow preventer",
+                      "createdon":  "2026-02-25T21:19:42Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81971218\"",
+                      "incidentid":  "440d85a9-8f12-f111-8407-7c1e520a58a1",
+                      "ticketnumber":  "CAS-18281-X2J0R9",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Winsupply - Floor drain strainer finish options",
+                      "createdon":  "2026-02-25T21:19:32Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81972700\"",
+                      "incidentid":  "02490987-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18258-X0X7V6",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Winsupply - Product spec sheets needed for bid package",
+                      "createdon":  "2026-02-25T21:18:34Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81974185\"",
+                      "incidentid":  "5febf6b1-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18287-X7Z3M4",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Wolseley - Elkay filter replacement schedule recommendation",
+                      "createdon":  "2026-02-25T21:19:48Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81968578\"",
+                      "incidentid":  "7be3158e-8f12-f111-8407-7ced8dceb433",
+                      "ticketnumber":  "CAS-18261-D3V5M6",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Wolseley - Cross-border shipping delays on Zurn drainage products",
+                      "createdon":  "2026-02-25T21:18:43Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81968681\"",
+                      "incidentid":  "fbd58b8b-8f12-f111-8407-7c1e520a58a1",
+                      "ticketnumber":  "CAS-18262-X7H2B9",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Consolidated Supply - Winterization guidance for bottle fillers",
+                      "createdon":  "2026-02-25T21:18:46Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81971732\"",
+                      "incidentid":  "8af686af-8f12-f111-8407-7c1e520a58a1",
+                      "ticketnumber":  "CAS-18284-D6P1R5",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "Consolidated Supply - Drainage product lead time inquiry",
+                      "createdon":  "2026-02-25T21:19:40Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81968857\"",
+                      "incidentid":  "92e3158e-8f12-f111-8407-7ced8dceb433",
+                      "ticketnumber":  "CAS-18263-S3R6P4",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Consolidated Supply - Replacement filter bulk order",
+                      "createdon":  "2026-02-25T21:18:48Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81971336\"",
+                      "incidentid":  "765285ae-8f12-f111-8407-7c1e52143136",
+                      "ticketnumber":  "CAS-18282-B0W2B3",
+                      "statuscode":  1,
+                      "caseorigincode":  3,
+                      "title":  "Pacific Plumbing - eCommerce order payment failed",
+                      "createdon":  "2026-02-25T21:19:35Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81972910\"",
+                      "incidentid":  "45f8b993-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18264-K9Q9X9",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Pacific Plumbing - Roof drain compatibility question",
+                      "createdon":  "2026-02-25T21:18:50Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81969115\"",
+                      "incidentid":  "b14b1490-8f12-f111-8407-7c1e52143136",
+                      "ticketnumber":  "CAS-18265-J6B3B5",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Midwest Pipe - Order discrepancy - wrong quantities received",
+                      "createdon":  "2026-02-25T21:18:53Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81973019\"",
+                      "incidentid":  "7ef8b993-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18266-T7V3D1",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Midwest Pipe - AquaSpec faucet aerator replacement part number",
+                      "createdon":  "2026-02-25T21:18:55Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81969291\"",
+                      "incidentid":  "a8f8b993-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18267-D3P0C7",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Southern Pipe - Warranty claim on flush valve solenoid",
+                      "createdon":  "2026-02-25T21:18:58Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81969414\"",
+                      "incidentid":  "51e2b499-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18268-M4Z9T1",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "URGENT - Southern Pipe - Recall inquiry on flush valve model",
+                      "createdon":  "2026-02-25T21:19:01Z",
+                      "statecode":  0,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81969525\"",
+                      "incidentid":  "75e2b499-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18269-G1F8X4",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "Gateway Supply - Elkay cooler making noise after 6 months",
+                      "createdon":  "2026-02-25T21:19:04Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81973852\"",
+                      "incidentid":  "99cee8ab-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18283-M8R9N5",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Gateway Supply - Bottle filler counter reset procedure",
+                      "createdon":  "2026-02-25T21:19:37Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81970031\"",
+                      "incidentid":  "6046949d-8f12-f111-8407-7c1e520a58a1",
+                      "ticketnumber":  "CAS-18273-Y6Q2M6",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "Greenfield SD - Drinking fountain not cooling",
+                      "createdon":  "2026-02-25T21:19:13Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81970224\"",
+                      "incidentid":  "028997a1-8f12-f111-8407-7ced8dceb433",
+                      "ticketnumber":  "CAS-18274-X4T7X7",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "Greenfield SD - Quote request for bottle fillers in all buildings",
+                      "createdon":  "2026-02-25T21:19:15Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81973634\"",
+                      "incidentid":  "1f8997a1-8f12-f111-8407-7ced8dceb433",
+                      "ticketnumber":  "CAS-18276-K7S8C5",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Marriott Milwaukee - Sensor faucet battery replacement program",
+                      "createdon":  "2026-02-25T21:19:20Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"81973758\"",
+                      "incidentid":  "7ea2cca5-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18278-S5K6L9",
+                      "statuscode":  5,
+                      "caseorigincode":  3,
+                      "title":  "Homeowner - Winterization question for outdoor Elkay bottle filler",
+                      "createdon":  "2026-02-25T21:19:24Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"81970811\"",
+                      "incidentid":  "50150ca2-8f12-f111-8406-7ced8dceb26a",
+                      "ticketnumber":  "CAS-18277-Z8Q8J2",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "Homeowner - Flush valve running continuously",
+                      "createdon":  "2026-02-25T21:19:22Z",
+                      "statecode":  0,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"75799739\"",
+                      "incidentid":  "68824fb1-d9eb-f011-8406-000d3a11159c",
+                      "ticketnumber":  "CAS-15375-N9F5K3",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-07T15:01:08Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77766892\"",
+                      "incidentid":  "d72c67bd-c7fa-f011-8406-000d3a19404d",
+                      "ticketnumber":  "CAS-16450-Y6F6J5",
+                      "statuscode":  6,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-26T15:00:28Z",
+                      "statecode":  2,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"74197390\"",
+                      "incidentid":  "dfd0839a-f5d9-f011-8543-000d3a54e911",
+                      "ticketnumber":  "CAS-13936-L1K5W0",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2025-12-15T20:35:37Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"74196874\"",
+                      "incidentid":  "22d1839a-f5d9-f011-8543-000d3a54e911",
+                      "ticketnumber":  "CAS-13937-H3P2H3",
+                      "statuscode":  5,
+                      "caseorigincode":  3,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2025-12-15T20:35:41Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"74195409\"",
+                      "incidentid":  "1840baac-f5d9-f011-8543-000d3a54e911",
+                      "ticketnumber":  "CAS-13949-Z1K4H0",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2025-12-15T20:36:07Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"74262628\"",
+                      "incidentid":  "87571fcf-fad9-f011-8543-000d3a54e911",
+                      "ticketnumber":  "CAS-14000-D6P2W2",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2025-12-15T21:12:59Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"77413408\"",
+                      "incidentid":  "efa4de3c-6cf8-f011-8406-000d3a8de20f",
+                      "ticketnumber":  "CAS-16262-T1W3H6",
+                      "statuscode":  6,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-23T15:00:30Z",
+                      "statecode":  2,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"77412500\"",
+                      "incidentid":  "7e2af963-6cf8-f011-8406-000d3a8de20f",
+                      "ticketnumber":  "CAS-16272-W7B9N7",
+                      "statuscode":  5,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-23T15:01:28Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"75445628\"",
+                      "incidentid":  "c128aba0-59e6-f011-8406-000d3a8fa0fc",
+                      "ticketnumber":  "CAS-14952-D4P5S5",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2025-12-31T15:01:49Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"78633604\"",
+                      "incidentid":  "56589e0b-4800-f111-8406-000d3a9d3ab9",
+                      "ticketnumber":  "CAS-16877-T4H5B0",
+                      "statuscode":  6,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-02T15:01:31Z",
+                      "statecode":  2,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"79121156\"",
+                      "incidentid":  "3d91b23c-da01-f111-8406-0022481c33a6",
+                      "ticketnumber":  "CAS-16984-N1W4V2",
+                      "statuscode":  6,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-04T15:00:28Z",
+                      "statecode":  2,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"75740061\"",
+                      "incidentid":  "70fc342d-08eb-f011-8406-0022481e1172",
+                      "ticketnumber":  "CAS-15299-J5Y9G1",
+                      "statuscode":  6,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-06T14:01:29Z",
+                      "statecode":  2,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"75739055\"",
+                      "incidentid":  "4938b373-10eb-f011-8406-0022481e1172",
+                      "ticketnumber":  "CAS-15312-H1Y0B5",
+                      "statuscode":  6,
+                      "caseorigincode":  3,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-06T15:00:43Z",
+                      "statecode":  2,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77222448\"",
+                      "incidentid":  "e585aee5-d9f6-f011-8406-0022482bafce",
+                      "ticketnumber":  "CAS-16156-Y5N7V4",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-21T15:00:24Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77414347\"",
+                      "incidentid":  "56a8c80d-64f8-f011-8406-00224831aad1",
+                      "ticketnumber":  "CAS-16251-V3C3C8",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-23T14:01:50Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"77412217\"",
+                      "incidentid":  "1e079a67-6cf8-f011-8406-00224831aad1",
+                      "ticketnumber":  "CAS-16274-Y0F7K7",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-23T15:01:38Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"76969530\"",
+                      "incidentid":  "4a14725f-7ef4-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-15992-P2Y9N3",
+                      "statuscode":  6,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-18T15:00:09Z",
+                      "statecode":  2,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"76958122\"",
+                      "incidentid":  "56b41d22-3ff5-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16028-V6K6J9",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-19T14:00:05Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"76955834\"",
+                      "incidentid":  "6d27648c-47f5-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16055-H2K1H7",
+                      "statuscode":  5,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-19T15:00:16Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"77122922\"",
+                      "incidentid":  "23f1b7ca-10f6-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16106-B5L5N7",
+                      "statuscode":  6,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-20T15:00:48Z",
+                      "statecode":  2,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"77223994\"",
+                      "incidentid":  "04567b9b-d1f6-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16141-S1T4F6",
+                      "statuscode":  5,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-21T14:01:01Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77221914\"",
+                      "incidentid":  "93b488fb-d9f6-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16161-M0C8Q1",
+                      "statuscode":  6,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-21T15:00:56Z",
+                      "statecode":  2,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77412586\"",
+                      "incidentid":  "01a1bd5e-6cf8-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16271-S9N7X9",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-23T15:01:25Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"77834090\"",
+                      "incidentid":  "14736507-2df9-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16307-L1M8P5",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-24T14:00:29Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77782149\"",
+                      "incidentid":  "b5a7aa22-f6f9-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16366-M3L0Q9",
+                      "statuscode":  5,
+                      "caseorigincode":  3,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-25T14:00:03Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"77779724\"",
+                      "incidentid":  "73ea0893-fef9-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16391-N8Z2R6",
+                      "statuscode":  5,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-25T15:00:32Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77890030\"",
+                      "incidentid":  "0d0329c9-51fc-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16565-S0B3P2",
+                      "statuscode":  6,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-28T14:01:15Z",
+                      "statecode":  2,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77889683\"",
+                      "incidentid":  "7b6d9dd5-51fc-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16568-B4Y7S0",
+                      "statuscode":  6,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-28T14:01:27Z",
+                      "statecode":  2,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"77887357\"",
+                      "incidentid":  "d9e08931-5afc-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16593-N2C1T4",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-28T15:01:25Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"77958612\"",
+                      "incidentid":  "cb5a7f79-23fd-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16635-V4M1D3",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-29T15:02:13Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"78006476\"",
+                      "incidentid":  "d09fc42b-e4fd-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16683-Y5F3L0",
+                      "statuscode":  6,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-30T14:01:31Z",
+                      "statecode":  2,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"79069766\"",
+                      "incidentid":  "37b73d47-adfe-f011-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16739-H6Y1C9",
+                      "statuscode":  5,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-01-31T14:01:05Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"78635839\"",
+                      "incidentid":  "4882b695-3f00-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-16850-X3L1L4",
+                      "statuscode":  5,
+                      "caseorigincode":  3,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-02T14:01:03Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"79169925\"",
+                      "incidentid":  "2df0270b-9b02-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17025-X7J6S4",
+                      "statuscode":  6,
+                      "caseorigincode":  3,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-05T14:00:45Z",
+                      "statecode":  2,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"79167718\"",
+                      "incidentid":  "4bcb9e8b-a302-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17050-L2N3Q0",
+                      "statuscode":  6,
+                      "caseorigincode":  3,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-05T15:01:29Z",
+                      "statecode":  2,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"79214913\"",
+                      "incidentid":  "e2aba937-6403-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17079-F1B6Q8",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-06T14:00:47Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"79405950\"",
+                      "incidentid":  "557ae6ab-3504-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17141-D3F0Q5",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-07T15:00:02Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"79356458\"",
+                      "incidentid":  "d0022d97-f604-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17197-M7G6W6",
+                      "statuscode":  6,
+                      "caseorigincode":  3,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-08T14:01:04Z",
+                      "statecode":  2,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"79343069\"",
+                      "incidentid":  "2b480e1e-c805-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17256-Q4M2X6",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-09T15:00:52Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"79342295\"",
+                      "incidentid":  "29100d30-c805-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17263-Z8W4J9",
+                      "statuscode":  5,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-09T15:01:29Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"79341600\"",
+                      "incidentid":  "03486648-c805-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17269-J0F1Y9",
+                      "statuscode":  6,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-09T15:02:02Z",
+                      "statecode":  2,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"79395974\"",
+                      "incidentid":  "f6227c41-9106-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17332-S3T6X5",
+                      "statuscode":  6,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-10T15:00:45Z",
+                      "statecode":  2,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"79500539\"",
+                      "incidentid":  "4ea21d37-1b08-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17427-F4R5L1",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-12T14:00:48Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"79500213\"",
+                      "incidentid":  "bda4643d-1b08-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17430-V5M3V5",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-12T14:00:58Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"79497415\"",
+                      "incidentid":  "f8d0ebb0-2308-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17461-P9Z8V3",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-12T15:01:29Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"79590441\"",
+                      "incidentid":  "659b1c47-e408-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17486-V0G7J1",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-13T14:00:04Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"79587420\"",
+                      "incidentid":  "2012f6e3-ec08-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17519-K2V2G2",
+                      "statuscode":  5,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-13T15:01:44Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"80096815\"",
+                      "incidentid":  "c8f973f7-b509-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17582-Z0P2M5",
+                      "statuscode":  5,
+                      "caseorigincode":  3,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-14T15:01:02Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"80590504\"",
+                      "incidentid":  "07a76b99-da0c-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17819-N7R9Q0",
+                      "statuscode":  5,
+                      "caseorigincode":  1,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-18T15:00:54Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"80590416\"",
+                      "incidentid":  "c825699f-da0c-f111-8406-6045bda80a72",
+                      "ticketnumber":  "CAS-17820-Q3Z6T7",
+                      "statuscode":  5,
+                      "caseorigincode":  700610000,
+                      "title":  "Emergency HVAC Failure – Retail Location",
+                      "createdon":  "2026-02-18T15:00:58Z",
+                      "statecode":  1,
+                      "prioritycode":  1
+                  },
+                  {
+                      "@odata.etag":  "W/\"81973493\"",
+                      "incidentid":  "a69a719b-8f12-f111-8407-7ced8dceb433",
+                      "ticketnumber":  "CAS-18272-P9B1D9",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "Lakeside Parts - Return policy question",
+                      "createdon":  "2026-02-25T21:19:11Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"81972487\"",
+                      "incidentid":  "432b2eb5-8f12-f111-8407-7c1e52143136",
+                      "ticketnumber":  "CAS-18288-S7Z7G5",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "Metro Building - Elkay sink rough-in dimensions",
+                      "createdon":  "2026-02-25T21:19:50Z",
+                      "statecode":  0,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"81969758\"",
+                      "incidentid":  "a4e9f69b-8f12-f111-8406-7ced8dceb26a",
+                      "ticketnumber":  "CAS-18271-T5C2L0",
+                      "statuscode":  1,
+                      "caseorigincode":  3,
+                      "title":  "Metro Building - Account setup and first order assistance",
+                      "createdon":  "2026-02-25T21:19:09Z",
+                      "statecode":  0,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"81972612\"",
+                      "incidentid":  "9a615fb8-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18289-Q7L7P5",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "ABC Plumbing - Zurn AquaSpec faucet leaking at base",
+                      "createdon":  "2026-02-25T21:19:52Z",
+                      "statecode":  0,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"81973262\"",
+                      "incidentid":  "74e9f69b-8f12-f111-8406-7ced8dceb26a",
+                      "ticketnumber":  "CAS-18270-W4Z5Y7",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "ABC Plumbing - General product catalog request",
+                      "createdon":  "2026-02-25T21:19:06Z",
+                      "statecode":  1,
+                      "prioritycode":  3
+                  },
+                  {
+                      "@odata.etag":  "W/\"81971104\"",
+                      "incidentid":  "ef0c85a9-8f12-f111-8407-7c1e520a58a1",
+                      "ticketnumber":  "CAS-18280-T9J2J7",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "HD Supply - Elkay undermount sink scratched on delivery",
+                      "createdon":  "2026-02-25T21:19:30Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81968302\"",
+                      "incidentid":  "4db6fd88-8f12-f111-8407-7c1e52143136",
+                      "ticketnumber":  "CAS-18259-R5J5T3",
+                      "statuscode":  1,
+                      "caseorigincode":  1,
+                      "title":  "HD Supply - Order #HD-44210 status inquiry",
+                      "createdon":  "2026-02-25T21:18:37Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81972798\"",
+                      "incidentid":  "60aec389-8f12-f111-8406-7ced8dceb26a",
+                      "ticketnumber":  "CAS-18260-H5K3K2",
+                      "statuscode":  5,
+                      "caseorigincode":  2,
+                      "title":  "HD Supply - Lustertone sink installation template request",
+                      "createdon":  "2026-02-25T21:18:41Z",
+                      "statecode":  1,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81972071\"",
+                      "incidentid":  "30ebf6b1-8f12-f111-8407-7ced8d18c8d7",
+                      "ticketnumber":  "CAS-18286-N7J1L1",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "City of Mesa - Zurn roof drain spec for flat-roof water treatment facility",
+                      "createdon":  "2026-02-25T21:19:45Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  },
+                  {
+                      "@odata.etag":  "W/\"81970453\"",
+                      "incidentid":  "d4140ca2-8f12-f111-8406-7ced8dceb26a",
+                      "ticketnumber":  "CAS-18275-Y9H0D6",
+                      "statuscode":  1,
+                      "caseorigincode":  2,
+                      "title":  "City of Mesa - Backflow preventer compliance question",
+                      "createdon":  "2026-02-25T21:19:18Z",
+                      "statecode":  0,
+                      "prioritycode":  2
+                  }
+              ],
+    "products":  [
+                     {
+                         "@odata.etag":  "W/\"81978404\"",
+                         "statecode":  0,
+                         "description":  "Wall-mount bottle filler with filter. Counts bottles saved.",
+                         "price":  null,
+                         "name":  "Elkay EZH2O Bottle Filling Station",
+                         "productid":  "8a9382bf-9112-f111-8406-7c1e5218592b",
+                         "productnumber":  "EK-BF-5001"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978408\"",
+                         "statecode":  0,
+                         "description":  "Bi-level drinking fountain with bottle filler. Stainless.",
+                         "price":  null,
+                         "name":  "Elkay LZSTL8 Bi-Level Drinking Fountain",
+                         "productid":  "f02289c5-9112-f111-8407-7ced8d18c8d7",
+                         "productnumber":  "EK-DF-5003"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978412\"",
+                         "statecode":  0,
+                         "description":  "Replacement filter for bottle fillers and coolers. 3000 gal.",
+                         "price":  null,
+                         "name":  "Elkay EWF3000 Water Sentry Filter",
+                         "productid":  "b13393c1-9112-f111-8406-7ced8dceb26a",
+                         "productnumber":  "EK-FL-6003"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978411\"",
+                         "statecode":  0,
+                         "description":  "33 x 22 inch stainless steel double bowl drop-in sink.",
+                         "price":  null,
+                         "name":  "Elkay Lustertone DLRS3322 Sink",
+                         "productid":  "ac3393c1-9112-f111-8406-7ced8dceb26a",
+                         "productnumber":  "EK-SS-6001"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978415\"",
+                         "statecode":  0,
+                         "description":  "31-inch undermount single bowl sink. 18-gauge stainless.",
+                         "price":  null,
+                         "name":  "Elkay ELUH3120R Undermount Sink",
+                         "productid":  "e7f6c7c2-9112-f111-8407-7ced8dceb433",
+                         "productnumber":  "EK-UM-6002"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978401\"",
+                         "statecode":  0,
+                         "description":  "8 GPH wall-mount water cooler. ADA compliant. Light gray.",
+                         "price":  null,
+                         "name":  "Elkay EZS8L Cooler",
+                         "productid":  "75bf65c0-9112-f111-8407-7c1e52143136",
+                         "productnumber":  "EK-WC-5002"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978410\"",
+                         "statecode":  0,
+                         "description":  "Double check valve assembly. 1-inch size. Stainless steel.",
+                         "price":  null,
+                         "name":  "Wilkins 350XL Double Check Valve",
+                         "productid":  "a73393c1-9112-f111-8406-7ced8dceb26a",
+                         "productnumber":  "WK-DC-4002"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978414\"",
+                         "statecode":  0,
+                         "description":  "Reduced Pressure Zone backflow preventer. 2-inch size. Lead-free.",
+                         "price":  null,
+                         "name":  "Wilkins 975XL RPZ Assembly",
+                         "productid":  "b9f6c7c2-9112-f111-8407-7ced8dceb433",
+                         "productnumber":  "WK-RP-4001"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978413\"",
+                         "statecode":  0,
+                         "description":  "Commercial AquaSpec centerset faucet. 2.2 GPM aerator.",
+                         "price":  null,
+                         "name":  "Zurn Z86300 AquaSpec Faucet",
+                         "productid":  "b3f6c7c2-9112-f111-8407-7ced8dceb433",
+                         "productnumber":  "ZN-AS-2002"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978398\"",
+                         "statecode":  0,
+                         "description":  "1.28 GPF sensor-operated flush valve for water closets. ADA compliant.",
+                         "price":  null,
+                         "name":  "Zurn AquaVantage AV Flush Valve",
+                         "productid":  "1b495fbc-9112-f111-8407-7c1e520a58a1",
+                         "productnumber":  "ZN-AV-1001"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978409\"",
+                         "statecode":  0,
+                         "description":  "Retrofit sensor flush valve kit for manual flush valves.",
+                         "price":  null,
+                         "name":  "Zurn AquaSense E-Z Flush Valve",
+                         "productid":  "7a3393c1-9112-f111-8406-7ced8dceb26a",
+                         "productnumber":  "ZN-EZ-1002"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978402\"",
+                         "statecode":  0,
+                         "description":  "Cast iron floor drain with 5-inch round nickel bronze strainer.",
+                         "price":  null,
+                         "name":  "Zurn Z415 Floor Drain",
+                         "productid":  "6b9382bf-9112-f111-8406-7c1e5218592b",
+                         "productnumber":  "ZN-FD-3001"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978400\"",
+                         "statecode":  0,
+                         "description":  "15-inch cast iron roof drain with low-profile dome.",
+                         "price":  null,
+                         "name":  "Zurn Z100 Roof Drain",
+                         "productid":  "3dc557c2-9112-f111-8407-7c1e520a58a1",
+                         "productnumber":  "ZN-RD-3003"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978407\"",
+                         "statecode":  0,
+                         "description":  "Battery-powered sensor faucet with below-deck mixing valve.",
+                         "price":  null,
+                         "name":  "Zurn AquaSense Sensor Faucet",
+                         "productid":  "5bcf8bbf-9112-f111-8407-7ced8d18c8d7",
+                         "productnumber":  "ZN-SF-2001"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978396\"",
+                         "statecode":  0,
+                         "description":  "Linear trench drain system with slotted grate. 8-inch wide.",
+                         "price":  null,
+                         "name":  "Zurn Z886 Trench Drain",
+                         "productid":  "94a00ac1-9112-f111-8406-6045bda80a72",
+                         "productnumber":  "ZN-TD-3002"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81978406\"",
+                         "statecode":  0,
+                         "description":  "0.5 GPF sensor urinal flush valve. Chrome finish.",
+                         "price":  null,
+                         "name":  "Zurn ZER6000AV Urinal Flush Valve",
+                         "productid":  "58cf8bbf-9112-f111-8407-7ced8d18c8d7",
+                         "productnumber":  "ZN-UR-1003"
+                     }
+                 ],
+    "accounts":  [
+                     {
+                         "@odata.etag":  "W/\"81976670\"",
+                         "description":  "Zurn Industries, LLC - Commercial plumbing products, flush valves, faucets, drainage, backflow prevention (Wilkins brand).",
+                         "name":  "Zurn Industries",
+                         "address1_city":  "Milwaukee",
+                         "address1_composite":  "Milwaukee, WI",
+                         "address1_stateorprovince":  "WI",
+                         "telephone1":  "(855) 663-9876",
+                         "accountnumber":  null,
+                         "accountid":  "8bc2781a-8d12-f111-8407-7c1e52143136"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976690\"",
+                         "description":  "Elkay Manufacturing Company - Stainless steel sinks, drinking fountains \u0026 bottle fillers, water coolers, cabinetry.",
+                         "name":  "Elkay Manufacturing",
+                         "address1_city":  "Downers Grove",
+                         "address1_composite":  "Downers Grove, IL",
+                         "address1_stateorprovince":  "IL",
+                         "telephone1":  "(630) 572-3192",
+                         "accountnumber":  null,
+                         "accountid":  "3d228930-8d12-f111-8407-7c1e520a58a1"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976672\"",
+                         "description":  "[Tier 1] Largest US plumbing distributor. Major Zurn and Elkay channel partner.",
+                         "name":  "Ferguson Enterprises",
+                         "address1_city":  "Newport News",
+                         "address1_composite":  "Newport News, VA",
+                         "address1_stateorprovince":  "VA",
+                         "telephone1":  "(757) 874-7795",
+                         "accountnumber":  "TIER-1",
+                         "accountid":  "9b1e5a20-8d12-f111-8406-7ced8dceb26a"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976673\"",
+                         "description":  "[Tier 1] Privately held wholesale distributor - plumbing, heating, industrial.",
+                         "name":  "Hajoca Corporation",
+                         "address1_city":  "Ardmore",
+                         "address1_composite":  "Ardmore, PA",
+                         "address1_stateorprovince":  "PA",
+                         "telephone1":  "(610) 649-3600",
+                         "accountnumber":  "TIER-1",
+                         "accountid":  "cebfdb23-8d12-f111-8407-7c1e520a58a1"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976693\"",
+                         "description":  "[Tier 1] Network of local distributors - plumbing, HVAC, waterworks.",
+                         "name":  "Winsupply Inc.",
+                         "address1_city":  "Dayton",
+                         "address1_composite":  "Dayton, OH",
+                         "address1_stateorprovince":  "OH",
+                         "telephone1":  "(937) 222-3071",
+                         "accountnumber":  "TIER-1",
+                         "accountid":  "8367912d-8d12-f111-8406-6045bda80a72"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976675\"",
+                         "description":  "[Tier 2] National MRO and waterworks distributor.",
+                         "name":  "HD Supply",
+                         "address1_city":  "Atlanta",
+                         "address1_composite":  "Atlanta, GA",
+                         "address1_stateorprovince":  "GA",
+                         "telephone1":  "(770) 852-9000",
+                         "accountnumber":  "TIER-2",
+                         "accountid":  "224aaf26-8d12-f111-8407-7c1e52143136"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976695\"",
+                         "description":  "[Tier 2] Industrial PVF and plumbing distributor (Canada and US).",
+                         "name":  "Wolseley Industrial Group",
+                         "address1_city":  "Burlington",
+                         "address1_composite":  "Burlington, ON",
+                         "address1_stateorprovince":  "ON",
+                         "telephone1":  "(905) 335-2410",
+                         "accountnumber":  "TIER-2",
+                         "accountid":  "1671c132-8d12-f111-8407-7c1e52143136"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976696\"",
+                         "description":  "[Tier 2] Pacific Northwest plumbing and waterworks distributor.",
+                         "name":  "Consolidated Supply Co.",
+                         "address1_city":  "Portland",
+                         "address1_composite":  "Portland, OR",
+                         "address1_stateorprovince":  "OR",
+                         "telephone1":  "(503) 234-4181",
+                         "accountnumber":  "TIER-2",
+                         "accountid":  "20a6a230-8d12-f111-8407-7ced8d18c8d7"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976678\"",
+                         "description":  "[Tier 3] Regional plumbing supply house - Pacific Northwest.",
+                         "name":  "Pacific Plumbing Supply",
+                         "address1_city":  "Seattle",
+                         "address1_composite":  "Seattle, WA",
+                         "address1_stateorprovince":  "WA",
+                         "telephone1":  "(206) 762-6050",
+                         "accountnumber":  "TIER-3",
+                         "accountid":  "efb65226-8d12-f111-8406-7ced8dceb26a"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976681\"",
+                         "description":  "[Tier 3] Plumbing, HVAC, and appliance distributor - Southeast.",
+                         "name":  "Gateway Supply Company",
+                         "address1_city":  "Columbia",
+                         "address1_composite":  "Columbia, SC",
+                         "address1_stateorprovince":  "SC",
+                         "telephone1":  "(803) 779-3200",
+                         "accountnumber":  "TIER-3",
+                         "accountid":  "6b4aaf26-8d12-f111-8407-7c1e52143136"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976682\"",
+                         "description":  "[Tier 4] Small local plumbing wholesaler. Occasional Zurn orders.",
+                         "name":  "ABC Plumbing Wholesale",
+                         "address1_city":  "Denver",
+                         "address1_composite":  "Denver, CO",
+                         "address1_stateorprovince":  "CO",
+                         "telephone1":  "(303) 555-0101",
+                         "accountnumber":  "TIER-4",
+                         "accountid":  "1330372a-8d12-f111-8407-7ced8d18c8d7"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976683\"",
+                         "description":  "[Tier 4] General building supply. Minor plumbing fixture volume.",
+                         "name":  "Metro Building Supply",
+                         "address1_city":  "Phoenix",
+                         "address1_composite":  "Phoenix, AZ",
+                         "address1_stateorprovince":  "AZ",
+                         "telephone1":  "(602) 555-0202",
+                         "accountnumber":  "TIER-4",
+                         "accountid":  "9897142a-8d12-f111-8407-7c1e520a58a1"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976684\"",
+                         "description":  "[Tier 4] Small regional parts distributor.",
+                         "name":  "Lakeside Plumbing Parts",
+                         "address1_city":  "Cleveland",
+                         "address1_composite":  "Cleveland, OH",
+                         "address1_stateorprovince":  "OH",
+                         "telephone1":  "(216) 555-0303",
+                         "accountnumber":  "TIER-4",
+                         "accountid":  "6c969627-8d12-f111-8406-6045bda80a72"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976704\"",
+                         "description":  "School District - end-user requesting technical support or product information.",
+                         "name":  "Greenfield School District",
+                         "address1_city":  "Greenfield",
+                         "address1_composite":  "Greenfield, WI",
+                         "address1_stateorprovince":  "WI",
+                         "telephone1":  "(414) 555-0401",
+                         "accountnumber":  null,
+                         "accountid":  "f66fb733-8d12-f111-8406-6045bda80a72"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976705\"",
+                         "description":  "Municipality - end-user requesting technical support or product information.",
+                         "name":  "City of Mesa Water Dept",
+                         "address1_city":  "Mesa",
+                         "address1_composite":  "Mesa, AZ",
+                         "address1_stateorprovince":  "AZ",
+                         "telephone1":  "(480) 555-0501",
+                         "accountnumber":  null,
+                         "accountid":  "77b7ec36-8d12-f111-8407-7c1e520a58a1"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976706\"",
+                         "description":  "Commercial - end-user requesting technical support or product information.",
+                         "name":  "Marriott Downtown Milwaukee",
+                         "address1_city":  "Milwaukee",
+                         "address1_composite":  "Milwaukee, WI",
+                         "address1_stateorprovince":  "WI",
+                         "telephone1":  "(414) 555-0601",
+                         "accountnumber":  null,
+                         "accountid":  "0870b733-8d12-f111-8406-6045bda80a72"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81976688\"",
+                         "description":  "Homeowner - end-user requesting technical support or product information.",
+                         "name":  "Johnson Residence",
+                         "address1_city":  "Madison",
+                         "address1_composite":  "Madison, WI",
+                         "address1_stateorprovince":  "WI",
+                         "telephone1":  "(608) 555-0701",
+                         "accountnumber":  null,
+                         "accountid":  "7567912d-8d12-f111-8406-6045bda80a72"
+                     }
+                 ],
+    "calendars":  [
+                      {
+                          "@odata.etag":  "W/\"81955780\"",
+                          "name":  "Zurn Elkay Business Hours",
+                          "description":  "Mon-Fri 8:00 AM - 5:00 PM CT. Standard business hours for SLA tracking.",
+                          "calendarid":  "65d3d36c-8f12-f111-8407-7c1e520a58a1"
+                      }
+                  ],
+    "contacts":  [
+                     {
+                         "@odata.etag":  "W/\"81939677\"",
+                         "_parentcustomerid_value":  "ab13bd2c-8d12-f111-8407-7c1e52143136",
+                         "emailaddress1":  "lisa.kume@zurn.com",
+                         "jobtitle":  "Customer Care Manager",
+                         "telephone1":  "(414) 555-1001",
+                         "fullname":  "Lisa Kume",
+                         "contactid":  "9cbaa436-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Zurn Industries"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81939806\"",
+                         "_parentcustomerid_value":  "ab13bd2c-8d12-f111-8407-7c1e52143136",
+                         "emailaddress1":  "chad.didriksen@zurn.com",
+                         "jobtitle":  "IT Manager",
+                         "telephone1":  "(414) 555-1002",
+                         "fullname":  "Chad Didriksen",
+                         "contactid":  "88872043-8d12-f111-8407-7c1e520a58a1",
+                         "accountName":  "Zurn Industries"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81939841\"",
+                         "_parentcustomerid_value":  "ab13bd2c-8d12-f111-8407-7c1e52143136",
+                         "emailaddress1":  "darin.volpe@zurn.com",
+                         "jobtitle":  "Salesforce Admin",
+                         "telephone1":  "(414) 555-1003",
+                         "fullname":  "Darin Volpe",
+                         "contactid":  "db872043-8d12-f111-8407-7c1e520a58a1",
+                         "accountName":  "Zurn Industries"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81940120\"",
+                         "_parentcustomerid_value":  "ab13bd2c-8d12-f111-8407-7c1e52143136",
+                         "emailaddress1":  "mike.schmidt@zurn.com",
+                         "jobtitle":  "Director of CRM and BI",
+                         "telephone1":  "(414) 555-1004",
+                         "fullname":  "Mike Schmidt",
+                         "contactid":  "f828b748-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Zurn Industries"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81939957\"",
+                         "_parentcustomerid_value":  "ab13bd2c-8d12-f111-8407-7c1e52143136",
+                         "emailaddress1":  "steve.krupp@zurn.com",
+                         "jobtitle":  "Infrastructure \u0026 Voice Manager",
+                         "telephone1":  "(414) 555-1005",
+                         "fullname":  "Steve Krupp",
+                         "contactid":  "b228b748-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Zurn Industries"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81940008\"",
+                         "_parentcustomerid_value":  "3f9e4d2c-8d12-f111-8406-7ced8dceb26a",
+                         "emailaddress1":  "tom.harrison@ferguson.com",
+                         "jobtitle":  "Plumbing Category Manager",
+                         "telephone1":  "(757) 555-2001",
+                         "fullname":  "Tom Harrison",
+                         "contactid":  "deb81d49-8d12-f111-8407-7c1e520a58a1",
+                         "accountName":  "Ferguson Enterprises"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81940069\"",
+                         "_parentcustomerid_value":  "3f9e4d2c-8d12-f111-8406-7ced8dceb26a",
+                         "emailaddress1":  "rachel.chen@ferguson.com",
+                         "jobtitle":  "Purchasing Director",
+                         "telephone1":  "(757) 555-2002",
+                         "fullname":  "Rachel Chen",
+                         "contactid":  "e328b748-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Ferguson Enterprises"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81940546\"",
+                         "_parentcustomerid_value":  "55228930-8d12-f111-8407-7c1e520a58a1",
+                         "emailaddress1":  "mark.sullivan@hajoca.com",
+                         "jobtitle":  "Branch Manager",
+                         "telephone1":  "(610) 555-2101",
+                         "fullname":  "Mark Sullivan",
+                         "contactid":  "640c1b4f-8d12-f111-8407-7c1e520a58a1",
+                         "accountName":  "Hajoca Corporation"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81940776\"",
+                         "_parentcustomerid_value":  "8367912d-8d12-f111-8406-6045bda80a72",
+                         "emailaddress1":  "karen.ostrowski@winsupply.com",
+                         "jobtitle":  "Product Specialist",
+                         "telephone1":  "(937) 555-2201",
+                         "fullname":  "Karen Ostrowski",
+                         "contactid":  "800c1b4f-8d12-f111-8407-7c1e520a58a1",
+                         "accountName":  "Winsupply Inc."
+                     },
+                     {
+                         "@odata.etag":  "W/\"81941082\"",
+                         "_parentcustomerid_value":  "0571c132-8d12-f111-8407-7c1e52143136",
+                         "emailaddress1":  "james.morales@hdsupply.com",
+                         "jobtitle":  "Commercial Accounts Manager",
+                         "telephone1":  "(770) 555-2301",
+                         "fullname":  "James Morales",
+                         "contactid":  "0116b04e-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "HD Supply"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81941197\"",
+                         "_parentcustomerid_value":  "1671c132-8d12-f111-8407-7c1e52143136",
+                         "emailaddress1":  "sarah.tremblay@wolseley.com",
+                         "jobtitle":  "Procurement Lead",
+                         "telephone1":  "(905) 555-2401",
+                         "fullname":  "Sarah Tremblay",
+                         "contactid":  "2b16b04e-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Wolseley Industrial Group"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81941327\"",
+                         "_parentcustomerid_value":  "20a6a230-8d12-f111-8407-7ced8d18c8d7",
+                         "emailaddress1":  "david.park@consupply.com",
+                         "jobtitle":  "Inside Sales",
+                         "telephone1":  "(503) 555-2501",
+                         "fullname":  "David Park",
+                         "contactid":  "2e399350-8d12-f111-8406-7ced8dceb26a",
+                         "accountName":  "Consolidated Supply Co."
+                     },
+                     {
+                         "@odata.etag":  "W/\"81941642\"",
+                         "_parentcustomerid_value":  "07814832-8d12-f111-8406-7ced8dceb26a",
+                         "emailaddress1":  "linda.nguyen@pacificps.com",
+                         "jobtitle":  "Operations Manager",
+                         "telephone1":  "(206) 555-2601",
+                         "fullname":  "Linda Nguyen",
+                         "contactid":  "bd75ab54-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Pacific Plumbing Supply"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81941783\"",
+                         "_parentcustomerid_value":  "d96fb733-8d12-f111-8406-6045bda80a72",
+                         "emailaddress1":  "brian.kowalski@midwestpipe.com",
+                         "jobtitle":  "Branch Buyer",
+                         "telephone1":  "(816) 555-2701",
+                         "fullname":  "Brian Kowalski",
+                         "contactid":  "f861c655-8d12-f111-8407-7c1e520a58a1",
+                         "accountName":  "Midwest Pipe \u0026 Supply"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81941750\"",
+                         "_parentcustomerid_value":  "3971c132-8d12-f111-8407-7c1e52143136",
+                         "emailaddress1":  "angela.foster@southernpipe.com",
+                         "jobtitle":  "Customer Service Lead",
+                         "telephone1":  "(601) 555-2801",
+                         "fullname":  "Angela Foster",
+                         "contactid":  "de75ab54-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Southern Pipe \u0026 Supply"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81942006\"",
+                         "_parentcustomerid_value":  "78a6a230-8d12-f111-8407-7ced8d18c8d7",
+                         "emailaddress1":  "eric.hammond@gatewaysupply.com",
+                         "jobtitle":  "Purchasing Agent",
+                         "telephone1":  "(803) 555-2901",
+                         "fullname":  "Eric Hammond",
+                         "contactid":  "acd5af56-8d12-f111-8406-7ced8dceb26a",
+                         "accountName":  "Gateway Supply Company"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81942238\"",
+                         "_parentcustomerid_value":  "58814832-8d12-f111-8406-7ced8dceb26a",
+                         "emailaddress1":  "tony.reeves@abcplumbing.com",
+                         "jobtitle":  "Owner",
+                         "telephone1":  "(303) 555-3001",
+                         "fullname":  "Tony Reeves",
+                         "contactid":  "3062c655-8d12-f111-8407-7c1e520a58a1",
+                         "accountName":  "ABC Plumbing Wholesale"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81942247\"",
+                         "_parentcustomerid_value":  "aba6a230-8d12-f111-8407-7ced8d18c8d7",
+                         "emailaddress1":  "carmen.diaz@metrobldg.com",
+                         "jobtitle":  "Counter Sales",
+                         "telephone1":  "(602) 555-3101",
+                         "fullname":  "Carmen Diaz",
+                         "contactid":  "1e210b58-8d12-f111-8407-7c1e52143136",
+                         "accountName":  "Metro Building Supply"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81942349\"",
+                         "_parentcustomerid_value":  "e96fb733-8d12-f111-8406-6045bda80a72",
+                         "emailaddress1":  "ryan.brooks@lakesideparts.com",
+                         "jobtitle":  "Owner / Buyer",
+                         "telephone1":  "(216) 555-3201",
+                         "fullname":  "Ryan Brooks",
+                         "contactid":  "97c2ad5a-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Lakeside Plumbing Parts"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81942477\"",
+                         "_parentcustomerid_value":  "f66fb733-8d12-f111-8406-6045bda80a72",
+                         "emailaddress1":  "pkelley@greenfieldsd.edu",
+                         "jobtitle":  "Facilities Director",
+                         "telephone1":  "(414) 555-4001",
+                         "fullname":  "Pat Kelley",
+                         "contactid":  "68210b58-8d12-f111-8407-7c1e52143136",
+                         "accountName":  "Greenfield School District"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81942538\"",
+                         "_parentcustomerid_value":  "77b7ec36-8d12-f111-8407-7c1e520a58a1",
+                         "emailaddress1":  "mgutierrez@mesaaz.gov",
+                         "jobtitle":  "Utilities Supervisor",
+                         "telephone1":  "(480) 555-5001",
+                         "fullname":  "Maria Gutierrez",
+                         "contactid":  "72b6355e-8d12-f111-8407-7c1e52143136",
+                         "accountName":  "City of Mesa Water Dept"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81942729\"",
+                         "_parentcustomerid_value":  "0870b733-8d12-f111-8406-6045bda80a72",
+                         "emailaddress1":  "kevin.strand@marriott.com",
+                         "jobtitle":  "Chief Engineer",
+                         "telephone1":  "(414) 555-6001",
+                         "fullname":  "Kevin Strand",
+                         "contactid":  "5e62a85c-8d12-f111-8406-7ced8dceb26a",
+                         "accountName":  "Marriott Downtown Milwaukee"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81942771\"",
+                         "_parentcustomerid_value":  "8950b039-8d12-f111-8406-6045bda80a72",
+                         "emailaddress1":  "rjohnson247@gmail.com",
+                         "jobtitle":  null,
+                         "telephone1":  "(608) 555-7001",
+                         "fullname":  "Robert Johnson",
+                         "contactid":  "dec2ad5a-8d12-f111-8407-7ced8d18c8d7",
+                         "accountName":  "Johnson Residence"
+                     }
+                 ],
+    "subjects":  [
+                     {
+                         "@odata.etag":  "W/\"81945244\"",
+                         "description":  "Wilkins backflow preventers - tech support, sizing, compliance, repairs",
+                         "_parentsubject_value":  "a82aea45-8f12-f111-8407-7ced8d18c8d7",
+                         "subjectid":  "b8309348-8f12-f111-8407-7c1e520a58a1",
+                         "title":  "Backflow / Wilkins"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81944519\"",
+                         "description":  "Wilkins backflow preventers - tech support, sizing, compliance, repairs",
+                         "_parentsubject_value":  "a64e89e9-8d12-f111-8406-7c1e5218592b",
+                         "subjectid":  "e25190ef-8d12-f111-8406-7c1e5218592b",
+                         "title":  "Backflow / Wilkins"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81945246\"",
+                         "description":  "Floor drains, trench drains, roof drains - specifications and troubleshooting",
+                         "_parentsubject_value":  "a82aea45-8f12-f111-8407-7ced8d18c8d7",
+                         "subjectid":  "c32aea45-8f12-f111-8407-7ced8d18c8d7",
+                         "title":  "Drainage"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81944521\"",
+                         "description":  "Floor drains, trench drains, roof drains - specifications and troubleshooting",
+                         "_parentsubject_value":  "a64e89e9-8d12-f111-8406-7c1e5218592b",
+                         "subjectid":  "a202d2ed-8d12-f111-8407-7ced8dceb433",
+                         "title":  "Drainage"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81944501\"",
+                         "description":  "Elkay Manufacturing product and service subjects",
+                         "_parentsubject_value":  null,
+                         "subjectid":  "1bb12eec-8d12-f111-8407-7ced8d18c8d7",
+                         "title":  "Elkay"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81945226\"",
+                         "description":  "Elkay Manufacturing product and service subjects",
+                         "_parentsubject_value":  null,
+                         "subjectid":  "ac2aea45-8f12-f111-8407-7ced8d18c8d7",
+                         "title":  "Elkay"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81944544\"",
+                         "description":  "Water Sentry filters, replacement parts, maintenance",
+                         "_parentsubject_value":  "1bb12eec-8d12-f111-8407-7ced8d18c8d7",
+                         "subjectid":  "5a897eee-8d12-f111-8407-7c1e520a58a1",
+                         "title":  "Filters \u0026 Replacement"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81945264\"",
+                         "description":  "Water Sentry filters, replacement parts, maintenance",
+                         "_parentsubject_value":  "ac2aea45-8f12-f111-8407-7ced8d18c8d7",
+                         "subjectid":  "72529847-8f12-f111-8407-7ced8dceb433",
+                         "title":  "Filters \u0026 Replacement"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81945260\"",
+                         "description":  "Bottle fillers, drinking fountains, water coolers - tech support and specs",
+                         "_parentsubject_value":  "ac2aea45-8f12-f111-8407-7ced8d18c8d7",
+                         "subjectid":  "e8309348-8f12-f111-8407-7c1e520a58a1",
+                         "title":  "Hydration Products"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81944537\"",
+                         "description":  "Bottle fillers, drinking fountains, water coolers - tech support and specs",
+                         "_parentsubject_value":  "1bb12eec-8d12-f111-8407-7ced8d18c8d7",
+                         "subjectid":  "f45190ef-8d12-f111-8406-7c1e5218592b",
+                         "title":  "Hydration Products"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81945262\"",
+                         "description":  "Stainless steel sinks, faucets, accessories",
+                         "_parentsubject_value":  "ac2aea45-8f12-f111-8407-7ced8d18c8d7",
+                         "subjectid":  "e6c7334b-8f12-f111-8407-7c1e52143136",
+                         "title":  "Sinks \u0026 Fixtures"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81944540\"",
+                         "description":  "Stainless steel sinks, faucets, accessories",
+                         "_parentsubject_value":  "1bb12eec-8d12-f111-8407-7ced8d18c8d7",
+                         "subjectid":  "e2d3a0f2-8d12-f111-8407-7ced8d18c8d7",
+                         "title":  "Sinks \u0026 Fixtures"
+                     },
+                     {
+                         "@odata.etag":  "W/\"35507297\"",
+                         "description":  null,
+                         "_parentsubject_value":  null,
+                         "subjectid":  "b31681c6-b807-ed11-82e4-000d3a3b0334",
+                         "title":  "Water supply"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81944498\"",
+                         "description":  "Zurn Industries product and service subjects",
+                         "_parentsubject_value":  null,
+                         "subjectid":  "a64e89e9-8d12-f111-8406-7c1e5218592b",
+                         "title":  "Zurn"
+                     },
+                     {
+                         "@odata.etag":  "W/\"81945223\"",
+                         "description":  "Zurn Industries product and service subjects",
+                         "_parentsubject_value":  null,
+                         "subjectid":  "a82aea45-8f12-f111-8407-7ced8d18c8d7",
+                         "title":  "Zurn"
+                     }
+                 ]
+}

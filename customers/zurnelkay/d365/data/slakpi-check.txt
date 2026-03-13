@@ -1,0 +1,3 @@
+﻿slakpiinstances: 10
+msdyn_slakpis not found: The remote server returned an error: (400) Bad Request.
+Could not get SLA item metadata

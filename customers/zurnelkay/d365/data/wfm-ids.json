@@ -1,0 +1,45 @@
+﻿{
+    "shiftActivityTypes":  {
+                               "Coaching":  "a8f0748e-ab1a-f111-8341-6045bda80a72",
+                               "Case Work":  "b18a7088-ab1a-f111-8341-6045bda80a72",
+                               "Break":  "b38a7088-ab1a-f111-8341-6045bda80a72",
+                               "Training":  "b58a7088-ab1a-f111-8341-6045bda80a72",
+                               "Team Meeting":  "b68a7088-ab1a-f111-8341-6045bda80a72",
+                               "Lunch":  "b48a7088-ab1a-f111-8341-6045bda80a72"
+                           },
+    "shiftPlans":  {
+                       "Zurn Elkay Day Shift":  "da8d5195-ab1a-f111-8342-7ced8d18c8d7",
+                       "Zurn Elkay Afternoon Shift":  "9718b59c-ab1a-f111-8341-6045bda80a72",
+                       "Zurn Elkay Staggered Shift":  "19e841a2-ab1a-f111-8342-7ced8d18c8d7",
+                       "Zurn Elkay Weekend Shift":  "992cc7a3-ab1a-f111-8341-6045bda80a72",
+                       "Zurn Elkay Morning Shift":  "abf0748e-ab1a-f111-8341-6045bda80a72"
+                   },
+    "planWindow":  {
+                       "start":  "2026-03-01T00:00:00Z",
+                       "end":  "2026-04-30T00:00:00Z"
+                   },
+    "agents":  {
+                   "Spencer Low":  "2fdef173-52d5-f011-8543-6045bded8e22",
+                   "Markus Long":  "8b348d13-2a5b-ef11-bfe2-6045bdeeb65d",
+                   "David So":  "063dcf90-b53a-ee11-bdf4-000d3a3386ed",
+                   "Enrico Cattaneo":  "df3c0609-745c-4bc6-b9b3-4ce4d751adf6",
+                   "Alan Steiner":  "cd790c0f-e2c6-ef11-b8e8-7c1e524805ed",
+                   "Renee Lo":  "9c348d13-2a5b-ef11-bfe2-6045bdeeb65d"
+               },
+    "timeOffTypes":  {
+                         "Training Off-site":  "7985458d-ab1a-f111-8342-7ced8d18c8d7",
+                         "Company Holiday":  "7685458d-ab1a-f111-8342-7ced8d18c8d7",
+                         "Vacation":  "7385458d-ab1a-f111-8342-7ced8d18c8d7",
+                         "Sick Leave":  "a9f0748e-ab1a-f111-8341-6045bda80a72",
+                         "Personal":  "7485458d-ab1a-f111-8342-7ced8d18c8d7",
+                         "Jury Duty":  "aaf0748e-ab1a-f111-8341-6045bda80a72",
+                         "Bereavement":  "7885458d-ab1a-f111-8342-7ced8d18c8d7"
+                     },
+    "timeOffRequests":  {
+                            "Markus Long - Training":  "08cc8ba8-ab1a-f111-8342-7ced8d18c8d7",
+                            "Alan Steiner - Personal Day":  "26cc8ba8-ab1a-f111-8342-7ced8d18c8d7",
+                            "Renee Lo - Vacation":  "3ae841a2-ab1a-f111-8342-7ced8d18c8d7",
+                            "Enrico Cattaneo - Sick Leave":  "42cc8ba8-ab1a-f111-8342-7ced8d18c8d7",
+                            "David So - Vacation":  "5fcc8ba8-ab1a-f111-8342-7ced8d18c8d7"
+                        }
+}

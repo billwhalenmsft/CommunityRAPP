@@ -1,0 +1,16 @@
+﻿
+  Customer Tier  |  Base Priority  |  With Hot Word  |  D365 Priority
+  ---------------+-----------------+-----------------+----------------
+  Tier 1         |  8,000          |  10,000         |  1 (High)
+  Tier 2         |  6,000          |  10,000         |  2 (Normal)
+  Tier 3         |  10,000         |  10,000         |  2 (Normal)
+  Tier 4         |  1,000          |  10,000         |  3 (Low)
+  
+  Hot Words: Urgent, Next Day Air, Emergency, Recall, Safety, Legal
+  
+  Priority field (prioritycode): 1=High, 2=Normal, 3=Low
+  
+  NOTE: The AIP lookup (ERP integration) determines customer tier.
+  In the demo, tier is stored on the Account (accountclassificationcode).
+  A Power Automate flow should read the tier on case creation and set priority.
+

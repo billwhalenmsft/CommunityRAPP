@@ -1,13 +1,14 @@
-# Name: Greeting
-# This topic is triggered when the user greets the agent.
+mcs.metadata:
+  componentName: Greeting
+  description: This topic is triggered when the user greets the agent.
 kind: AdaptiveDialog
-modelDescription: This should call the assistant. Always trigger this when a user has a message they post in the chat to trigger giving them a response from the assistant.
 inputs:
   - kind: AutomaticTaskInput
     propertyName: Var1
     entity: StringPrebuiltEntity
     shouldPromptUser: true
 
+modelDescription: This should call the assistant. Always trigger this when a user has a message they post in the chat to trigger giving them a response from the assistant.
 beginDialog:
   kind: OnRecognizedIntent
   id: main

@@ -1,0 +1,238 @@
+﻿# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  SCREEN 1 â€” Order Lookup (scrOrderLookup)
+#  Format: Power Apps pa.yaml SchemaV3
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#
+#  HOW TO USE:
+#   Option A  â€“ Paste the entire Screens: block into your app's
+#               pa.yaml (Git integration / source-code editing).
+#   Option B  â€“ Create screen manually, set its Properties, then
+#               right-click screen â†’ Paste code for each Children
+#               block one control at a time.
+#
+#  SCREEN-LEVEL PROPERTIES (set on the screen itself):
+#    Fill      â†’ =RGBA(250, 250, 250, 1)
+#    OnVisible â†’ (see below)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+Screens:
+  scrOrderLookup:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      OnVisible: |-
+        =Set(varSelectedOrder, Blank());
+        Clear(colQtyChanges);
+        Clear(colNewLines);
+        Clear(colDateChanges);
+        Set(varTimelineAdded, false);
+        // Parse pipe-delimited recordId: accountId|caseId|accountName|serialNumber
+        Set(varRawParam, Param("recordId"));
+        If(
+            !IsBlank(varRawParam) && !IsBlank(Find("|", varRawParam)),
+            // Piped format — extract each segment
+            Set(varAccountId, Left(varRawParam, Find("|", varRawParam) - 1));
+            Set(varRemainder1, Mid(varRawParam, Find("|", varRawParam) + 1));
+            Set(varCaseId,
+                If(!IsBlank(Find("|", varRemainder1)),
+                    Left(varRemainder1, Find("|", varRemainder1) - 1),
+                    varRemainder1
+                )
+            );
+            Set(varRemainder2,
+                If(!IsBlank(Find("|", varRemainder1)),
+                    Mid(varRemainder1, Find("|", varRemainder1) + 1),
+                    ""
+                )
+            );
+            Set(varAccountName,
+                If(!IsBlank(Find("|", varRemainder2)),
+                    Left(varRemainder2, Find("|", varRemainder2) - 1),
+                    varRemainder2
+                )
+            );
+            Set(varPassedSerial,
+                If(!IsBlank(Find("|", varRemainder2)),
+                    Mid(varRemainder2, Find("|", varRemainder2) + 1),
+                    ""
+                )
+            ),
+            // No pipes — backward compat (plain recordId)
+            Set(varAccountId, varRawParam);
+            Set(varCaseId, "");
+            Set(varAccountName, "");
+            Set(varPassedSerial, "")
+        );
+        // Look up case record if caseId was passed
+        Set(varCaseRecord,
+            If(!IsBlank(varCaseId),
+                LookUp(Cases, Case = GUID(varCaseId))
+            )
+        )
+    Children:
+      # â”€â”€ Blue accent bar at top â”€â”€
+      - rectTopBar:
+          Control: Rectangle
+          Properties:
+            X: =0
+            Y: =0
+            Width: =Parent.Width
+            Height: =6
+            Fill: =RGBA(0, 120, 212, 1)
+
+      # â”€â”€ Search icon â”€â”€
+      - icoSearch:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Search
+            X: =16
+            Y: =24
+            Width: =36
+            Height: =36
+            Color: =RGBA(0, 120, 212, 1)
+
+      # -- Home button (top-right) --
+      - btnHomeIcon:
+          Control: Classic/Button
+          Properties:
+            Text: ="Home"
+            X: =Parent.Width - 68
+            Y: =22
+            Width: =52
+            Height: =32
+            Size: =10
+            Color: =RGBA(0, 120, 212, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            BorderColor: =RGBA(0, 120, 212, 1)
+            BorderThickness: =1
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+
+      # -- Screen title --
+      - lblScreenTitle:
+          Control: Label
+          Properties:
+            Text: ="Order Modification"
+            X: =56
+            Y: =24
+            Width: =Parent.Width - 132
+            Height: =40
+            Size: =20
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # â”€â”€ Subtitle â”€â”€
+      - lblSubtitle:
+          Control: Label
+          Properties:
+            Text: ="Select the order to modify"
+            X: =16
+            Y: =68
+            Width: =Parent.Width - 32
+            Height: =28
+            Size: =12
+            Color: =RGBA(96, 94, 92, 1)
+
+      # â”€â”€ Divider line â”€â”€
+      - rectDivider1:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =100
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # â”€â”€ Orders gallery (vertical, blank template) â”€â”€
+      - galOrders:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            X: =0
+            Y: =110
+            Width: =Parent.Width
+            Height: =Parent.Height - 110
+            TemplateSize: =90
+            TemplatePadding: =4
+            Fill: =RGBA(250, 250, 250, 1)
+            Items: |-
+              =If(
+                  IsBlank(varAccountId),
+                  Filter(Orders, 'Status Reason' = 'Status Reason (Orders)'.New),
+                  Filter(Orders,
+                      'Status Reason' = 'Status Reason (Orders)'.New,
+                      IsType(Customer, [@Accounts]) &&
+                      AsType(Customer, [@Accounts]).Account = GUID(varAccountId)
+                  )
+              )
+            OnSelect: |-
+              =Set(varSelectedOrder, ThisItem);
+              Navigate(scrOrderLineManagement, ScreenTransition.None)
+          Children:
+            # â”€â”€ Card background (blue border when selected) â”€â”€
+            - rectOrderCard:
+                Control: Rectangle
+                Properties:
+                  X: =8
+                  Y: =4
+                  Width: =Parent.TemplateWidth - 16
+                  Height: =Parent.TemplateHeight - 8
+                  Fill: =RGBA(255, 255, 255, 1)
+                  BorderColor: =If(ThisItem.IsSelected, RGBA(0, 120, 212, 1), RGBA(237, 235, 233, 1))
+                  BorderThickness: =If(ThisItem.IsSelected, 2, 1)
+                  OnSelect: =Select(Parent)
+
+            # â”€â”€ Order ID (bold, blue) â”€â”€
+            - lblOrderId:
+                Control: Label
+                Properties:
+                  Text: =ThisItem.'Order ID'
+                  X: =24
+                  Y: =12
+                  Width: =180
+                  Height: =28
+                  Size: =14
+                  FontWeight: =FontWeight.Bold
+                  Color: =RGBA(0, 90, 158, 1)
+                  OnSelect: =Select(Parent)
+
+            # â”€â”€ Order name / description â”€â”€
+            - lblOrderName:
+                Control: Label
+                Properties:
+                  Text: =ThisItem.Name
+                  X: =24
+                  Y: =40
+                  Width: =220
+                  Height: =22
+                  Size: =11
+                  Color: =RGBA(96, 94, 92, 1)
+                  OnSelect: =Select(Parent)
+
+            # â”€â”€ Total amount (right-aligned) â”€â”€
+            - lblOrderAmount:
+                Control: Label
+                Properties:
+                  Text: |-
+                    ="$" & Text(ThisItem.'Total Amount', "#,##0")
+                  X: =Parent.TemplateWidth - 130
+                  Y: =12
+                  Width: =110
+                  Height: =28
+                  Size: =14
+                  FontWeight: =FontWeight.Semibold
+                  Align: =Align.Right
+                  Color: =RGBA(50, 49, 48, 1)
+                  OnSelect: =Select(Parent)
+
+            # â”€â”€ Delivery date (right-aligned) â”€â”€
+            - lblOrderDate:
+                Control: Label
+                Properties:
+                  Text: =Text(ThisItem.'Date Fulfilled', "MMM d, yyyy")
+                  X: =Parent.TemplateWidth - 130
+                  Y: =40
+                  Width: =110
+                  Height: =22
+                  Size: =10
+                  Align: =Align.Right
+                  Color: =RGBA(96, 94, 92, 1)
+                  OnSelect: =Select(Parent)

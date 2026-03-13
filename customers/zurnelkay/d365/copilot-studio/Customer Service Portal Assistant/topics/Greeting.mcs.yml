@@ -1,0 +1,28 @@
+mcs.metadata:
+  componentName: Greeting
+  description: This topic is triggered when the user greets the agent.
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Greeting
+    includeInOnSelectIntent: false
+    triggerQueries:
+      - Good afternoon
+      - Good morning
+      - Hello
+      - Hey
+      - Hi
+
+  actions:
+    - kind: SendActivity
+      id: sendMessage_abmysR
+      activity:
+        text:
+          - Hello! Welcome to Zurn Elkay support. I can help with product troubleshooting, warranty claims, order inquiries, and more. What can I help you with?
+        speak:
+          - Hello! Welcome to Zurn Elkay support. What can I help you with today?
+
+    - kind: CancelAllDialogs
+      id: cancelAllDialogs_01At22

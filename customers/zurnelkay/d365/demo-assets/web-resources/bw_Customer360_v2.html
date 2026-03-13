@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Customer 360</title>
+    <style>
+        /* ═══ Reset & Variables ═══ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --purple: #6B4FBB;
+            --blue: #0078D4;
+            --teal: #00B7C3;
+            --green: #107C10;
+            --yellow: #FFB900;
+            --red: #D13438;
+            --orange: #CA5010;
+            --bg: #F5F5F5;
+            --card: #FFFFFF;
+            --text-1: #323130;
+            --text-2: #605E5C;
+            --text-3: #A19F9D;
+            --border: #EDEBE9;
+            --border-lt: #F3F2F1;
+            --grad-header: linear-gradient(135deg, #1B1045 0%, #0E3A6E 100%);
+            --shadow-s: 0 1.6px 3.6px rgba(0, 0, 0, .08), 0 .3px .9px rgba(0, 0, 0, .04);
+            --shadow-m: 0 3.2px 7.2px rgba(0, 0, 0, .1), 0 .6px 1.8px rgba(0, 0, 0, .06);
+            --r: 4px;
+            --r-lg: 6px;
+            --font: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text-1);
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* ═══ Animations ═══ */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .animate-in {
+            animation: fadeIn .4s ease both;
+        }
+
+        .animate-up {
+            animation: slideUp .5s ease both;
+        }
+
+        [data-delay="1"] {
+            animation-delay: .05s
+        }
+
+        [data-delay="2"] {
+            animation-delay: .1s
+        }
+
+        [data-delay="3"] {
+            animation-delay: .15s
+        }
+
+        [data-delay="4"] {
+            animation-delay: .2s
+        }
+
+        [data-delay="5"] {
+            animation-delay: .25s
+        }
+
+        [data-delay="6"] {
+            animation-delay: .3s
+        }
+
+        /* ═══ Loading / Error ═══ */
+        .state-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            gap: 16px;
+            color: var(--text-2);
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--purple);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        .state-screen .error-icon {
+            font-size: 32px;
+        }
+
+        .state-screen p {
+            font-size: 13px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* ═══ Header Banner ═══ */
+        .c360-header {
+            background: var(--grad-header);
+            color: #fff;
+            padding: 20px 24px 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .c360-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(107, 79, 187, .15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .c360-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: 20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 183, 195, .1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .account-name {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -.2px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .account-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, .7);
+            margin-top: 2px;
+        }
+
+        .account-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .tier-1 {
+            background: linear-gradient(135deg, #FFB900, #FF8C00);
+            color: #1a1a1a;
+        }
+
+        .tier-2 {
+            background: linear-gradient(135deg, #C4C4C4, #A0A0A0);
+            color: #1a1a1a;
+        }
+
+        .tier-3 {
+            background: linear-gradient(135deg, #CD7F32, #A0522D);
+            color: #fff;
+        }
+
+        .tier-4 {
+            background: rgba(255, 255, 255, .15);
+            color: rgba(255, 255, 255, .8);
+        }
+
+        .tier-none {
+            background: rgba(255, 255, 255, .1);
+            color: rgba(255, 255, 255, .5);
+        }
+
+        /* Health Score Gauge */
+        .health-gauge {
+            width: 90px;
+            height: 90px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .health-gauge svg {
+            transform: rotate(-90deg);
+        }
+
+        .health-gauge .gauge-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, .12);
+            stroke-width: 6;
+        }
+
+        .health-gauge .gauge-fill {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.5s ease, stroke 1s ease;
+        }
+
+        .health-gauge .gauge-label {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .health-gauge .gauge-value {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1;
+            transition: color 1s ease;
+        }
+
+        .health-gauge .gauge-text {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            opacity: .7;
+            margin-top: 2px;
+        }
+
+        /* ═══ Tab Navigation ═══ */
+        .c360-tabs {
+            display: flex;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .c360-tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 11px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-2);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all .2s;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .c360-tab:hover {
+            color: var(--text-1);
+            background: var(--border-lt);
+        }
+
+        .c360-tab.active {
+            color: var(--purple);
+            border-bottom-color: var(--purple);
+        }
+
+        .c360-tab .tab-icon {
+            font-size: 14px;
+        }
+
+        .tab-panel {
+            display: none;
+            padding: 16px;
+            animation: fadeIn .3s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ═══ Section ═══ */
+        .section {
+            margin-bottom: 16px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-1);
+        }
+
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .3px;
+        }
+
+        .badge-oracle {
+            background: linear-gradient(135deg, #FF6B35, #C74B16);
+            color: #fff;
+        }
+
+        .badge-fno {
+            background: linear-gradient(135deg, #0078D4, #005A9E);
+            color: #fff;
+        }
+
+        .badge-dataverse {
+            background: linear-gradient(135deg, #6B4FBB, #4A3694);
+            color: #fff;
+        }
+
+        .badge-ai {
+            background: linear-gradient(135deg, #00B7C3, #008B94);
+            color: #fff;
+        }
+
+        /* ═══ Metric Cards Grid ═══ */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            background: var(--card);
+            border-radius: var(--r);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-s);
+            border: 1px solid var(--border-lt);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: var(--r) var(--r) 0 0;
+        }
+
+        .metric-card.purple::before {
+            background: var(--purple)
+        }
+
+        .metric-card.blue::before {
+            background: var(--blue)
+        }
+
+        .metric-card.teal::before {
+            background: var(--teal)
+        }
+
+        .metric-card.green::before {
+            background: var(--green)
+        }
+
+        .metric-card.red::before {
+            background: var(--red)
+        }
+
+        .metric-card.orange::before {
+            background: var(--orange)
+        }
+
+        .metric-value {
+            font-size: 26px;
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -.5px;
+        }
+
+        .metric-value.purple {
+            color: var(--purple)
+        }
+
+        .metric-value.blue {
+            color: var(--blue)
+        }
+
+        .metric-value.teal {
+            color: var(--teal)
+        }
+
+        .metric-value.green {
+            color: var(--green)
+        }
+
+        .metric-value.red {
+            color: var(--red)
+        }
+
+        .metric-value.orange {
+            color: var(--orange)
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-2);
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        .metric-sub {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-top: 4px;
+        }
+
+        /* ═══ Cards ═══ */
+        .card {
+            background: var(--card);
+            border-radius: var(--r);
+            box-shadow: var(--shadow-s);
+            border: 1px solid var(--border-lt);
+            overflow: hidden;
+        }
+
+        .card-body {
+            padding: 14px 16px;
+        }
+
+        /* ═══ Layouts ═══ */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .two-col.wide-right {
+            grid-template-columns: 1fr 1.4fr;
+        }
+
+        /* ═══ Contact Cards ═══ */
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .contact-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--card);
+            border-radius: var(--r);
+            border: 1px solid var(--border-lt);
+        }
+
+        .contact-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .avatar-purple {
+            background: var(--purple)
+        }
+
+        .avatar-blue {
+            background: var(--blue)
+        }
+
+        .avatar-teal {
+            background: var(--teal)
+        }
+
+        .avatar-green {
+            background: var(--green)
+        }
+
+        .contact-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-1);
+        }
+
+        .contact-detail {
+            font-size: 11px;
+            color: var(--text-2);
+            line-height: 1.4;
+        }
+
+        /* ═══ Tables ═══ */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .data-table thead th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--text-2);
+            border-bottom: 1px solid var(--border);
+            background: var(--border-lt);
+        }
+
+        .data-table tbody td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-lt);
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(107, 79, 187, .03);
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cell-primary {
+            font-weight: 600;
+            color: var(--text-1);
+        }
+
+        .cell-secondary {
+            font-size: 10px;
+            color: var(--text-2);
+        }
+
+        .cell-mono {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 11px;
+        }
+
+        /* ═══ Status Pills ═══ */
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .1px;
+        }
+
+        .pill-active {
+            background: #E1F5E0;
+            color: #107C10
+        }
+
+        .pill-resolved {
+            background: #E8F1FB;
+            color: #0078D4
+        }
+
+        .pill-cancelled {
+            background: #F3F2F1;
+            color: #8A8886
+        }
+
+        .pill-high {
+            background: #FDE7E9;
+            color: #D13438
+        }
+
+        .pill-normal {
+            background: #E8F1FB;
+            color: #0078D4
+        }
+
+        .pill-low {
+            background: #F3F2F1;
+            color: #605E5C
+        }
+
+        .pill-warning {
+            background: #FFF4CE;
+            color: #7A6400
+        }
+
+        .pill-danger {
+            background: #FDE7E9;
+            color: #D13438
+        }
+
+        .pill-purple {
+            background: #F0ECFA;
+            color: #6B4FBB
+        }
+
+        .origin {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 11px;
+        }
+
+        .origin-icon {
+            font-size: 12px;
+        }
+
+        /* ═══ Progress Bars ═══ */
+        .progress-outer {
+            height: 6px;
+            background: var(--border-lt);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-inner {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        .progress-inner.green {
+            background: var(--green)
+        }
+
+        .progress-inner.yellow {
+            background: var(--yellow)
+        }
+
+        .progress-inner.red {
+            background: var(--red)
+        }
+
+        .progress-inner.blue {
+            background: var(--blue)
+        }
+
+        .entitlement-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-lt);
+        }
+
+        .entitlement-item:last-child {
+            border-bottom: none;
+        }
+
+        .ent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .ent-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .ent-usage {
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .ent-dates {
+            font-size: 11px;
+            color: var(--text-3);
+            margin-top: 4px;
+        }
+
+        /* ═══ Charts ═══ */
+        .chart-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .donut-chart {
+            position: relative;
+        }
+
+        .donut-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donut-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-1);
+        }
+
+        .donut-label {
+            font-size: 9px;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-label {
+            color: var(--text-2);
+            flex: 1;
+        }
+
+        .legend-value {
+            font-weight: 600;
+            color: var(--text-1);
+        }
+
+        .sparkline-container {
+            width: 100%;
+            height: 60px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 80px;
+            padding-top: 4px;
+        }
+
+        .bar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .bar-fill {
+            width: 100%;
+            border-radius: 3px 3px 0 0;
+            transition: height .8s ease;
+            min-height: 2px;
+        }
+
+        .bar-label {
+            font-size: 8px;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        /* ═══ ERP Rows ═══ */
+        .erp-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-lt);
+        }
+
+        .erp-row:last-child {
+            border-bottom: none;
+        }
+
+        .erp-item-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-1);
+        }
+
+        .erp-item-detail {
+            font-size: 10px;
+            color: var(--text-2);
+        }
+
+        .erp-item-value {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .stock-bar {
+            display: flex;
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+            width: 80px;
+            background: var(--border-lt);
+        }
+
+        .stock-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* ═══ Overview Snapshot Sections ═══ */
+        .snapshot-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .snapshot-card {
+            background: var(--card);
+            border-radius: var(--r);
+            box-shadow: var(--shadow-s);
+            border: 1px solid var(--border-lt);
+            overflow: hidden;
+        }
+
+        .snapshot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px 6px;
+            border-bottom: 1px solid var(--border-lt);
+        }
+
+        .snapshot-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-1);
+        }
+
+        .snapshot-body {
+            padding: 10px 14px;
+        }
+
+        .case-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border-lt);
+        }
+
+        .case-row:last-child {
+            border-bottom: none;
+        }
+
+        .case-row .origin-icon {
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .case-row-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .case-row-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .case-row-meta {
+            font-size: 10px;
+            color: var(--text-3);
+        }
+
+        .ent-mini {
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-lt);
+        }
+
+        .ent-mini:last-child {
+            border-bottom: none;
+        }
+
+        .ent-mini-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .ent-mini-name {
+            font-weight: 600;
+            color: var(--text-1);
+        }
+
+        .ent-mini-count {
+            color: var(--text-2);
+        }
+
+        .fin-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-lt);
+        }
+
+        .fin-row:last-child {
+            border-bottom: none;
+        }
+
+        .fin-label {
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .fin-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-1);
+        }
+
+        /* ═══ Empty / Responsive ═══ */
+        .empty-state {
+            padding: 24px;
+            text-align: center;
+            color: var(--text-3);
+            font-size: 12px;
+        }
+
+        @media(max-width:680px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .two-col,
+            .contacts-grid {
+                grid-template-columns: 1fr
+            }
+
+            .snapshot-row {
+                grid-template-columns: 1fr
+            }
+
+            .c360-tabs {
+                overflow-x: auto
+            }
+        }
+
+        @media(max-width:500px) {
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .metric-value {
+                font-size: 22px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading -->
+    <div id="loadingState" class="state-screen">
+        <div class="spinner"></div>
+        <p>Loading Customer 360...</p>
+    </div>
+
+    <!-- Error -->
+    <div id="errorState" class="state-screen" style="display:none">
+        <div class="error-icon">⚠️</div>
+        <p id="errorMessage">Unable to load Customer 360 data.</p>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" style="display:none">
+        <!-- Header Banner -->
+        <div class="c360-header">
+            <div class="header-top">
+                <div class="header-info">
+                    <div class="account-name" id="accountName">Loading...</div>
+                    <div class="account-meta" id="accountMeta"></div>
+                    <div class="tier-badge tier-none" id="tierBadge">&mdash;</div>
+                </div>
+                <div class="health-gauge" id="healthGauge">
+                    <svg viewBox="0 0 90 90">
+                        <circle class="gauge-bg" cx="45" cy="45" r="38"></circle>
+                        <circle class="gauge-fill" id="healthArc" cx="45" cy="45" r="38" stroke-dasharray="238.76"
+                            stroke-dashoffset="238.76"></circle>
+                    </svg>
+                    <div class="gauge-label">
+                        <div class="gauge-value" id="healthValue">&mdash;</div>
+                        <div class="gauge-text">Health</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="c360-tabs">
+            <div class="c360-tab active" data-tab="overview"><span class="tab-icon">📊</span> Overview</div>
+            <div class="c360-tab" data-tab="service"><span class="tab-icon">🎧</span> Service</div>
+            <div class="c360-tab" data-tab="orders"><span class="tab-icon">📦</span> Orders &amp; Supply</div>
+            <div class="c360-tab" data-tab="financials"><span class="tab-icon">💰</span> Financials</div>
+        </div>
+
+        <!-- ═══ TAB: OVERVIEW ═══ -->
+        <div class="tab-panel active" id="tabOverview">
+            <div class="metrics-grid" id="overviewMetrics"></div>
+            <!-- Snapshot Row: Recent Cases | Entitlement Health | Financial Snapshot -->
+            <div class="snapshot-row">
+                <div class="snapshot-card">
+                    <div class="snapshot-header">
+                        <span class="snapshot-title">Recent Cases</span>
+                        <span class="section-badge badge-dataverse">Dataverse</span>
+                    </div>
+                    <div class="snapshot-body" id="overviewCases"></div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-header">
+                        <span class="snapshot-title">Entitlement Health</span>
+                        <span class="section-badge badge-dataverse">Dataverse</span>
+                    </div>
+                    <div class="snapshot-body" id="overviewEntitlements"></div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-header">
+                        <span class="snapshot-title">Financial Snapshot</span>
+                        <span class="section-badge badge-fno">D365 F&amp;O</span>
+                    </div>
+                    <div class="snapshot-body" id="overviewFinancials"></div>
+                </div>
+            </div>
+            <div class="two-col">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Revenue Trend (12 mo)</div>
+                        <span class="section-badge badge-fno">D365 F&amp;O</span>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="sparkline-container" id="revenueSpark"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Key Contacts</div>
+                        <span class="section-badge badge-dataverse">Dataverse</span>
+                    </div>
+                    <div class="contacts-grid" id="contactsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB: SERVICE ═══ -->
+        <div class="tab-panel" id="tabService">
+            <div class="metrics-grid" id="serviceMetrics"></div>
+            <div class="two-col wide-right">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Case Mix</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body chart-container" id="caseMixChart"></div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Recent Cases</div>
+                        <span class="section-badge badge-dataverse">Dataverse</span>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="casesList"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Entitlements &amp; SLA</div>
+                    <span class="section-badge badge-dataverse">Dataverse</span>
+                </div>
+                <div class="card">
+                    <div class="card-body" id="entitlementsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB: ORDERS & SUPPLY ═══ -->
+        <div class="tab-panel" id="tabOrders">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Recent Orders</div>
+                    <span class="section-badge badge-dataverse">Dataverse</span>
+                </div>
+                <div class="card">
+                    <div class="card-body" id="ordersList"></div>
+                </div>
+            </div>
+            <div class="two-col">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Inventory Levels</div>
+                        <span class="section-badge badge-oracle">Oracle ERP</span>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="inventoryList"></div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Supply Chain</div>
+                        <span class="section-badge badge-oracle">Oracle ERP</span>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="supplyChainList"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Bill of Materials</div>
+                    <span class="section-badge badge-oracle">Oracle ERP</span>
+                </div>
+                <div class="card">
+                    <div class="card-body" id="bomList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB: FINANCIALS ═══ -->
+        <div class="tab-panel" id="tabFinancials">
+            <div class="metrics-grid" id="arMetrics"></div>
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Open Invoices</div>
+                    <span class="section-badge badge-fno">D365 F&amp;O</span>
+                </div>
+                <div class="card">
+                    <div class="card-body" id="invoicesList"></div>
+                </div>
+            </div>
+            <div class="two-col">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Payment History (6 mo)</div>
+                        <span class="section-badge badge-fno">D365 F&amp;O</span>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="paymentChart"></div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Revenue by Category</div>
+                        <span class="section-badge badge-fno">D365 F&amp;O</span>
+                    </div>
+                    <div class="card">
+                        <div class="card-body chart-container" id="revenueByCatChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ── Shorthand helpers ──
+            function $(id) { return document.getElementById(id); }
+            function show(id) { $(id).style.display = 'block'; }
+            function hide(id) { $(id).style.display = 'none'; }
+            function text(id, t) { $(id).textContent = t; }
+            function html(id, h) { $(id).innerHTML = h; }
+            function esc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+            function initials(name) {
+                if (!name) return '?';
+                var parts = name.split(/\s+/);
+                return parts.length > 1 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : name.substring(0, 2).toUpperCase();
+            }
+            function fmtDate(iso) {
+                if (!iso) return '\u2014';
+                var d = new Date(iso);
+                return isNaN(d) ? '\u2014' : (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+            }
+            function fmtCurrency(v) {
+                if (v == null || isNaN(v)) return '\u2014';
+                return '$' + Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            // ── Deterministic simulation helpers ──
+            function hash(s) { var h = 0; for (var i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; } return Math.abs(h); }
+            function simVal(seed, min, max) { return min + (seed % (max - min + 1)); }
+
+            // ── Xrm helpers (unchanged from v1) ──
+            function getXrm() {
+                try { if (window.parent && window.parent.Xrm) return window.parent.Xrm; } catch (e) { }
+                return window.Xrm || null;
+            }
+            function getFormContext() {
+                var xrm = getXrm();
+                if (!xrm) return null;
+                try {
+                    var ctx = xrm.Utility.getPageContext();
+                    if (ctx && ctx.input && ctx.input.entityName) return { entityName: ctx.input.entityName, entityId: ctx.input.entityId.replace(/[{}]/g, '') };
+                } catch (e) { }
+                try { if (xrm.Page && xrm.Page.data) return { entityName: xrm.Page.data.entity.getEntityName(), entityId: xrm.Page.data.entity.getId().replace(/[{}]/g, '') }; } catch (e) { }
+                return null;
+            }
+            function resolveAccountId() {
+                return new Promise(function (resolve, reject) {
+                    var fc = getFormContext();
+                    if (!fc) return reject('No form context found.');
+                    if (fc.entityName === 'account') return resolve(fc.entityId);
+                    if (fc.entityName === 'incident') {
+                        var xrm = getXrm();
+                        xrm.WebApi.retrieveRecord('incident', fc.entityId, '?$select=_customerid_value').then(function (r) {
+                            var cid = r['_customerid_value'];
+                            if (cid) resolve(cid); else reject('Case has no customer.');
+                        }, function (e) { reject('Error resolving case customer: ' + e.message); });
+                    } else { reject('Unsupported entity: ' + fc.entityName); }
+                });
+            }
+            function fetchRecords(entitySet, query) {
+                return new Promise(function (resolve, reject) {
+                    getXrm().WebApi.retrieveMultipleRecords(entitySet, '?' + query).then(function (r) { resolve(r.entities || []); }, function (e) { reject(e.message || e); });
+                });
+            }
+            function fetchRecord(entitySet, id, query) {
+                return new Promise(function (resolve, reject) {
+                    getXrm().WebApi.retrieveRecord(entitySet, id, '?' + query).then(function (r) { resolve(r); }, function (e) { reject(e.message || e); });
+                });
+            }
+
+            // ── Status / Priority / Origin mappings ──
+            var priorityMap = { 1: 'High', 2: 'Normal', 3: 'Low' };
+            var priorityPill = { 1: 'pill-high', 2: 'pill-normal', 3: 'pill-low' };
+            var caseStatusMap = { 1: 'Active', 2: 'Resolved', 3: 'Cancelled', 5: 'Active', 1000: 'Info Provided', 2000: 'Merged' };
+            function casePill(sc) { return (sc === 1 || sc === 5) ? 'pill-active' : (sc === 2 || sc === 1000) ? 'pill-resolved' : 'pill-cancelled'; }
+            var orderStatusMap = { 0: 'Active', 1: 'Submitted', 2: 'Cancelled', 3: 'Fulfilled', 4: 'Invoiced', 100001: 'Partial Ship', 100002: 'Complete' };
+            function orderPill(sc) { return (sc === 3 || sc === 4 || sc === 100002) ? 'pill-resolved' : (sc === 2) ? 'pill-cancelled' : 'pill-active'; }
+            var originIcon = { 1: '\uD83D\uDCDE', 2: '\uD83D\uDCE7', 3: '\uD83C\uDF10' };
+            var originLabel = { 1: 'Phone', 2: 'Email', 3: 'Web' };
+
+            // ── Tier detection (enhanced — checks accountcategorycode first) ──
+            function detectTier(account, entitlements) {
+                var cat = account.accountcategorycode;
+                if (cat === 1) return { num: 1, label: 'Tier 1 \u00B7 Strategic' };
+                if (cat === 2) return { num: 2, label: 'Tier 2 \u00B7 Key Account' };
+                if (cat === 3) return { num: 3, label: 'Tier 3 \u00B7 Standard' };
+                if (cat === 4) return { num: 4, label: 'Tier 4 \u00B7 Basic' };
+                if (!entitlements || entitlements.length === 0) return { num: 0, label: 'No Tier' };
+                var best = 5, bestLabel = '';
+                entitlements.forEach(function (e) {
+                    var n = (e.name || '').toLowerCase();
+                    if ((n.indexOf('strategic') >= 0 || n.indexOf('tier 1') >= 0) && 1 < best) { best = 1; bestLabel = 'Tier 1 \u00B7 Strategic'; }
+                    else if ((n.indexOf('key') >= 0 || n.indexOf('tier 2') >= 0) && 2 < best) { best = 2; bestLabel = 'Tier 2 \u00B7 Key Account'; }
+                    else if ((n.indexOf('standard') >= 0 || n.indexOf('tier 3') >= 0) && 3 < best) { best = 3; bestLabel = 'Tier 3 \u00B7 Standard'; }
+                    else if ((n.indexOf('basic') >= 0 || n.indexOf('tier 4') >= 0) && 4 < best) { best = 4; bestLabel = 'Tier 4 \u00B7 Basic'; }
+                });
+                if (best > 4) return { num: 0, label: 'No Tier' };
+                return { num: best, label: bestLabel };
+            }
+
+            // ── Tab switching ──
+            function initTabs() {
+                var tabs = document.querySelectorAll('.c360-tab');
+                var tabMap = { overview: 'tabOverview', service: 'tabService', orders: 'tabOrders', financials: 'tabFinancials' };
+                tabs.forEach(function (tab) {
+                    tab.addEventListener('click', function () {
+                        tabs.forEach(function (t) { t.classList.remove('active'); });
+                        document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+                        tab.classList.add('active');
+                        var panel = $(tabMap[tab.dataset.tab]);
+                        if (panel) panel.classList.add('active');
+                    });
+                });
+            }
+
+            // ── Counter animation ──
+            function animateCounter(el, target, duration) {
+                duration = duration || 800;
+                var startTime = null;
+                function step(ts) {
+                    if (!startTime) startTime = ts;
+                    var p = Math.min((ts - startTime) / duration, 1);
+                    el.textContent = Math.round(p * target).toLocaleString();
+                    if (p < 1) requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            }
+
+            // ── Health Score ──
+            function calcHealthScore(data) {
+                var score = 70;
+                var openCases = data.cases.filter(function (c) { return c.statuscode === 1 || c.statuscode === 5; }).length;
+                score -= openCases * 5;
+                var totalRemaining = 0;
+                data.entitlements.forEach(function (e) { totalRemaining += (e.remainingterms || 0); });
+                if (totalRemaining > 20) score += 10; else if (totalRemaining < 5) score -= 10;
+                var activeOrders = data.orders.filter(function (o) { return o.statuscode === 0 || o.statuscode === 1; }).length;
+                score += activeOrders * 3;
+                return Math.max(0, Math.min(100, score));
+            }
+            function setHealthGauge(score) {
+                var circumference = 2 * Math.PI * 38;
+                var offset = circumference * (1 - score / 100);
+                var arc = $('healthArc');
+                var color = score >= 70 ? '#107C10' : (score >= 40 ? '#FFB900' : '#D13438');
+                arc.style.stroke = color;
+                arc.style.strokeDashoffset = offset;
+                $('healthValue').textContent = score;
+                $('healthValue').style.color = color;
+            }
+
+            // ── SVG Charts ──
+            function drawDonut(containerId, slices, size, centerLabel) {
+                size = size || 130;
+                var r = size / 2 - 10, cx = size / 2, cy = size / 2, C = 2 * Math.PI * r;
+                var total = 0; slices.forEach(function (s) { total += s.value; });
+                var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '">';
+                var off = 0;
+                slices.forEach(function (s) {
+                    var pct = total > 0 ? s.value / total : 0, dash = C * pct;
+                    svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + s.color + '" stroke-width="14" stroke-dasharray="' + dash.toFixed(1) + ' ' + (C - dash).toFixed(1) + '" stroke-dashoffset="' + (-off).toFixed(1) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+                    off += dash;
+                });
+                svg += '</svg>';
+                var center = '<div class="donut-center"><div class="donut-value">' + total + '</div><div class="donut-label">' + (centerLabel || 'Total') + '</div></div>';
+                var legend = '<div class="chart-legend">';
+                slices.forEach(function (s) { legend += '<div class="legend-item"><div class="legend-dot" style="background:' + s.color + '"></div><span class="legend-label">' + esc(s.label) + '</span><span class="legend-value">' + s.value + '</span></div>'; });
+                legend += '</div>';
+                $(containerId).innerHTML = '<div class="donut-chart" style="width:' + size + 'px;height:' + size + 'px;margin:0 auto">' + svg + center + '</div>' + legend;
+            }
+            function drawSparkline(containerId, values, color) {
+                color = color || '#6B4FBB';
+                var el = $(containerId); if (!el) return;
+                var w = el.offsetWidth || 300, h = 60;
+                var max = Math.max.apply(null, values), min = Math.min.apply(null, values), range = max - min || 1;
+                var stp = w / (values.length - 1), pts = [];
+                for (var i = 0; i < values.length; i++) pts.push((i * stp).toFixed(1) + ',' + ((h - 4) - ((values[i] - min) / range) * (h - 8)).toFixed(1));
+                var line = pts.join(' '), area = line + ' ' + w + ',' + h + ' 0,' + h;
+                var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" style="width:100%;height:' + h + 'px">'
+                    + '<defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + color + '" stop-opacity="0.15"/><stop offset="1" stop-color="' + color + '" stop-opacity="0"/></linearGradient></defs>'
+                    + '<polygon points="' + area + '" fill="url(#sg1)"/>'
+                    + '<polyline points="' + line + '" fill="none" stroke="' + color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                var months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+                var now = new Date(), startM = (now.getMonth() - values.length + 1 + 12) % 12;
+                var lbls = '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-3);padding:2px 0">';
+                for (var i = 0; i < values.length; i++) lbls += '<span>' + months[(startM + i) % 12] + '</span>';
+                el.innerHTML = svg + lbls + '</div>';
+            }
+            function drawBarChart(containerId, data) {
+                var max = 0; data.forEach(function (d) { if (d.value > max) max = d.value; });
+                var h = '<div class="bar-chart">';
+                data.forEach(function (d) {
+                    var pct = max > 0 ? (d.value / max * 100) : 0;
+                    h += '<div class="bar-col"><div class="bar-fill" style="height:' + pct + '%;background:' + (d.color || 'var(--blue)') + '" title="$' + d.value.toLocaleString() + '"></div><div class="bar-label">' + d.label + '</div></div>';
+                });
+                $(containerId).innerHTML = h + '</div>';
+            }
+
+            // ── Render: Overview Metrics ──
+            function renderOverviewMetrics(data) {
+                var openCases = data.cases.filter(function (c) { return c.statuscode === 1 || c.statuscode === 5; }).length;
+                var highPriority = data.cases.filter(function (c) { return c.prioritycode === 1 && (c.statuscode === 1 || c.statuscode === 5); }).length;
+                var activeOrders = data.orders.filter(function (o) { return o.statuscode === 0 || o.statuscode === 1; }).length;
+                var totalRemaining = 0; data.entitlements.forEach(function (e) { totalRemaining += (e.remainingterms || 0); });
+                var cards = [
+                    { value: openCases, label: 'Open Cases', color: 'red', sub: openCases > 3 ? '\u2191 Needs attention' : 'Stable' },
+                    { value: highPriority, label: 'High Priority', color: 'orange', sub: highPriority > 0 ? 'Requires action' : 'All clear' },
+                    { value: activeOrders, label: 'Active Orders', color: 'blue', sub: 'In pipeline' },
+                    { value: totalRemaining, label: 'Cases Remaining', color: 'teal', sub: 'Entitlement balance' }
+                ];
+                var h = ''; cards.forEach(function (c, i) {
+                    h += '<div class="metric-card ' + c.color + ' animate-up" data-delay="' + (i + 1) + '"><div class="metric-value ' + c.color + '" data-count="' + c.value + '">0</div><div class="metric-label">' + c.label + '</div><div class="metric-sub">' + c.sub + '</div></div>';
+                });
+                $('overviewMetrics').innerHTML = h;
+                setTimeout(function () { document.querySelectorAll('#overviewMetrics .metric-value').forEach(function (el) { animateCounter(el, parseInt(el.dataset.count)); }); }, 200);
+            }
+
+            // ── Render: Contacts ──
+            function renderContacts(contacts) {
+                if (!contacts || !contacts.length) { $('contactsList').innerHTML = '<div class="empty-state">No contacts found.</div>'; return; }
+                var colors = ['avatar-purple', 'avatar-blue', 'avatar-teal', 'avatar-green'];
+                var h = ''; contacts.forEach(function (c, i) {
+                    var detail = [esc(c.jobtitle || ''), esc(c.emailaddress1 || ''), esc(c.telephone1 || '')].filter(Boolean).join(' \u00B7 ');
+                    h += '<div class="contact-card animate-in" data-delay="' + (i + 1) + '"><div class="contact-avatar ' + colors[i % 4] + '">' + initials(c.fullname) + '</div><div><div class="contact-name">' + esc(c.fullname) + '</div><div class="contact-detail">' + detail + '</div></div></div>';
+                });
+                $('contactsList').innerHTML = h;
+            }
+
+            // ── Render: Overview — Recent Cases Snapshot ──
+            function renderOverviewCases(cases) {
+                if (!cases || !cases.length) { $('overviewCases').innerHTML = '<div class="empty-state">No cases.</div>'; return; }
+                var recent = cases.slice(0, 4);
+                var h = ''; recent.forEach(function (c) {
+                    var p = c.prioritycode || 2, sc = c.statuscode || 1, orig = c.caseorigincode || 0;
+                    h += '<div class="case-row"><span class="origin-icon">' + (originIcon[orig] || '\u2014') + '</span>'
+                        + '<div class="case-row-info"><div class="case-row-title">' + esc(c.title || c.ticketnumber || 'Case') + '</div>'
+                        + '<div class="case-row-meta">' + esc(c.ticketnumber || '') + ' \u00B7 ' + fmtDate(c.createdon) + '</div></div>'
+                        + '<span class="pill ' + (priorityPill[p] || 'pill-normal') + '">' + esc(priorityMap[p] || 'Normal') + '</span>'
+                        + '<span class="pill ' + casePill(sc) + '">' + esc(caseStatusMap[sc] || 'Active') + '</span></div>';
+                });
+                $('overviewCases').innerHTML = h;
+            }
+
+            // ── Render: Overview — Entitlement Health Snapshot ──
+            function renderOverviewEntitlements(entitlements) {
+                if (!entitlements || !entitlements.length) { $('overviewEntitlements').innerHTML = '<div class="empty-state">No entitlements.</div>'; return; }
+                var h = ''; entitlements.forEach(function (e) {
+                    var total = e.totalterms || 0, remaining = e.remainingterms != null ? e.remainingterms : total;
+                    var used = total - remaining, pct = total > 0 ? Math.round(used / total * 100) : 0;
+                    var barColor = pct > 90 ? 'red' : (pct > 70 ? 'yellow' : 'green');
+                    h += '<div class="ent-mini"><div class="ent-mini-header"><span class="ent-mini-name">' + esc(e.name || 'Entitlement') + '</span><span class="ent-mini-count">' + remaining + ' left</span></div>'
+                        + '<div class="progress-outer"><div class="progress-inner ' + barColor + '" style="width:' + pct + '%"></div></div></div>';
+                });
+                $('overviewEntitlements').innerHTML = h;
+            }
+
+            // ── Render: Overview — Financial Snapshot (Simulated D365 F&O) ──
+            function renderOverviewFinancials(accountName) {
+                var seed = hash(accountName || 'default');
+                var creditLimit = simVal(seed, 250, 750) * 1000;
+                var outstanding = simVal(seed + 10, 50, 200) * 1000;
+                var dso = simVal(seed + 20, 25, 55);
+                var util = Math.round(outstanding / creditLimit * 100);
+                var utilColor = util > 80 ? 'var(--red)' : (util > 60 ? 'var(--orange)' : 'var(--green)');
+                var dsoColor = dso > 45 ? 'var(--red)' : (dso > 35 ? 'var(--orange)' : 'var(--green)');
+                var h = '<div class="fin-row"><span class="fin-label">Credit Limit</span><span class="fin-value">$' + (creditLimit / 1000).toFixed(0) + 'K</span></div>'
+                    + '<div class="fin-row"><span class="fin-label">Outstanding</span><span class="fin-value" style="color:' + utilColor + '">$' + (outstanding / 1000).toFixed(0) + 'K</span></div>'
+                    + '<div class="fin-row"><span class="fin-label">Credit Utilization</span><span class="fin-value" style="color:' + utilColor + '">' + util + '%</span></div>'
+                    + '<div class="fin-row"><span class="fin-label">Days Sales Outstanding</span><span class="fin-value" style="color:' + dsoColor + '">' + dso + ' days</span></div>';
+                $('overviewFinancials').innerHTML = h;
+            }
+
+            // ── Render: Service Metrics ──
+            function renderServiceMetrics(cases) {
+                var open = 0, resolved = 0, high = 0;
+                cases.forEach(function (c) { if (c.statuscode === 1 || c.statuscode === 5) open++; if (c.statuscode === 2 || c.statuscode === 1000) resolved++; if (c.prioritycode === 1) high++; });
+                var total = cases.length, resRate = total > 0 ? Math.round(resolved / total * 100) : 0;
+                var cards = [
+                    { value: open, label: 'Open Cases', color: 'red' },
+                    { value: resolved, label: 'Resolved', color: 'green' },
+                    { value: high, label: 'High Priority', color: 'orange' },
+                    { value: resRate + '%', label: 'Resolution Rate', color: 'blue', noAnim: true }
+                ];
+                var h = ''; cards.forEach(function (c, i) {
+                    h += '<div class="metric-card ' + c.color + ' animate-up" data-delay="' + (i + 1) + '"><div class="metric-value ' + c.color + '"' + (c.noAnim ? '' : ' data-count="' + c.value + '"') + '>' + (c.noAnim ? c.value : '0') + '</div><div class="metric-label">' + c.label + '</div></div>';
+                });
+                $('serviceMetrics').innerHTML = h;
+                setTimeout(function () { document.querySelectorAll('#serviceMetrics .metric-value[data-count]').forEach(function (el) { animateCounter(el, parseInt(el.dataset.count)); }); }, 200);
+            }
+
+            // ── Render: Case Mix Donut ──
+            function renderCaseMix(cases) {
+                var high = 0, normal = 0, low = 0;
+                cases.forEach(function (c) { if (c.prioritycode === 1) high++; else if (c.prioritycode === 3) low++; else normal++; });
+                if (!cases.length) { $('caseMixChart').innerHTML = '<div class="empty-state">No case data.</div>'; return; }
+                drawDonut('caseMixChart', [{ label: 'High', value: high, color: '#D13438' }, { label: 'Normal', value: normal, color: '#0078D4' }, { label: 'Low', value: low, color: '#8A8886' }], 130, 'Cases');
+            }
+
+            // ── Render: Cases Table ──
+            function renderCases(cases) {
+                if (!cases || !cases.length) { $('casesList').innerHTML = '<div class="empty-state">No cases found.</div>'; return; }
+                var h = '<table class="data-table"><thead><tr><th>Case</th><th>Origin</th><th>Priority</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+                cases.forEach(function (c) {
+                    var p = c.prioritycode || 2, sc = c.statuscode || 1, orig = c.caseorigincode || 0;
+                    h += '<tr><td><span class="cell-primary">' + esc(c.ticketnumber || '\u2014') + '</span><br><span class="cell-secondary">' + esc(c.title || '') + '</span></td>'
+                        + '<td><span class="origin"><span class="origin-icon">' + (originIcon[orig] || '') + '</span>' + esc(originLabel[orig] || '\u2014') + '</span></td>'
+                        + '<td><span class="pill ' + (priorityPill[p] || 'pill-normal') + '">' + esc(priorityMap[p] || 'Normal') + '</span></td>'
+                        + '<td><span class="pill ' + casePill(sc) + '">' + esc(caseStatusMap[sc] || 'Active') + '</span></td>'
+                        + '<td>' + fmtDate(c.createdon) + '</td></tr>';
+                });
+                $('casesList').innerHTML = h + '</tbody></table>';
+            }
+
+            // ── Render: Entitlements ──
+            function renderEntitlements(entitlements) {
+                if (!entitlements || !entitlements.length) { $('entitlementsList').innerHTML = '<div class="empty-state">No entitlements.</div>'; return; }
+                var h = ''; entitlements.forEach(function (e) {
+                    var total = e.totalterms || 0, remaining = e.remainingterms != null ? e.remainingterms : total;
+                    var used = total - remaining, pct = total > 0 ? Math.round(used / total * 100) : 0;
+                    var barColor = pct > 90 ? 'red' : (pct > 70 ? 'yellow' : 'green');
+                    h += '<div class="entitlement-item"><div class="ent-header"><span class="ent-name">' + esc(e.name || 'Entitlement') + '</span><span class="ent-usage">' + used + ' / ' + total + ' used</span></div>'
+                        + '<div class="progress-outer"><div class="progress-inner ' + barColor + '" style="width:' + pct + '%"></div></div>'
+                        + '<div class="ent-dates">' + remaining + ' remaining \u00B7 ' + fmtDate(e.startdate) + ' \u2013 ' + fmtDate(e.enddate) + '</div></div>';
+                });
+                $('entitlementsList').innerHTML = h;
+            }
+
+            // ── Render: Orders Table ──
+            function renderOrders(orders) {
+                if (!orders || !orders.length) { $('ordersList').innerHTML = '<div class="empty-state">No orders found.</div>'; return; }
+                var h = '<table class="data-table"><thead><tr><th>Order #</th><th>Date</th><th>Amount</th><th>Status</th><th>Tracking</th></tr></thead><tbody>';
+                orders.forEach(function (o) {
+                    var sc = o.statuscode || 0;
+                    var track = esc(o.bw_trackingnumber || ''), carrier = esc(o.bw_carriercode || '');
+                    var trackText = track ? (carrier ? carrier.toUpperCase() + ' ' : '') + track.substring(0, 12) + (track.length > 12 ? '\u2026' : '') : '\u2014';
+                    h += '<tr><td class="cell-primary">' + esc(o.ordernumber || o.name || '\u2014') + '</td>'
+                        + '<td>' + fmtDate(o.createdon) + '</td><td class="cell-mono">' + fmtCurrency(o.totalamount) + '</td>'
+                        + '<td><span class="pill ' + orderPill(sc) + '">' + esc(orderStatusMap[sc] || 'Unknown') + '</span></td>'
+                        + '<td style="font-size:10px">' + trackText + '</td></tr>';
+                });
+                $('ordersList').innerHTML = h + '</tbody></table>';
+            }
+
+            // ── Render: ERP Simulated — Inventory (Oracle ERP) ──
+            function renderInventory(accountName) {
+                var seed = hash(accountName || 'default');
+                var items = [
+                    { sku: 'Z5795-SS', name: 'AquaVantage Flush Valve', qty: simVal(seed, 120, 450), reorder: 200, max: 500 },
+                    { sku: 'LZWSGRN8K', name: 'EZH2O Bottle Filler Station', qty: simVal(seed + 1, 30, 180), reorder: 50, max: 200 },
+                    { sku: 'Z81000-AV', name: 'AquaSense Sensor Faucet', qty: simVal(seed + 2, 80, 320), reorder: 100, max: 400 },
+                    { sku: 'Z1202-N', name: 'Floor Drain Body 4\u2033', qty: simVal(seed + 3, 200, 600), reorder: 250, max: 700 },
+                    { sku: 'EZFS8-1A', name: 'EZH2O Cooler Combo', qty: simVal(seed + 4, 15, 90), reorder: 25, max: 100 }
+                ];
+                var h = ''; items.forEach(function (item) {
+                    var pct = Math.round(item.qty / item.max * 100);
+                    var barColor = item.qty < item.reorder ? '#D13438' : (item.qty < item.reorder * 1.5 ? '#FFB900' : '#107C10');
+                    var status = item.qty < item.reorder ? 'LOW' : (item.qty < item.reorder * 1.5 ? 'REORDER' : 'OK');
+                    var statusPill = item.qty < item.reorder ? 'pill-danger' : (item.qty < item.reorder * 1.5 ? 'pill-warning' : 'pill-active');
+                    h += '<div class="erp-row"><div><div class="erp-item-name">' + item.sku + '</div><div class="erp-item-detail">' + item.name + '</div></div>'
+                        + '<div style="display:flex;align-items:center;gap:8px"><span class="pill ' + statusPill + '">' + status + '</span>'
+                        + '<div style="text-align:right"><div class="erp-item-value">' + item.qty.toLocaleString() + ' units</div>'
+                        + '<div class="stock-bar"><div class="stock-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div></div></div></div>';
+                });
+                $('inventoryList').innerHTML = h;
+            }
+
+            // ── Render: ERP Simulated — Supply Chain (Oracle ERP) ──
+            function renderSupplyChain(accountName) {
+                var seed = hash(accountName || 'default');
+                var items = [
+                    { name: 'Brass Castings', supplier: 'Mueller Industries', lead: simVal(seed, 8, 18) + ' days', status: 'On Track' },
+                    { name: 'Stainless Steel Tubing', supplier: 'Outokumpu', lead: simVal(seed + 1, 5, 12) + ' days', status: 'On Track' },
+                    { name: 'Sensor Modules (IR)', supplier: 'Honeywell', lead: simVal(seed + 2, 12, 25) + ' days', status: seed % 3 === 0 ? 'BACKORDER' : 'On Track' },
+                    { name: 'Cartridge Assemblies', supplier: 'Internal (Zurn MFG)', lead: simVal(seed + 3, 3, 8) + ' days', status: 'On Track' },
+                    { name: 'Packaging / Labels', supplier: 'Sealed Air Corp', lead: simVal(seed + 4, 2, 5) + ' days', status: 'On Track' }
+                ];
+                var h = ''; items.forEach(function (item) {
+                    var pill = item.status === 'BACKORDER' ? 'pill-danger' : 'pill-active';
+                    h += '<div class="erp-row"><div><div class="erp-item-name">' + item.name + '</div><div class="erp-item-detail">' + item.supplier + '</div></div>'
+                        + '<div style="text-align:right"><div class="erp-item-value">' + item.lead + '</div><span class="pill ' + pill + '">' + item.status + '</span></div></div>';
+                });
+                $('supplyChainList').innerHTML = h;
+            }
+
+            // ── Render: ERP Simulated — BOM (Oracle ERP) ──
+            function renderBOM() {
+                var bom = [
+                    { name: 'Brass Valve Body', part: 'ZB-5795-001', qty: 1, cost: 12.50, src: 'Internal' },
+                    { name: 'Diaphragm Assembly', part: 'ZB-5795-004', qty: 1, cost: 3.25, src: 'Mueller' },
+                    { name: 'Handle Assembly \u2013 Chrome', part: 'ZB-5795-007', qty: 1, cost: 4.80, src: 'Internal' },
+                    { name: 'Vacuum Breaker', part: 'ZB-5795-010', qty: 1, cost: 2.15, src: 'Watts' },
+                    { name: 'Mounting Hardware Kit', part: 'ZB-KIT-MNT-01', qty: 1, cost: 1.40, src: 'Internal' },
+                    { name: 'O-Ring Set (3)', part: 'ZB-SEAL-003', qty: 1, cost: 0.85, src: 'Parker' }
+                ];
+                var h = '<table class="data-table"><thead><tr><th>Component</th><th>Part #</th><th>Qty</th><th>Unit Cost</th><th>Source</th></tr></thead><tbody>';
+                var totalCost = 0; bom.forEach(function (b) {
+                    totalCost += b.cost * b.qty;
+                    h += '<tr><td class="cell-primary">' + b.name + '</td><td class="cell-mono">' + b.part + '</td><td>' + b.qty + '</td><td class="cell-mono">$' + b.cost.toFixed(2) + '</td><td>' + b.src + '</td></tr>';
+                });
+                h += '<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Total BOM Cost</td><td></td><td></td><td class="cell-mono">$' + totalCost.toFixed(2) + '</td><td></td></tr></tbody></table>';
+                h += '<div style="font-size:10px;color:var(--text-3);margin-top:6px">BOM shown for Z5795-SS AquaVantage Flush Valve (top SKU)</div>';
+                $('bomList').innerHTML = h;
+            }
+
+            // ── Render: ERP Simulated — AR Metrics (D365 F&O) ──
+            function renderARMetrics(accountName) {
+                var seed = hash(accountName || 'default');
+                var creditLimit = simVal(seed, 250, 750) * 1000, outstanding = simVal(seed + 10, 50, 200) * 1000;
+                var dso = simVal(seed + 20, 25, 55), util = Math.round(outstanding / creditLimit * 100);
+                var cards = [
+                    { value: '$' + (creditLimit / 1000).toFixed(0) + 'K', label: 'Credit Limit', color: 'blue' },
+                    { value: '$' + (outstanding / 1000).toFixed(0) + 'K', label: 'Outstanding', color: util > 80 ? 'red' : (util > 60 ? 'orange' : 'green') },
+                    { value: dso + ' days', label: 'Days Sales Outstanding', color: dso > 45 ? 'red' : (dso > 35 ? 'orange' : 'green') },
+                    { value: util + '%', label: 'Credit Utilization', color: util > 80 ? 'red' : (util > 60 ? 'orange' : 'blue') }
+                ];
+                var h = ''; cards.forEach(function (c, i) {
+                    h += '<div class="metric-card ' + c.color + ' animate-up" data-delay="' + (i + 1) + '"><div class="metric-value ' + c.color + '">' + c.value + '</div><div class="metric-label">' + c.label + '</div></div>';
+                });
+                $('arMetrics').innerHTML = h;
+            }
+
+            // ── Render: ERP Simulated — Invoices (D365 F&O) ──
+            function renderInvoices(accountName) {
+                var seed = hash(accountName || 'default'), now = new Date();
+                var invoices = [
+                    { num: 'INV-2026-' + simVal(seed, 800, 999), amount: simVal(seed, 30, 60) * 1000, due: new Date(now.getTime() + 16 * 864e5), status: 'Open' },
+                    { num: 'INV-2026-' + simVal(seed + 1, 700, 799), amount: simVal(seed + 1, 15, 40) * 1000, due: new Date(now.getTime() - 3 * 864e5), status: 'Overdue' },
+                    { num: 'INV-2026-' + simVal(seed + 2, 600, 699), amount: simVal(seed + 2, 10, 25) * 1000, due: new Date(now.getTime() - 30 * 864e5), status: 'Paid' },
+                    { num: 'INV-2025-' + simVal(seed + 3, 1100, 1300), amount: simVal(seed + 3, 20, 45) * 1000, due: new Date(now.getTime() - 60 * 864e5), status: 'Paid' }
+                ];
+                var h = '<table class="data-table"><thead><tr><th>Invoice</th><th>Amount</th><th>Due Date</th><th>Status</th></tr></thead><tbody>';
+                invoices.forEach(function (inv) {
+                    var pill = inv.status === 'Paid' ? 'pill-resolved' : (inv.status === 'Overdue' ? 'pill-danger' : 'pill-active');
+                    h += '<tr><td class="cell-primary">' + inv.num + '</td><td class="cell-mono">$' + inv.amount.toLocaleString() + '</td><td>' + fmtDate(inv.due.toISOString()) + '</td><td><span class="pill ' + pill + '">' + inv.status + '</span></td></tr>';
+                });
+                $('invoicesList').innerHTML = h + '</tbody></table>';
+            }
+
+            // ── Render: ERP Simulated — Payment History (D365 F&O) ──
+            function renderPaymentHistory(accountName) {
+                var seed = hash(accountName || 'default');
+                var months = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'];
+                var data = months.map(function (m, i) { return { label: m, value: simVal(seed + i + 100, 60, 120) * 1000, color: '#0078D4' }; });
+                drawBarChart('paymentChart', data);
+            }
+
+            // ── Render: ERP Simulated — Revenue by Category Donut ──
+            function renderRevenueByCategory(accountName) {
+                var seed = hash(accountName || 'default');
+                drawDonut('revenueByCatChart', [
+                    { label: 'Flush Valves', value: simVal(seed + 50, 30, 45), color: '#6B4FBB' },
+                    { label: 'Bottle Fillers', value: simVal(seed + 51, 18, 30), color: '#0078D4' },
+                    { label: 'Sensor Faucets', value: simVal(seed + 52, 12, 22), color: '#00B7C3' },
+                    { label: 'Drains', value: simVal(seed + 53, 8, 15), color: '#FFB900' },
+                    { label: 'Other', value: simVal(seed + 54, 4, 10), color: '#8A8886' }
+                ], 130, '% Rev');
+            }
+
+            // ── Render: ERP Simulated — Revenue Trend Sparkline ──
+            function renderRevenueTrend(accountName) {
+                var seed = hash(accountName || 'default'), values = [];
+                for (var i = 0; i < 12; i++) values.push(simVal(seed + i + 200, 60, 140) * 1000);
+                drawSparkline('revenueSpark', values, '#6B4FBB');
+            }
+
+            // ═══════════════════════════════════════════
+            // ──          MAIN LOAD FUNCTIONS          ──
+            // ═══════════════════════════════════════════
+            function loadDashboard() {
+                resolveAccountId().then(function (accountId) {
+                    loadAccountData(accountId);
+                }).catch(function (err) {
+                    hide('loadingState');
+                    $('errorMessage').textContent = '\u26A0\uFE0F ' + String(err) + ' Ensure this web resource is on an Account or Case form tab.';
+                    show('errorState');
+                });
+            }
+
+            function loadAccountData(accountId) {
+                var accountP = fetchRecord('account', accountId, '$select=name,telephone1,websiteurl,accountnumber,address1_city,address1_stateorprovince,industrycode,accountcategorycode');
+                var contactsP = fetchRecords('contact', '$filter=_parentcustomerid_value eq ' + accountId + '&$select=fullname,jobtitle,emailaddress1,telephone1,createdon&$orderby=createdon desc&$top=6');
+                var ordersP = fetchRecords('salesorder', '$filter=_customerid_value eq ' + accountId + '&$select=ordernumber,name,totalamount,statuscode,createdon,bw_trackingnumber,bw_carriercode&$orderby=createdon desc&$top=8');
+                var casesP = fetchRecords('incident', '$filter=_customerid_value eq ' + accountId + '&$select=ticketnumber,title,prioritycode,statuscode,caseorigincode,createdon&$orderby=createdon desc&$top=10');
+                var entP = fetchRecords('entitlement', '$filter=_customerid_value eq ' + accountId + '&$select=name,totalterms,remainingterms,startdate,enddate&$orderby=createdon desc&$top=3');
+
+                Promise.all([accountP, contactsP, ordersP, casesP, entP]).then(function (res) {
+                    var account = res[0], contacts = res[1], orders = res[2], cases = res[3], entitlements = res[4];
+                    var data = { account: account, contacts: contacts, orders: orders, cases: cases, entitlements: entitlements };
+
+                    // Header
+                    text('accountName', account.name || 'Account');
+                    var meta = [];
+                    if (account.accountnumber) meta.push('<span>#' + esc(account.accountnumber) + '</span>');
+                    if (account.telephone1) meta.push('<span>\uD83D\uDCDE ' + esc(account.telephone1) + '</span>');
+                    var loc = [account.address1_city, account.address1_stateorprovince].filter(Boolean).join(', ');
+                    if (loc) meta.push('<span>\uD83D\uDCCD ' + esc(loc) + '</span>');
+                    if (account.websiteurl) meta.push('<span>\uD83C\uDF10 ' + esc(account.websiteurl) + '</span>');
+                    $('accountMeta').innerHTML = meta.join('');
+
+                    // Tier
+                    var tier = detectTier(account, entitlements);
+                    var badge = $('tierBadge');
+                    badge.textContent = tier.label;
+                    badge.className = 'tier-badge ' + (tier.num > 0 ? 'tier-' + tier.num : 'tier-none');
+
+                    // Health Score
+                    var health = calcHealthScore(data);
+                    setTimeout(function () { setHealthGauge(health); }, 300);
+
+                    // Render all Dataverse-backed tabs
+                    renderOverviewMetrics(data);
+                    renderOverviewCases(cases);
+                    renderOverviewEntitlements(entitlements);
+                    renderContacts(contacts);
+                    renderServiceMetrics(cases);
+                    renderCaseMix(cases);
+                    renderCases(cases);
+                    renderEntitlements(entitlements);
+                    renderOrders(orders);
+
+                    // Simulated ERP sections (slight delay for visual stagger)
+                    setTimeout(function () {
+                        renderRevenueTrend(account.name);
+                        renderOverviewFinancials(account.name);
+                        renderInventory(account.name);
+                        renderSupplyChain(account.name);
+                        renderBOM();
+                        renderARMetrics(account.name);
+                        renderInvoices(account.name);
+                        renderPaymentHistory(account.name);
+                        renderRevenueByCategory(account.name);
+                    }, 100);
+
+                    hide('loadingState');
+                    show('mainContent');
+                }).catch(function (err) {
+                    hide('loadingState');
+                    $('errorMessage').innerHTML = '\u26A0\uFE0F Error loading Customer 360: ' + esc(String(err));
+                    show('errorState');
+                });
+            }
+
+            // ── Init: poll for Xrm context ──
+            initTabs();
+            var attempts = 0;
+            var ticker = setInterval(function () {
+                attempts++;
+                if (getXrm() && getFormContext()) { clearInterval(ticker); loadDashboard(); }
+                else if (attempts > 50) { clearInterval(ticker); hide('loadingState'); $('errorMessage').textContent = '\u26A0\uFE0F Timed out waiting for form context.'; show('errorState'); }
+            }, 200);
+        })();
+    </script>
+</body>
+
+</html>

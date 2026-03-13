@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer 360</title>
+    <style>
+        /* =============================================
+           Fluent UI–inspired Customer 360 Dashboard
+           Designed for D365 Account or Case form tab (IFRAME)
+           ============================================= */
+        :root {
+            --blue: #0078D4;
+            --blue-dark: #004578;
+            --blue-light: #DEECF9;
+            --green: #107C10;
+            --green-bg: #DFF6DD;
+            --orange: #CA5010;
+            --orange-bg: #FFF4CE;
+            --red: #D13438;
+            --red-bg: #FDE7E9;
+            --gray-10: #FAF9F8;
+            --gray-20: #F3F2F1;
+            --gray-30: #EDEBE9;
+            --gray-60: #605E5C;
+            --gray-80: #323130;
+            --gray-90: #201F1E;
+            --white: #FFFFFF;
+            --radius: 4px;
+            --shadow: 0 1.6px 3.6px rgba(0, 0, 0, .132), 0 .3px .9px rgba(0, 0, 0, .108);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 13px;
+            color: var(--gray-80);
+            background: var(--gray-10);
+            padding: 16px 20px;
+            line-height: 1.4;
+        }
+
+        /* -- Loading / Error states -- */
+        #loadingState {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: var(--gray-60);
+            font-size: 14px;
+        }
+
+        #loadingState .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--gray-30);
+            border-top-color: var(--blue);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #errorState {
+            display: none;
+            padding: 16px;
+            background: var(--red-bg);
+            border-left: 4px solid var(--red);
+            border-radius: var(--radius);
+            color: var(--red);
+            font-size: 13px;
+        }
+
+        #mainContent {
+            display: none;
+        }
+
+        /* -- Header -- */
+        .c360-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .c360-header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-90);
+            margin: 0 0 2px 0;
+        }
+
+        .c360-header .subtitle {
+            font-size: 12px;
+            color: var(--gray-60);
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            white-space: nowrap;
+            margin-top: 4px;
+        }
+
+        .tier-1 {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .tier-2 {
+            background: var(--orange-bg);
+            color: var(--orange);
+        }
+
+        .tier-3 {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .tier-4 {
+            background: var(--gray-20);
+            color: var(--gray-60);
+        }
+
+        /* -- Metrics Row -- */
+        .metrics-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            flex: 1;
+            background: var(--white);
+            border: 1px solid var(--gray-30);
+            border-radius: var(--radius);
+            padding: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .metric-card .metric-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--blue);
+            line-height: 1.1;
+        }
+
+        .metric-card .metric-label {
+            font-size: 11px;
+            color: var(--gray-60);
+            margin-top: 4px;
+        }
+
+        .metric-card.alert .metric-value {
+            color: var(--red);
+        }
+
+        /* -- Section headers -- */
+        .section-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue-dark);
+            margin: 18px 0 8px 0;
+            padding-bottom: 4px;
+            border-bottom: 2px solid var(--blue);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-header .section-icon {
+            font-size: 14px;
+        }
+
+        /* -- Card containers -- */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-30);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 6px;
+            overflow: hidden;
+        }
+
+        /* -- Contact rows -- */
+        .contact-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--gray-20);
+        }
+
+        .contact-row:last-child {
+            border-bottom: none;
+        }
+
+        .contact-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--gray-80);
+        }
+
+        .contact-detail {
+            font-size: 11px;
+            color: var(--gray-60);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* -- Table-style list rows (orders, cases) -- */
+        .list-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .list-table th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-60);
+            padding: 8px 10px;
+            background: var(--gray-20);
+            border-bottom: 1px solid var(--gray-30);
+        }
+
+        .list-table td {
+            padding: 8px 10px;
+            font-size: 12px;
+            border-bottom: 1px solid var(--gray-20);
+            vertical-align: middle;
+        }
+
+        .list-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .list-table tr:hover {
+            background: var(--gray-10);
+        }
+
+        /* -- Status pills -- */
+        .status-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .status-resolved {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .status-cancelled {
+            background: var(--gray-20);
+            color: var(--gray-60);
+        }
+
+        .status-high {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .status-normal {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .status-low {
+            background: var(--gray-20);
+            color: var(--gray-60);
+        }
+
+        /* -- Origin icons -- */
+        .origin-icon {
+            font-size: 12px;
+            margin-right: 3px;
+        }
+
+        /* -- Entitlement bar -- */
+        .entitlement-card {
+            padding: 14px;
+        }
+
+        .entitlement-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-80);
+            margin-bottom: 6px;
+        }
+
+        .progress-bar-outer {
+            height: 8px;
+            background: var(--gray-20);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background: var(--blue);
+            border-radius: 4px;
+            transition: width .6s ease;
+        }
+
+        .progress-bar-inner.warning {
+            background: var(--orange);
+        }
+
+        .progress-bar-inner.critical {
+            background: var(--red);
+        }
+
+        .entitlement-detail {
+            font-size: 11px;
+            color: var(--gray-60);
+        }
+
+        .entitlement-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* -- Empty state -- */
+        .empty-state {
+            padding: 16px;
+            text-align: center;
+            color: var(--gray-60);
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        /* -- Responsive: narrow form tabs -- */
+        @media (max-width: 500px) {
+            .metrics-row {
+                flex-wrap: wrap;
+            }
+
+            .metric-card {
+                min-width: calc(50% - 6px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading State -->
+    <div id="loadingState">
+        <div class="spinner"></div>
+        <span>Loading Customer 360&hellip;</span>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState"></div>
+
+    <!-- Main Content -->
+    <div id="mainContent">
+
+        <!-- Account Header -->
+        <div class="c360-header">
+            <div>
+                <h1 id="accountName"></h1>
+                <div class="subtitle" id="accountSubtitle"></div>
+            </div>
+            <span class="tier-badge" id="tierBadge"></span>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-row">
+            <div class="metric-card" id="metricCases">
+                <div class="metric-value" id="openCasesCount">—</div>
+                <div class="metric-label">Open Cases</div>
+            </div>
+            <div class="metric-card" id="metricOrders">
+                <div class="metric-value" id="openOrdersCount">—</div>
+                <div class="metric-label">Active Orders</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="entitlementRemaining">—</div>
+                <div class="metric-label">Cases Remaining</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="contactCount">—</div>
+                <div class="metric-label">Contacts</div>
+            </div>
+        </div>
+
+        <!-- Key Contacts -->
+        <div class="section-header">
+            <span class="section-icon">👤</span> Key Contacts
+        </div>
+        <div class="card" id="contactsList"></div>
+
+        <!-- Recent Orders -->
+        <div class="section-header">
+            <span class="section-icon">📦</span> Recent Orders
+        </div>
+        <div class="card" id="ordersList"></div>
+
+        <!-- Recent Cases -->
+        <div class="section-header">
+            <span class="section-icon">🎫</span> Recent Cases
+        </div>
+        <div class="card" id="casesList"></div>
+
+        <!-- Entitlements / SLA -->
+        <div class="section-header">
+            <span class="section-icon">🛡️</span> Entitlements &amp; SLA
+        </div>
+        <div class="card" id="entitlementsList"></div>
+
+    </div>
+
+    <script>
+        /* ==============================================
+           Customer 360 — Web Resource for Account / Case Form
+           Reads entity context from parent D365 form.
+           If on a Case form, resolves the parent Account
+           from the case's customerid lookup field.
+           ============================================== */
+        (function () {
+            "use strict";
+
+            // ── Xrm Access ──
+            function getXrm() {
+                if (window.parent && window.parent.Xrm) return window.parent.Xrm;
+                if (window.Xrm) return window.Xrm;
+                return null;
+            }
+
+            function getFormContext() {
+                var xrm = getXrm();
+                if (!xrm) return null;
+                try {
+                    // Modern: Xrm.Utility.getPageContext (UCI)
+                    if (xrm.Utility && xrm.Utility.getPageContext) {
+                        var ctx = xrm.Utility.getPageContext();
+                        if (ctx && ctx.input && ctx.input.entityId) {
+                            return {
+                                entityName: (ctx.input.entityName || "").toLowerCase(),
+                                entityId: ctx.input.entityId.replace(/[{}]/g, "").toLowerCase()
+                            };
+                        }
+                    }
+                    // Legacy: Xrm.Page
+                    if (xrm.Page && xrm.Page.data) {
+                        return {
+                            entityName: xrm.Page.data.entity.getEntityName().toLowerCase(),
+                            entityId: xrm.Page.data.entity.getId().replace(/[{}]/g, "").toLowerCase()
+                        };
+                    }
+                } catch (e) { /* fall through */ }
+                return null;
+            }
+
+            function resolveAccountId() {
+                var ctx = getFormContext();
+                console.log("[C360] Form context:", ctx);
+                if (!ctx) return Promise.reject("No form context available");
+
+                // Already on an Account form — use the ID directly
+                if (ctx.entityName === "account") {
+                    return Promise.resolve(ctx.entityId);
+                }
+
+                // On a Case (incident) form — look up the parent account
+                if (ctx.entityName === "incident") {
+                    return fetchRecord("incident", ctx.entityId,
+                        "$select=_customerid_value"
+                    ).then(function (caseRecord) {
+                        var custId = caseRecord._customerid_value;
+                        if (!custId) {
+                            return Promise.reject("This case has no customer assigned.");
+                        }
+                        return custId.replace(/[{}]/g, "").toLowerCase();
+                    });
+                }
+
+                return Promise.reject("Unsupported entity: " + ctx.entityName + ". Place this on an Account or Case form.");
+            }
+
+            // ── Web API helper ──
+            function fetchRecords(entitySet, query) {
+                var xrm = getXrm();
+                if (!xrm || !xrm.WebApi) {
+                    return Promise.reject("Xrm.WebApi not available");
+                }
+                return new Promise(function (resolve, reject) {
+                    xrm.WebApi.retrieveMultipleRecords(entitySet, "?" + query).then(
+                        function (result) { resolve(result.entities || []); },
+                        function (err) { reject(err.message || err); }
+                    );
+                });
+            }
+
+            function fetchRecord(entitySet, id, query) {
+                var xrm = getXrm();
+                if (!xrm || !xrm.WebApi) {
+                    return Promise.reject("Xrm.WebApi not available");
+                }
+                return new Promise(function (resolve, reject) {
+                    xrm.WebApi.retrieveRecord(entitySet, id, "?" + query).then(
+                        function (result) { resolve(result); },
+                        function (err) { reject(err.message || err); }
+                    );
+                });
+            }
+
+            // ── UI Helpers ──
+            function show(id) { var el = document.getElementById(id); if (el) el.style.display = "block"; }
+            function hide(id) { var el = document.getElementById(id); if (el) el.style.display = "none"; }
+            function setText(id, txt) { document.getElementById(id).textContent = txt; }
+            function setHtml(id, html) { document.getElementById(id).innerHTML = html; }
+
+            function escHtml(s) {
+                if (!s) return "";
+                var d = document.createElement("div");
+                d.appendChild(document.createTextNode(s));
+                return d.innerHTML;
+            }
+
+            function initials(name) {
+                if (!name) return "?";
+                var parts = name.trim().split(/\s+/);
+                if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                return parts[0][0].toUpperCase();
+            }
+
+            function formatDate(iso) {
+                if (!iso) return "—";
+                var d = new Date(iso);
+                return (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+            }
+
+            function formatCurrency(val) {
+                if (val == null || val === "") return "—";
+                return "$" + Number(val).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            // ── Priority / Status mappings ──
+            var priorityMap = { 1: "High", 2: "Normal", 3: "Low" };
+            var priorityClass = { 1: "status-high", 2: "status-normal", 3: "status-low" };
+
+            var caseStatusMap = {
+                1: "Active", 2: "Resolved", 3: "Cancelled",
+                5: "Active", 1000: "Info Provided", 2000: "Merged"
+            };
+
+            // Case statuscode → class
+            function caseStatusClass(code) {
+                if (code === 1 || code === 5) return "status-active";
+                if (code === 2 || code === 1000) return "status-resolved";
+                return "status-cancelled";
+            }
+
+            // Order status
+            var orderStatusMap = {
+                0: "Active", 1: "Submitted", 2: "Cancelled", 3: "Fulfilled",
+                4: "Invoiced", 100001: "Partial Ship", 100002: "Complete"
+            };
+            function orderStatusClass(code) {
+                if (code === 3 || code === 4 || code === 100002) return "status-resolved";
+                if (code === 2) return "status-cancelled";
+                return "status-active";
+            }
+
+            // Case origin
+            var originIconMap = { 1: "📞", 2: "📧", 3: "🌐" };
+            var originLabelMap = { 1: "Phone", 2: "Email", 3: "Web" };
+
+            // ── Tier detection from entitlement name ──
+            function detectTier(entitlements) {
+                if (!entitlements || entitlements.length === 0) return { num: 0, label: "No Entitlement" };
+                // Find the highest tier (lowest number = highest value)
+                var best = 5;
+                var bestLabel = "";
+                for (var i = 0; i < entitlements.length; i++) {
+                    var name = (entitlements[i].name || "").toLowerCase();
+                    if (name.indexOf("strategic") >= 0 || name.indexOf("tier 1") >= 0) {
+                        if (1 < best) { best = 1; bestLabel = "Tier 1 · Strategic"; }
+                    } else if (name.indexOf("key") >= 0 || name.indexOf("tier 2") >= 0) {
+                        if (2 < best) { best = 2; bestLabel = "Tier 2 · Key Account"; }
+                    } else if (name.indexOf("standard") >= 0 || name.indexOf("tier 3") >= 0) {
+                        if (3 < best) { best = 3; bestLabel = "Tier 3 · Standard"; }
+                    } else if (name.indexOf("basic") >= 0 || name.indexOf("tier 4") >= 0) {
+                        if (4 < best) { best = 4; bestLabel = "Tier 4 · Basic"; }
+                    }
+                }
+                if (best > 4) { best = 0; bestLabel = "No Tier Assigned"; }
+                return { num: best, label: bestLabel };
+            }
+
+            // ── Render Functions ──
+
+            function renderContacts(contacts) {
+                if (!contacts || contacts.length === 0) {
+                    setHtml("contactsList", '<div class="empty-state">No contacts found for this account.</div>');
+                    return;
+                }
+                var html = "";
+                for (var i = 0; i < contacts.length; i++) {
+                    var c = contacts[i];
+                    var name = escHtml(c.fullname || "Unknown");
+                    var title = escHtml(c.jobtitle || "");
+                    var email = escHtml(c.emailaddress1 || "");
+                    var phone = escHtml(c.telephone1 || "");
+                    var detail = [title, email, phone].filter(function (s) { return s; }).join(" · ");
+                    html += '<div class="contact-row">'
+                        + '<div class="contact-avatar">' + initials(c.fullname) + '</div>'
+                        + '<div class="contact-info">'
+                        + '<div class="contact-name">' + name + '</div>'
+                        + '<div class="contact-detail">' + detail + '</div>'
+                        + '</div></div>';
+                }
+                setHtml("contactsList", html);
+            }
+
+            function renderOrders(orders) {
+                if (!orders || orders.length === 0) {
+                    setHtml("ordersList", '<div class="empty-state">No orders found for this account.</div>');
+                    return;
+                }
+                var html = '<table class="list-table"><thead><tr>'
+                    + '<th>Order #</th><th>Date</th><th>Amount</th><th>Status</th><th>Tracking</th>'
+                    + '</tr></thead><tbody>';
+                for (var i = 0; i < orders.length; i++) {
+                    var o = orders[i];
+                    var sc = o.statuscode || 0;
+                    var tracking = escHtml(o.bw_trackingnumber || "");
+                    var carrier = escHtml(o.bw_carriercode || "");
+                    var trackText = tracking ? (carrier ? carrier.toUpperCase() + " " : "") + tracking.substring(0, 12) + (tracking.length > 12 ? "…" : "") : "—";
+                    html += '<tr>'
+                        + '<td><strong>' + escHtml(o.ordernumber || o.name || "—") + '</strong></td>'
+                        + '<td>' + formatDate(o.createdon) + '</td>'
+                        + '<td>' + formatCurrency(o.totalamount) + '</td>'
+                        + '<td><span class="status-pill ' + orderStatusClass(sc) + '">' + escHtml(orderStatusMap[sc] || "Unknown") + '</span></td>'
+                        + '<td style="font-size:11px">' + trackText + '</td>'
+                        + '</tr>';
+                }
+                html += '</tbody></table>';
+                setHtml("ordersList", html);
+            }
+
+            function renderCases(cases) {
+                if (!cases || cases.length === 0) {
+                    setHtml("casesList", '<div class="empty-state">No cases found for this account.</div>');
+                    return;
+                }
+                var html = '<table class="list-table"><thead><tr>'
+                    + '<th>Case</th><th>Origin</th><th>Priority</th><th>Status</th><th>Date</th>'
+                    + '</tr></thead><tbody>';
+                for (var i = 0; i < cases.length; i++) {
+                    var c = cases[i];
+                    var p = c.prioritycode || 2;
+                    var sc = c.statuscode || 1;
+                    var origin = c.caseorigincode || 0;
+                    html += '<tr>'
+                        + '<td><strong>' + escHtml(c.ticketnumber || "—") + '</strong><br><span style="font-weight:normal;font-size:11px;color:#605e5c">' + escHtml(c.title || "") + '</span></td>'
+                        + '<td><span class="origin-icon">' + (originIconMap[origin] || "") + '</span>' + escHtml(originLabelMap[origin] || "—") + '</td>'
+                        + '<td><span class="status-pill ' + (priorityClass[p] || "status-normal") + '">' + escHtml(priorityMap[p] || "Normal") + '</span></td>'
+                        + '<td><span class="status-pill ' + caseStatusClass(sc) + '">' + escHtml(caseStatusMap[sc] || "Active") + '</span></td>'
+                        + '<td>' + formatDate(c.createdon) + '</td>'
+                        + '</tr>';
+                }
+                html += '</tbody></table>';
+                setHtml("casesList", html);
+            }
+
+            function renderEntitlements(entitlements) {
+                if (!entitlements || entitlements.length === 0) {
+                    setHtml("entitlementsList", '<div class="empty-state">No entitlements configured for this account.</div>');
+                    return;
+                }
+                var html = "";
+                for (var i = 0; i < entitlements.length; i++) {
+                    var e = entitlements[i];
+                    var total = e.totalterms || 0;
+                    var remaining = e.remainingterms != null ? e.remainingterms : total;
+                    var used = total - remaining;
+                    var pct = total > 0 ? Math.round((used / total) * 100) : 0;
+                    var barClass = pct > 90 ? "critical" : (pct > 70 ? "warning" : "");
+                    var startDate = formatDate(e.startdate);
+                    var endDate = formatDate(e.enddate);
+
+                    html += '<div class="entitlement-card">'
+                        + '<div class="entitlement-row">'
+                        + '<div class="entitlement-label">' + escHtml(e.name || "Entitlement") + '</div>'
+                        + '<div class="entitlement-detail">' + used + ' / ' + total + ' used</div>'
+                        + '</div>'
+                        + '<div class="progress-bar-outer"><div class="progress-bar-inner ' + barClass + '" style="width:' + pct + '%"></div></div>'
+                        + '<div class="entitlement-row">'
+                        + '<div class="entitlement-detail">' + remaining + ' cases remaining</div>'
+                        + '<div class="entitlement-detail">' + startDate + ' – ' + endDate + '</div>'
+                        + '</div></div>';
+                    if (i < entitlements.length - 1) {
+                        html += '<div style="border-bottom:1px solid var(--gray-20)"></div>';
+                    }
+                }
+                setHtml("entitlementsList", html);
+            }
+
+            // ── Main Load ──
+            function loadDashboard() {
+                resolveAccountId().then(function (accountId) {
+                    console.log("[C360] Resolved account:", accountId);
+                    loadAccountData(accountId);
+                }).catch(function (err) {
+                    hide("loadingState");
+                    setHtml("errorState", "⚠️ " + escHtml(String(err)) + " Ensure this web resource is placed on an Account or Case form tab.");
+                    show("errorState");
+                });
+            }
+
+            function loadAccountData(accountId) {
+
+                // Fetch account record first for header info
+                var accountPromise = fetchRecord("account", accountId,
+                    "$select=name,telephone1,websiteurl,accountnumber,address1_city,address1_stateorprovince,industrycode"
+                );
+
+                // Parallel queries for related data
+                var contactsPromise = fetchRecords("contact",
+                    "$filter=_parentcustomerid_value eq " + accountId
+                    + "&$select=fullname,jobtitle,emailaddress1,telephone1,createdon"
+                    + "&$orderby=createdon desc&$top=5"
+                );
+
+                var ordersPromise = fetchRecords("salesorder",
+                    "$filter=_customerid_value eq " + accountId
+                    + "&$select=ordernumber,name,totalamount,statuscode,createdon,bw_trackingnumber,bw_carriercode"
+                    + "&$orderby=createdon desc&$top=5"
+                );
+
+                var casesPromise = fetchRecords("incident",
+                    "$filter=_customerid_value eq " + accountId
+                    + "&$select=ticketnumber,title,prioritycode,statuscode,caseorigincode,createdon"
+                    + "&$orderby=createdon desc&$top=8"
+                );
+
+                var entitlementsPromise = fetchRecords("entitlement",
+                    "$filter=_customerid_value eq " + accountId
+                    + "&$select=name,totalterms,remainingterms,startdate,enddate"
+                    + "&$orderby=createdon desc&$top=3"
+                );
+
+                Promise.all([accountPromise, contactsPromise, ordersPromise, casesPromise, entitlementsPromise])
+                    .then(function (results) {
+                        var account = results[0];
+                        var contacts = results[1];
+                        var orders = results[2];
+                        var cases = results[3];
+                        var entitlements = results[4];
+
+                        // Header
+                        setText("accountName", account.name || "Account");
+                        var subtitleParts = [];
+                        if (account.accountnumber) subtitleParts.push("#" + account.accountnumber);
+                        if (account.telephone1) subtitleParts.push(account.telephone1);
+                        var location = [account.address1_city, account.address1_stateorprovince].filter(Boolean).join(", ");
+                        if (location) subtitleParts.push(location);
+                        if (account.websiteurl) subtitleParts.push(account.websiteurl);
+                        setText("accountSubtitle", subtitleParts.join("  ·  "));
+
+                        // Tier badge
+                        var tier = detectTier(entitlements);
+                        var badge = document.getElementById("tierBadge");
+                        badge.textContent = tier.label;
+                        badge.className = "tier-badge" + (tier.num > 0 ? " tier-" + tier.num : "");
+
+                        // Metrics
+                        var openCases = cases.filter(function (c) { return c.statuscode === 1 || c.statuscode === 5; });
+                        setText("openCasesCount", openCases.length.toString());
+                        if (openCases.length > 5) {
+                            document.getElementById("metricCases").classList.add("alert");
+                        }
+
+                        var activeOrders = orders.filter(function (o) { return o.statuscode === 0 || o.statuscode === 1; });
+                        setText("openOrdersCount", activeOrders.length.toString());
+
+                        var totalRemaining = 0;
+                        for (var i = 0; i < entitlements.length; i++) {
+                            totalRemaining += (entitlements[i].remainingterms || 0);
+                        }
+                        setText("entitlementRemaining", totalRemaining.toString());
+
+                        setText("contactCount", contacts.length.toString());
+
+                        // Render sections
+                        renderContacts(contacts);
+                        renderOrders(orders);
+                        renderCases(cases);
+                        renderEntitlements(entitlements);
+
+                        // Show content
+                        hide("loadingState");
+                        show("mainContent");
+                        console.log("[C360] Dashboard rendered successfully");
+                    })
+                    .catch(function (err) {
+                        console.error("[C360] Data load error:", err);
+                        hide("loadingState");
+                        setHtml("errorState", "⚠️ Error loading Customer 360 data: " + escHtml(String(err)));
+                        show("errorState");
+                    });
+            }
+
+            // ── Init ──
+            // Wait for both Xrm AND form context to be ready before loading.
+            var attempts = 0;
+            var ticker = setInterval(function () {
+                attempts++;
+                if (getXrm() && getFormContext()) {
+                    clearInterval(ticker);
+                    console.log("[C360] Form context ready — loading dashboard");
+                    loadDashboard();
+                } else if (attempts > 50) {
+                    clearInterval(ticker);
+                    console.warn("[C360] Timed out waiting for form context");
+                    hide("loadingState");
+                    setHtml("errorState", "⚠️ Unable to connect to Dynamics 365 form context. This web resource must be embedded on a D365 Account or Case form.");
+                    show("errorState");
+                }
+            }, 300);
+
+        })();
+    </script>
+</body>
+
+</html>

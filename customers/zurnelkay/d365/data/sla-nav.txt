@@ -1,0 +1,65 @@
+﻿Existing SLA: SLA (b35e4ae8-0b71-ef11-a671-7c1e520b7f56)
+Items: 3
+
+  Name: Escalated By
+  ID: c8d11637-0d71-ef11-a671-7c1e520b7f56
+  KPI ID: 2cf89166-0c71-ef11-a671-7c1e520b7f56
+  Failure After: 2880
+  Warn After: 1440
+  Applicable: <fetch version="1.0" output-format="xml-platform" mapping="logical">
+    <entity name="incident">
+        <filter type="and">
+            <condition attribute="prioritycode" operator="eq" value="1"/>
+        </filter>
+    </entity>
+</fetch>
+  Success: <fetch version="1.0" output-format="xml-platform" mapping="logical">
+    <entity name="incident">
+        <filter type="and">
+            <condition attribute="statuscode" operator="eq" value="5"/>
+        </filter>
+    </entity>
+</fetch>
+
+  Name: Resolved By
+  ID: 3658d39d-0d71-ef11-a671-7c1e520b7f56
+  KPI ID: 0c94637a-0c71-ef11-a671-7c1e520b7f56
+  Failure After: 10080
+  Warn After: 4320
+  Applicable: <fetch version="1.0" output-format="xml-platform" mapping="logical">
+    <entity name="incident">
+        <filter type="and">
+            <condition attribute="title" operator="not-null"/>
+        </filter>
+    </entity>
+</fetch>
+  Success: <fetch version="1.0" output-format="xml-platform" mapping="logical">
+    <entity name="incident">
+        <filter type="and">
+            <condition attribute="statecode" operator="eq" value="1"/>
+        </filter>
+    </entity>
+</fetch>
+
+  Name: First Response By
+  ID: 12a99ed3-0d71-ef11-a671-7c1e520b7f56
+  KPI ID: 680ca024-0c71-ef11-a671-7c1e520b7f56
+  Failure After: 300
+  Warn After: 60
+  Applicable: <fetch version="1.0" output-format="xml-platform" mapping="logical">
+    <entity name="incident">
+        <filter type="and">
+            <condition attribute="incidentid" operator="not-null"/>
+        </filter>
+    </entity>
+</fetch>
+  Success: <fetch version="1.0" output-format="xml-platform" mapping="logical">
+    <entity name="incident">
+        <filter type="and">
+            <condition attribute="firstresponsesent" operator="eq" value="1"/>
+        </filter>
+    </entity>
+</fetch>
+
+Navigation properties related to KPI:
+  Schema: msdyn_msdyn_slakpi_slaitem | RefAttr: msdyn_slakpiid | NavProp: msdyn_SLAKPIID | RefEntity: msdyn_slakpi

@@ -1,4 +1,5 @@
-# Name: RAPP Agent
+mcs.metadata:
+  componentName: RAPP Agent
 kind: GptComponentMetadata
 displayName: RAPP Agent
 instructions:

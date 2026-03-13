@@ -1,4 +1,5 @@
-# Name: MAIN
+mcs.metadata:
+  componentName: MAIN
 kind: AdaptiveDialog
 inputs:
   - kind: AutomaticTaskInput

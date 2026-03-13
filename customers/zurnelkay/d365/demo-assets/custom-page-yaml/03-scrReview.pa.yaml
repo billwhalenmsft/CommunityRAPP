@@ -1,0 +1,267 @@
+﻿# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  SCREEN 3 â€” Review & Confirm (scrReview)
+#  Format: Power Apps pa.yaml SchemaV3
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+Screens:
+    scrReview:
+        Properties:
+            Fill: =RGBA(250, 250, 250, 1)
+        Children:
+            # â”€â”€ Green accent bar â”€â”€
+            - rectTopBar3:
+                  Control: Rectangle
+                  Properties:
+                      X: =0
+                      Y: =0
+                      Width: =Parent.Width
+                      Height: =6
+                      Fill: =RGBA(16, 124, 16, 1)
+
+            # â”€â”€ Clipboard icon â”€â”€
+            - icoClipboard:
+                  Control: Classic/Icon
+                  Properties:
+                      Icon: =Icon.DetailList
+                      X: =16
+                      Y: =20
+                      Width: =32
+                      Height: =32
+                      Color: =RGBA(16, 124, 16, 1)
+
+            # â”€â”€ Review title â”€â”€
+            - lblReviewTitle:
+                  Control: Label
+                  Properties:
+                      Text: ="Review Changes"
+                      X: =52
+                      Y: =18
+                      Width: =Parent.Width - 68
+                      Height: =30
+                      Size: =16
+                      FontWeight: =FontWeight.Bold
+                      Color: =RGBA(50, 49, 48, 1)
+
+            # â”€â”€ PO subtitle â”€â”€
+            - lblReviewPO:
+                  Control: Label
+                  Properties:
+                      Text: ="PO " & varSelectedOrder.'Order ID' & " - " & varSelectedOrder.Name
+                      X: =52
+                      Y: =48
+                      Width: =Parent.Width - 68
+                      Height: =24
+                      Size: =12
+                      Color: =RGBA(96, 94, 92, 1)
+
+            # â”€â”€ Divider â”€â”€
+            - rectDivider3:
+                  Control: Rectangle
+                  Properties:
+                      X: =16
+                      Y: =78
+                      Width: =Parent.Width - 32
+                      Height: =1
+                      Fill: =RGBA(237, 235, 233, 1)
+
+            # â”€â”€ HTML change summary â”€â”€
+            - htmlChangeSummary:
+                  Control: HtmlViewer
+                  Properties:
+                      X: =16
+                      Y: =88
+                      Width: =Parent.Width - 32
+                      Height: =280
+                      BorderThickness: =0
+                      HtmlText: |-
+                          ="<div style='font-family:Segoe UI,sans-serif;font-size:13px;'>" &
+                          If(CountRows(colQtyChanges) > 0,
+                              "<h3 style='color:#323130;margin:0 0 8px;font-size:14px;'>Quantity Adjustments</h3>" &
+                              Concat(
+                                  colQtyChanges,
+                                  "<div style='padding:4px 0;border-bottom:1px solid #F3F2F1;'>" &
+                                  "<span style='color:" & If(Delta < 0, "#A4262C", "#107C10") & ";'>Ln " & LineNum & " - " & ProductName &
+                                  ": " & OrigQty & " → " & NewQty &
+                                  " (" & If(Delta > 0, "+", "") & Delta & " = " &
+                                  If(AdjAmount >= 0, "+", "-") & "$" & Text(Abs(AdjAmount), "#,##0.00") & ")</span></div>"
+                              ),
+                              ""
+                          ) &
+                          If(CountRows(colNewLines) > 0,
+                              "<h3 style='color:#107C10;margin:16px 0 8px;font-size:14px;'>New Line Items</h3>" &
+                              Concat(
+                                  colNewLines,
+                                  "<div style='color:#107C10;padding:4px 0;border-bottom:1px solid #F3F2F1;'>" &
+                                  ProductName & " x" & Qty & " @ $" & Text(UnitPrice, "#,##0.00") &
+                                  " = $" & Text(LineAmount, "#,##0.00") & "</div>"
+                              ),
+                              ""
+                          ) &
+                          If(CountRows(colDateChanges) > 0,
+                              "<h3 style='color:#0078D4;margin:16px 0 8px;font-size:14px;'>Delivery Date Changes</h3>" &
+                              Concat(
+                                  colDateChanges,
+                                  "<div style='padding:4px 0;'>Line updated to <b>" & Text(NewDate, "mmmm d, yyyy") & "</b></div>"
+                              ),
+                              ""
+                          ) &
+                          "<h3 style='color:#323130;margin:16px 0 8px;font-size:14px;'>Impact Summary</h3>" &
+                          If(CountRows(colQtyChanges) > 0,
+                              "<div style='padding:4px 0;'>Adjusting <b>" & CountRows(colQtyChanges) & "</b> line(s)</div>" &
+                              "<div style='padding:4px 0;'>Net impact: <b style='color:" &
+                              If(Sum(colQtyChanges, AdjAmount) < 0, "#A4262C", "#107C10") &
+                              ";font-size:16px;'>" &
+                              If(Sum(colQtyChanges, AdjAmount) >= 0, "+", "-") & "$" &
+                              Text(Abs(Sum(colQtyChanges, AdjAmount)), "#,##0.00") & "</b></div>",
+                              ""
+                          ) &
+                          If(CountRows(colNewLines) > 0,
+                              "<div style='padding:4px 0;'>Adding <b>" & CountRows(colNewLines) & "</b> new line(s)</div>" &
+                              "<div style='padding:4px 0;'>New total: <b style='color:#107C10;'>$" &
+                              Text(Sum(colNewLines, LineAmount), "#,##0.00") & "</b></div>",
+                              ""
+                          ) &
+                          "</div>"
+
+            # â”€â”€ "Agent Notes" label â”€â”€
+            - lblNotesLabel:
+                  Control: Label
+                  Properties:
+                      Text: ="Agent Notes"
+                      X: =16
+                      Y: =378
+                      Width: =Parent.Width - 32
+                      Height: =24
+                      Size: =12
+                      FontWeight: =FontWeight.Semibold
+                      Color: =RGBA(50, 49, 48, 1)
+
+            # â”€â”€ Agent notes text input (multi-line) â”€â”€
+            - txtAgentNotes:
+                  Control: Classic/TextInput
+                  Properties:
+                      X: =16
+                      Y: =404
+                      Width: =Parent.Width - 32
+                      Height: =100
+                      Mode: =TextMode.MultiLine
+                      Default: =""
+                      HintText: ="Add notes for the customer..."
+                      Size: =11
+                      Color: =RGBA(50, 49, 48, 1)
+                      Fill: =RGBA(255, 255, 255, 1)
+                      BorderColor: =RGBA(200, 198, 196, 1)
+
+            # â”€â”€ Warning callout background (amber) â”€â”€
+            - rectConfirmBg:
+                  Control: Rectangle
+                  Properties:
+                      X: =8
+                      Y: =520
+                      Width: =Parent.Width - 16
+                      Height: =90
+                      Fill: =RGBA(255, 244, 206, 1)
+
+            # â”€â”€ Warning callout left bar (amber accent) â”€â”€
+            - rectConfirmBar:
+                  Control: Rectangle
+                  Properties:
+                      X: =8
+                      Y: =520
+                      Width: =4
+                      Height: =90
+                      Fill: =RGBA(255, 185, 0, 1)
+
+            # â”€â”€ Warning text â”€â”€
+            - lblConfirmWarn:
+                  Control: Label
+                  Properties:
+                      Text: |-
+                          ="This will " &
+                          If(CountRows(colQtyChanges) > 0,
+                              "adjust qty on " & CountRows(colQtyChanges) & " line(s) (net " &
+                              If(Sum(colQtyChanges, AdjAmount) >= 0, "+", "") &
+                              "$" & Text(Sum(colQtyChanges, AdjAmount), "#,##0.00") & ")",
+                              ""
+                          ) &
+                          If(CountRows(colQtyChanges) > 0 && CountRows(colNewLines) > 0, " and ", "") &
+                          If(CountRows(colNewLines) > 0,
+                              "add " & CountRows(colNewLines) & " new line item(s)",
+                              ""
+                          ) &
+                          ". This cannot be undone from this wizard."
+                      X: =22
+                      Y: =526
+                      Width: =Parent.Width - 46
+                      Height: =78
+                      Size: =11
+                      Color: =RGBA(152, 111, 11, 1)
+
+            # â”€â”€ Submit Changes button (green) â”€â”€
+            - btnSubmit:
+                  Control: Classic/Button
+                  Properties:
+                      Text: ="Submit Changes"
+                      X: =16
+                      Y: =Parent.Height - 120
+                      Width: =Parent.Width - 32
+                      Height: =48
+                      Size: =15
+                      FontWeight: =FontWeight.Bold
+                      Color: =RGBA(255, 255, 255, 1)
+                      Fill: =RGBA(16, 124, 16, 1)
+                      OnSelect: |-
+                          =// 1. Adjust quantities on selected lines
+                          ForAll(
+                              colQtyChanges,
+                              Patch(
+                                  'Order Lines',
+                                  LineRecord,
+                                  { Quantity: NewQty }
+                              )
+                          );
+                          // 2. Patch delivery-date changes
+                          //    ForAll iterates a local collection, so LookUp + Patch
+                          //    on the data source is allowed (no same-source conflict).
+                          ForAll(
+                              colDateChanges,
+                              Patch(
+                                  'Order Lines',
+                                  LookUp('Order Lines', 'Order Product' = LineId),
+                                  { 'Requested Delivery Date': NewDate }
+                              )
+                          );
+                          // 3. Add new line items to the order
+                          ForAll(
+                              colNewLines,
+                              Patch(
+                                  'Order Lines',
+                                  Defaults('Order Lines'),
+                                  {
+                                      Order: varSelectedOrder,
+                                      'Product Name': ProductName,
+                                      Quantity: Qty,
+                                      'Price Per Unit': UnitPrice
+                                  }
+                              )
+                          );
+                          // 4. Store agent notes for confirmation screen
+                          Set(varAgentNotes, txtAgentNotes.Text);
+                          // 5. Navigate to success screen
+                          Navigate(scrConfirmation, ScreenTransition.None)
+
+            # â”€â”€ Back button (outlined blue) â”€â”€
+            - btnBack2:
+                  Control: Classic/Button
+                  Properties:
+                      Text: ="Back to Lines"
+                      X: =16
+                      Y: =Parent.Height - 62
+                      Width: =Parent.Width - 32
+                      Height: =40
+                      Size: =12
+                      Color: =RGBA(0, 120, 212, 1)
+                      Fill: =RGBA(255, 255, 255, 1)
+                      BorderColor: =RGBA(0, 120, 212, 1)
+                      BorderThickness: =1
+                      OnSelect: =Navigate(scrOrderLineManagement, ScreenTransition.None)

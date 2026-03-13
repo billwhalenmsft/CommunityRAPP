@@ -1,0 +1,205 @@
+# {{ customer_name }} -- Customer Service Demo Script
+
+> **Last Updated**: {{ generated_date }}
+> **Demo Date**: {{ demo_date }}
+> **Guiding Principle**: Show differentiation, not feature parity. Best foot forward.
+> **Execution Guide**: See [demo-execution-guide.md](demo-execution-guide.md)
+> **Phone Call Script**: See [phone-call-script.md](phone-call-script.md)
+> **Chat Demo Script**: See [chat-demo-script.md](chat-demo-script.md)
+
+---
+
+## Key Personas
+
+| Persona | Role | Focus |
+|---------|------|-------|
+{% for p in personas -%}
+| **{{ p.name }}** | {{ p.role }} | {{ p.focus }} |
+{% endfor %}
+
+---
+
+## Planned Follow-Up Sessions
+
+| Session | Audience | Topics |
+|---------|----------|--------|
+{% for s in followup_sessions -%}
+| **{{ s.name }}** | {{ s.audience }} | {{ s.topics }} |
+{% endfor %}
+
+---
+
+# Part 1 -- Demo Walkthrough
+
+## 1. Connect & Orient (~10 min)
+
+> **Action**: Introductions, brief D365 UI orientation
+
+| | |
+|---|---|
+| **Context** | {{ orient_context }} |
+| **What to Say** | "Thank you all for joining. Quick intros -- I'm Bill, solution engineer focused on Power Platform and Dynamics 365. Today is designed around YOUR priorities: {{ demo_priorities | join(', ') }}. Instead of feature matching, we're going to put you inside the experience and let you feel the difference. Let me do a quick 2-minute orientation on the workspace layout before we dive in." |
+| **What to Show** | Quick tour: left nav, session tabs, Copilot panel location, how tabs/sessions work in the multisession workspace. |
+
+---
+
+## 2. Their World Today (~5 min)
+
+> **Action**: Validate challenges, don't belabor
+
+| | |
+|---|---|
+| **What to Say** | "We've spent time with your teams understanding the current state. {{ current_state_summary }}" |
+| **Key Points** | {{ pain_points | join('. ') }}. |
+| **DO NOT** | Spend more than 5 minutes here. The room wants to SEE things, not hear about problems. |
+
+---
+
+## 3. Day in the Life: {{ agent_role_title }} (~80 min)
+
+### 3a. Starting the Day: CS Workspace
+
+| | |
+|---|---|
+| **What to Say** | "When a {{ agent_role_title }} logs in, this is their home. No separate apps to open. Everything starts here. I can see: my assigned cases with color-coded tier levels, SLA timers, priority cases, and my workload across all channels -- email, phone, and chat -- in one view." |
+| **Differentiation** | Unified workspace replaces multiple application windows. SLA timers are live. Tier-level pills show customer importance at a glance. |
+| **Show** | My Active Cases view with Tier Level column, priority indicators, SLA countdown, case origin icons. |
+
+---
+
+### 3b. Email Case Creation & Copilot
+
+| | |
+|---|---|
+| **What to Say** | "Let's walk through what happens when a customer emails the team. {{ email_scenario_intro }} Here, the system identified the customer, created the case, linked the email thread, populated the issue details, AND applied your routing rules. Zero manual steps. And Copilot summarizes the full picture in seconds." |
+| **Differentiation** | Auto-case creation + auto-customer matching + auto-routing vs. manual triage. Copilot summarization eliminates reading entire email chains. |
+| **Show** | Inbound email, auto-created case, Copilot summary, suggested response draft. |
+
+---
+
+### 3c. Working the Case: Timeline & Customer 360
+
+| | |
+|---|---|
+| **What to Say** | "Every email, phone call, note, internal chat -- all here in one chronological view. And the customer account shows the same data Sales sees. Previous cases, open orders, products owned, warranty status, tier classification. Sales and Service share the same data natively -- no connector, no sync, no middleware." |
+| **Differentiation** | Unified data platform -- Sales + Service {{ '+ ERP visibility' if erp_integration else '' }} without integration. |
+| **Show** | Case timeline, account record, product/warranty/order info. |
+
+---
+
+### 3d. Knowledge in the Flow of Work
+
+| | |
+|---|---|
+| **What to Say** | "As I'm working this case, the system surfaces relevant knowledge articles. {{ kb_context }} Notice the system reads case context and proactively suggests articles. And when I resolve a case and there isn't an article for the issue, Copilot prompts me to create one." |
+| **Show** | Copilot suggesting KB articles, KB search tab, "create article from case" prompt. |
+
+---
+
+### 3e. Teams Collaboration Embedded
+
+| | |
+|---|---|
+| **What to Say** | "In Dynamics, I start a Teams chat FROM the case -- context comes automatically. When a colleague replies, I click 'Capture to Case' and it logs directly into the timeline. No context switching, no lost information." |
+| **Show** | Embedded Teams panel, starting a chat with case context, capture to timeline. |
+
+---
+
+### 3f. Handling a Customer Call -- NATIVE VOICE
+
+> **CRITICAL**: Telephony is non-negotiable for most D365 CS demos.
+
+| | |
+|---|---|
+| **What to Say** | "Native telephony built into Dynamics -- no third-party integration required. As the call comes in, the system recognizes the caller, pops the customer record. Real-time transcript appears and Copilot listens, surfacing step-by-step procedures based on what the customer says. The system understands SERVICE INTENT -- not just keywords." |
+| **After-Call Wrap-Up** | "With one click, Copilot drafts the summary from the transcript, logs actions, updates case fields, and drafts the follow-up email. What took minutes now takes seconds." |
+| **Show** | Inbound call, screen pop, real-time transcript, Copilot suggestions, sentiment analysis, auto wrap-up. |
+
+---
+
+### 3g. Chat / Digital Messaging
+
+| | |
+|---|---|
+| **What to Say** | "Chat is just another channel in the same workspace. Same routing rules, same capacity management, same customer context. And the same intelligence we saw on the phone works here too." |
+| **Show** | Portal chat widget, associate receiving chat, customer identified, knowledge suggestions in real time. |
+
+---
+
+### 3h. Tiered Routing & Skills (Outcomes View)
+
+| | |
+|---|---|
+| **What to Say** | "Let me show you why this case landed with this specific associate. The system evaluated: customer tier level{% if has_hot_words %}, hot-word detection{% endif %}, product skills matching, and capacity -- all automatically in milliseconds." |
+| **DO NOT** | Open Admin Center or show rule configuration. Save for tech deep dive. |
+
+---
+
+{% if guided_actions %}
+### 3i. Guided Process Flows
+
+| | |
+|---|---|
+| **What to Say** | "{{ guided_actions_intro }}" |
+| **Show** | Service Toolkit custom page with guided wizards. |
+
+{% for tool in guided_action_tools %}
+**{{ tool.name }}**:
+| | |
+|---|---|
+| **Quick Pitch** | "{{ tool.pitch }}" |
+| **What to Show** | {{ tool.show }} |
+
+{% endfor %}
+{% endif %}
+
+---
+
+### 3j. Proactive Notifications & Alerts
+
+| | |
+|---|---|
+| **What to Say** | "Notifications are highly configurable. You decide which events matter: SLA breach approaching? Tier 1 customer waiting too long? Hot-word case? Only high-value, actionable alerts get through." |
+| **Show** | In-app notification, SLA warning toast, supervisor dashboard. |
+
+---
+
+## 4. Care Leader View (~15 min)
+
+### 4a. Dashboards & Real-Time Monitoring
+
+| | |
+|---|---|
+| **What to Say** | "This is the Omnichannel real-time analytics dashboard. Case volume by channel, SLA performance, associate availability, queue wait times, and trend data -- all real-time." |
+
+### 4b. Agent Performance Metrics
+
+| | |
+|---|---|
+| **What to Say** | "Handle time, wait time, call duration -- all captured natively because every channel runs through the same system. One platform, one source of truth." |
+
+{% if workforce_mgmt %}
+### 4c. Workforce Management
+
+| | |
+|---|---|
+| **What to Say** | "Workforce Management is built right into the platform -- scheduling, forecasting, adherence, shift bidding all live inside the same system that handles routing." |
+{% endif %}
+
+{% if quality_mgmt %}
+### 4d. Quality Management
+
+| | |
+|---|---|
+| **What to Say** | "Quality Management lets supervisors review interactions using evaluation criteria, score calls, and provide coaching -- all connected to the same case and transcript data." |
+{% endif %}
+
+---
+
+## 5. Wrap-Up & Next Steps (~10 min)
+
+| | |
+|---|---|
+| **What to Say** | "Let's step back. We covered: {{ sections_covered | join(', ') }}. What stood out? What do you want to dig into further?" |
+| **Key Takeaway** | {{ key_takeaway }} |
+| **Next Steps** | {{ next_steps }} |

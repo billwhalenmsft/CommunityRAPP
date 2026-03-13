@@ -1,0 +1,33 @@
+﻿displayName: Customer Service Portal Assistant
+schemaName: cra1f_customerServicePortalAssistant
+accessControlPolicy: GroupMembership
+authenticationMode: None
+authenticationTrigger: AsNeeded
+configuration:
+  channels:
+    - id: Omnichannel
+      channelId: Omnichannel
+
+    - id: MsTeams
+      channelId: MsTeams
+
+  settings:
+    GenerativeActionsEnabled: true
+
+  isAgentConnectable: true
+  gPTSettings:
+    defaultSchemaName: cra1f_customerServicePortalAssistant.gpt.default
+
+  aISettings:
+    useModelKnowledge: true
+    isFileAnalysisEnabled: true
+    isSemanticSearchEnabled: true
+    optInUseLatestModels: false
+
+  recognizer:
+    kind: GenerativeAIRecognizer
+
+authenticationConfiguration: {}
+publishedOn: 2026-03-05T18:28:13.0000000Z
+template: default-2.1.0
+language: 1033

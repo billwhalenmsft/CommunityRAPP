@@ -1,0 +1,15 @@
+mcs.metadata:
+  componentName: Conversation Start
+  description: This system topic triggers when the agent receives an Activity indicating the beginning of a new conversation. If you do not want the agent to initiate the conversation, disable this topic.
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SendActivity
+      id: sendMessage_M0LuhV
+      activity:
+        text:
+          - Welcome to Zurn Elkay Customer Care! I'm your virtual assistant. I can help with product troubleshooting, warranty and RMA questions, order status, and more. How can I assist you today?
+        speak:
+          - Welcome to Zurn Elkay Customer Care. I'm your virtual assistant. I can help with product troubleshooting, warranty questions, order status, and more. How may I help you today?

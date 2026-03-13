@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zurn / Elkay -- Demo Execution Guide (Click-by-Click)</title>
+    <style>
+        :root {
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-warm: #D83B01;
+            --accent-green: #107C10;
+            --accent-purple: #5C2D91;
+            --accent-teal: #008575;
+            --accent-red: #A4262C;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #A4262C 0%, #D83B01 50%, #FFB900 100%);
+            color: white;
+            padding: 50px 40px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #D83B01, #FFB900, #107C10, #0078D4, #5C2D91);
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.92;
+            font-weight: 300;
+            margin-bottom: 16px;
+        }
+
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            font-size: 0.88rem;
+            opacity: 0.88;
+            flex-wrap: wrap;
+        }
+
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 20px;
+            padding: 4px 18px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            margin-top: 14px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Section label */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--ms-blue);
+            margin-top: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* Pre-flight checklist */
+        .preflight {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F2 100%);
+            border-left: 4px solid var(--accent-green);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+
+        .preflight h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+        }
+
+        .preflight ul {
+            font-size: 0.88rem;
+            color: #2E5A30;
+            line-height: 2;
+            padding-left: 20px;
+        }
+
+        .preflight li {
+            margin-bottom: 2px;
+        }
+
+        .preflight code {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.82rem;
+        }
+
+        /* Collapsible sections */
+        .exec-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+            border-left: 5px solid var(--ms-blue);
+            transition: box-shadow 0.2s;
+            overflow: hidden;
+        }
+
+        .exec-section:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .exec-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 22px 24px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .exec-header:hover {
+            background: rgba(0, 120, 212, 0.03);
+        }
+
+        .exec-number {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .exec-header-text {
+            flex: 1;
+        }
+
+        .exec-header-text h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .exec-header-text .exec-purpose {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .exec-time {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .exec-expand {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .exec-section.open .exec-expand {
+            transform: rotate(180deg);
+        }
+
+        .exec-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .exec-section.open .exec-body {
+            max-height: 20000px;
+        }
+
+        .exec-content {
+            padding: 0 24px 28px 82px;
+        }
+
+        /* Step blocks */
+        .step-block {
+            margin: 16px 0;
+            padding: 16px 20px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            border-left: 3px solid var(--ms-blue);
+        }
+
+        .step-block.voice-step {
+            border-left-color: var(--accent-red);
+            background: #FFF5F5;
+        }
+
+        .step-block.chat-step {
+            border-left-color: var(--accent-teal);
+            background: #F0FAF9;
+        }
+
+        .step-block.copilot-step {
+            border-left-color: var(--accent-purple);
+            background: #F8F5FD;
+        }
+
+        .step-block.transition-step {
+            border-left-color: #FFB900;
+            background: #FFFCF0;
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .step-label.prep {
+            background: var(--accent-green);
+        }
+
+        .step-label.click {
+            background: var(--ms-blue);
+        }
+
+        .step-label.say {
+            background: var(--accent-warm);
+        }
+
+        .step-label.show {
+            background: var(--accent-teal);
+        }
+
+        .step-label.tip {
+            background: #FFB900;
+            color: #5D4510;
+        }
+
+        .step-label.caution {
+            background: var(--accent-red);
+        }
+
+        .step-label.copilot {
+            background: var(--accent-purple);
+        }
+
+        .step-label.transition {
+            background: #605E5C;
+        }
+
+        .step-label.email {
+            background: #0078D4;
+        }
+
+        .step-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .step-text strong {
+            color: var(--text);
+        }
+
+        .step-text em {
+            color: var(--accent-warm);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .step-text .click-path {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            background: rgba(0, 120, 212, 0.1);
+            color: var(--ms-blue-dark);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        .step-text .keyboard {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            background: #323130;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+        }
+
+        /* Verbatim talk track */
+        .talk-track {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 10px 0;
+            font-style: italic;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: #444;
+            position: relative;
+        }
+
+        .talk-track::before {
+            content: '\201C';
+            font-size: 3rem;
+            color: var(--accent-warm);
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            font-style: normal;
+            opacity: 0.5;
+        }
+
+        .talk-track p {
+            padding-left: 24px;
+        }
+
+        /* Sub-topic headers */
+        .sub-header {
+            margin: 28px 0 10px;
+            font-size: 1.02rem;
+            font-weight: 600;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-header.voice {
+            color: var(--accent-red);
+        }
+
+        .sub-header.chat {
+            color: var(--accent-teal);
+        }
+
+        .sub-header.leader {
+            color: var(--accent-teal);
+        }
+
+        .sub-header.ai {
+            color: var(--accent-purple);
+        }
+
+        .sub-header.close {
+            color: var(--ms-blue-dark);
+        }
+
+        /* Callout boxes */
+        .callout {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .callout.warning {
+            background: #FFF4CE;
+            border-left: 3px solid #FFB900;
+            color: #5D4510;
+        }
+
+        .callout.critical {
+            background: #FDE7E9;
+            border-left: 3px solid var(--accent-red);
+            color: #5D1015;
+        }
+
+        .callout.success {
+            background: #E8F5E9;
+            border-left: 3px solid var(--accent-green);
+            color: #2E5A30;
+        }
+
+        .callout.info {
+            background: var(--ms-blue-light);
+            border-left: 3px solid var(--ms-blue);
+            color: #003A6E;
+        }
+
+        .callout strong {
+            font-weight: 700;
+        }
+
+        /* Data reference tables */
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.82rem;
+        }
+
+        .ref-table th {
+            background: #F3F2F1;
+            font-weight: 600;
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 2px solid #D2D0CE;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .ref-table td {
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: top;
+        }
+
+        .ref-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ref-table tbody tr:hover {
+            background: #F9F9F9;
+        }
+
+        .ref-table code {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.76rem;
+            background: #F0F0F0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #333;
+        }
+
+        .ref-table .agent-dual {
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        .ref-section-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--accent-teal);
+            margin: 20px 0 6px;
+        }
+
+        .ref-note {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin: 6px 0 16px;
+            padding-left: 12px;
+            border-left: 2px solid var(--border);
+        }
+
+        .talk-points {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        .talk-points li {
+            font-size: 0.84rem;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .talk-points li em {
+            color: var(--accent-teal);
+        }
+
+        /* Email scenario cards */
+        .email-card {
+            background: white;
+            border: 1px solid #DDD;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 10px 0;
+        }
+
+        .email-card-header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.82rem;
+            color: var(--text-light);
+        }
+
+        .email-card-header .email-badge {
+            background: var(--ms-blue);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .email-card-header .email-badge.hot {
+            background: var(--accent-red);
+        }
+
+        .email-card .email-from {
+            font-size: 0.82rem;
+            color: var(--text-light);
+        }
+
+        .email-card .email-subject {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 4px 0 8px;
+        }
+
+        .email-card .email-body {
+            font-size: 0.84rem;
+            color: #555;
+            line-height: 1.55;
+        }
+
+        /* Timing bar */
+        .timing-bar {
+            display: flex;
+            gap: 0;
+            margin: 28px 0 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 8px;
+        }
+
+        .timing-bar .t-seg {
+            height: 100%;
+        }
+
+        /* URL reference */
+        .url-ref {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.78rem;
+            color: var(--ms-blue);
+            word-break: break-all;
+        }
+
+        /* Differentiator badge */
+        .diff-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFB900, #FF8C00);
+            color: white;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* Colors per section */
+        .border-connect {
+            border-left-color: var(--ms-blue);
+        }
+
+        .border-challenge {
+            border-left-color: var(--accent-warm);
+        }
+
+        .border-solve {
+            border-left-color: var(--accent-green);
+        }
+
+        .border-leader {
+            border-left-color: var(--accent-teal);
+        }
+
+        .border-future {
+            border-left-color: var(--accent-purple);
+        }
+
+        .border-close {
+            border-left-color: var(--ms-blue-dark);
+        }
+
+        .bg-connect {
+            background: var(--ms-blue);
+        }
+
+        .bg-challenge {
+            background: var(--accent-warm);
+        }
+
+        .bg-solve {
+            background: var(--accent-green);
+        }
+
+        .bg-leader {
+            background: var(--accent-teal);
+        }
+
+        .bg-future {
+            background: var(--accent-purple);
+        }
+
+        .bg-close {
+            background: var(--ms-blue-dark);
+        }
+
+        /* Print-friendly */
+        @media print {
+            .hero {
+                padding: 20px;
+            }
+
+            .exec-body {
+                max-height: none !important;
+            }
+
+            .exec-section {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 32px 16px;
+            }
+
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .exec-content {
+                padding-left: 24px;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 48px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HERO -->
+    <header class="hero">
+        <h1>Demo Execution Guide</h1>
+        <p class="subtitle">Zurn / Elkay -- Customer Service -- Click-by-Click Playbook</p>
+        <div class="meta">
+            <span>&#128197; March 12, 2026 -- 2 Hours</span>
+            <span>&#127919; Differentiation, Not Feature Parity</span>
+            <span>&#128421; Pairs with: Demo Plan Review</span>
+        </div>
+        <div class="hero-badge">Prescriptive -- Every Click, Every Word</div>
+    </header>
+
+    <div class="container">
+
+        <!-- TIMING BAR -->
+        <p class="section-label">Session Timing</p>
+        <div class="timing-bar">
+            <div class="t-seg" style="flex: 10; background: var(--ms-blue);" title="Connect ~10 min"></div>
+            <div class="t-seg" style="flex: 5; background: var(--accent-warm);" title="Challenges ~5 min"></div>
+            <div class="t-seg" style="flex: 80; background: var(--accent-green);" title="Day in Life ~80 min"></div>
+            <div class="t-seg" style="flex: 15; background: var(--accent-teal);" title="Care Leader ~15 min"></div>
+            <div class="t-seg" style="flex: 10; background: var(--accent-purple);" title="AI Agents ~10 min"></div>
+            <div class="t-seg" style="flex: 5; background: var(--ms-blue-dark);" title="Close ~5 min"></div>
+        </div>
+        <div
+            style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.72rem; color:var(--text-light); margin-bottom:32px;">
+            <span>&#9632; Connect (10m)</span>
+            <span style="color:var(--accent-warm);">&#9632; Challenges (5m)</span>
+            <span style="color:var(--accent-green);">&#9632; Live Demo (80m)</span>
+            <span style="color:var(--accent-teal);">&#9632; Care Leader (15m)</span>
+            <span style="color:var(--accent-purple);">&#9632; AI Agents (10m)</span>
+            <span style="color:var(--ms-blue-dark);">&#9632; Close (5m)</span>
+        </div>
+
+        <!-- PRE-FLIGHT CHECKLIST -->
+        <div class="preflight">
+            <h3>&#9989; Pre-Flight Checklist (30 min before demo)</h3>
+            <ul>
+                <li><strong>Browser tabs open (Edge recommended):</strong></li>
+                <li>&emsp;Tab 1: D365 Customer Service Workspace -- <code>https://orgecbce8ef.crm.dynamics.com</code>
+                </li>
+                <li>&emsp;Tab 2: D365 Admin / Omnichannel Real-Time Analytics (open but stay on Tab 1)</li>
+                <li>&emsp;Tab 3: Power Pages Portal -- <code>https://zurnelkaycustomercare.powerappsportals.com/</code>
+                </li>
+                <li>&emsp;Tab 4: Outlook Web -- <code>https://outlook.office.com</code> (for sending inbound emails)
+                </li>
+                <li><strong>In D365 Workspace verify:</strong></li>
+                <li>&emsp;You see "My Active Cases" view with tier-level color pills</li>
+                <li>&emsp;SLA timers are visible on at least 2 cases</li>
+                <li>&emsp;Copilot panel is accessible (click Copilot icon in command bar)</li>
+                <li>&emsp;Presence status is set to "Available" (green circle, bottom-left)</li>
+                <li><strong>Email ready to send</strong> -- Pre-draft Scenario 1 (Ferguson flush valve) in Outlook. Do
+                    NOT send yet.</li>
+                <li><strong>Phone ready</strong> -- Verify Voice Channel status shows "Available" in Omnichannel panel
+                </li>
+                <li><strong>Portal chat tested</strong> -- Open portal Tab 3, verify chat widget appears in bottom-right
+                </li>
+                <li><strong>Portal persona login verified</strong> -- Sign in as <code>derek.lawson</code> or
+                    <code>rachel.chen</code> using password <code>ZeDemo!2026</code>
+                </li>
+                <li><strong>Screen sharing active</strong> -- Share the Edge browser window (not full desktop)</li>
+                <li><strong>Notifications silenced</strong> -- Focus Assist ON, Teams status DND, Outlook notifications
+                    OFF</li>
+            </ul>
+        </div>
+
+        <!-- QUICK REFERENCE URLS -->
+        <div class="callout info">
+            <strong>Quick Reference URLs</strong><br>
+            D365 Org: <span class="url-ref">https://orgecbce8ef.crm.dynamics.com</span><br>
+            Portal: <span class="url-ref">https://zurnelkaycustomercare.powerappsportals.com/</span><br>
+            Email Queue: <span class="url-ref">customerservice@D365DemoTSCE30330346.onmicrosoft.com</span><br>
+            Outlook: <span class="url-ref">https://outlook.office.com</span>
+        </div>
+
+        <div class="callout info">
+            <strong>Portal Auth for Demo (Keep Entra Enabled)</strong><br>
+            Local contact login is configured for hero personas. Use these credentials in portal:<br>
+            Derek Lawson: <code>derek.lawson</code> / <code>ZeDemo!2026</code> (HD Supply, Scenario A)<br>
+            Rachel Chen: <code>rachel.chen</code> / <code>ZeDemo!2026</code> (Ferguson, Scenario B)<br>
+            Alternates: <code>james.morales</code>, <code>tom.harrison</code>, <code>mike.reynolds</code> (same
+            password)
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION 1: CONNECT & ORIENT -->
+        <!-- ===================================================================== -->
+        <p class="section-label">Agenda</p>
+
+        <div class="exec-section border-connect open">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-connect">1</div>
+                <div class="exec-header-text">
+                    <h3>Connect &amp; Orient</h3>
+                    <div class="exec-purpose">Build connection, set the frame, brief UI orientation</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block">
+                        <span class="step-label prep">Prep</span>
+                        <div class="step-text">
+                            Have Tab 1 (D365 Customer Service Workspace) visible. You should be on the
+                            <strong>Home</strong> page showing the default dashboard. Copilot panel should be closed at
+                            start.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Thank you all for joining. Quick intros -- I'm Bill, solution engineer focused on Power
+                                Platform and Dynamics 365. Today is designed around YOUR priorities: Email Integration,
+                                Workflow Automation, and Omni-Channel Case Management. But more importantly, we heard
+                                from Chad -- you want to see how we're DIFFERENT, not just check boxes. So instead of
+                                feature matching, we're going to put you inside the experience and let you feel the
+                                difference. Let me do a quick 2-minute orientation on the workspace layout before we
+                                dive in.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            Point to the <strong>left navigation panel</strong> (vertical bar on left side).<br>
+                            Click <span class="click-path">Home</span> in the left nav.<br>
+                            Point to the <strong>session tabs</strong> at the top (horizontal tabs bar -- each
+                            case/activity opens as a new tab).<br>
+                            Click the <span class="click-path">Copilot</span> icon in the top command bar (sparkle icon,
+                            top-right area) to briefly show the panel, then close it.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>This is the multisession workspace. Each case, each conversation opens as its own tab up
+                                here -- like browser tabs. Your associates never lose context when switching between a
+                                phone call and an email case. The left nav gives you quick access to your cases,
+                                dashboards, knowledge, and queues. And the Copilot panel -- which I'll show in action
+                                throughout -- lives right here, embedded in the workspace. No separate window, no
+                                separate tool. Let's start working.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout warning">
+                        <strong>Timing Check:</strong> Keep this under 10 minutes. Justin said "this is a lot of
+                        verbiage for me" -- get to the live demo fast. If the room seems engaged in intros, let it flow.
+                        If they're ready to go, cut to Section 3 sooner.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION 2: THEIR WORLD TODAY -->
+        <!-- ===================================================================== -->
+
+        <div class="exec-section border-challenge">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-challenge">2</div>
+                <div class="exec-header-text">
+                    <h3>Their World Today</h3>
+                    <div class="exec-purpose">Validate challenges quickly -- the room wants to SEE things</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block">
+                        <span class="step-label prep">Prep</span>
+                        <div class="step-text">Stay on D365 Workspace. No clicks needed -- this is conversational. Keep
+                            your hands OFF the screen for now. Let the room talk.</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>We've spent time with your teams understanding the current state. Customer Care
+                                Associates start their day across Salesforce, ERP screens, Outlook, Teams, and shared
+                                drives. Routing involves manual triage. Information is scattered. And your tiered
+                                customer model -- where an 80-20 analysis drives who gets priority attention -- requires
+                                lookups to external systems that aren't always connected. Does that still ring true?
+                                Anything we should add before we jump in?</p>
+                        </div>
+                    </div>
+
+                    <div class="callout warning">
+                        <strong>DO NOT</strong> spend more than 5 minutes here. If anyone starts a deeper conversation,
+                        gently redirect: <em>"Great point -- let me show you exactly how we address that in just a
+                            moment."</em> The room wants to SEE things, not hear about problems they already know.
+                    </div>
+
+                    <div class="step-block transition-step">
+                        <span class="step-label transition">Transition</span>
+                        <div class="step-text">
+                            <strong>Bridge to Demo:</strong> "Let me show you what it looks like when all of that comes
+                            together in one place. I'm going to walk you through a Customer Care Associate's day -- from
+                            the moment they log in to resolving cases across email, phone, and chat."
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION 3: DAY IN THE LIFE (MAIN DEMO) -->
+        <!-- ===================================================================== -->
+
+        <div class="exec-section border-solve">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-solve">3</div>
+                <div class="exec-header-text">
+                    <h3>Day in the Life: Customer Care Associate</h3>
+                    <div class="exec-purpose">Core demo -- follow an associate from login to resolution across all
+                        channels</div>
+                </div>
+                <div class="exec-time">~80 min</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- ===== 3a: CS WORKSPACE ===== -->
+                    <h4 class="sub-header">&#9654; 3a. Starting the Day: CS Workspace</h4>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            In the left nav, click <span class="click-path">Customer Service workspace</span> (or it may
+                            already be your default app).<br>
+                            Click <span class="click-path">Cases</span> in the left nav to expand the Cases area.<br>
+                            Click <span class="click-path">My Active Cases</span> view (should be the default view; if
+                            not, use the view selector dropdown at the top of the grid).
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>When a Customer Care Associate logs in, this is their home. No Outlook to open first, no
+                                ERP to check, no Salesforce tab. Everything starts here. I can see: my assigned cases
+                                with color-coded tier levels, SLA timers that tell me what's about to breach, priority
+                                cases that need immediate attention, and my workload across all channels -- email,
+                                phone, and chat -- in one view.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            <strong>Point out these items in the grid:</strong><br>
+                            1. <em>Tier Level column</em> -- color-coded pills (Tier 1 red, Tier 2 orange, Tier 3 blue,
+                            Tier 4 gray)<br>
+                            2. <em>Priority column</em> -- High/Normal/Low<br>
+                            3. <em>SLA timers</em> -- countdown indicators (green = on track, yellow = approaching, red
+                            = breached)<br>
+                            4. <em>Case Origin column</em> -- icons showing Email / Phone / Web / Chat<br>
+                            5. Hover over a Tier 1 case to show the SLA detail tooltip
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Unified workspace replaces 3-4 separate application windows.
+                        SLA timers are live, not report-based. Tier-level pills show customer importance at a glance --
+                        driven by the same ERP data that currently requires manual lookup. <span
+                            class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <!-- ===== 3b: EMAIL CASE CREATION ===== -->
+                    <h4 class="sub-header">&#9654; 3b. Email Case Creation &amp; Copilot</h4>
+
+                    <div class="step-block">
+                        <span class="step-label prep">Prep</span>
+                        <div class="step-text">
+                            <strong>BEFORE this step:</strong> Switch to your Outlook tab (Tab 4). You should have the
+                            Ferguson email pre-drafted. Now is the time to SEND it.
+                        </div>
+                    </div>
+
+                    <div class="email-card">
+                        <div class="email-card-header">
+                            <span class="email-badge">Scenario 1</span>
+                            Tier 2 Distributor -- Ferguson Enterprises
+                        </div>
+                        <div class="email-from">From: sarah.mitchell@ferguson.com &rarr;
+                            customerservice@D365DemoTSCE30330346.onmicrosoft.com</div>
+                        <div class="email-subject">Order Issue -- Wrong Flush Valve Models Shipped (PO #91447)</div>
+                        <div class="email-body">
+                            Ferguson distributor received wrong Zurn flush valve models. Ordered 24x ZN-AV-1001
+                            (Aqua-Vantage) but received 24x ZN-UR-1003 (Urinal valves). Affects 3 commercial projects
+                            with deadlines. Needs: (1) correct units shipped immediately, (2) return label for wrong
+                            units, (3) expedited shipping.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label email">Send Email</span>
+                        <div class="step-text">
+                            In Outlook (Tab 4), click <span class="click-path">Send</span> on the pre-drafted Ferguson
+                            email.<br>
+                            Switch back to D365 (Tab 1).
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Let's walk through what happens when a customer emails the team. I just sent an email
+                                from a distributor about a shipment issue. In the current world, someone would manually
+                                create a case, copy-paste details, search for the customer record, and try to figure out
+                                context from the email chain. Let's see what happens here.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout warning">
+                        <strong>Timing:</strong> Server-side sync can take 1-2 minutes. While waiting, keep talking
+                        about the current-state pain. If the case doesn't appear within 2 minutes, have a BACKUP: open a
+                        pre-existing email case and say "Here's one that came in earlier through the same process."
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            Once the case appears in your queue / active cases:<br>
+                            Click the <strong>case title</strong> in the grid to open it as a new session tab.<br>
+                            Point to: <em>Customer field</em> (auto-matched to Ferguson account), <em>Case Origin</em>
+                            (Email), <em>Priority</em>, <em>Tier Level</em>.<br>
+                            Scroll down to the <strong>Timeline</strong> section -- the email should be visible as the
+                            first entry.
+                        </div>
+                    </div>
+
+                    <div class="step-block copilot-step">
+                        <span class="step-label copilot">Copilot</span>
+                        <div class="step-text">
+                            Click the <span class="click-path">Copilot</span> icon (sparkle) in the top command bar to
+                            open the Copilot side panel.<br>
+                            Click <span class="click-path">Summarize case</span> (or type "Summarize this case" in the
+                            prompt).<br>
+                            <strong>Wait for Copilot response</strong> -- it will summarize the email content, identify
+                            the customer, the problem, and suggest next actions.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>The system identified the customer, created the case, linked the email thread, populated
+                                the issue details, AND applied your routing rules to get it to the right person. Zero
+                                manual steps. And watch this -- I asked Copilot to summarize and it gives me the full
+                                picture in seconds: what the customer is asking, the history, and suggested next
+                                actions. No reading through email chains. No context assembly.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block copilot-step">
+                        <span class="step-label copilot">Copilot Draft</span>
+                        <div class="step-text">
+                            In the Copilot panel, click <span class="click-path">Draft a response</span> (or type "Draft
+                            a reply to this customer").<br>
+                            Show the generated response -- Copilot drafts a professional reply using case context.<br>
+                            <strong>Don't send it</strong> -- just show the capability and close the draft.
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Auto-case creation + auto-customer matching + auto-routing vs.
+                        manual triage in SF. Copilot summarization eliminates reading entire email chains. <span
+                            class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <!-- ===== 3c: TIMELINE & CUSTOMER 360 ===== -->
+                    <h4 class="sub-header">&#9654; 3c. Working the Case: Timeline &amp; Customer 360</h4>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            Stay on the open case. Scroll to the <strong>Timeline</strong> section.<br>
+                            Point to the email entry, any notes, any prior activities.<br>
+                            Now click the <strong>customer name link</strong> (e.g., "Ferguson Enterprises") in the
+                            Customer field at the top of the case form -- this opens the Account record.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            On the Account record, point out:<br>
+                            1. <em>Account details</em> -- Tier classification, address, contacts<br>
+                            2. <em>Related Cases</em> -- previous support history<br>
+                            3. <em>Products</em> -- what they've purchased (linked via orders)<br>
+                            4. <em>Timeline</em> -- all interactions across Sales AND Service<br>
+                            5. <em>Entitlements</em> -- SLA terms tied to their tier
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Now look at the timeline. Every email, every phone call, every note, every internal chat
+                                -- it's all here in one chronological view. And when I click into the customer account,
+                                I see the same data that Sales sees. There's no integration to build -- it's the same
+                                platform. Previous cases, open orders, products they own, warranty status, their tier
+                                classification. This is one of the biggest differentiators: in Dynamics, Sales and
+                                Service share the same data natively. There's no connector, no sync, no middleware. It's
+                                one platform.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            Click the <strong>browser Back button</strong> or click the <strong>case session
+                                tab</strong> at the top to return to the case record.
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Unified data platform -- Sales + Service + ERP visibility
+                        without integration. SF requires connectors to share data between Sales Cloud and Service Cloud.
+                        <span class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <!-- ===== 3d: KNOWLEDGE ===== -->
+                    <h4 class="sub-header">&#9654; 3d. Knowledge in the Flow of Work</h4>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            On the case form, look for the <strong>Knowledge</strong> tab or the <span
+                                class="click-path">Knowledge Search</span> panel on the right side (sometimes labeled
+                            "Knowledge" in the productivity pane).<br>
+                            If using the Copilot panel, type: <em>"Find KB articles for this case"</em><br>
+                            Copilot should surface relevant articles based on the case subject/product.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Point to the suggested knowledge articles.<br>
+                            Click one article title to preview it inline.<br>
+                            <strong>Briefly mention</strong> the "Create article from case" capability (bottom of
+                            resolved case form) -- don't demo it in depth.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>As I'm working this case, the system is already surfacing relevant knowledge articles.
+                                Today, your knowledge base is primarily customer-facing -- engineering-approved articles
+                                from the help center. But there's a huge opportunity here: an internal knowledge base
+                                that helps Customer Care Associates resolve cases faster without having to track down
+                                the one person who knows the trick. And when I resolve a case and there ISN'T an article
+                                for this issue, the system prompts me to create one -- with Copilot drafting it from my
+                                case notes. That goes through an approval workflow and then it's available for the next
+                                associate who gets the same question.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout warning">
+                        <strong>DO NOT</strong> go deep on KB admin, approval workflows, or the KM agent here. Keep it
+                        in the flow of work. Say: <em>"We'll talk about the Knowledge Management agent in a few
+                            minutes."</em>
+                    </div>
+
+                    <!-- ===== 3e: TEAMS COLLABORATION ===== -->
+                    <h4 class="sub-header">&#9654; 3e. Teams Collaboration Embedded</h4>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            On the case form, look for the <strong>Teams</strong> icon in the command bar or the
+                            productivity pane on the right side.<br>
+                            Click <span class="click-path">Teams chat</span> or <span class="click-path">New linked
+                                chat</span>.<br>
+                            A new Teams chat panel opens -- notice the case title and context are auto-populated in the
+                            chat header.<br>
+                            Type a brief message: <em>"Checking on availability of ZN-AV-1001 -- 24 units for Ferguson
+                                PO #91447"</em><br>
+                            <strong>Don't actually send unless you have a recipient set up.</strong>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Here's something that closes a major gap Chad mentioned. Right now, if an associate needs
+                                help, they leave Salesforce, open Teams, find the right person, manually paste case
+                                context, and the whole conversation is lost to the case record. In Dynamics, I start a
+                                Teams chat FROM the case -- the context comes with me automatically. When the shipping
+                                coordinator replies that a part is back-ordered, I click 'Capture to Case' and it logs
+                                directly into the timeline. No context switching, no lost information.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Embedded Teams with auto-capture to case record. SF has no
+                        native Teams integration. Chad specifically called this out. <span
+                            class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <!-- ===== 3f: NATIVE VOICE ===== -->
+                    <h4 class="sub-header voice">&#128242; 3f. Handling a Customer Call -- NATIVE VOICE</h4>
+
+                    <div class="callout critical">
+                        <strong>NON-NEGOTIABLE (Mike's Directive):</strong> "It's a non-negotiable. We need to see the
+                        call center and telephony integration as part of this demo." They are open to replacing Genesis
+                        entirely. GO ALL-IN HERE.
+                    </div>
+
+                    <div class="step-block voice-step">
+                        <span class="step-label prep">Prep</span>
+                        <div class="step-text">
+                            <strong>Before this step:</strong> Verify your Omnichannel presence shows
+                            <strong>"Available"</strong> (green dot, bottom-left of workspace). Verify the Voice Channel
+                            workstream is active. You'll need a second phone to call in, OR simulate the screen pop by
+                            navigating to a pre-existing phone case.<br>
+                            <strong>Workstream ID:</strong> <code>940cdd5e-b83e-8107-b01c-af6ed452cb25</code>
+                        </div>
+                    </div>
+
+                    <div class="step-block voice-step">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Now let's take a customer call. This is native telephony built into Dynamics -- no
+                                third-party integration required. As the call comes in, the system recognizes the
+                                caller, pops the customer record, and I immediately see: their account, every open case,
+                                recent orders, SLA status, and their tier level. I don't have to ask 'who am I speaking
+                                with?' -- I already know.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block voice-step">
+                        <span class="step-label click">Click / Show</span>
+                        <div class="step-text">
+                            When the call notification appears (or when you open the phone case):<br>
+                            1. Click <span class="click-path">Accept</span> on the incoming call toast notification<br>
+                            2. Point to the <strong>screen pop</strong> -- customer record auto-loaded on the left,
+                            conversation panel on the right<br>
+                            3. Point to the <strong>real-time transcript</strong> appearing on the right side as the
+                            conversation progresses<br>
+                            4. Point to <strong>Copilot suggestions</strong> appearing based on what's being discussed
+                            -- KB articles, next best actions, product info<br>
+                            5. Point to the <strong>sentiment indicator</strong> (positive/neutral/negative mood
+                            reading)
+                        </div>
+                    </div>
+
+                    <div class="step-block voice-step">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Now watch the right side of the screen. As we're talking, the real-time transcript is
+                                appearing. And Copilot is listening -- it picks up on what the customer is saying and
+                                starts suggesting next best actions. If the customer mentions a specific product, it
+                                surfaces that product's KB articles. If they mention wanting to return something, it
+                                suggests the return process. This is the Intent Agent in action -- it's guiding the
+                                associate through resolution in real time.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block voice-step">
+                        <span class="step-label say">After-Call Wrap-Up</span>
+                        <div class="talk-track">
+                            <p>And here's where you save massive amounts of time. Wrap-up typically takes 5-10 minutes
+                                per interaction -- associates type notes, update fields, log actions. With one click,
+                                Copilot drafts the summary from the transcript, logs the actions taken, updates case
+                                fields, and drafts the follow-up email. What used to take minutes now takes seconds.
+                                Multiply that across every call, every day, across the entire team -- that's a
+                                significant productivity gain.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block voice-step">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            After the call ends (or on the pre-existing phone case):<br>
+                            Click <span class="click-path">Copilot</span> &rarr; <em>"Summarize this
+                                conversation"</em><br>
+                            Show the auto-generated call summary, auto-populated case notes, draft follow-up email.
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Native telephony with real-time transcript + Copilot
+                        utterance-based suggestions. Genesis Cloud doesn't integrate well with SF (Chad's pain point).
+                        This replaces Genesis entirely. <span class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <!-- ===== 3g: CHAT / DIGITAL MESSAGING ===== -->
+                    <h4 class="sub-header chat">&#9654; 3g. Chat / Digital Messaging</h4>
+
+                    <div class="step-block chat-step">
+                        <span class="step-label prep">Prep</span>
+                        <div class="step-text">
+                            Switch to your Portal tab (Tab 3): <span
+                                class="url-ref">https://zurnelkaycustomercare.powerappsportals.com/</span><br>
+                            Sign in as a known portal persona before opening chat:<br>
+                            <code>derek.lawson</code> / <code>ZeDemo!2026</code> (Scenario A) OR
+                            <code>rachel.chen</code> / <code>ZeDemo!2026</code> (Scenario B).<br>
+                            The chat widget should be visible in the bottom-right corner. You'll use this tab to
+                            initiate chat as the customer, then switch to D365 (Tab 1) to receive it as the agent.
+                        </div>
+                    </div>
+
+                    <div class="step-block chat-step">
+                        <span class="step-label click">Click (Scenario A -- Derek)</span>
+                        <div class="step-text">
+                            On the Portal tab (Tab 3), click the <strong>Chat widget</strong> (bottom-right bubble).<br>
+                            Type: <em>"My E-Z Flush sensor isn't detecting users. We have 8 units at a hotel and they're
+                                all acting up."</em><br>
+                            If prompted in chat, click <strong>Login</strong> and complete sign-in with the same Derek
+                            credentials.<br>
+                            Then type: <em>"I've already tried batteries, sensor cleaning, and pressure checks. Can I
+                                talk to someone?"</em><br>
+                            Click <span class="click-path">Send</span>.
+                        </div>
+                    </div>
+
+                    <div class="step-block chat-step">
+                        <span class="step-label click">Click (as Agent)</span>
+                        <div class="step-text">
+                            Switch to D365 tab (Tab 1). You should receive an incoming chat notification.<br>
+                            Click <span class="click-path">Accept</span> on the chat notification toast.<br>
+                            The chat session opens in a new tab alongside your email/phone session tabs.<br>
+                            Point to: HD Supply identified, Derek contact, Tier 2 context, full bot transcript, and
+                            case timeline notes for firmware v2.3 humidity issue.
+                        </div>
+                    </div>
+
+                    <div class="step-block chat-step">
+                        <span class="step-label click">Click (Scenario B -- Rachel)</span>
+                        <div class="step-text">
+                            Start a new portal session and sign in as <code>rachel.chen</code> /
+                            <code>ZeDemo!2026</code>.<br>
+                            In chat, type: <em>"I need a warranty claim for 50 WaterSentry Plus filters from batch
+                                WS-2026-0217."</em><br>
+                            Then type: <em>"I need an RMA number and I need to know where else this batch
+                                shipped."</em><br>
+                            Switch to D365 and accept chat. Show Ferguson Tier 1 (red), Rachel identity, and timeline
+                            notes confirming the batch defect and 48-hour RMA handling.
+                        </div>
+                    </div>
+
+                    <div class="step-block chat-step">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>This is the same customer service data model across channels. The customer signs into the
+                                portal, the bot triages first, then escalates to a live associate with full transcript
+                                and account context. For Derek, we move from self-service troubleshooting to warranty
+                                replacement. For Rachel, we move from warranty policy to actual RMA and batch-impact
+                                discussion. Same workspace, same routing, same Copilot assist.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Unified channel management. Chat, email, phone all in one
+                        workspace with shared routing and capacity. Currently scattered across HubSpot/SF/Genesis. <span
+                            class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <!-- ===== 3h: TIERED ROUTING ===== -->
+                    <h4 class="sub-header">&#9654; 3h. Tiered Routing &amp; Skills (Outcomes View)</h4>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            Go back to the email case from Section 3b (click its session tab at the top).<br>
+                            Point to the <strong>Tier Level</strong> field on the case form (should show the colored
+                            tier pill).<br>
+                            If there's a hot-word banner visible (red/yellow bar at top of form), point to it.<br>
+                            Scroll to see the <strong>Queue</strong> the case was routed to.<br>
+                            If available, click <span class="click-path">Routing diagnostics</span> or point to routing
+                            metadata showing why this case landed here.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Let me show you why this case landed with this specific associate. The system evaluated
+                                multiple factors: the customer's tier level -- this is a Tier 1 Strategic account based
+                                on your ERP classification -- so they went to the front of the line. The email subject
+                                contained the word 'urgent,' which triggered our hot-word detection and escalated the
+                                priority. And because this is a hydration product question, it matched an associate with
+                                the right product skills. All of that happened automatically in milliseconds. No manual
+                                triage, no reading the email and deciding where to route it. And if an associate is
+                                already at capacity on phone calls, the system knows not to send them more work until
+                                they have bandwidth.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout warning">
+                        <strong>DO NOT</strong> open Admin Center or show rule configuration. Say: <em>"In our tech deep
+                            dive session, we'll walk through exactly how these rules are set up and how they map to your
+                            AIP process."</em>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Intelligent multi-factor routing (tier + keywords + skills +
+                        capacity) vs. SF's queue-based or basic skills-based backlog. Unified capacity management across
+                        all channels. <span class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <!-- ===== 3i: GUIDED PROCESS FLOWS ===== -->
+                    <h4 class="sub-header">&#9654; 3i. Guided Process Flows (SF "Guided Actions" Equivalent)</h4>
+
+                    <div class="callout success">
+                        <strong>Custom Page Status:</strong> &#10003; Built and registered. The Order Modification
+                        Wizard is live in the D365 productivity pane. Use it during the phone call demo (Section 3f).
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Benton, you asked about your guided actions -- those step-by-step wizards that walk
+                                associates through complex tasks without exposing complicated forms. Let me show you our
+                                equivalent. I'm going to start a warranty claim. Instead of filling out a full case form
+                                with 20 fields, I click this button and get a guided experience: enter the serial
+                                number, the system looks it up and pulls the product, verify the warranty status, answer
+                                a couple of diagnostic questions, and it creates the claim, generates the shipping
+                                label, and sends the customer a confirmation -- all in 4 clicks. This is built with
+                                Power Apps, which means your team can create and modify these flows without a full
+                                development cycle. And because it's all connected to Dataverse, every action is captured
+                                on the case timeline.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click (if built)</span>
+                        <div class="step-text">
+                            On the case form, click the <span class="click-path">Start Warranty Claim</span> button (or
+                            the guided flow tab).<br>
+                            Step through: Enter serial number &rarr; Product auto-populates &rarr; Warranty status
+                            confirmed &rarr; Diagnostic questions &rarr; Claim created.<br>
+                            Point to the timeline entry showing the completed action.
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Power Apps custom pages / canvas apps embedded in case forms --
+                        equivalent to SF screen flows but with full access to the Microsoft data platform, ERP
+                        integration, and extensibility. <span class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <!-- ===== 3j: PROACTIVE NOTIFICATIONS ===== -->
+                    <h4 class="sub-header">&#9654; 3j. Proactive Notifications &amp; Alerts</h4>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Point to any in-app notification that may be visible (bell icon in top command bar).<br>
+                            If an SLA warning toast appears, highlight it.<br>
+                            Otherwise, describe the notification types verbally while pointing to the notification
+                            center.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>You mentioned notification fatigue is a real concern -- associates get bombarded and
+                                start ignoring everything. In Dynamics, notifications are highly configurable. You
+                                decide which events matter: SLA breach approaching in 30 minutes? That's a notification.
+                                A Tier 1 customer has been waiting in queue for more than 2 minutes? Alert the
+                                supervisor. A hot-word case just came in? Push it to attention. But you moderate it --
+                                only the high-value, actionable alerts get through. And for supervisors, the Omnichannel
+                                real-time dashboard shows queue health, wait times, and associate availability without
+                                needing push notifications at all.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block transition-step">
+                        <span class="step-label transition">Transition to Care Leader</span>
+                        <div class="step-text">
+                            <strong>Bridge:</strong> "That's the Customer Care Associate's world. Now let me switch to
+                            Lisa and Michelle's perspective -- what does a care leader see?"
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION 4: CARE LEADER VIEW -->
+        <!-- ===================================================================== -->
+
+        <div class="exec-section border-leader">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-leader">4</div>
+                <div class="exec-header-text">
+                    <h3>Care Leader View</h3>
+                    <div class="exec-purpose">Dashboards, agent metrics, workforce &amp; quality management</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block">
+                        <span class="step-label transition">Narrative Shift</span>
+                        <div class="step-text">
+                            &ldquo;You&rsquo;ve seen the associate experience &mdash; now let&rsquo;s switch to what
+                            Lisa and Michelle live in every day. The supervisor and care leader view.&rdquo;
+                        </div>
+                    </div>
+
+                    <!-- 4a: Dashboards -->
+                    <h4 class="sub-header leader">&#9654; 4a. Real-Time Dashboards</h4>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            Switch to your Admin / Analytics tab (Tab 2), or navigate within D365:<br>
+                            Click <span class="click-path">Customer Service workspace</span> &rarr; left nav &rarr;
+                            <span class="click-path">Omnichannel real-time analytics</span> (under Service).<br>
+                            Alternatively: <span class="click-path">Dashboards</span> &rarr; select <em>"Omnichannel
+                                Ongoing Conversations Dashboard"</em> from the view selector.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Now let me switch to what Lisa and Michelle would see. This is the Omnichannel real-time
+                                analytics dashboard. You can see: case volume by channel, SLA performance across the
+                                team, which associates are available versus at capacity, queue wait times, and trend
+                                data. Previously, getting this view required pulling reports from Salesforce, ERP, and
+                                spreadsheets separately -- often taking days. Here it's real-time.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Point to these dashboard elements:<br>
+                            1. <em>Active conversations by channel</em> (email, phone, chat breakdown)<br>
+                            2. <em>Agent availability grid</em> -- who's available, busy, away<br>
+                            3. <em>Queue wait times</em> per queue<br>
+                            4. <em>SLA compliance rate</em> chart (if available)<br>
+                            5. <em>Conversation status breakdown</em> -- active, waiting, wrap-up
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p><strong>vs. Salesforce:</strong> In Service Cloud, you&rsquo;d need to build a custom
+                                dashboard in Salesforce Reports, pull in Genesys data through an integration, and hope
+                                the timestamps line up. Here the telephony data, case data, and routing data are all the
+                                same system &mdash; so the numbers are always right.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout info">
+                        <strong>Tip:</strong> If the dashboard looks sparse (demo environment with limited volume),
+                        say: &ldquo;In production with your full team running, this lights up. Right now we&rsquo;re
+                        looking at our demo data, but the structure is exactly what you&rsquo;d see at scale.&rdquo;
+                    </div>
+
+                    <!-- 4b: Agent Performance -->
+                    <h4 class="sub-header leader">&#9654; 4b. Agent Performance Metrics</h4>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            From the real-time dashboard, click the <span class="click-path">Agent</span> tab, or
+                            navigate to <span class="click-path">Omnichannel historical analytics</span> &rarr;
+                            <span class="click-path">Agent</span> view.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Benton, you asked about performance metrics &mdash; handle time, wait time,
+                                call duration. All of that is captured natively here because the phone, email,
+                                and chat all run through one platform. You don&rsquo;t need to pull a report from
+                                Genesys for talk time, a separate report from Salesforce for case metrics, and then
+                                reconcile them in Excel. One system, one source of truth for every metric.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Point to agent-level metrics (if visible on screen):<br>
+                            &bull; <em>Average handle time</em> by agent or channel<br>
+                            &bull; <em>Average wait time</em> for customers in queue<br>
+                            &bull; <em>Conversations handled</em> per agent (daily/weekly)<br>
+                            &bull; <em>Active vs. idle time</em> breakdown<br>
+                            &bull; <em>Transfer rate</em> &mdash; how often agents escalate or transfer
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Michelle, imagine your morning routine: you pull up this view, see who handled
+                                the most cases yesterday, who had the longest handle times, who transferred
+                                the most. That&rsquo;s your coaching conversation for the day &mdash; data-driven,
+                                not anecdotal. And because WFM is integrated, you can see if someone had a long
+                                handle time because they were juggling training and cases on the same shift.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>The key here is convergence. Today you have data in Salesforce, data in Genesys,
+                                data in spreadsheets, and it takes days to build a picture. Here, every interaction
+                                &mdash; phone, email, chat &mdash; flows through the same system, so the numbers
+                                are real-time and trustworthy.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout info">
+                        <strong>Tip:</strong> If the dashboard is sparse in the demo environment, say:
+                        &ldquo;With 14 agents across five shifts, this view gives you instant visibility
+                        that today requires pulling three separate reports.&rdquo;
+                    </div>
+
+                    <!-- 4c: Workforce Management -->
+                    <h4 class="sub-header leader">&#9654; 4c. Workforce Management</h4>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>And here's something that's now built right into the platform -- Workforce Management.
+                                Scheduling, forecasting demand by channel, managing shift assignments, tracking
+                                adherence. It's not a separate tool or license bolted on -- it's integrated, so the same
+                                data that drives routing and capacity also drives your staffing decisions.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Navigate to <span class="click-path">CS Admin Center &gt; Workforce Management &gt; Schedule
+                                Management</span>.<br>
+                            Show the scheduling view, shift plans, agent assignments, and time-off calendar.
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>All WFM features are enabled:</strong> Forecast volume, Capacity planning, Schedule
+                        management, Shift-based routing, Representative calendar, Bidding, Swapping.
+                    </div>
+
+                    <!-- WFM Data Reference -->
+                    <p class="ref-section-title">Shift Plans (5 total)</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr>
+                                <th>Shift Plan</th>
+                                <th>Hours (CT)</th>
+                                <th>Days</th>
+                                <th>Staff</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Zurn Elkay Morning Shift</td>
+                                <td>6:00 AM &ndash; 2:00 PM</td>
+                                <td>Mon&ndash;Fri</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>Zurn Elkay Day Shift</td>
+                                <td>8:00 AM &ndash; 5:00 PM</td>
+                                <td>Mon&ndash;Fri</td>
+                                <td>6</td>
+                            </tr>
+                            <tr>
+                                <td>Zurn Elkay Afternoon Shift</td>
+                                <td>2:00 PM &ndash; 10:00 PM</td>
+                                <td>Mon&ndash;Fri</td>
+                                <td>3</td>
+                            </tr>
+                            <tr>
+                                <td>Zurn Elkay Staggered Shift</td>
+                                <td>7:00 AM &ndash; 3:00 PM</td>
+                                <td>Mon&ndash;Fri</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td>Zurn Elkay Weekend Shift</td>
+                                <td>8:00 AM &ndash; 2:00 PM</td>
+                                <td>Sat&ndash;Sun</td>
+                                <td>2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">Agent Shift Assignments (1,196 bookings provisioned)</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr>
+                                <th>Shift</th>
+                                <th>Agents Assigned</th>
+                                <th>Bookings / Agent</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Morning (6 AM &ndash; 2 PM)</td>
+                                <td>Renee Lo, Alicia Thomber, Molly Clark, Spencer Low</td>
+                                <td>90 (10 days &times; 9 activities)</td>
+                                <td>360</td>
+                            </tr>
+                            <tr>
+                                <td>Day (8 AM &ndash; 5 PM)</td>
+                                <td>Markus Long, David So, Tyler Stein + <span class="agent-dual">Alan Steiner, Bill
+                                        Technician (existing)</span></td>
+                                <td>110 (10 days &times; 11 activities)</td>
+                                <td>330 new + existing</td>
+                            </tr>
+                            <tr>
+                                <td>Afternoon (2 PM &ndash; 10 PM)</td>
+                                <td>Jamie Reding, Claudia Mazzanti, Enrico Cattaneo</td>
+                                <td>90 (10 days &times; 9 activities)</td>
+                                <td>270</td>
+                            </tr>
+                            <tr>
+                                <td>Staggered (7 AM &ndash; 3 PM)</td>
+                                <td>Alex Baker, Riley Ramirez</td>
+                                <td>90 (10 days &times; 9 activities)</td>
+                                <td>180</td>
+                            </tr>
+                            <tr>
+                                <td>Weekend (8 AM &ndash; 2 PM)</td>
+                                <td>Tyler Stein, Riley Ramirez</td>
+                                <td>28 (4 days &times; 7 activities)</td>
+                                <td>56</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="ref-note">Tyler Stein and Riley Ramirez are on both weekday and Weekend shifts. Weekdays:
+                        March 2&ndash;6, 9&ndash;13. Weekends: March 1, 7, 8, 14.</p>
+
+                    <p class="ref-section-title">Shift Activity Types (6)</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr>
+                                <th>Activity</th>
+                                <th>Duration</th>
+                                <th>Assignable?</th>
+                                <th>Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Case Work</td>
+                                <td>Variable</td>
+                                <td>Yes</td>
+                                <td>Active case handling &mdash; agent receives routed work</td>
+                            </tr>
+                            <tr>
+                                <td>Break</td>
+                                <td>15 min</td>
+                                <td>No</td>
+                                <td>Paid break &mdash; off routing queue</td>
+                            </tr>
+                            <tr>
+                                <td>Lunch</td>
+                                <td>60 min</td>
+                                <td>No</td>
+                                <td>Unpaid lunch &mdash; off routing queue</td>
+                            </tr>
+                            <tr>
+                                <td>Training</td>
+                                <td>60 min</td>
+                                <td>No</td>
+                                <td>Product/compliance training</td>
+                            </tr>
+                            <tr>
+                                <td>Team Meeting</td>
+                                <td>30 min</td>
+                                <td>No</td>
+                                <td>Standup or weekly sync</td>
+                            </tr>
+                            <tr>
+                                <td>Coaching</td>
+                                <td>30 min</td>
+                                <td>No</td>
+                                <td>1:1 with supervisor</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">Time Off Requests (5) &mdash; show to demonstrate schedule impact</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Type</th>
+                                <th>Dates</th>
+                                <th>Talking Point</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Renee Lo</td>
+                                <td>Vacation</td>
+                                <td>5 days out, 4-day PTO</td>
+                                <td><em>"She won't receive any routed cases during this window"</em></td>
+                            </tr>
+                            <tr>
+                                <td>Markus Long</td>
+                                <td>Training</td>
+                                <td>3 days out, 1-day</td>
+                                <td><em>"Off-site training &mdash; automatically off the queue"</em></td>
+                            </tr>
+                            <tr>
+                                <td>Alan Steiner</td>
+                                <td>Personal</td>
+                                <td>7 days out, 1-day</td>
+                                <td><em>"Personal day &mdash; shift-based routing respects it"</em></td>
+                            </tr>
+                            <tr>
+                                <td>Enrico Cattaneo</td>
+                                <td>Sick Leave</td>
+                                <td>Yesterday through today</td>
+                                <td><em>"Unplanned absence &mdash; shows real-time adherence impact"</em></td>
+                            </tr>
+                            <tr>
+                                <td>David So</td>
+                                <td>Vacation</td>
+                                <td>12 days out, 5-day</td>
+                                <td><em>"Week-long vacation &mdash; supervisor sees the capacity gap"</em></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">Demo Talking Points</p>
+                    <ul class="talk-points">
+                        <li><em>&ldquo;The schedule IS the routing configuration.&rdquo;</em> If Renee is on PTO, she
+                            doesn't get cases. Period.</li>
+                        <li><em>&ldquo;Agents can bid on open shifts and request swaps directly in the
+                                platform&rdquo;</em> &mdash; no email chains.</li>
+                        <li>Non-assignable activities (training, meetings, coaching) automatically remove agents from
+                            the routing queue. No manual status toggling.</li>
+                        <li><strong>vs. Salesforce:</strong> <em>&ldquo;With Service Cloud, WFM typically requires
+                                Workforce Engagement or a third-party tool. Here it's native &mdash; same data model,
+                                same admin experience, no sync issues.&rdquo;</em></li>
+                    </ul>
+
+                    <!-- 4d: Quality Management -->
+                    <h4 class="sub-header leader">&#9654; 4d. Quality Management</h4>
+
+                    <div class="callout success">
+                        <strong>Setup Status:</strong> &#10003; Quality Management is fully configured and LIVE.
+                        Connection references set, all 6 QEA/KM flows active, QEA + KM agents published.
+                        <strong>Manufacturing Service Quality Standard</strong> criteria published with 6 sections,
+                        21 AI-scored questions. Two evaluation plans published and active.
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>The last piece of the care leader&rsquo;s toolkit is Quality Management. This is
+                                where supervisors can score agent interactions against evaluation criteria &mdash;
+                                think of it as your QA process, built into the platform.</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation: Show Live Criteria -->
+                    <h5 style="margin: 1.2em 0 0.6em; color: #0078d4;">Navigation: Show Live Criteria</h5>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Navigate to <strong>Customer Service admin center</strong> &rarr; <strong>Quality
+                                Management</strong> (left nav) &rarr; <strong>Evaluation criteria</strong> &rarr;
+                            click <strong>Manufacturing Service Quality Standard</strong>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>We&rsquo;ve built a criteria set called the Manufacturing Service Quality Standard.
+                                It has six weighted sections with 21 questions &mdash; all tailored to your service
+                                model.</p>
+                        </div>
+                    </div>
+
+                    <p class="ref-section-title">Walk Through the Sections (scroll, don&rsquo;t read every question)</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Section</th>
+                                <th>Weight</th>
+                                <th>Qs</th>
+                                <th>Key Point to Mention</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Customer Identification &amp; Account Handling</td>
+                                <td>15%</td>
+                                <td>3</td>
+                                <td>&ldquo;Did the agent verify identity and recognize the customer&rsquo;s tier?&rdquo;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Technical Accuracy &amp; Product Knowledge</td>
+                                <td>25%</td>
+                                <td>4</td>
+                                <td>&ldquo;Heaviest weight &mdash; did the agent reference correct specs and recommend
+                                    the right parts?&rdquo;</td>
+                            </tr>
+                            <tr>
+                                <td>Process Compliance &amp; Escalation Handling</td>
+                                <td>20%</td>
+                                <td>4</td>
+                                <td>&ldquo;Hot word detection &mdash; Urgent, Recall, Safety, Legal &mdash; did the
+                                    agent escalate properly?&rdquo;</td>
+                            </tr>
+                            <tr>
+                                <td>Resolution Effectiveness</td>
+                                <td>20%</td>
+                                <td>4</td>
+                                <td>&ldquo;Was the issue resolved on first contact? Was documentation thorough?&rdquo;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Communication &amp; Professionalism</td>
+                                <td>10%</td>
+                                <td>3</td>
+                                <td>&ldquo;Tone, clarity, setting expectations&rdquo;</td>
+                            </tr>
+                            <tr>
+                                <td>Tool Adoption &amp; Efficiency</td>
+                                <td>10%</td>
+                                <td>3</td>
+                                <td>&ldquo;Did the agent use Copilot, KB, and AI tools? This rewards adoption.&rdquo;
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Every question has AI-response enabled. The Quality Management Agent reads the
+                                conversation transcript and case notes, then scores each question automatically.
+                                The supervisor only reviews the flagged ones.</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation: Show Evaluation Plans -->
+                    <h5 style="margin: 1.2em 0 0.6em; color: #0078d4;">Navigation: Show Evaluation Plans</h5>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Go back to <strong>Quality Management</strong> &rarr; <strong>Evaluation plans</strong>
+                            &rarr; show both plans:
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Plan</th>
+                                <th>Type</th>
+                                <th>Frequency</th>
+                                <th>Scope</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Daily Case Quality Review</strong></td>
+                                <td>Recurring</td>
+                                <td>Daily</td>
+                                <td>Cases &mdash; evaluates all resolved cases each day</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Conversation Quality Review</strong></td>
+                                <td>Trigger</td>
+                                <td>On closed conversation</td>
+                                <td>Conversations &mdash; evaluates every closed chat/voice interaction</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>There are two approaches here. First, manual evaluation &mdash; a supervisor picks
+                                a conversation, scores it against criteria like greeting, resolution accuracy,
+                                compliance language. Second &mdash; and this is where it gets powerful &mdash;
+                                the Quality Management Agent. That&rsquo;s an AI agent that automatically scores
+                                <em>every</em> interaction against your criteria and flags the ones that need human
+                                review. So instead of randomly sampling 5% of calls, the system tells you which
+                                conversations deserve attention based on sentiment, compliance keywords, or
+                                resolution quality.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Lisa, think about your QA process today. How many calls does your team review per
+                                week? And how do you decide which ones to review? With the QM Agent, every
+                                interaction gets evaluated, and the supervisor&rsquo;s time goes to the conversations
+                                that actually need coaching &mdash; not random sampling.</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation: Show Scored Evaluations (conditional) -->
+                    <h5 style="margin: 1.2em 0 0.6em; color: #0078d4;">Navigation: Show Scored Evaluations
+                        <span style="font-weight: normal; font-style: italic;">(if simulation has run)</span>
+                    </h5>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            If a simulation has been run, navigate to <strong>Quality Management</strong> &rarr;
+                            <strong>Evaluation results</strong> &rarr; open a scored evaluation. Walk through:
+                            <ul>
+                                <li>The overall score (percentage)</li>
+                                <li>Per-section scores with the weight breakdown</li>
+                                <li>Click into a question to show the AI&rsquo;s selected answer and its rationale</li>
+                                <li>Point out where the AI referenced specific moments from the transcript</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>The AI read the entire conversation and scored each of the 21 questions. It shows
+                                its reasoning &mdash; you can see exactly why it scored this way. The supervisor
+                                can agree, override, or add notes.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p><strong>vs. Salesforce:</strong> With Salesforce, quality management typically
+                                requires Einstein Conversation Insights as an add-on, plus a third-party QA tool
+                                for structured evaluations. Here it&rsquo;s native &mdash; same data, same
+                                platform, same admin experience.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block transition-step">
+                        <span class="step-label transition">Transition to AI Agents</span>
+                        <div class="step-text">
+                            <strong>Bridge:</strong> "You've now seen both the associate experience and the care
+                            leader's view. Let me show you the AI agents that power a lot of what you've been seeing."
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION 5: AI AGENTS -->
+        <!-- ===================================================================== -->
+
+        <div class="exec-section border-future">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-future">5</div>
+                <div class="exec-header-text">
+                    <h3>AI Agents -- Outcomes Only</h3>
+                    <div class="exec-purpose">Show what agents DO, not how they're configured</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="callout info">
+                        <strong>Benton's Guidance:</strong> "How AI's configured is probably not necessary. I think just
+                        what would be their best experience." Show outcomes only.
+                    </div>
+
+                    <div class="step-block copilot-step">
+                        <span class="step-label copilot">Intent Agent</span>
+                        <div class="step-text">
+                            <strong>No new clicks needed</strong> -- reference back to the phone call demo (3f).<br>
+                            Point back to the transcript and Copilot suggestions you showed during the voice call.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Let me show you three AI agents that come built into Customer Service. First, the Intent
+                                Agent -- you've already seen this in action. During the phone call, it was listening to
+                                the conversation and suggesting next steps. It uses your knowledge base, case history,
+                                and product data to guide the associate to faster resolution in real time.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Second, the Case Management Agent -- this one monitors your case queue and can automate
+                                follow-ups. If a case has been waiting for customer response for 48 hours, it sends a
+                                nudge email automatically. If a case comes in that matches a known resolution, it can
+                                suggest closing it or even handle the response without human intervention.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Third, the Knowledge Management Agent -- it monitors patterns in your cases and
+                                identifies gaps. If 15 cases came in about the same bottle filler issue and there's no
+                                KB article, it drafts one and routes it for review. Remember how your current KB is
+                                mainly customer-facing and engineering-approved? These agents can build your internal
+                                knowledge base automatically from case resolutions.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Three built-in agents with real service outcomes -- not just chatbot builders. And this
+                                is just the beginning.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Differentiator:</strong> Three built-in agents with real service outcomes. SF charges
+                        separately for many of these capabilities. <span class="diff-badge">Differentiator</span>
+                    </div>
+
+                    <div class="step-block transition-step">
+                        <span class="step-label transition">Transition to Close</span>
+                        <div class="step-text">
+                            <strong>Bridge:</strong> "One last thing Mike asked us to highlight before we wrap up."
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION 6: PLATFORM & CLOSE -->
+        <!-- ===================================================================== -->
+
+        <div class="exec-section border-close">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-close">6</div>
+                <div class="exec-header-text">
+                    <h3>Platform &amp; Close</h3>
+                    <div class="exec-purpose">Brief extensibility mention + recap differentiators + next steps</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block">
+                        <span class="step-label say">Platform</span>
+                        <div class="talk-track">
+                            <p>One last thing Mike asked us to highlight. Everything you've seen today is the
+                                out-of-the-box platform. But the entire application is built on Power Apps and Dataverse
+                                -- which means your team can extend, customize, and build on top of it. Need a custom
+                                warranty module? Power Apps. Need to connect to a third-party logistics system? Power
+                                Automate. Need an app from a partner? AppSource has thousands, just like the AppExchange
+                                you know today. And for developers like Justin, code-first options are coming that give
+                                you full code-level control when you need it. The key point: this platform grows with
+                                you.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout warning">
+                        <strong>DO NOT</strong> demo AppSource or Power Apps in detail. Just state the capability and
+                        move on. Per Mike: "Just mention it."
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Recap</span>
+                        <div class="talk-track">
+                            <p>To wrap up -- you asked us to show differentiation, not a checkbox exercise. Here's what
+                                we showed today that's different:</p>
+                            <p><strong>One.</strong> One platform for Sales and Service -- no connectors, no middleware,
+                                no sync issues.</p>
+                            <p><strong>Two.</strong> Native telephony with real-time transcript and AI-driven
+                                suggestions -- replaces Genesis entirely.</p>
+                            <p><strong>Three.</strong> Chat, email, and phone in the same workspace with unified routing
+                                that considers customer tier, keywords, skills, AND associate capacity.</p>
+                            <p><strong>Four.</strong> Copilot embedded everywhere -- summarizing, suggesting, drafting,
+                                guiding -- reducing handle time and wrap-up from minutes to seconds.</p>
+                            <p><strong>Five.</strong> Workforce and Quality Management built in -- not bolted on.</p>
+                            <p><strong>Six.</strong> A platform that your team can extend with Power Apps, Power
+                                Automate, and soon code-first development.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Next Steps</span>
+                        <div class="talk-track">
+                            <p>We have follow-up sessions planned: a tech deep dive for Benton, Chad, and Justin to go
+                                through routing configuration, the AIP process, and guided action equivalents in detail.
+                                An IT benefits session for Mike, Chad, and John on cost, contracts, and DevOps. And
+                                we'll share everything you've seen today in a follow-up document. Thank you for your
+                                time.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- EMERGENCY / HOT WORD SCENARIO (BONUS) -->
+        <!-- ===================================================================== -->
+
+        <p class="section-label">Bonus Scenarios (Use If Time Permits or as Backup)</p>
+
+        <div class="exec-section" style="border-left-color: var(--accent-red);">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: var(--accent-red);">!</div>
+                <div class="exec-header-text">
+                    <h3>Hot Word Scenario: Emergency Backflow Failure</h3>
+                    <div class="exec-purpose">Shows priority escalation from hot words -- high-impact demo moment</div>
+                </div>
+                <div class="exec-time">Backup</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="email-card">
+                        <div class="email-card-header">
+                            <span class="email-badge hot">Scenario 2 -- Hot Words</span>
+                            Tier 2 Distributor -- Hajoca Corporation
+                        </div>
+                        <div class="email-from">From: tom.garcia@hajoca.com &rarr;
+                            customerservice@D365DemoTSCE30330346.onmicrosoft.com</div>
+                        <div class="email-subject">EMERGENCY -- Wilkins 975XL backflow preventer failed at hospital site
+                        </div>
+                        <div class="email-body">
+                            Critical situation: Wilkins 975XL 4" backflow preventer failed at Mercy General Hospital.
+                            Check valve not holding. City water authority issued 48-hour compliance notice. Hospital
+                            cannot lose water service. Needs: (1) Replacement unit or repair kit shipped IMMEDIATELY,
+                            (2) Technical guidance, (3) Warranty status. <strong>Hot words: EMERGENCY,
+                                life-safety.</strong>
+                        </div>
+                    </div>
+
+                    <div class="step-block" style="border-left-color: var(--accent-red);">
+                        <span class="step-label caution">What to Show</span>
+                        <div class="step-text">
+                            After sending this email and the case is created:<br>
+                            1. Open the case -- note the <strong>Priority is automatically set to highest</strong>
+                            (10,000)<br>
+                            2. Point to the <strong>RED hot-word banner</strong> at the top of the form: "CRITICAL
+                            KEYWORDS DETECTED: EMERGENCY"<br>
+                            3. Point to the <strong>Queue assignment</strong> -- routed to escalation queue, not
+                            standard<br>
+                            4. Say: <em>"The word 'emergency' in that email automatically boosted this to maximum
+                                priority and routed it to your escalation team. No human had to read it first."</em>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="exec-section" style="border-left-color: #FFB900;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #FFB900; color: #5D4510;">!</div>
+                <div class="exec-header-text">
+                    <h3>Safety / Recall Scenario: Z5795 Flush Valve</h3>
+                    <div class="exec-purpose">Double hot word ("recall" + "safety") -- shows maximum escalation</div>
+                </div>
+                <div class="exec-time">Backup</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="email-card">
+                        <div class="email-card-header">
+                            <span class="email-badge hot">Scenario 5 -- Recall + Safety</span>
+                            Tier 1 Distributor -- HD Supply
+                        </div>
+                        <div class="email-from">From: david.oconnor@hdsupply.com &rarr;
+                            customerservice@D365DemoTSCE30330346.onmicrosoft.com</div>
+                        <div class="email-subject">SAFETY concern -- Possible recall on Zurn Z5795 flush valve?</div>
+                        <div class="email-body">
+                            3 contractor reports of Z5795 sensor-operated flush valves activating unexpectedly and
+                            continuously -- causing flooding. Affected: Hilton Garden Inn Charlotte (4 units), Duke
+                            Energy HQ Charlotte (2 units), Atrium Health Clinic Concord (1 unit). Asking about active
+                            recall or safety bulletin. <strong>Hot words: SAFETY, RECALL.</strong>
+                        </div>
+                    </div>
+
+                    <div class="step-block" style="border-left-color: var(--accent-red);">
+                        <span class="step-label caution">What to Show</span>
+                        <div class="step-text">
+                            Same pattern as Scenario 2. Point out BOTH hot words detected, double-escalation, and the
+                            red banner. This is the "scary email" that leadership wants to make sure never gets buried
+                            in a queue.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="exec-section" style="border-left-color: var(--accent-teal);">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: var(--accent-teal);">!</div>
+                <div class="exec-header-text">
+                    <h3>Elkay Technical Support: Bottle Filler Troubleshooting</h3>
+                    <div class="exec-purpose">Conversational troubleshooting flow -- good for KB suggestions demo</div>
+                </div>
+                <div class="exec-time">Backup</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="email-card">
+                        <div class="email-card-header">
+                            <span class="email-badge">Scenario 3</span>
+                            Tier 2 Distributor -- Winsupply
+                        </div>
+                        <div class="email-from">From: jessica.huang@winsupply.com &rarr;
+                            customerservice@D365DemoTSCE30330346.onmicrosoft.com</div>
+                        <div class="email-subject">ezH2O Liv bottle filler not dispensing -- model LBWD06WHK</div>
+                        <div class="email-body">
+                            School district reports Elkay ezH2O Liv bottle filler (LBWD06WHK) not dispensing water. Unit
+                            powers on, sensor light activates, no water. Installed last week. Need troubleshooting steps
+                            before school starts Monday.
+                        </div>
+                    </div>
+
+                    <div class="step-block" style="border-left-color: var(--accent-teal);">
+                        <span class="step-label tip">Why Use This One</span>
+                        <div class="step-text">
+                            This is the best scenario for showing <strong>Knowledge article suggestions</strong> because
+                            the product-linked KB articles should match the ezH2O product. When the case is opened,
+                            Copilot/KB search should surface the bottle filler troubleshooting article. Great for
+                            section 3d (Knowledge in the Flow of Work).
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="exec-section" style="border-left-color: var(--accent-purple);">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: var(--accent-purple);">!</div>
+                <div class="exec-header-text">
+                    <h3>Warranty / RMA Claim: Elkay Lustertone Sink</h3>
+                    <div class="exec-purpose">Best for guided process flow demo (3i) -- warranty claim walkthrough</div>
+                </div>
+                <div class="exec-time">Backup</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="email-card">
+                        <div class="email-card-header">
+                            <span class="email-badge">Scenario 4</span>
+                            Tier 3 Distributor -- Gateway Supply
+                        </div>
+                        <div class="email-from">From: carlos.mendez@gatewaysupply.com &rarr;
+                            customerservice@D365DemoTSCE30330346.onmicrosoft.com</div>
+                        <div class="email-subject">Warranty claim -- Elkay Lustertone sink rusting after 8 months</div>
+                        <div class="email-body">
+                            Elkay Lustertone Classic undermount sink (ELUH2816) showing rust spots after 8 months.
+                            Standard residential kitchen use, no harsh chemicals. Photos attached. Need RMA process and
+                            warranty replacement.
+                        </div>
+                    </div>
+
+                    <div class="step-block" style="border-left-color: var(--accent-purple);">
+                        <span class="step-label tip">Why Use This One</span>
+                        <div class="step-text">
+                            Best scenario for the <strong>Guided Process Flow</strong> demo (Section 3i). Walk through
+                            the warranty claim wizard: enter serial, verify warranty status, initiate RMA, generate
+                            shipping label. Also good for showing case status progression: Active &rarr; On Hold
+                            (waiting for delivery) &rarr; Resolved.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- RECOVERY PLAYS -->
+        <!-- ===================================================================== -->
+
+        <p class="section-label">Recovery Plays (When Things Go Wrong)</p>
+
+        <div class="callout critical">
+            <strong>If email-to-case doesn't create within 2 min:</strong><br>
+            Say: "Server-side sync runs on a schedule -- in production this is near-instant. Let me show you one that
+            came in earlier." Open a pre-existing email case from the Active Cases view.
+        </div>
+
+        <div class="callout critical">
+            <strong>If Voice Channel shows "Disconnected":</strong><br>
+            Say: "Let me show you what this looks like from a case that was handled via phone earlier." Open a resolved
+            phone case with call transcript and Copilot summary on the timeline.
+        </div>
+
+        <div class="callout critical">
+            <strong>If Chat widget doesn't appear on portal:</strong><br>
+            Say: "The chat experience is the same as what I just showed with email and phone -- let me walk you through
+            a chat conversation from the agent side." Show a pre-existing chat transcript in D365 if available.
+        </div>
+
+        <div class="callout critical">
+            <strong>If chat prompts Login unexpectedly:</strong><br>
+            Use the same portal persona credentials inside the chat prompt (for example,
+            <code>derek.lawson</code> / <code>ZeDemo!2026</code>). If sign-in still fails, continue from an already
+            authenticated portal tab and proceed with the agent-side transcript walkthrough.
+        </div>
+
+        <div class="callout critical">
+            <strong>If Copilot doesn't respond:</strong><br>
+            Wait 5 seconds, then try rephrasing. If still no response, say: "Copilot is connecting -- while it loads,
+            let me show you the manual path, which is what your associates do today. And THIS is what Copilot turns it
+            into." Then switch to a case where Copilot has already generated a summary.
+        </div>
+
+        <div class="callout critical">
+            <strong>If someone asks about admin configuration:</strong><br>
+            Always redirect: "Great question. We've set that up specifically for your environment. In our tech deep dive
+            session with Benton, Chad, and Justin, we'll walk through exactly how all of this is configured -- routing
+            rules, queue setup, skills, the AIP process mapping. Today is about the experience."
+        </div>
+
+        <div class="callout critical">
+            <strong>If someone asks about pricing/licensing:</strong><br>
+            Redirect: "Dana can walk through the licensing and commercial details in our follow-up. Today let's stay
+            focused on the experience and what this means for your team's day-to-day."
+        </div>
+
+    </div>
+
+    <footer>
+        Zurn / Elkay -- Demo Execution Guide (Click-by-Click) &bull; March 12, 2026 &bull; Confidential<br>
+        Pairs with: Demo Plan Review &bull; Source: demo-script.md, sample-emails.md
+    </footer>
+
+    <script>
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
+        }
+    </script>
+
+</body>
+
+</html>

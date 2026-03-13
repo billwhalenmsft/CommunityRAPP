@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Modification Custom Page — Build Guide</title>
+    <style>
+        :root {
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-warm: #D83B01;
+            --accent-green: #107C10;
+            --accent-purple: #5C2D91;
+            --accent-teal: #008575;
+            --accent-red: #A4262C;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ─── Hero ─── */
+        .hero {
+            background: linear-gradient(135deg, #0078D4 0%, #005A9E 50%, #5C2D91 100%);
+            color: white;
+            padding: 56px 40px 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #D83B01, #FFB900, #107C10, #0078D4, #5C2D91);
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+            margin-bottom: 18px;
+        }
+
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            font-size: 0.88rem;
+            opacity: 0.85;
+            flex-wrap: wrap;
+        }
+
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 4px 16px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ─── Container ─── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ─── Section Label ─── */
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--ms-blue);
+            margin-top: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* ─── Cards ─── */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 24px 28px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card-header:hover {
+            background: rgba(0, 120, 212, 0.03);
+        }
+
+        .card-number {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .card-header-text {
+            flex: 1;
+        }
+
+        .card-header-text h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .card-header-text .card-subtitle {
+            font-size: 0.86rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .card-time {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .card-expand {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .card.open .card-expand {
+            transform: rotate(180deg);
+        }
+
+        .card-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.45s ease;
+        }
+
+        .card.open .card-body {
+            max-height: 6000px;
+        }
+
+        .card-content {
+            padding: 0 28px 28px 86px;
+        }
+
+        /* ─── Wizard Flow Visual ─── */
+        .wizard-flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            margin: 28px 0 8px;
+            position: relative;
+        }
+
+        .wizard-flow::before {
+            content: '';
+            position: absolute;
+            top: 34px;
+            left: 12%;
+            right: 12%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--ms-blue), var(--accent-warm), var(--accent-green), var(--accent-purple));
+            border-radius: 2px;
+            z-index: 0;
+        }
+
+        .wizard-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .wizard-step .step-circle {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 10px;
+        }
+
+        .wizard-step .step-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .wizard-step .step-desc {
+            font-size: 0.74rem;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* ─── Mapping Table ─── */
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.88rem;
+        }
+
+        .mapping-table th {
+            background: var(--ms-blue);
+            color: white;
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mapping-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mapping-table tr:nth-child(even) td {
+            background: #F8F8F8;
+        }
+
+        .mapping-table tr:hover td {
+            background: var(--ms-blue-light);
+        }
+
+        /* ─── Line Items Table ─── */
+        .line-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.85rem;
+        }
+
+        .line-table th {
+            background: #F3F2F1;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .line-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .line-table .cancel-row td {
+            background: #FDE7E9;
+            text-decoration: line-through;
+            color: var(--accent-red);
+            opacity: 0.85;
+        }
+
+        .line-table .keep-row td {
+            background: #DFF6DD;
+        }
+
+        .line-table .amount {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+
+        /* ─── Code Block ─── */
+        .code-block {
+            background: #1E1E1E;
+            color: #D4D4D4;
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin: 12px 0;
+            font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+            font-size: 0.82rem;
+            line-height: 1.65;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block .lang-label {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #858585;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .code-kw {
+            color: #569CD6;
+        }
+
+        .code-str {
+            color: #CE9178;
+        }
+
+        .code-fn {
+            color: #DCDCAA;
+        }
+
+        .code-cmt {
+            color: #6A9955;
+            font-style: italic;
+        }
+
+        .code-num {
+            color: #B5CEA8;
+        }
+
+        .code-op {
+            color: #D4D4D4;
+        }
+
+        /* ─── Callout Boxes ─── */
+        .callout {
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 18px 22px;
+            margin: 18px 0;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .callout h4 {
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .callout-blue {
+            background: linear-gradient(135deg, #DEECF9 0%, #EEF5FC 100%);
+            border-left: 4px solid var(--ms-blue);
+        }
+
+        .callout-blue h4 {
+            color: var(--ms-blue);
+        }
+
+        .callout-green {
+            background: linear-gradient(135deg, #DFF6DD 0%, #EAFBE8 100%);
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .callout-green h4 {
+            color: var(--accent-green);
+        }
+
+        .callout-amber {
+            background: linear-gradient(135deg, #FFF4CE 0%, #FFF8E1 100%);
+            border-left: 4px solid #FFB900;
+        }
+
+        .callout-amber h4 {
+            color: #986F0B;
+        }
+
+        .callout-red {
+            background: linear-gradient(135deg, #FDE7E9 0%, #FFF0F1 100%);
+            border-left: 4px solid var(--accent-red);
+        }
+
+        .callout-red h4 {
+            color: var(--accent-red);
+        }
+
+        .callout-purple {
+            background: linear-gradient(135deg, #EDE3F6 0%, #F5F0FA 100%);
+            border-left: 4px solid var(--accent-purple);
+        }
+
+        .callout-purple h4 {
+            color: var(--accent-purple);
+        }
+
+        /* ─── Instruction Steps ─── */
+        .instructions {
+            padding-left: 0;
+            list-style: none;
+            counter-reset: instr;
+        }
+
+        .instructions li {
+            counter-increment: instr;
+            padding: 10px 0 10px 44px;
+            position: relative;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #F3F2F1;
+        }
+
+        .instructions li:last-child {
+            border-bottom: none;
+        }
+
+        .instructions li::before {
+            content: counter(instr);
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--ms-blue-light);
+            color: var(--ms-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .instructions li strong {
+            color: var(--ms-blue-dark);
+        }
+
+        /* ─── Pills ─── */
+        .pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .pill-blue {
+            background: var(--ms-blue-light);
+            color: var(--ms-blue-dark);
+        }
+
+        .pill-green {
+            background: #DFF6DD;
+            color: #0B6A0B;
+        }
+
+        .pill-red {
+            background: #FDE7E9;
+            color: var(--accent-red);
+        }
+
+        .pill-purple {
+            background: #EDE3F6;
+            color: var(--accent-purple);
+        }
+
+        .pill-amber {
+            background: #FFF4CE;
+            color: #986F0B;
+        }
+
+        .pill-teal {
+            background: #D1F0EC;
+            color: var(--accent-teal);
+        }
+
+        /* ─── Screen Mockup ─── */
+        .screen-mockup {
+            background: #F3F2F1;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            padding: 0;
+            margin: 16px 0;
+            overflow: hidden;
+            max-width: 380px;
+        }
+
+        .screen-titlebar {
+            background: var(--ms-blue);
+            color: white;
+            padding: 10px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .screen-body {
+            padding: 16px;
+            background: white;
+            font-size: 0.82rem;
+        }
+
+        .screen-body .mock-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #F3F2F1;
+        }
+
+        .screen-body .mock-row:last-child {
+            border-bottom: none;
+        }
+
+        .mock-row .mock-sku {
+            font-weight: 600;
+            color: var(--ms-blue-dark);
+        }
+
+        .mock-row .mock-price {
+            font-variant-numeric: tabular-nums;
+            color: var(--text-light);
+        }
+
+        .mock-row .mock-cancel {
+            color: var(--accent-red);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .screen-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: var(--ms-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            cursor: default;
+            text-align: center;
+        }
+
+        .screen-btn.green {
+            background: var(--accent-green);
+        }
+
+        /* ─── Talking Points ─── */
+        .talk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .talk-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 22px;
+            border-top: 3px solid var(--ms-blue);
+            transition: transform 0.2s;
+        }
+
+        .talk-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .talk-card .talk-quote {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ms-blue-dark);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .talk-card .talk-detail {
+            font-size: 0.84rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* ─── Troubleshooting ─── */
+        .ts-grid {
+            margin: 16px 0;
+        }
+
+        .ts-row {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.86rem;
+        }
+
+        .ts-row:last-child {
+            border-bottom: none;
+        }
+
+        .ts-issue {
+            font-weight: 600;
+            color: var(--accent-red);
+        }
+
+        .ts-fix {
+            color: var(--text);
+        }
+
+        /* ─── Footer ─── */
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 48px;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 40px 20px 36px;
+            }
+
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+
+            .wizard-flow {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .wizard-flow::before {
+                display: none;
+            }
+
+            .card-content {
+                padding: 0 20px 20px 20px;
+            }
+
+            .talk-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ─── Print ─── */
+        @media print {
+            .card-body {
+                max-height: none !important;
+            }
+
+            .card-expand {
+                display: none;
+            }
+
+            .hero {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ════════ HERO ════════ -->
+    <div class="hero">
+        <h1>Order Modification Custom Page</h1>
+        <div class="subtitle">Build Guide — Power Apps Custom Page in D365 Productivity Pane</div>
+        <div class="meta">
+            <span>📋 4-Screen Wizard</span>
+            <span>🔧 Power Apps Custom Page</span>
+            <span>📌 Productivity Pane Side Panel</span>
+        </div>
+        <div class="badge">REPLACES SALESFORCE SCREEN FLOW</div>
+    </div>
+
+    <!-- ════════ WIZARD FLOW VISUAL ════════ -->
+    <div class="container">
+        <div class="section-label">Wizard Architecture</div>
+        <div class="wizard-flow">
+            <div class="wizard-step">
+                <div class="step-circle" style="background:var(--ms-blue);">🔍</div>
+                <div class="step-label">Order Lookup</div>
+                <div class="step-desc">Select PO to modify</div>
+            </div>
+            <div class="wizard-step">
+                <div class="step-circle" style="background:var(--accent-warm);">✏️</div>
+                <div class="step-label">Line Management</div>
+                <div class="step-desc">Cancel / edit / expedite</div>
+            </div>
+            <div class="wizard-step">
+                <div class="step-circle" style="background:var(--accent-green);">📝</div>
+                <div class="step-label">Review &amp; Confirm</div>
+                <div class="step-desc">Change summary + delta</div>
+            </div>
+            <div class="wizard-step">
+                <div class="step-circle" style="background:var(--accent-purple);">✅</div>
+                <div class="step-label">Confirmation</div>
+                <div class="step-desc">Success + next actions</div>
+            </div>
+        </div>
+
+        <!-- ════════ SF → D365 MAPPING ════════ -->
+        <div class="section-label">Salesforce → D365 Mapping</div>
+        <table class="mapping-table">
+            <thead>
+                <tr>
+                    <th>Salesforce</th>
+                    <th>D365 Equivalent (This Build)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Screen Flow in Utility Bar</td>
+                    <td>Custom Page in Productivity Pane</td>
+                </tr>
+                <tr>
+                    <td>Lightning Flow for Service</td>
+                    <td>Canvas app + Dataverse connector</td>
+                </tr>
+                <tr>
+                    <td>Process Builder automation</td>
+                    <td>Power Automate cloud flow</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ════════ DEMO SCENARIO ════════ -->
+        <div class="callout callout-blue">
+            <h4>Demo Scenario</h4>
+            During the <strong>phone call</strong> with Mike Reynolds (Ferguson), the agent uses this Custom Page to:
+            <ol style="margin-top:8px; padding-left:18px;">
+                <li>Pull up <strong>PO #94820</strong></li>
+                <li>Cancel lines 4 &amp; 5 (drinking fountains + stainless sinks)</li>
+                <li>Expedite lines 1–3 from March 15 → March 10</li>
+                <li>Confirm changes and generate a summary</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- ════════ REFERENCE DATA ════════ -->
+    <div class="container">
+        <div class="section-label">Reference Data — PO #94820</div>
+        <table class="line-table">
+            <thead>
+                <tr>
+                    <th>Line</th>
+                    <th>SKU</th>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th class="amount">Unit Price</th>
+                    <th class="amount">Extended</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="keep-row">
+                    <td>1</td>
+                    <td>EK-BF-5001</td>
+                    <td>Elkay EZH2O Bottle Filling Station</td>
+                    <td>120</td>
+                    <td class="amount">$1,150</td>
+                    <td class="amount">$138,000</td>
+                    <td><span class="pill pill-green">EXPEDITE</span></td>
+                </tr>
+                <tr class="keep-row">
+                    <td>2</td>
+                    <td>EK-WC-5002</td>
+                    <td>Elkay Wall Mount Water Cooler Bi-Level ADA</td>
+                    <td>60</td>
+                    <td class="amount">$780</td>
+                    <td class="amount">$46,800</td>
+                    <td><span class="pill pill-green">EXPEDITE</span></td>
+                </tr>
+                <tr class="keep-row">
+                    <td>3</td>
+                    <td>EK-FL-6003</td>
+                    <td>Elkay WaterSentry Plus Replacement Filter</td>
+                    <td>200</td>
+                    <td class="amount">$29.50</td>
+                    <td class="amount">$5,900</td>
+                    <td><span class="pill pill-green">EXPEDITE</span></td>
+                </tr>
+                <tr class="cancel-row">
+                    <td>4</td>
+                    <td>EK-DF-5003</td>
+                    <td>Elkay Floor Mount Drinking Fountain ADA</td>
+                    <td>25</td>
+                    <td class="amount">$1,450</td>
+                    <td class="amount">$36,250</td>
+                    <td><span class="pill pill-red">CANCEL</span></td>
+                </tr>
+                <tr class="cancel-row">
+                    <td>5</td>
+                    <td>EK-SS-6001</td>
+                    <td>Elkay Stainless Steel Single Bowl Sink</td>
+                    <td>40</td>
+                    <td class="amount">$780</td>
+                    <td class="amount">$31,200</td>
+                    <td><span class="pill pill-red">CANCEL</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="display:flex; gap:20px; flex-wrap:wrap; margin:12px 0 8px;">
+            <div class="callout callout-red" style="flex:1; min-width:200px; margin:0;">
+                <h4>Credit Amount</h4>
+                <div style="font-size:1.6rem; font-weight:700; color:var(--accent-red);">−$67,450</div>
+                <div style="font-size:0.8rem; margin-top:4px;">Lines 4 + 5 cancelled</div>
+            </div>
+            <div class="callout callout-green" style="flex:1; min-width:200px; margin:0;">
+                <h4>New Delivery</h4>
+                <div style="font-size:1.6rem; font-weight:700; color:var(--accent-green);">March 10</div>
+                <div style="font-size:0.8rem; margin-top:4px;">Was March 15 — 5 days earlier</div>
+            </div>
+            <div class="callout callout-blue" style="flex:1; min-width:200px; margin:0;">
+                <h4>Remaining Total</h4>
+                <div style="font-size:1.6rem; font-weight:700; color:var(--ms-blue);">$190,700</div>
+                <div style="font-size:0.8rem; margin-top:4px;">3 line items active</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ BUILD STEPS ════════ -->
+    <div class="container">
+        <div class="section-label">Build Steps</div>
+
+        <!-- Step 1 -->
+        <div class="card open" data-step="1">
+            <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-number" style="background:var(--ms-blue);">1</div>
+                <div class="card-header-text">
+                    <h3>Create the Custom Page</h3>
+                    <div class="card-subtitle">Power Apps Maker Portal setup</div>
+                </div>
+                <span class="card-time">~5 min</span>
+                <span class="card-expand">▾</span>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <h4 style="margin-bottom:12px; color:var(--ms-blue-dark);">1.1 — Open Maker Portal</h4>
+                    <ol class="instructions">
+                        <li>Go to <strong>https://make.powerapps.com</strong></li>
+                        <li>Select the environment: <strong>orgecbce8ef</strong> (the D365 CS org)</li>
+                        <li>Click <strong>Solutions</strong> → open or create a solution (e.g., "Zurn Elkay Demo
+                            Components")</li>
+                        <li>Click <strong>+ New</strong> → <strong>App</strong> → <strong>Page</strong> (Custom Page)
+                        </li>
+                        <li>Name: <strong>Order Modification Wizard</strong></li>
+                        <li>Choose <strong>Start with a blank page</strong></li>
+                    </ol>
+
+                    <h4 style="margin:20px 0 12px; color:var(--ms-blue-dark);">1.2 — Set Page Dimensions</h4>
+                    <div class="callout callout-amber">
+                        <h4>Productivity Pane Width</h4>
+                        Custom Pages in the pane render in a narrow side panel. Set <strong>Width: 380</strong> and
+                        <strong>Height: 800</strong>.<br>
+                        Go to <strong>Settings (⚙️)</strong> → <strong>Display</strong> → update dimensions.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="card" data-step="2">
+            <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-number" style="background:var(--accent-warm);">2</div>
+                <div class="card-header-text">
+                    <h3>Build the 4 Screens</h3>
+                    <div class="card-subtitle">Order Lookup → Line Management → Review → Confirmation</div>
+                </div>
+                <span class="card-time">~60 min</span>
+                <span class="card-expand">▾</span>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+
+                    <!-- Screen 1 -->
+                    <h4 style="margin-bottom:10px; color:var(--ms-blue);">Screen 1: Order Lookup</h4>
+                    <p style="font-size:0.88rem; color:var(--text-light); margin-bottom:12px;">Agent selects which order
+                        to modify. Auto-filters to active orders.</p>
+
+                    <div class="screen-mockup">
+                        <div class="screen-titlebar">🔍 Order Modification</div>
+                        <div class="screen-body">
+                            <div style="font-size:0.78rem; color:var(--text-light); margin-bottom:10px;">Select the
+                                order to modify</div>
+                            <div class="mock-row"
+                                style="background:#EEF5FC; border-radius:6px; padding:10px; margin-bottom:6px;">
+                                <div>
+                                    <div class="mock-sku">PO-94820</div>
+                                    <div style="font-size:0.75rem; color:var(--text-light);">Hydration Products Q1</div>
+                                </div>
+                                <div class="mock-price">$258,150</div>
+                            </div>
+                            <div class="mock-row" style="padding:10px;">
+                                <div>
+                                    <div class="mock-sku">PO-95102</div>
+                                    <div style="font-size:0.75rem; color:var(--text-light);">Flush Valves Replenishment
+                                    </div>
+                                </div>
+                                <div class="mock-price">$94,550</div>
+                            </div>
+                            <div class="mock-row" style="padding:10px;">
+                                <div>
+                                    <div class="mock-sku">PO-93201</div>
+                                    <div style="font-size:0.75rem; color:var(--text-light);">Zurn Backflow Q4</div>
+                                </div>
+                                <div class="mock-price">$108,125</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="font-size:0.84rem; margin:10px 0 4px;"><strong>Gallery control</strong> —
+                        <code>galOrders</code></p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-fn">Filter</span>(
+                        <span class="code-str">'Sales Orders'</span>,
+                        <span class="code-str">'Status Reason'</span> = <span class="code-str">'Status Reason (Sales
+                            Orders)'</span>.Active
+                        )
+                    </div>
+                    <p style="font-size:0.84rem; margin:8px 0;"><strong>OnSelect</strong>:</p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-fn">Set</span>(varSelectedOrder, ThisItem);
+                        <span class="code-fn">Navigate</span>(scrLineManagement)
+                    </div>
+
+                    <hr style="border:none; border-top:1px solid var(--border); margin:24px 0;">
+
+                    <!-- Screen 2 -->
+                    <h4 style="margin-bottom:10px; color:var(--accent-warm);">Screen 2: Line Management</h4>
+                    <p style="font-size:0.88rem; color:var(--text-light); margin-bottom:12px;">Shows all line items.
+                        Agent marks lines for cancellation and adjusts delivery dates.</p>
+
+                    <div class="screen-mockup">
+                        <div class="screen-titlebar" style="background:var(--accent-warm);">✏️ PO PO-94820 — Ferguson
+                        </div>
+                        <div class="screen-body">
+                            <div class="mock-row">
+                                <div><span class="pill pill-blue">Ln 1</span> <span class="mock-sku"
+                                        style="margin-left:6px;">EK-BF-5001</span></div>
+                                <div class="mock-price">$138,000</div>
+                            </div>
+                            <div class="mock-row">
+                                <div><span class="pill pill-blue">Ln 2</span> <span class="mock-sku"
+                                        style="margin-left:6px;">EK-WC-5002</span></div>
+                                <div class="mock-price">$46,800</div>
+                            </div>
+                            <div class="mock-row">
+                                <div><span class="pill pill-blue">Ln 3</span> <span class="mock-sku"
+                                        style="margin-left:6px;">EK-FL-6003</span></div>
+                                <div class="mock-price">$5,900</div>
+                            </div>
+                            <div class="mock-row" style="background:#FDE7E9;">
+                                <div><span class="pill pill-red">Ln 4</span> <span class="mock-sku"
+                                        style="margin-left:6px;">EK-DF-5003</span></div>
+                                <div class="mock-cancel">☒ CANCEL</div>
+                            </div>
+                            <div class="mock-row" style="background:#FDE7E9;">
+                                <div><span class="pill pill-red">Ln 5</span> <span class="mock-sku"
+                                        style="margin-left:6px;">EK-SS-6001</span></div>
+                                <div class="mock-cancel">☒ CANCEL</div>
+                            </div>
+                            <div style="font-size:0.78rem; color:var(--accent-red); font-weight:600; margin-top:10px;">
+                                Cancelling 2 lines = −$67,450
+                            </div>
+                            <div class="screen-btn" style="background:var(--accent-warm);">Review Changes →</div>
+                        </div>
+                    </div>
+
+                    <p style="font-size:0.84rem; margin:10px 0 4px;"><strong>Gallery</strong> —
+                        <code>galLineItems</code></p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-fn">Filter</span>(
+                        <span class="code-str">'Sales Order Products'</span>,
+                        <span class="code-str">'Sales Order'</span>.<span class="code-str">'Sales Order'</span> =
+                        varSelectedOrder.<span class="code-str">'Sales Order'</span>
+                        )
+                    </div>
+
+                    <p style="font-size:0.84rem; margin:10px 0 4px;"><strong>Checkbox OnCheck / OnUncheck</strong>:</p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-cmt">// OnCheck</span>
+                        <span class="code-fn">Collect</span>(colCancelledLines, ThisItem)
+
+                        <span class="code-cmt">// OnUncheck</span>
+                        <span class="code-fn">Remove</span>(colCancelledLines, ThisItem)
+                    </div>
+
+                    <p style="font-size:0.84rem; margin:10px 0 4px;"><strong>Running totals footer</strong>:</p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-str">"Cancelling "</span> &amp; <span
+                            class="code-fn">CountRows</span>(colCancelledLines) &amp; <span class="code-str">" lines =
+                            -$"</span> &amp;
+                        <span class="code-fn">Text</span>(<span class="code-fn">Sum</span>(colCancelledLines, <span
+                            class="code-str">'Extended Amount'</span>), <span class="code-str">"#,##0.00"</span>)
+                    </div>
+
+                    <p style="font-size:0.84rem; margin:10px 0 4px;"><strong>OnVisible</strong> — initialize
+                        collections:</p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-fn">ClearCollect</span>(colCancelledLines, <span
+                            class="code-fn">Blank</span>());
+                        <span class="code-fn">ClearCollect</span>(colDateChanges, <span class="code-fn">Blank</span>());
+                    </div>
+
+                    <hr style="border:none; border-top:1px solid var(--border); margin:24px 0;">
+
+                    <!-- Screen 3 -->
+                    <h4 style="margin-bottom:10px; color:var(--accent-green);">Screen 3: Review &amp; Confirm</h4>
+                    <p style="font-size:0.88rem; color:var(--text-light); margin-bottom:12px;">Summary of all changes
+                        before submitting. Shows delta with red strikethrough on cancellations.</p>
+
+                    <p style="font-size:0.84rem; margin:10px 0 4px;"><strong>HTML Text control</strong> — change
+                        summary:</p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-str">"&lt;h3&gt;Lines to Cancel&lt;/h3&gt;"</span> &amp;
+                        <span class="code-fn">Concat</span>(colCancelledLines,
+                        <span class="code-str">"&lt;div style='color:red;text-decoration:line-through'&gt;Ln "</span>
+                        &amp;
+                        <span class="code-str">'Line Item Number'</span> &amp; <span class="code-str">" — "</span> &amp;
+                        <span class="code-str">'Product Description'</span> &amp;
+                        <span class="code-str">" ($"</span> &amp; <span class="code-fn">Text</span>(<span
+                            class="code-str">'Extended Amount'</span>, <span class="code-str">"#,##0.00"</span>) &amp;
+                        <span class="code-str">")&lt;/div&gt;"</span>
+                        ) &amp;
+                        <span class="code-str">"&lt;h3&gt;Delivery Date Changes&lt;/h3&gt;"</span> &amp;
+                        <span class="code-str">"&lt;div&gt;New delivery: March 10, 2026 (was March
+                            15)&lt;/div&gt;"</span>
+                    </div>
+
+                    <p style="font-size:0.84rem; margin:10px 0 4px;"><strong>Submit button OnSelect</strong>:</p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-cmt">// Cancel the selected lines</span>
+                        <span class="code-fn">ForAll</span>(colCancelledLines,
+                        <span class="code-fn">Patch</span>(<span class="code-str">'Sales Order Products'</span>,
+                        ThisRecord,
+                        { <span class="code-str">'Quantity Cancelled'</span>: ThisRecord.Quantity }
+                        )
+                        );
+
+                        <span class="code-cmt">// Expedite remaining lines to March 10</span>
+                        <span class="code-fn">ForAll</span>(
+                        <span class="code-fn">Filter</span>(<span class="code-str">'Sales Order Products'</span>,
+                        <span class="code-str">'Sales Order'</span>.<span class="code-str">'Sales Order'</span> =
+                        varSelectedOrder.<span class="code-str">'Sales Order'</span>,
+                        !(<span class="code-str">'Sales Order Detail'</span> <span class="code-kw">in</span>
+                        colCancelledLines.<span class="code-str">'Sales Order Detail'</span>)
+                        ),
+                        <span class="code-fn">Patch</span>(<span class="code-str">'Sales Order Products'</span>,
+                        ThisRecord,
+                        { <span class="code-str">'Ship To: Requested Delivery Date'</span>: <span
+                            class="code-fn">Date</span>(<span class="code-num">2026</span>, <span
+                            class="code-num">3</span>, <span class="code-num">10</span>) }
+                        )
+                        );
+
+                        <span class="code-fn">Navigate</span>(scrConfirmation);
+                    </div>
+
+                    <div class="callout callout-amber">
+                        <h4>Simplified for Demo</h4>
+                        In production, you'd call a <strong>Power Automate flow</strong> for the submit action to handle
+                        FNO integration, email notifications, and approval workflows.
+                    </div>
+
+                    <hr style="border:none; border-top:1px solid var(--border); margin:24px 0;">
+
+                    <!-- Screen 4 -->
+                    <h4 style="margin-bottom:10px; color:var(--accent-purple);">Screen 4: Confirmation</h4>
+                    <p style="font-size:0.88rem; color:var(--text-light); margin-bottom:12px;">Success confirmation with
+                        next actions.</p>
+
+                    <div class="screen-mockup">
+                        <div class="screen-titlebar" style="background:var(--accent-green);">✅ Order Updated</div>
+                        <div class="screen-body" style="text-align:center; padding:24px 16px;">
+                            <div style="font-size:2.4rem; margin-bottom:8px;">✅</div>
+                            <div style="font-size:1.1rem; font-weight:600; margin-bottom:4px;">Order Updated
+                                Successfully</div>
+                            <div style="font-size:0.85rem; color:var(--text-light); margin-bottom:4px;">PO PO-94820 has
+                                been modified</div>
+                            <div style="font-size:0.85rem; color:var(--text-light); margin-bottom:16px;">2 lines
+                                cancelled | Delivery → March 10, 2026</div>
+                            <div
+                                style="font-size:1.2rem; font-weight:700; color:var(--accent-red); margin-bottom:18px;">
+                                Credit: $67,450</div>
+                            <div class="screen-btn" style="background:var(--accent-teal); margin-bottom:8px;">📌 Add to
+                                Case Timeline</div>
+                            <div class="screen-btn" style="background:var(--ms-blue);">✉️ Draft Confirmation Email</div>
+                        </div>
+                    </div>
+
+                    <p style="font-size:0.84rem; margin:14px 0 4px;"><strong>"Add to Case Timeline" OnSelect</strong>:
+                    </p>
+                    <div class="code-block">
+                        <span class="lang-label">Power Fx</span>
+                        <span class="code-fn">Patch</span>(Notes, <span class="code-fn">Defaults</span>(Notes), {
+                        Subject: <span class="code-str">"Order Modification - PO "</span> &amp; varSelectedOrder.<span
+                            class="code-str">'Order ID'</span>,
+                        <span class="code-str">'Note Text'</span>: <span class="code-str">"Cancelled "</span> &amp;
+                        <span class="code-fn">CountRows</span>(colCancelledLines) &amp;
+                        <span class="code-str">" lines. Credit: $"</span> &amp; <span class="code-fn">Text</span>(...)
+                        &amp;
+                        <span class="code-str">". Delivery expedited to March 10, 2026."</span>,
+                        <span class="code-str">'Regarding (Cases)'</span>: <span class="code-fn">LookUp</span>(Cases,
+                        <span class="code-str">'Case Title'</span> = <span class="code-str">"Ferguson PO #94820 - Order
+                            modification request"</span>)
+                        });
+                        <span class="code-fn">Notify</span>(<span class="code-str">"Note added to case timeline"</span>,
+                        NotificationType.Success);
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="card" data-step="3">
+            <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-number" style="background:var(--accent-green);">3</div>
+                <div class="card-header-text">
+                    <h3>Add Data Sources</h3>
+                    <div class="card-subtitle">Connect the Custom Page to Dataverse tables</div>
+                </div>
+                <span class="card-time">~3 min</span>
+                <span class="card-expand">▾</span>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <p style="font-size:0.88rem; margin-bottom:14px;">In the Custom Page editor, click
+                        <strong>Data</strong> (cylinder icon) → <strong>+ Add data</strong> →
+                        <strong>Dataverse</strong>, then add each table:</p>
+                    <div style="display:flex; flex-wrap:wrap; gap:10px; margin:12px 0;">
+                        <span class="pill pill-blue" style="font-size:0.82rem; padding:6px 14px;">Sales Orders <code
+                                style="font-size:0.72rem;">(salesorder)</code></span>
+                        <span class="pill pill-blue" style="font-size:0.82rem; padding:6px 14px;">Sales Order Products
+                            <code style="font-size:0.72rem;">(salesorderdetail)</code></span>
+                        <span class="pill pill-blue" style="font-size:0.82rem; padding:6px 14px;">Accounts <code
+                                style="font-size:0.72rem;">(account)</code></span>
+                        <span class="pill pill-teal" style="font-size:0.82rem; padding:6px 14px;">Notes <code
+                                style="font-size:0.72rem;">(annotation)</code></span>
+                        <span class="pill pill-purple" style="font-size:0.82rem; padding:6px 14px;">Cases <code
+                                style="font-size:0.72rem;">(incident)</code></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="card" data-step="4">
+            <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-number" style="background:var(--accent-teal);">4</div>
+                <div class="card-header-text">
+                    <h3>Publish &amp; Add to Solution</h3>
+                    <div class="card-subtitle">Save, publish, verify in solution</div>
+                </div>
+                <span class="card-time">~2 min</span>
+                <span class="card-expand">▾</span>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <ol class="instructions">
+                        <li>Save the Custom Page (<strong>Ctrl+S</strong>)</li>
+                        <li><strong>Publish</strong> the Custom Page</li>
+                        <li>Verify it appears in your solution (<strong>Solutions</strong> → your solution → check the
+                            Custom Page is listed)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="card" data-step="5">
+            <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-number" style="background:var(--accent-purple);">5</div>
+                <div class="card-header-text">
+                    <h3>Register in the Productivity Pane</h3>
+                    <div class="card-subtitle">The critical step — make it appear in the agent's side panel</div>
+                </div>
+                <span class="card-time">~10 min</span>
+                <span class="card-expand">▾</span>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+
+                    <h4 style="margin-bottom:10px; color:var(--ms-blue-dark);">Option A — Admin Center (Recommended)
+                    </h4>
+                    <ol class="instructions">
+                        <li>Go to <strong>https://orgecbce8ef.crm.dynamics.com</strong> → <strong>Customer Service admin
+                                center</strong></li>
+                        <li>Left nav: <strong>Workspaces</strong> → <strong>Agent experience profiles</strong></li>
+                        <li>Open your demo profile (or create <strong>"Zurn Elkay Demo Profile"</strong>)</li>
+                        <li>Under <strong>Productivity pane</strong>, click <strong>Edit</strong> → ensure it's
+                            <strong>Enabled</strong></li>
+                        <li>Click <strong>+ Add tool</strong> → select <strong>Custom Page</strong> → choose
+                            <strong>Order Modification Wizard</strong></li>
+                        <li>Set Label: <strong>"Order Modification"</strong>, show on <strong>Case</strong> entity form,
+                            position alongside Copilot &amp; KB Search</li>
+                    </ol>
+
+                    <hr style="border:none; border-top:1px solid var(--border); margin:20px 0;">
+
+                    <h4 style="margin-bottom:10px; color:var(--accent-warm);">Option B — Client API (Programmatic)</h4>
+                    <p style="font-size:0.88rem; color:var(--text-light); margin-bottom:10px;">If the admin UI doesn't
+                        support custom page tools directly, add a <strong>Command Bar button</strong> on the Case form:
+                    </p>
+
+                    <div class="code-block">
+                        <span class="lang-label">JavaScript</span>
+                        <span class="code-kw">function</span> <span
+                            class="code-fn">openOrderModificationWizard</span>(formContext) {
+                        <span class="code-kw">var</span> pageInput = {
+                        pageType: <span class="code-str">"custom"</span>,
+                        name: <span class="code-str">"cr8d7_ordmodwizard_8a1b2"</span>, <span class="code-cmt">//
+                            Replace with your page unique name</span>
+                        entityName: <span class="code-str">"incident"</span>,
+                        recordId: formContext.data.entity.<span class="code-fn">getId</span>()
+                        };
+                        <span class="code-kw">var</span> navigationOptions = {
+                        target: <span class="code-num">2</span>, <span class="code-cmt">// 2 = side dialog</span>
+                        width: { value: <span class="code-num">400</span>, unit: <span class="code-str">"px"</span> },
+                        position: <span class="code-num">1</span> <span class="code-cmt">// 1 = side pane</span>
+                        };
+                        Xrm.Navigation.<span class="code-fn">navigateTo</span>(pageInput, navigationOptions);
+                        }
+                    </div>
+
+                    <hr style="border:none; border-top:1px solid var(--border); margin:20px 0;">
+
+                    <h4 style="margin-bottom:10px; color:var(--accent-teal);">Option C — Agent Script Action</h4>
+                    <ol class="instructions">
+                        <li>Add an <strong>Agent Script</strong> step of type <strong>"Macro"</strong></li>
+                        <li>Macro action: <strong>Open Custom Page</strong> (side pane)</li>
+                        <li>The guided walkthrough includes <strong>"Process order modification"</strong> as a step that
+                            opens the wizard</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="card" data-step="6">
+            <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-number" style="background:var(--ms-blue-dark);">6</div>
+                <div class="card-header-text">
+                    <h3>Test the Flow</h3>
+                    <div class="card-subtitle">End-to-end validation mirroring the phone call demo</div>
+                </div>
+                <span class="card-time">~5 min</span>
+                <span class="card-expand">▾</span>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <ol class="instructions">
+                        <li>Open a case for Ferguson — <strong>"Ferguson PO #94820 - Order modification
+                                request"</strong></li>
+                        <li>Click the <strong>Order Modification</strong> tool in the productivity pane (right side)
+                        </li>
+                        <li><strong>Screen 1</strong>: See PO-94820 in the order list → click it</li>
+                        <li><strong>Screen 2</strong>: Check "Cancel" on <strong>Line 4</strong> (Drinking Fountains)
+                            and <strong>Line 5</strong> (Stainless Sinks)</li>
+                        <li><strong>Screen 2</strong>: Change delivery date to <strong>March 10</strong> for lines 1–3
+                        </li>
+                        <li>Verify running total: <strong>"Cancelling 2 lines = −$67,450"</strong></li>
+                        <li>Click <strong>"Review Changes"</strong></li>
+                        <li><strong>Screen 3</strong>: Verify red strikethrough on cancelled lines, new delivery date,
+                            credit amount</li>
+                        <li>Add agent note: <strong>"Per Mike Reynolds call — Fort Worth scope reduction"</strong></li>
+                        <li>Click <strong>"Submit Changes"</strong></li>
+                        <li><strong>Screen 4</strong>: Green checkmark → <strong>"Order Updated Successfully"</strong>
+                        </li>
+                        <li>Click <strong>"Add to Case Timeline"</strong> → verify note appears in case timeline</li>
+                        <li>Click <strong>"Draft Confirmation Email"</strong> → opens email to Mike</li>
+                    </ol>
+
+                    <h4 style="margin:20px 0 10px; color:var(--ms-blue-dark);">Expected Data Changes After Submit</h4>
+                    <table class="line-table">
+                        <thead>
+                            <tr>
+                                <th>Line</th>
+                                <th>Before</th>
+                                <th>After</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="keep-row">
+                                <td>Ln 1 EK-BF-5001</td>
+                                <td>120 × $1,150, Mar 15</td>
+                                <td>120 × $1,150, <strong>Mar 10</strong></td>
+                            </tr>
+                            <tr class="keep-row">
+                                <td>Ln 2 EK-WC-5002</td>
+                                <td>60 × $780, Mar 15</td>
+                                <td>60 × $780, <strong>Mar 10</strong></td>
+                            </tr>
+                            <tr class="keep-row">
+                                <td>Ln 3 EK-FL-6003</td>
+                                <td>200 × $29.50, Mar 15</td>
+                                <td>200 × $29.50, <strong>Mar 10</strong></td>
+                            </tr>
+                            <tr class="cancel-row">
+                                <td>Ln 4 EK-DF-5003</td>
+                                <td>25 × $1,450, Mar 15</td>
+                                <td><strong>CANCELLED</strong></td>
+                            </tr>
+                            <tr class="cancel-row">
+                                <td>Ln 5 EK-SS-6001</td>
+                                <td>40 × $780, Mar 15</td>
+                                <td><strong>CANCELLED</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ TALKING POINTS ════════ -->
+    <div class="container">
+        <div class="section-label">Demo Talking Points</div>
+        <div class="talk-grid">
+            <div class="talk-card">
+                <div class="talk-quote">"This replaces the Salesforce Screen Flow"</div>
+                <div class="talk-detail">Same guided experience, same side panel position, but built natively on Power
+                    Platform with direct Dataverse access.</div>
+            </div>
+            <div class="talk-card" style="border-top-color:var(--accent-green);">
+                <div class="talk-quote">"No code deployment needed"</div>
+                <div class="talk-detail">Built in the maker portal, deployed through solutions. No Apex triggers, no
+                    VisualForce pages, no deployment pipelines.</div>
+            </div>
+            <div class="talk-card" style="border-top-color:var(--accent-warm);">
+                <div class="talk-quote">"Context-aware"</div>
+                <div class="talk-detail">The wizard knows which case the agent is on and auto-filters orders to the
+                    customer. In SF, this required custom Lightning components.</div>
+            </div>
+            <div class="talk-card" style="border-top-color:var(--accent-purple);">
+                <div class="talk-quote">"Extensible"</div>
+                <div class="talk-detail">Add approval workflows with Power Automate, connect to FNO for fulfillment, add
+                    AI Builder for order anomaly detection — all low-code.</div>
+            </div>
+            <div class="talk-card" style="border-top-color:var(--accent-teal);">
+                <div class="talk-quote">"Same experience as Copilot"</div>
+                <div class="talk-detail">The Order Modification wizard sits right next to Copilot and Smart Assist in
+                    the productivity pane. Agents don't leave their workspace.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ SHORTCUT ════════ -->
+    <div class="container">
+        <div class="callout callout-purple">
+            <h4>⏱️ Demo-Day Shortcut (~30 min instead of ~2 hrs)</h4>
+            <p style="margin-top:6px;">If you run out of time building the full 4-screen wizard:</p>
+            <ol style="margin-top:8px; padding-left:18px; font-size:0.88rem; line-height:1.8;">
+                <li>Create a <strong>single-screen</strong> Custom Page with just a gallery showing PO #94820's line
+                    items</li>
+                <li>Add checkboxes for cancel and a submit button</li>
+                <li>Skip the date picker and review screen</li>
+            </ol>
+            <p style="margin-top:10px;">The key demo point is the <strong>productivity pane embedding</strong> — showing
+                that D365 has the same side-panel guided process capability as Salesforce's Utility Bar flows.</p>
+        </div>
+    </div>
+
+    <!-- ════════ TROUBLESHOOTING ════════ -->
+    <div class="container">
+        <div class="section-label">Troubleshooting</div>
+        <div class="card open" style="border-left: 5px solid var(--accent-red);">
+            <div class="card-content" style="padding:24px 28px;">
+                <div class="ts-grid">
+                    <div class="ts-row">
+                        <div class="ts-issue">Custom Page not showing in pane</div>
+                        <div class="ts-fix">Verify it's published and added to the Agent Experience Profile</div>
+                    </div>
+                    <div class="ts-row">
+                        <div class="ts-issue">"No orders found" in gallery</div>
+                        <div class="ts-fix">Check Data Source is added; verify Sales Orders table has data</div>
+                    </div>
+                    <div class="ts-row">
+                        <div class="ts-issue">Can't patch Sales Order Products</div>
+                        <div class="ts-fix">Ensure the Custom Page has Dataverse connection with sufficient privileges
+                        </div>
+                    </div>
+                    <div class="ts-row">
+                        <div class="ts-issue">Productivity pane empty</div>
+                        <div class="ts-fix">Enable the pane in Agent Experience Profile → Productivity Pane toggle ON
+                        </div>
+                    </div>
+                    <div class="ts-row">
+                        <div class="ts-issue">Custom Page too wide</div>
+                        <div class="ts-fix">Set display width to 380px in Custom Page settings</div>
+                    </div>
+                    <div class="ts-row">
+                        <div class="ts-issue">Changes not reflecting</div>
+                        <div class="ts-fix">Click refresh on the Sales Order form; Dataverse patches are async</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ REFERENCE IDs ════════ -->
+    <div class="container">
+        <div class="section-label">Dataverse Reference IDs</div>
+        <table class="mapping-table" style="font-size:0.82rem;">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>ID / Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PO #94820 (salesorderid)</td>
+                    <td><code>e624146a-a718-f111-8342-7c1e520a58a1</code></td>
+                </tr>
+                <tr>
+                    <td>Ferguson Enterprises (accountid)</td>
+                    <td><code>ee8604af-8912-f111-8342-000d3a316172</code></td>
+                </tr>
+                <tr>
+                    <td>HD Supply (accountid)</td>
+                    <td><code>f48604af-8912-f111-8342-000d3a316172</code></td>
+                </tr>
+                <tr>
+                    <td>Elkay Standard Price List</td>
+                    <td><code>6cfa0c6e-8d12-f111-8407-7c1e520a58a1</code></td>
+                </tr>
+                <tr>
+                    <td>Zurn Standard Price List</td>
+                    <td><code>69fa0c6e-8d12-f111-8407-7c1e520a58a1</code></td>
+                </tr>
+                <tr>
+                    <td>Dataverse Org</td>
+                    <td><code>orgecbce8ef.crm.dynamics.com</code></td>
+                </tr>
+                <tr>
+                    <td>Data Seeding Script</td>
+                    <td><code>scripts/20-OrderMgmt.ps1</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ════════ FOOTER ════════ -->
+    <div class="footer">
+        <div>Zurn Elkay × D365 Customer Service Demo — Custom Page Build Guide</div>
+        <div style="margin-top:4px;">Generated March 5, 2026 · Data seeded by <code>20-OrderMgmt.ps1</code></div>
+    </div>
+
+    <!-- ════════ SCRIPT ════════ -->
+    <script>
+        function toggleCard(headerEl) {
+            const card = headerEl.closest('.card');
+            card.classList.toggle('open');
+        }
+
+        // Open first card by default (handled via class in HTML)
+    </script>
+</body>
+
+</html>

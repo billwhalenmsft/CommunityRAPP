@@ -1,0 +1,6 @@
+﻿=== SLA Version Option Set ===
+  Value: 100000000 | Label: Version WC
+  Value: 100000001 | Label: Version UC
+
+=== Existing SLAs ===
+  SLA | ver=100000001 | state=1

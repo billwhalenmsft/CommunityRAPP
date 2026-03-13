@@ -1,0 +1,527 @@
+# ============================================
+#  QUICK QUOTE - Product Picker (scrQuickQuote)
+#  Format: Power Apps pa.yaml SchemaV3
+# ============================================
+#
+#  Screen 1 of 2 for the Quick Quote tool.
+#  Agent selects brand, customer, then builds
+#  quote lines from the product catalog with
+#  real-time pricing from Price List Items.
+#
+#  Prerequisites:
+#    - 'Products' data source added
+#    - 'Price List Items' data source added
+#    - 'Accounts' data source added
+#    For Save feature (scrQuoteReview):
+#    - 'Quotes' data source added
+#    - 'Quote Lines' data source added
+#    - 'Price Lists' data source added
+#
+#  Variables/collections (initialized in scrHome):
+#    colQuoteLines    - line items collection
+#    varQuoteBrand    - "Zurn" or "Elkay"
+#    varQuoteAccount  - selected Accounts record
+#    varQuoteSaved    - boolean, quote saved flag
+#    varQuoteError    - error message text
+#    varTempPrice     - temp price from lookup
+#
+#  NOTE: Column display names may vary between
+#  D365 environments. If a formula shows "column
+#  not found", check:
+#    - Product number: 'Product ID' (schema: productnumber)
+#    - Customer: 'Potential Customer' vs 'Customer'
+#    - Amount on Price List Items: 'Amount'
+# ============================================
+
+Screens:
+  scrQuickQuote:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      OnVisible: |-
+        =Set(varQuoteSaved, false);
+        Set(varQuoteError, "");
+        Set(varTempPrice, Blank())
+    Children:
+      # -- Teal accent bar --
+      - rectQuoteBar:
+          Control: Rectangle
+          Properties:
+            X: =0
+            Y: =0
+            Width: =Parent.Width
+            Height: =6
+            Fill: =RGBA(0, 133, 117, 1)
+
+      # -- Document icon --
+      - icoQuoteIcon:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Document
+            X: =16
+            Y: =18
+            Width: =32
+            Height: =32
+            Color: =RGBA(0, 133, 117, 1)
+
+      # -- Title --
+      - lblQuoteTitle:
+          Control: Label
+          Properties:
+            Text: ="Quick Quote"
+            X: =58
+            Y: =16
+            Width: =200
+            Height: =30
+            Size: =20
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Home button (top right) --
+      - btnQuoteHome:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Home
+            X: =Parent.Width - 52
+            Y: =16
+            Width: =32
+            Height: =32
+            Color: =RGBA(96, 94, 92, 1)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+
+      # -- Subtitle --
+      - lblQuoteSubtitle:
+          Control: Label
+          Properties:
+            Text: ="Build a quote from the product catalog"
+            X: =58
+            Y: =48
+            Width: =Parent.Width - 74
+            Height: =22
+            Size: =11
+            Color: =RGBA(96, 94, 92, 1)
+
+      # -- Divider --
+      - rectQuoteDivider1:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =78
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  BRAND + CUSTOMER
+      # =============================================
+
+      # -- Brand label --
+      - lblBrandLbl:
+          Control: Label
+          Properties:
+            Text: ="Brand"
+            X: =16
+            Y: =86
+            Width: =Parent.Width - 32
+            Height: =20
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Brand dropdown --
+      - ddBrand:
+          Control: Classic/DropDown
+          Properties:
+            Items: =["Zurn", "Elkay"]
+            Default: ="Zurn"
+            X: =16
+            Y: =106
+            Width: =Parent.Width - 32
+            Height: =36
+            Size: =12
+            BorderColor: =RGBA(200, 198, 196, 1)
+
+      # -- Customer label --
+      - lblCustLbl:
+          Control: Label
+          Properties:
+            Text: ="Customer"
+            X: =16
+            Y: =150
+            Width: =Parent.Width - 32
+            Height: =20
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Customer search (ComboBox bound to Accounts) --
+      - cbAccount:
+          Control: Classic/ComboBox
+          Properties:
+            Items: =Accounts
+            DisplayFields: =["Account Name"]
+            SearchFields: =["Account Name"]
+            IsSearchable: =true
+            SelectMultiple: =false
+            X: =16
+            Y: =170
+            Width: =Parent.Width - 32
+            Height: =36
+            Size: =12
+            BorderColor: =RGBA(200, 198, 196, 1)
+
+      # -- Divider --
+      - rectQuoteDivider2:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =216
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  PRODUCT PICKER
+      # =============================================
+
+      # -- Product label --
+      - lblProductLbl:
+          Control: Label
+          Properties:
+            Text: ="Product"
+            X: =16
+            Y: =224
+            Width: =Parent.Width - 32
+            Height: =20
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Product search ComboBox --
+      # Filters by brand: ZN/WK = Zurn, EK = Elkay
+      # NOTE: If 'Product ID' column name differs in your
+      # environment, change to 'Product Number' below and
+      # in SearchFields.
+      - cbProductSearch:
+          Control: Classic/ComboBox
+          Properties:
+            Items: |-
+              =Filter(Products,
+                  If(ddBrand.Selected.Value = "Zurn",
+                      StartsWith('Product ID', "ZN") || StartsWith('Product ID', "WK"),
+                      StartsWith('Product ID', "EK")
+                  )
+              )
+            DisplayFields: =["Name", "Product ID"]
+            SearchFields: =["Name", "Product ID"]
+            IsSearchable: =true
+            SelectMultiple: =false
+            X: =16
+            Y: =244
+            Width: =Parent.Width - 32
+            Height: =36
+            Size: =11
+            BorderColor: =RGBA(200, 198, 196, 1)
+            OnChange: |-
+              =Set(varTempPrice,
+                  If(!IsBlank(cbProductSearch.Selected),
+                      LookUp(
+                          'Price List Items',
+                          Product.'Product ID' = cbProductSearch.Selected.'Product ID'
+                      ).Amount,
+                      Blank()
+                  )
+              )
+
+      # -- Qty label --
+      - lblQtyLbl:
+          Control: Label
+          Properties:
+            Text: ="Qty"
+            X: =16
+            Y: =288
+            Width: =80
+            Height: =20
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Unit Price label --
+      - lblPriceLbl:
+          Control: Label
+          Properties:
+            Text: ="Unit Price"
+            X: =104
+            Y: =288
+            Width: =Parent.Width - 120
+            Height: =20
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Qty text input --
+      - txtLineQty:
+          Control: Classic/TextInput
+          Properties:
+            Default: ="1"
+            Format: =TextFormat.Number
+            X: =16
+            Y: =308
+            Width: =80
+            Height: =36
+            Size: =12
+            BorderColor: =RGBA(200, 198, 196, 1)
+
+      # -- Price display (auto from Price List Items) --
+      - lblPriceValue:
+          Control: Label
+          Properties:
+            Text: |-
+              =If(
+                  !IsBlank(varTempPrice),
+                  Text(varTempPrice, "$#,##0.00"),
+                  If(!IsBlank(cbProductSearch.Selected),
+                      "Price not found",
+                      "Select a product"
+                  )
+              )
+            X: =104
+            Y: =308
+            Width: =Parent.Width - 120
+            Height: =36
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: |-
+              =If(!IsBlank(varTempPrice), RGBA(0, 133, 117, 1), RGBA(160, 158, 156, 1))
+            VerticalAlign: =VerticalAlign.Middle
+
+      # -- Add Line button --
+      - btnAddLine:
+          Control: Classic/Button
+          Properties:
+            Text: ="+ Add Line"
+            X: =16
+            Y: =352
+            Width: =Parent.Width - 32
+            Height: =38
+            Fill: =RGBA(0, 133, 117, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Size: =12
+            FontWeight: =FontWeight.Bold
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 113, 97, 1)
+            PressedFill: =RGBA(0, 93, 77, 1)
+            DisabledFill: =RGBA(200, 198, 196, 1)
+            DisplayMode: |-
+              =If(
+                  IsBlank(cbProductSearch.Selected) || Value(txtLineQty.Text) <= 0,
+                  DisplayMode.Disabled,
+                  DisplayMode.Edit
+              )
+            OnSelect: |-
+              =If(
+                  IsBlank(varTempPrice),
+                  Notify("Price not found for this product. Check Price List Items data source.", NotificationType.Warning),
+                  Collect(
+                      colQuoteLines,
+                      {
+                          ProductName: cbProductSearch.Selected.Name,
+                          ProductNum: cbProductSearch.Selected.'Product ID',
+                          Qty: Value(txtLineQty.Text),
+                          UnitPrice: varTempPrice,
+                          LineAmount: Value(txtLineQty.Text) * varTempPrice
+                      }
+                  );
+                  Reset(cbProductSearch);
+                  Reset(txtLineQty);
+                  Set(varTempPrice, Blank())
+              )
+
+      # -- Divider --
+      - rectQuoteDivider3:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =398
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
+      #  QUOTE LINES
+      # =============================================
+
+      # -- Lines header --
+      - lblLinesHeader:
+          Control: Label
+          Properties:
+            Text: |-
+              ="Quote Lines (" & CountRows(colQuoteLines) & ")"
+            X: =16
+            Y: =406
+            Width: =Parent.Width - 32
+            Height: =22
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Empty state message --
+      - lblNoLines:
+          Control: Label
+          Properties:
+            Text: ="Add products above to build your quote"
+            X: =16
+            Y: =440
+            Width: =Parent.Width - 32
+            Height: =40
+            Size: =11
+            Color: =RGBA(160, 158, 156, 1)
+            Align: =Align.Center
+            Visible: =CountRows(colQuoteLines) = 0
+
+      # -- Quote lines gallery --
+      - galQuoteLines:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            Items: =colQuoteLines
+            X: =0
+            Y: =432
+            Width: =Parent.Width
+            Height: =Parent.Height - 572
+            TemplateSize: =56
+            TemplatePadding: =0
+            Fill: =RGBA(250, 250, 250, 1)
+            Visible: =CountRows(colQuoteLines) > 0
+          Children:
+            - lblLineProd:
+                Control: Label
+                Properties:
+                  Text: =ThisItem.ProductName
+                  X: =16
+                  Y: =4
+                  Width: =Parent.TemplateWidth - 64
+                  Height: =22
+                  Size: =11
+                  FontWeight: =FontWeight.Semibold
+                  Color: =RGBA(50, 49, 48, 1)
+                  OnSelect: =Select(Parent)
+
+            - icoRemoveLine:
+                Control: Classic/Icon
+                Properties:
+                  Icon: =Icon.Cancel
+                  X: =Parent.TemplateWidth - 40
+                  Y: =4
+                  Width: =24
+                  Height: =24
+                  Color: =RGBA(197, 54, 1, 1)
+                  OnSelect: =Remove(colQuoteLines, ThisItem)
+
+            - lblLineCalc:
+                Control: Label
+                Properties:
+                  Text: |-
+                    =ThisItem.ProductNum & "  ·  " & ThisItem.Qty & " × " & Text(ThisItem.UnitPrice, "$#,##0.00") & " = " & Text(ThisItem.LineAmount, "$#,##0.00")
+                  X: =16
+                  Y: =28
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =20
+                  Size: =10
+                  Color: =RGBA(96, 94, 92, 1)
+                  OnSelect: =Select(Parent)
+
+            - rectLineDivider:
+                Control: Rectangle
+                Properties:
+                  X: =16
+                  Y: =Parent.TemplateHeight - 1
+                  Width: =Parent.TemplateWidth - 32
+                  Height: =1
+                  Fill: =RGBA(237, 235, 233, 1)
+                  OnSelect: =Select(Parent)
+
+      # =============================================
+      #  GRAND TOTAL
+      # =============================================
+      - rectQuoteDivider4:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =Parent.Height - 140
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(0, 133, 117, 0.3)
+
+      - lblGrandTotalLbl:
+          Control: Label
+          Properties:
+            Text: ="Grand Total:"
+            X: =16
+            Y: =Parent.Height - 134
+            Width: =120
+            Height: =28
+            Size: =14
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(50, 49, 48, 1)
+
+      - lblGrandTotalVal:
+          Control: Label
+          Properties:
+            Text: |-
+              =Text(Sum(colQuoteLines, LineAmount), "$#,##0.00")
+            X: =140
+            Y: =Parent.Height - 134
+            Width: =Parent.Width - 156
+            Height: =28
+            Size: =16
+            FontWeight: =FontWeight.Bold
+            Color: =RGBA(0, 133, 117, 1)
+            Align: =Align.Right
+
+      # =============================================
+      #  FOOTER BUTTONS
+      # =============================================
+      - btnReviewQuote:
+          Control: Classic/Button
+          Properties:
+            Text: |-
+              ="Review Quote →"
+            X: =16
+            Y: =Parent.Height - 96
+            Width: =Parent.Width - 32
+            Height: =38
+            Fill: =RGBA(0, 133, 117, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Size: =12
+            FontWeight: =FontWeight.Bold
+            BorderThickness: =0
+            HoverFill: =RGBA(0, 113, 97, 1)
+            PressedFill: =RGBA(0, 93, 77, 1)
+            DisabledFill: =RGBA(200, 198, 196, 1)
+            DisplayMode: |-
+              =If(
+                  CountRows(colQuoteLines) = 0 || IsBlank(cbAccount.Selected),
+                  DisplayMode.Disabled,
+                  DisplayMode.Edit
+              )
+            OnSelect: |-
+              =Set(varQuoteAccount, cbAccount.Selected);
+              Set(varQuoteBrand, ddBrand.Selected.Value);
+              Navigate(scrQuoteReview, ScreenTransition.None)
+
+      - btnQuoteBackHome:
+          Control: Classic/Button
+          Properties:
+            Text: ="Back to Service Toolkit"
+            X: =16
+            Y: =Parent.Height - 50
+            Width: =Parent.Width - 32
+            Height: =38
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(0, 133, 117, 1)
+            BorderColor: =RGBA(0, 133, 117, 1)
+            BorderThickness: =1
+            Size: =12
+            HoverFill: =RGBA(0, 133, 117, 0.05)
+            PressedFill: =RGBA(0, 133, 117, 0.1)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)

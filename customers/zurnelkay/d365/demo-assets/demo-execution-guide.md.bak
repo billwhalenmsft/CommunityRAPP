@@ -1,0 +1,824 @@
+# Demo Execution Guide -- Zurn / Elkay Customer Service
+
+> **Purpose**: Step-by-step presenter cheat sheet with exact records, IDs, navigation, and data you need during the live demo. Keep this open on a second monitor or print it.
+> **Demo Date**: March 12, 2026 (2 hours)
+> **Environment**: https://orgecbce8ef.crm.dynamics.com
+> **Portal**: https://zurnelkaycustomercare.powerappsportals.com
+> **Portal Auth Model for Demo**: Local contact login enabled (Entra remains enabled)
+
+---
+
+## Quick Reference Card
+
+### Hero Account -- Ferguson Enterprises
+
+| Field | Value |
+|-------|-------|
+| Account Name | Ferguson Enterprises |
+| Account ID | `ee8604af-8912-f111-8342-000d3a316172` |
+| Customer Tier | Tier 1 Strategic (red badge) |
+| Revenue | $27.8 billion |
+| Employees | 36,000 |
+| HQ Address | 751 Lakefront Commons, Newport News, VA 23602 |
+| Website | https://www.ferguson.com |
+| Description | Largest US plumbing distributor. #1 Zurn/Elkay channel partner. |
+
+### Hero Contacts
+
+| Name | Role | Phone | Email |
+|------|------|-------|-------|
+| **Mike Reynolds** | Field Ops Mgr -- Houston DC | (713) 555-0184 | mike.reynolds@ferguson.com |
+| Tom Harrison | Plumbing Category Mgr | (757) 555-2001 | tom.harrison@ferguson.com |
+| Rachel Chen | Purchasing Director | (757) 555-2002 | rachel.chen@ferguson.com |
+
+> **Mike is the caller** for the phone scenario. Tom and Rachel appear in the case timeline and account history.
+
+### Sales Orders on Ferguson
+
+| PO # | Description | Lines | Notes |
+|------|------------|-------|-------|
+| **#94820** | Hydration Products Q1 (~$295K) | 5 lines | **DEMO ORDER** -- cancel 2, expedite 3 |
+| #93201 | Zurn Backflow Q4 | 5 lines | Delivered (context) |
+| #95102 | Flush Valves Replenishment | 3 lines | Active (context) |
+
+### PO #94820 Line Items (commit to memory)
+
+| SKU | Product | Qty | Unit Price | Extended | Action |
+|-----|---------|-----|-----------|----------|--------|
+| EK-BF-5001 | EZH2O Bottle Filling Station | 120 | $1,150 | $138,000 | **KEEP -- expedite** |
+| EK-WC-5002 | Wall Mount Cooler Bi-Level ADA | 60 | $780 | $46,800 | **KEEP -- expedite** |
+| EK-FL-6003 | WaterSentry Plus Filter | 200 | $29.50 | $5,900 | **KEEP -- expedite + discount?** |
+| EK-DF-5003 | Floor Mount Drinking Fountain ADA | 25 | $1,450 | $36,250 | **CANCEL** |
+| EK-SS-6001 | Stainless Steel Sink Commercial | 40 | $780 | $31,200 | **CANCEL** |
+
+> Cancel total: ~$67K. Remaining: ~$191K. Delivery move: March 15 -> March 10.
+> Filter discount: 15% on 500+ units (Rachel negotiated). Mike's order has 200 -- may not qualify unless he increases quantity.
+
+### Key Case -- Phone Scenario
+
+| Field | Value |
+|-------|-------|
+| Case Title | Ferguson PO #94820 - Order modification request |
+| Case ID | `41739b76-a718-f111-8342-7c1e520a58a1` |
+| Origin | Phone |
+| Priority | High |
+| Tier Level | Tier 1 (red) |
+| Primary Contact | Mike Reynolds |
+
+---
+
+### Portal Login Personas (Local Contact Auth)
+
+Use these credentials to sign into the portal before starting chat. Keep Entra enabled; do not disable it.
+
+| Persona | Username | Password | Account | Primary Use |
+|---------|----------|----------|---------|-------------|
+| Derek Lawson | `derek.lawson` | `ZeDemo!2026` | HD Supply | Chat Scenario A |
+| James Morales | `james.morales` | `ZeDemo!2026` | HD Supply | HD Supply alternate login |
+| Rachel Chen | `rachel.chen` | `ZeDemo!2026` | Ferguson Enterprises | Chat Scenario B |
+| Tom Harrison | `tom.harrison` | `ZeDemo!2026` | Ferguson Enterprises | Ferguson alternate login |
+| Mike Reynolds | `mike.reynolds` | `ZeDemo!2026` | Ferguson Enterprises | Phone cross-reference persona |
+
+> All five contacts are provisioned with local identity fields and assigned to the portal `Authenticated Users` web role.
+
+### Copilot Studio Chat Auth Notes
+
+- Bot manual auth is configured for Omnichannel and remains enabled.
+- For portal-local users, expect either seamless response or a one-time in-chat login prompt depending on browser session state.
+- Preferred demo path: authenticate on portal first, then open chat widget.
+
+---
+
+### Customer Intent Agent -- Reference Data
+
+> These are the configured intents and SOP articles the system will surface during the phone call and chat. You don't present this data -- it's here so you recognize what's appearing on screen.
+
+**Intent Groups:**
+
+| Group | Intents |
+|-------|----------|
+| **Orders and Logistics** | Change order quantity, Expedite urgent order, Request invoice correction, Track raw material shipment, Update delivery address |
+| **Production and Quality** | Provide material specification, Report defective batch, Request process change, Request quality inspection, Schedule production run |
+
+**SOP Knowledge Articles** (surfaced automatically by intent):
+
+| Intent Recognized | SOP Article That Surfaces |
+|-------------------|---------------------------|
+| Change order quantity | SOP: Processing Order Quantity Changes |
+| Expedite urgent order | SOP: Expediting Urgent Orders |
+| Request invoice correction | SOP: Handling Invoice Correction Requests |
+| Track shipment | SOP: Tracking Shipments and Handling Delivery Exceptions |
+| Update delivery address | SOP: Updating Delivery Address on Orders |
+| Provide material spec | SOP: Providing Product Material Specifications |
+| Report defective batch | SOP: Defective Batch Reporting and Quality Hold Process |
+| Request process change | SOP: Processing Change Requests |
+| Request quality inspection | SOP: Quality Inspection Requests and Procedures |
+| Schedule production run | SOP: Scheduling and Managing Production Runs |
+
+> **During the phone call**: When Mike says "modify the order" → expect the Order Quantity Changes SOP to surface. When he says "expedite" → expect the Expediting SOP. This is the "aha moment" -- don't announce it, let the audience notice, then narrate what happened.
+
+---
+
+### Chat Scenario A -- HD Supply (Tier 2 Premium)
+
+| Field | Value |
+|-------|-------|
+| Account | HD Supply |
+| Account ID | `f48604af-8912-f111-8342-000d3a316172` |
+| Revenue | $8.5 billion |
+| Employees | 11,500 |
+| HQ Address | 3400 Peachtree Road NE, Atlanta, GA 30326 |
+
+**Chat Contacts:**
+
+| Name | Role | Phone | Email |
+|------|------|-------|-------|
+| **Derek Lawson** | Facilities Maintenance Supervisor | (770) 555-2305 | derek.lawson@hdsupply.com |
+| James Morales | Commercial Accounts Manager | (770) 555-2301 | james.morales@hdsupply.com |
+
+> **Derek is the chatter** for Scenario A. James appears in the case timeline (forwarded the Hilton complaint).
+
+**Chat Case A:**
+
+| Field | Value |
+|-------|-------|
+| Case Title | HD Supply - AquaVantage sensor flush intermittent activation at Hilton Midtown |
+| Case ID | `55220543-ba18-f111-8341-7ced8dceb26a` |
+| Origin | Web |
+| Priority | High |
+| Tier Level | Tier 2 (orange) |
+| Primary Contact | Derek Lawson |
+| Issue | 8 sensor flush valves phantom flushing at Hilton Midtown Atlanta |
+| Root Cause | Firmware v2.3 humidity bug |
+| Resolution | Warranty replacement sensor modules with v2.4 firmware |
+| Bot KB Article | "Troubleshooting Zurn AquaVantage and E-Z Flush Valve Issues" |
+
+**Timeline items on Case A:**
+- Email: James forwarded Hilton GM complaint (8 units, 2000+ gal/day waste)
+- Note: Engineering firmware bulletin -- v2.3 humidity bug, v2.4 patch available
+- Note: Derek's on-site troubleshooting log (batteries, sensor cleaning, pressure check, humidity 78%)
+
+---
+
+### Chat Scenario B -- Ferguson (Tier 1 Strategic)
+
+> Uses the same Ferguson hero account from the phone scenario.
+
+**Chatter**: Rachel Chen (Purchasing Director, rachel.chen@ferguson.com)
+
+**Chat Case B:**
+
+| Field | Value |
+|-------|-------|
+| Case Title | Ferguson - WaterSentry Plus filter defect batch WS-2026-0217 |
+| Case ID | `b078bc55-bd18-f111-8342-7c1e52143136` |
+| Origin | Web |
+| Priority | High |
+| Tier Level | Tier 1 (red) |
+| Primary Contact | Rachel Chen |
+| Issue | 50 WaterSentry Plus filters (EK-FL-6003) from batch WS-2026-0217 failing at 1200 gal (rated 3000) |
+| Root Cause | Carbon media loading variance at Erie plant |
+| Resolution | RMA approved, replacements from batch WS-2026-0303 |
+| Bot KB Article | "Zurn Warranty Policy and RMA Process" |
+
+**Timeline items on Case B:**
+- Email: Rachel's defect report with photos and test data
+- Note: Quality team confirmed batch defect -- 200 units to 3 distributors (Ferguson 50, Hajoca 80, Pacific Plumbing 70)
+- Note: Warranty verification -- Tier 1 = 48hr priority RMA, no charge for replacement/shipping
+
+**Cross-reference to Phone Scenario:** Rachel may ask about the 200 WaterSentry Plus filters on PO #94820 -- are those from the bad batch? (Answer: PO #94820 filters are from batch WS-2026-0303, the verified-good batch.)
+
+---
+
+## Demo Flow -- Section by Section
+
+### Pre-Demo Checklist (30 min before)
+
+- [ ] Log into CS Workspace: https://orgecbce8ef.crm.dynamics.com
+- [ ] Verify "My Active Cases" view is showing -- Ferguson case visible
+- [ ] Verify voice channel status is green (connected)
+- [ ] Verify Copilot panel is enabled (right side)
+- [ ] Open portal in a separate browser tab: https://zurnelkaycustomercare.powerappsportals.com
+- [ ] Sign into portal as `derek.lawson` (Scenario A) or `rachel.chen` (Scenario B)
+- [ ] Confirm portal contact name appears in header/profile menu
+- [ ] Open one existing case from portal to validate contact visibility
+- [ ] Have second phone ready for simulated Mike Reynolds call
+- [ ] Have this guide open on second monitor
+- [ ] Quick test: open Ferguson account -> confirm revenue, tier, orders visible
+- [ ] Quick test: open the phone case -> confirm timeline has notes, call, email
+
+---
+
+### Section 1: Connect & Orient (~10 min)
+
+**No special data needed.** General workspace orientation.
+
+**Navigation**: CS Workspace home -> point out left nav, session tabs, Copilot panel, multisession concept.
+
+---
+
+### Section 2: Their World Today (~5 min)
+
+**No special data needed.** Validate their pain points, keep under 5 minutes.
+
+---
+
+### Section 3a: CS Workspace & Dashboards (~5 min)
+
+**Navigation**: Home -> My Active Cases view
+
+**What to look for**:
+- Tier Level column with colored pills (Tier 1 red, Tier 2 orange, Tier 3 blue, Tier 4 gray)
+- SLA timers on cases (countdown)
+- Case origin icons (email, phone)
+- Priority column
+
+**Tip**: Ferguson cases should appear near the top due to Tier 1 + High priority.
+
+---
+
+### Section 3b: Email Case & Copilot (~10 min)
+
+**Use any existing email-origin case.** Look for one that has an email activity on the timeline.
+
+**Actions**:
+1. Open an email-origin case
+2. Show the auto-created case from inbound email
+3. Open Copilot pane -> "Summarize this case"
+4. Show suggested response draft
+
+---
+
+### Section 3c: Timeline & Customer 360 (~5 min)
+
+**Use**: Open the Ferguson PO #94820 case (already open from a previous step, or navigate to it)
+
+**Navigation**: Cases -> Search "Ferguson PO" -> Open case
+
+**Timeline should show** (from Script 17):
+- Internal note: "Prior discussion with Rachel Chen re: PO #94820" (Rachel mentioned scope reduction)
+- Phone call: "Mike Reynolds - PO #94820 delivery timeline check" (March 3, 7 min, incoming)
+- Email: "RE: PO #94820 - Q1 Hydration Products Order Confirmation" (Feb 20, Rachel's confirmation)
+- Warehouse note: "PO #94820 warehouse status" (EZH2O staged, fountains/sinks backordered)
+
+> **Demo gold**: Point out the warehouse note -- when Mike asks to cancel fountains and sinks, the agent can see those were backordered anyway. Cancelling avoids the backorder. This is the "aha" moment.
+
+**Then click into Ferguson account**:
+- Revenue $27.8B, 36K employees, Tier 1
+- 3 open sales orders visible in related records
+- Multiple contacts (Tom, Rachel, Mike)
+- Case history shows previous resolved/active cases
+
+**Talking point**: "Sales and Service share the same data. No integration to build."
+
+---
+
+### Section 3d: Knowledge in the Flow of Work (~5 min)
+
+**Navigation**: From any case -> Copilot pane or KB search tab
+
+**KB articles most likely to be suggested** (from the 30 in the system):
+- "Order Modification Process" (if discussing PO changes)
+- "Backflow Preventer Installation Guide" (if Zurn backflow cases)
+- "EZH2O Bottle Filling Station Troubleshooting"
+- "Warranty Claim Procedures"
+
+**SOP articles** (surfaced automatically by the Intent Agent during phone/chat):
+- "SOP: Processing Order Quantity Changes" -- surfaces when customer asks to modify order quantities
+- "SOP: Expediting Urgent Orders" -- surfaces when customer asks to rush/expedite an order
+- "SOP: Handling Invoice Correction Requests" -- surfaces for billing disputes
+- "SOP: Tracking Shipments and Handling Delivery Exceptions" -- surfaces for delivery inquiries
+- "SOP: Defective Batch Reporting and Quality Hold Process" -- surfaces for defect/recall scenarios
+
+> **Presenter note**: Don't read these titles to the audience. Let the phone call and chat trigger them organically. When one appears on screen, pause and say: "See that? The system heard the customer's request and surfaced the exact procedure."
+
+**Action**: Type a question in Copilot about the case topic, show it surfacing KB content.
+
+---
+
+### Section 3e: Teams Embedded Chat (~3 min)
+
+**Navigation**: From any case form -> Teams panel (right side or tab)
+
+**Action**: Start a chat, show case context auto-populating, mention "Capture to Case" feature.
+
+Already configured and working.
+
+---
+
+### Section 3f: PHONE CALL SCENARIO (~10-15 min) -- THE MAIN EVENT
+
+> **This is the hero demo.** Mike Schmidt said telephony is non-negotiable. Go all-in.
+
+#### Setup
+
+1. Have the Ferguson PO #94820 case visible in your session
+2. Second phone ready with the voice channel number
+3. Copilot pane visible on right side
+
+#### Call Phase 1: Ring & Screen Pop (0:00 - 0:30)
+
+**Second phone**: Dial the voice channel number.
+
+**On screen**:
+- Incoming call banner/toast appears
+- Accept the call
+- **Screen pop shows**: Ferguson Enterprises, Mike Reynolds, Tier 1 Strategic (red), $27.8B revenue, 36K employees
+- Recent cases and open orders visible
+
+**Say to audience**: "Notice the system immediately identifies the caller and shows the full customer context -- no 'Can I get your account number?' needed."
+
+#### Call Phase 2: Greeting (0:30 - 1:00)
+
+**As Mike (second phone)**:
+
+> "Hi, this is Mike Reynolds from Ferguson, calling from our Houston distribution center. I'm calling about PO number 94820 -- the hydration products order we placed for Q1."
+
+**On screen**: Real-time transcript appearing, Copilot processing.
+
+**Say to audience**: "The real-time transcript captures everything. Copilot is already analyzing context."
+
+#### Call Phase 3: Cancellation Request (1:00 - 2:00)
+
+**As Mike**:
+
+> "The Fort Worth school district project just reduced their scope. We need to cancel two of the five line items -- the floor mount drinking fountains, that was 25 units of the EK-DF model -- and also cancel the 40 stainless steel sinks. Those two lines are no longer needed."
+
+**On screen**: Transcript updating, Copilot may suggest "Order Modification Process" KB article.
+
+> **INTENT AGENT MOMENT**: When Mike says "cancel two of the five line items," watch for the **SOP: Processing Order Quantity Changes** article to surface in the Copilot pane. Don't announce it immediately -- let it appear, then pause and say to the audience: "See what just happened? Mike said 'cancel two line items' and the system surfaced a step-by-step procedure. The associate didn't search for anything -- the system understood the intent and delivered the playbook." This is the first of two "aha" moments.
+
+**Agent action**: Open the case (if not already open) -- show the timeline.
+
+**Say to audience**: "Look at the timeline. There's a note from March 3 where Mike warned this might happen. And the warehouse note shows those two items were on backorder anyway -- **cancelling them actually helps our fulfillment**. The agent has all the context without asking."
+
+> **THIS IS THE KEY MOMENT**: The warehouse note says fountains and sinks were backordered with ETA March 12. Cancelling avoids the backorder entirely. This demonstrates the power of the unified timeline.
+
+#### Call Phase 4: Expedite Request (2:00 - 3:00)
+
+**As Mike**:
+
+> "But here's the thing -- the remaining three lines, the bottle filling stations, the wall mount coolers, and the replacement filters -- we actually need those sooner. Can you move the delivery up from March 15 to March 10? Our FM contractor is starting the national rollout early."
+
+**On screen**: Transcript captures new delivery date.
+
+> **INTENT AGENT MOMENT #2**: When Mike says "need those sooner" / "move the delivery up," watch for the **SOP: Expediting Urgent Orders** article to surface. Say to audience: "Notice it switched -- different request, different procedure. It's not matching on one keyword. It's tracking the conversation as it evolves and adapting what it recommends. This is what we mean by understanding service intent."
+
+**Agent response** (to audience): "The agent can see from the warehouse note that EZH2O units (120) and coolers (60) are already staged and ready to ship. Filters are shipping from Erie. The expedite is feasible."
+
+#### Call Phase 5: Discount Question (3:00 - 3:30)
+
+**As Mike**:
+
+> "One more thing -- Rachel Chen mentioned something about a filter discount that was just approved. 15 percent on bulk orders? Can you make sure that's applied to this PO as well?"
+
+**Agent sees**: The discount details are in the case history (Ferguson's resolved case about EZH2O filter bulk discount: 15% on 500+ units).
+
+**Say to audience**: "The agent doesn't have to go hunting. The discount approval is right there in the customer's history. Rachel negotiated 15% on filter orders over 500 units. This order has 200 filters -- so the agent knows to check whether Mike wants to increase the quantity to qualify."
+
+> **Smart demo tip**: This creates a natural follow-up conversation point. The agent adds value by proactively flagging that 200 units is below the 500-unit threshold.
+
+#### Call Phase 6: Wrap-Up (3:30 - 4:30)
+
+**As Mike**:
+
+> "That's everything. Can you send me a confirmation email once the changes are processed? My email is mike.reynolds@ferguson.com."
+
+**Agent actions**:
+- Update case notes with modification details
+- End the call
+
+**After hangup** (the money shot):
+- Copilot auto-summarizes the call
+- Summary includes: lines to cancel, expedite request, discount inquiry
+- Copilot drafts a confirmation email to Mike
+
+**Say to audience**: "After the call ends, Copilot generates a summary from the transcript and drafts the confirmation email. The agent just reviews and sends. No manual note-taking -- what used to take 5-10 minutes takes seconds."
+
+#### Fallback: If Voice Channel Is Not Working
+
+- Open the case directly and walk through the screen layout
+- Show the timeline (notes, prior call, email)
+- Explain what the screen pop would look like
+- Show the Copilot pane and how KB suggestions work
+- Still effective, just less dramatic
+
+#### Fallback: If Copilot Is Slow
+
+- Continue the conversation naturally
+- Show the transcript manually
+- Point out where suggestions would appear
+- "In a live environment, Copilot responds in real time"
+
+---
+
+### Section 3g: Chat / Digital Messaging (~10-15 min)
+
+> **Full chat demo script**: See [chat-demo-script.md](chat-demo-script.md) for complete dialogue and flow.
+> **Copilot Studio setup**: See [copilot-studio-setup.md](copilot-studio-setup.md) for bot configuration steps.
+
+**Pre-requisite**: Copilot Studio bot configured and connected to the chat workstream.
+
+#### Option 1: Scenario A -- HD Supply (Tier 2, different customer)
+
+**Setup**: Use a clean browser profile or InPrivate, then log into portal as Derek.
+
+1. Open portal: https://zurnelkaycustomercare.powerappsportals.com
+2. Login using `derek.lawson` / `ZeDemo!2026`
+3. Click chat widget (bottom-right bubble)
+4. Bot greets customer
+5. **As Derek**: "My E-Z Flush sensor isn't detecting users. We have 8 units at a hotel and they're all acting up."
+6. If prompted in chat, click **Login** and complete sign-in (same Derek credentials)
+7. Bot surfaces KB/troubleshooting content for AquaVantage / E-Z Flush
+8. **As Derek**: "I've already tried batteries, sensor cleaning, and water pressure checks. Can I talk to someone?"
+9. Bot escalates to live agent
+10. **Switch to CS Workspace** -- accept incoming chat
+11. Show: HD Supply account, Tier 2 orange badge, Derek Lawson contact, bot transcript
+12. Open case -- show timeline (James email, engineering bulletin, Derek troubleshooting log)
+13. Agent identifies firmware v2.3 humidity bug from engineering note
+14. Resolution: Warranty replacement sensor modules with v2.4 firmware
+
+**Key demo point**: Bot handled initial triage + surfaced KB. When standard troubleshooting was exhausted, seamless escalation to agent WITH full context. Agent didn't have to re-ask anything.
+
+#### Option 2: Scenario B -- Ferguson (Tier 1, same hero account)
+
+**Setup**: New browser profile/InPrivate, log in as Rachel.
+
+1. Open portal and login with `rachel.chen` / `ZeDemo!2026`
+2. Open chat widget
+3. **As Rachel**: "I need to report a defective product batch. We received WaterSentry Plus filters from batch WS-2026-0217 and they're failing prematurely."
+4. Bot surfaces KB article: "Zurn Warranty Policy and RMA Process"
+5. **As Rachel**: "I need an actual RMA number for 50 filters and I need to know where else this batch shipped."
+6. Bot escalates
+7. **In CS Workspace**: Accept chat -- Ferguson pops, Tier 1 red badge, Rachel identified
+8. Open case -- show timeline (Rachel email, quality batch review, warranty note)
+9. Agent sees: defect confirmed, 200 units to 3 distributors, Tier 1 = 48-hour RMA
+10. **Cross-reference**: Rachel asks about PO #94820 filters -- confirm batch WS-2026-0303 is verified-good
+11. Resolution: Issue RMA, ship replacements, proactive recall to Hajoca + Pacific Plumbing
+
+**Key demo point**: Same account as phone scenario but different channel, different contact, different issue. Full customer 360 carries across all interactions. Tier 1 gets priority RMA turnaround.
+
+#### Fallback: If Copilot Studio Bot Is Not Ready
+
+- Open portal chat directly (without bot -- goes straight to agent queue)
+- Walk through the agent experience receiving the chat
+- Show case auto-creation, customer identification, KB suggestions in Copilot pane
+- Reference the bot architecture diagram from copilot-studio-setup.md
+
+---
+
+### Section 3h: Tiered Routing & Skills (~5 min)
+
+**Navigation**: From any case -> hover over Tier Level pill -> show the routing outcome
+
+**Key data points to reference**:
+- 4 tiers: Tier 1 (red/Strategic), Tier 2 (orange/Premium), Tier 3 (blue/Standard), Tier 4 (gray/Basic)
+- Hot words: **Urgent, Emergency, Recall, Safety, Legal, Next Day Air** -- boost priority to 10,000
+- 18 queues configured (brand x channel x tier)
+- Skills-based routing active
+
+**Do NOT open Admin Center** -- just show the outcomes on cases. Save config for tech deep dive.
+
+---
+
+### Section 3i: Guided Process Flows (~5 min)
+
+**Status**: **DATA READY** -- Order data seeded (4 orders), build guide available.
+
+> **Build guide**: See `demo-assets/custom-page-build-guide.md` for step-by-step instructions to create the Custom Page and register it in the productivity pane.
+
+**Architecture**: Power Apps Custom Page ("Order Modification Wizard") embedded in the D365 Customer Service **productivity pane** as a side-panel tool -- the D365 equivalent of Salesforce's Lightning Flow for Service / Utility Bar Screen Flows.
+
+**4-Screen Wizard**:
+1. **Order Lookup** -- Gallery of customer's active orders (auto-filters to account)
+2. **Line Management** -- Cancel checkboxes + delivery date pickers per line
+3. **Review & Confirm** -- Change summary with red strikethrough on cancellations, credit total
+4. **Confirmation** -- Success + "Add to Case Timeline" + "Draft Confirmation Email"
+
+**Demo flow** (during phone call with Mike Reynolds):
+- Agent opens the Order Modification tool in the productivity pane (right side)
+- Selects PO #94820 → sees 5 line items
+- Checks "cancel" on Line 4 (drinking fountains, $36,250) and Line 5 (sinks, $31,200)
+- Changes delivery to March 10 for remaining 3 lines
+- Reviews: "Cancelling 2 lines = -$67,450" → Submits
+- Adds note to case timeline, drafts confirmation email to Mike
+
+**Talking point**: "This is exactly what your team does today in Salesforce Screen Flows -- same guided wizard, same side panel position, but built natively on Power Platform with direct Dataverse access. No Apex code, no deployment pipelines."
+
+**Seeded orders** (created by `scripts/20-OrderMgmt.ps1`):
+| Order | Customer | Total | Status | Purpose |
+|-------|----------|-------|--------|---------|
+| PO-94820 | Ferguson | $258,150 | Active | **DEMO ORDER** -- modification target |
+| PO-93201 | Ferguson | $108,125 | Active | Context: Zurn Backflow Q4 (delivered) |
+| PO-95102 | Ferguson | $94,550 | Active | Context: Flush Valves replenishment |
+| PO-HD-7845 | HD Supply | $53,450 | Active | Context: Sensor products |
+
+**Custom Page Status**: ✅ Built and registered. The Order Modification Wizard is live in the D365 productivity pane. Use it during the phone call demo (Section 3f). The seeded order data supports the full modification walkthrough.
+
+---
+
+### Section 3j: Proactive Notifications (~3 min)
+
+**Navigation**: Show in-app notification (if one is active), SLA warning toast, supervisor dashboard.
+
+No special data needed -- general platform capability.
+
+---
+
+### Section 4: Care Leader View (~15 min)
+
+**Narrative shift**: "You've seen the associate experience -- now let's switch to what Lisa and Michelle live in every day. The supervisor and care leader view."
+
+**Navigation**: Open a new tab or switch to your pre-staged analytics tab. Navigate within D365: **Customer Service workspace** → left nav → **Omnichannel real-time analytics** (under Service).
+
+---
+
+#### 4a Real-Time Dashboards
+
+**Navigate to**: Customer Service workspace → left nav → **Omnichannel real-time analytics** (under Service). Alternatively: **Dashboards** → select *"Omnichannel Ongoing Conversations Dashboard"* from the view selector.
+
+**Say**: "Now let me switch to what Lisa and Michelle would see day-to-day. This is the Omnichannel real-time analytics dashboard. Lisa -- today you're pulling reports from Salesforce for cases, a separate report from Genesys for telephony data, and spreadsheets for SLA tracking. That's three systems to answer one question: how is my team doing right now? Here it's one screen, real-time, no assembly required."
+
+**Show** (point to each element on screen):
+1. **Active conversations by channel** -- email, phone, chat breakdown. "You can see at a glance where your volume is right now."
+2. **Agent availability grid** -- who's available, busy, away, offline. "No guessing who's logged in -- the system knows because telephony, chat, and routing are all one platform."
+3. **Queue wait times** -- per queue. "See which queues have the longest wait. Is Zurn Technical getting backed up? Are Elkay orders moving?"
+4. **SLA compliance rate** -- if the SLA chart is visible. "First response and resolution KPIs -- the same SLAs we set up earlier, tracked automatically."
+5. **Conversation status breakdown** -- active, waiting, wrap-up. "This is your morning standup in one glance."
+
+**Say** (Salesforce comparison): "In Service Cloud, you'd need to build a custom dashboard in Salesforce Reports, pull in Genesys data through an integration, and hope the timestamps line up. Here the telephony data, case data, and routing data are all the same system -- so the numbers are always right."
+
+> **Tip**: If the dashboard looks sparse (demo environment with limited volume), say: "In production with your full team running, this lights up. Right now we're looking at our demo data, but the structure is exactly what you'd see at scale."
+
+---
+
+#### 4b Agent Performance Metrics
+
+**Navigate to**: From the real-time dashboard, click the **Agent** tab or navigate to **Omnichannel historical analytics** → **Agent** view.
+
+**Say**: "Benton, you asked about performance metrics -- handle time, wait time, call duration. All of that is captured natively here because the phone, email, and chat all run through one platform. You don't need to pull a report from Genesys for talk time, a separate report from Salesforce for case metrics, and then reconcile them in Excel. One system, one source of truth for every metric."
+
+**Show** (point to these if visible):
+- **Average handle time** by agent or channel
+- **Average wait time** for customers in queue
+- **Conversations handled** per agent (daily/weekly)
+- **Active vs. idle time** breakdown
+- **Transfer rate** -- how often agents escalate or transfer
+
+**Say** (supervisor daily workflow): "Michelle, imagine your morning routine: you pull up this view, see who handled the most cases yesterday, who had the longest handle times, who transferred the most. That's your coaching conversation for the day -- data-driven, not anecdotal. And because WFM is integrated, you can see if someone had a long handle time because they were juggling training and cases on the same shift."
+
+**Say** (wrap up): "The key here is convergence. Today you have data in Salesforce, data in Genesys, data in spreadsheets, and it takes days to build a picture. Here, every interaction -- phone, email, chat -- flows through the same system, so the numbers are real-time and trustworthy."
+
+> **If the dashboard is sparse**: "In a demo environment the volume is limited, but I want you to see the structure. In production, with 14 agents across five shifts, this view gives you instant visibility that today requires pulling three separate reports."
+
+---
+
+#### 4c Workforce Management -- Navigation & Data Reference
+
+**All WFM features are enabled**: Forecast volume, Capacity planning, Schedule management, Shift-based routing, Representative calendar, Bidding, Swapping.
+
+**Navigate to**: CS Admin Center > Workforce Management > Schedule Management
+
+**Shift Plans (5 total)**:
+
+| Shift Plan | Hours (CT) | Days | Required Staff | Record ID |
+|---|---|---|---|---|
+| Zurn Elkay Morning Shift | 6:00 AM - 2:00 PM | Mon-Fri | 4 | `abf0748e-ab1a-f111-8341-6045bda80a72` |
+| Zurn Elkay Day Shift | 8:00 AM - 5:00 PM | Mon-Fri | 6 | `da8d5195-ab1a-f111-8342-7ced8d18c8d7` |
+| Zurn Elkay Afternoon Shift | 2:00 PM - 10:00 PM | Mon-Fri | 3 | `9718b59c-ab1a-f111-8341-6045bda80a72` |
+| Zurn Elkay Staggered Shift | 7:00 AM - 3:00 PM | Mon-Fri | 2 | `19e841a2-ab1a-f111-8342-7ced8d18c8d7` |
+| Zurn Elkay Weekend Shift | 8:00 AM - 2:00 PM | Sat-Sun | 2 | `992cc7a3-ab1a-f111-8341-6045bda80a72` |
+
+**Agent Shift Assignments (all provisioned via script)**:
+
+| Shift Plan | Agents Assigned | Bookings per Agent | Total |
+|---|---|---|---|
+| Morning (6 AM - 2 PM) | Renee Lo, Alicia Thomber, Molly Clark, Spencer Low | 90 (10 days x 9 activities) | 360 |
+| Day (8 AM - 5 PM) | Markus Long, David So, Tyler Stein + *Alan Steiner, Bill Technician (existing)* | 110 (10 days x 11 activities) | 330 new + existing |
+| Afternoon (2 PM - 10 PM) | Jamie Reding, Claudia Mazzanti, Enrico Cattaneo | 90 (10 days x 9 activities) | 270 |
+| Staggered (7 AM - 3 PM) | Alex Baker, Riley Ramirez | 90 (10 days x 9 activities) | 180 |
+| Weekend (8 AM - 2 PM) | Tyler Stein, Riley Ramirez | 28 (4 days x 7 activities) | 56 |
+
+> **Note**: Tyler Stein and Riley Ramirez are on both Staggered (weekdays) and Weekend shifts. Date ranges: Weekdays March 2-6 and 9-13, 2026. Weekends: March 1 (Sun), 7 (Sat), 8 (Sun), 14 (Sat).
+
+**Shift Activity Types (6)**:
+
+| Activity | Duration | Assignable? | Meaning |
+|---|---|---|---|
+| Case Work | Variable | Yes | Active case handling -- agent receives routed work |
+| Break | 15 min | No | Paid break -- off routing queue |
+| Lunch | 60 min | No | Unpaid lunch -- off routing queue |
+| Training | 60 min | No | Product/compliance training |
+| Team Meeting | 30 min | No | Standup or weekly sync |
+| Coaching | 30 min | No | 1:1 with supervisor |
+
+**Time Off Requests (5)** -- show these to demonstrate schedule impact:
+
+| Agent | Type | Dates | Talking Point |
+|---|---|---|---|
+| Renee Lo | Vacation | 5 days out, 4-day PTO | "She won't receive any routed cases during this window" |
+| Markus Long | Training | 3 days out, 1-day | "Off-site training -- automatically off the queue" |
+| Alan Steiner | Personal | 7 days out, 1-day | "Personal day -- shift-based routing respects it" |
+| Enrico Cattaneo | Sick Leave | Yesterday through today | "Unplanned absence -- shows real-time adherence impact" |
+| David So | Vacation | 12 days out, 5-day | "Week-long vacation -- supervisor sees the capacity gap" |
+
+**Time Off Types (7)**: Vacation, Sick Leave, Personal, Company Holiday, Jury Duty, Bereavement, Training Off-site
+
+**Demo Talking Points**:
+- "The schedule IS the routing configuration. If Renee is on PTO, she doesn't get cases. Period."
+- "Agents can bid on open shifts and request swaps directly in the platform -- no email chains."
+- "Non-assignable activities (training, meetings, coaching) automatically remove agents from the routing queue. No manual status toggling."
+- Versus Salesforce: "With Service Cloud, WFM typically requires Workforce Engagement or a third-party tool. Here it's native -- same data model, same admin experience, no sync issues."
+
+---
+
+#### 4d Quality Management
+
+**Status**: ✅ Quality Management is fully configured and LIVE. Connection references set, all 6 QEA/KM flows active, QEA + KM agents published. **Manufacturing Service Quality Standard** criteria published with 6 sections, 21 AI-scored questions. Two evaluation plans published and active.
+
+**Say**: "The last piece of the care leader's toolkit is Quality Management. This is where supervisors can score agent interactions against evaluation criteria -- think of it as your QA process, built into the platform."
+
+##### Navigation: Show Live Criteria
+
+**Show**: Navigate to **Customer Service admin center** → **Quality Management** (left nav) → **Evaluation criteria** → click **Manufacturing Service Quality Standard**
+
+**Say** (as you open it): "We've built a criteria set called the Manufacturing Service Quality Standard. It has six weighted sections with 21 questions -- all tailored to your service model."
+
+**Walk through the sections** (scroll, don't read every question):
+
+| Section | Weight | Questions | Key Point to Mention |
+|---------|--------|-----------|---------------------|
+| Customer Identification & Account Handling | 15% | 3 | "Did the agent verify identity and recognize the customer's tier?" |
+| Technical Accuracy & Product Knowledge | 25% | 4 | "Heaviest weight -- did the agent reference correct specs and recommend the right parts?" |
+| Process Compliance & Escalation Handling | 20% | 4 | "Hot word detection -- Urgent, Recall, Safety, Legal -- did the agent escalate properly?" |
+| Resolution Effectiveness | 20% | 4 | "Was the issue resolved on first contact? Was documentation thorough?" |
+| Communication & Professionalism | 10% | 3 | "Tone, clarity, setting expectations" |
+| Tool Adoption & Efficiency | 10% | 3 | "Did the agent use Copilot, KB, and AI tools? This rewards adoption." |
+
+**Say**: "Every question has AI-response enabled. The Quality Management Agent reads the conversation transcript and case notes, then scores each question automatically. The supervisor only reviews the flagged ones."
+
+##### Navigation: Show Evaluation Plans
+
+**Show**: Go back to **Quality Management** → **Evaluation plans** → show both plans:
+
+| Plan | Type | Frequency | Scope |
+|------|------|-----------|-------|
+| **Daily Case Quality Review** | Recurring | Daily | Cases -- evaluates all resolved cases each day |
+| **Conversation Quality Review** | Trigger | On closed conversation | Conversations -- evaluates every closed chat/voice interaction |
+
+**Say** (explain the vision): "There are two approaches here. First, manual evaluation -- a supervisor picks a conversation, scores it against criteria like greeting, resolution accuracy, compliance language. Second -- and this is where it gets powerful -- the Quality Management Agent. That's an AI agent that automatically scores every interaction against your criteria and flags the ones that need human review. So instead of randomly sampling 5% of calls, the system tells you which conversations deserve attention based on sentiment, compliance keywords, or resolution quality."
+
+**Say** (connect to their world): "Lisa, think about your QA process today. How many calls does your team review per week? And how do you decide which ones to review? With the QM Agent, every interaction gets evaluated, and the supervisor's time goes to the conversations that actually need coaching -- not random sampling."
+
+##### Navigation: Show Scored Evaluations (if simulation has run)
+
+**Show**: If a simulation has been run, navigate to **Quality Management** → **Evaluation results** → open a scored evaluation. Walk through:
+- The overall score (percentage)
+- Per-section scores with the weight breakdown
+- Click into a question to show the AI's selected answer and its rationale
+- Point out where the AI referenced specific moments from the transcript
+
+**Say**: "The AI read the entire conversation and scored each of the 21 questions. It shows its reasoning -- you can see exactly why it scored this way. The supervisor can agree, override, or add notes."
+
+**Key differentiator**: "With Salesforce, quality management typically requires Einstein Conversation Insights as an add-on, plus a third-party QA tool for structured evaluations. Here it's native -- same data, same platform, same admin experience."
+
+---
+
+### Section 5: AI Agents (~10 min)
+
+**Three built-in agents to reference** (show outcomes, not config):
+1. **Intent Agent** -- already demonstrated during phone call and chat. This is the reveal moment.
+2. **Case Management Agent** -- auto-follow-up on stale cases
+3. **Knowledge Management Agent** -- identifies KB gaps, drafts articles
+
+**Intent Agent is CONFIGURED.** 10 intents across 2 groups with prescriptive SOP articles. See the Intent Agent Reference Card above for the full mapping.
+
+**Narrative approach for this section**: Don't open config screens. Instead, refer back to the phone call:
+- "Remember when Mike said he needed to modify the order and the procedure appeared? That's the Intent Agent. It recognized the service intent -- not just a keyword match, but what the customer actually needs -- and delivered the right runbook."
+- "We've configured it for your top 10 service scenarios -- the calls and chats your team handles every day: order changes, expedites, defect reports, quality holds, invoice disputes."
+- "A new hire on day one gets the same procedural guidance that your 20-year veteran carries in their head. The system levels the playing field."
+
+**For Case Management Agent**: "This one watches your queue. If a case sits for 48 hours waiting on a customer reply, it sends a follow-up. If a new case matches a pattern seen 50 times before, it can suggest the resolution. Think about your Tier 3 and Tier 4 volume."
+
+**For Knowledge Management Agent**: "This agent watches for patterns. 15 cases about the same issue and no article? It drafts one and sends it for review. This is how you build that internal KB Benton wants -- automatically, from the cases your team is already resolving."
+
+> **Do NOT**: List all 10 intents, show admin screens, or mention "2 groups" (that's our config language, not their value).
+
+---
+
+### Section 6: Platform Extensibility (~3 min)
+
+**Just mention**: Power Apps, Power Automate, AppSource, code-first coming. Don't demo.
+
+---
+
+### Section 7: Close (~5 min)
+
+**5 differentiators to land**:
+1. One platform for Sales + Service (no middleware)
+2. Native telephony with real-time transcript + AI (replaces Genesis)
+3. Unified omnichannel (chat, email, phone) with intelligent routing
+4. Copilot everywhere (summarize, suggest, draft, guide)
+5. WFM + QM built in, not bolted on
+
+**Schedule**: Tech deep dive, guided actions deep dive, IT/platform session.
+
+---
+
+## Key Numbers to Know
+
+| Metric | Value |
+|--------|-------|
+| Demo environment org | orgecbce8ef.crm.dynamics.com |
+| Total accounts | 19 (2 mfg + 13 distributors + 4 end users) |
+| Total cases | ~40 across tiers and channels |
+| KB articles | 30 (20 product/case + 10 SOP runbooks) |
+| Queues | 18 (brand x channel x tier) |
+| Entitlements | 13 (4 tiers) |
+| Products | ~30 (Zurn + Elkay + Wilkins) |
+| Hot words | 6 (Urgent, Emergency, Recall, Safety, Legal, Next Day Air) |
+| SLA: First response | 4 business hours |
+| SLA: Resolution | 8 business hours |
+
+---
+
+## Environment URLs
+
+| Resource | URL |
+|----------|-----|
+| CS Workspace | https://orgecbce8ef.crm.dynamics.com |
+| Portal | https://zurnelkaycustomercare.powerappsportals.com |
+| Admin Center | https://orgecbce8ef.crm.dynamics.com (Settings -> Advanced) |
+| Fabric Workspace | App ID: 4ea7cd33-e2fd-480d-8ae7-c72c6a94a410 |
+
+---
+
+## Remaining TODO Items
+
+| Item | Priority | Status |
+|------|----------|--------|
+| Copilot Studio bot setup | High | ✅ Completed (YAML pushed, manual auth configured, connected to Omnichannel) |
+| Portal hero users local auth | High | ✅ Completed (5 personas with known usernames/password) |
+| Order modification custom page (10 screens) | High | ✅ YAML complete (10 screens), demo data seeded — needs paste into Power Apps |
+| Demo data: Product Serials | High | ✅ 7 records (Zurn + Elkay, mix of active/expired warranties) |
+| Demo data: Credit Memo / RMA | High | ✅ 4 Zurn/Elkay RMA records with reasons, lot numbers, dollar amounts |
+| Demo data: Warranty Claims | High | ✅ 4 claims (Submitted → Denied) linked to Product Serials |
+| ShipEngine custom connector | Medium | Import swagger JSON + create connection (see setup instructions) |
+| Quick Quote save via Power Automate | Medium | Backlogged — requires flow to bypass Project Operations required fields |
+| AI Agents: Intent Agent | Medium | ✅ Completed (10 intents, 2 groups, 10 SOP articles -- Script 22) |
+| AI Agents: Case Mgmt + KM | Medium | ✅ Done -- Connection refs fixed, flows activated |
+| Workforce Management enable | High | ✅ Done -- Script 23 |
+| Quality Management enable | Medium | ✅ Done -- Connection refs fixed, 6 flows activated, QEA/KM agents published, **Manufacturing Service Quality Standard** criteria published (6 sections, 21 questions), 2 evaluation plans published (Daily Case + Conversation trigger) |
+| Portal: Warranty/Claims/RMA display | Low | Backlogged — add customer-facing views (see setup-instructions backlog) |
+| Account 360 canvas app | Low | Not started |
+| Simulated phone call (AI voice) | Backlog | Not started |
+
+---
+
+## Custom Page Data Sources & Script Reference
+
+### Data Sources Required for Custom Page
+
+| # | Display Name | Logical Name | Used By |
+|---|-------------|--------------|----------|
+| 1 | Sales Orders | `salesorder` | Order Update (01–04) |
+| 2 | Sales Order Products | `salesorderdetail` | Order Update (01–04) |
+| 3 | Accounts | `account` | Order Update, Quick Quote |
+| 4 | Notes | `annotation` | Order Update (04) |
+| 5 | Cases | `incident` | Order Update (04) |
+| 6 | Products | `product` | Quick Quote (06) |
+| 7 | Price List Items | `productpricelevel` | Quick Quote (06) |
+| 8 | Credit Memo and RMAs | `cra1f_creditmemoandrma` | Return/RMA (08) |
+| 9 | Product Serials | `cr74e_productserial` | Warranty Lookup (09) |
+| 10 | Warranty Claims | `cr74e_warrantyclaim` | Warranty Lookup (09) |
+| 11 | ShipEngine (custom connector) | — | Shipment Tracker (05) |
+
+---
+
+### Provisioning Scripts
+
+| Script | Purpose |
+|--------|---------|
+| 00-Setup.ps1 | Master runner |
+| 01-Accounts.ps1 | Manufacturers, distributors, end users |
+| 02-Contacts.ps1 | Stakeholders, buyers, contacts |
+| 03-Products.ps1 | Product catalog, units, price lists |
+| 04-CaseConfig.ps1 | Subject tree, case origins |
+| 05-Queues.ps1 | Email + phone queues per brand |
+| 06-SLAs.ps1 | SLA with first response + resolution KPIs |
+| 07-DemoCases.ps1 | ~40 sample cases |
+| 08-Entitlements.ps1 | Tiered entitlements |
+| 09-Routing.ps1 | Classification + routing rules |
+| 10-KnowledgeBase.ps1 | 20 KB articles |
+| 11-ProductLinks.ps1 | Product-KB, product-case, KB-case links |
+| 12-QueueMembers.ps1 | Queue membership |
+| 13-VisualEnrich.ps1 | Tier field, hot-word JS, banners |
+| 14-Portal.ps1 | Portal branding (header, footer, home) |
+| 15-ChatWidget.ps1 | Chat widget injection |
+| 16-KBPage.ps1 | KB Home redesign |
+| 17-PhoneScenario.ps1 | Hero record: Ferguson enrichment, Mike Reynolds, orders, phone case, timeline |
+| 18-ChatScenario.ps1 | Chat scenario: HD Supply enrichment, Derek Lawson, 2 chat cases, timeline activities |
+| 19-PortalHeroUsers.ps1 | Portal hero users: local login identities + authenticated web role assignment |
+| 20-OrderMgmt.ps1 | Sales orders: Ferguson hero order PO-94820 + context orders, line items |
+| 21-ProductSerials.ps1 | Product serials, warranty claims, credit memo/RMA records |
+| 22-CustomerIntentAgent.ps1 | Customer Intent Agent: 10 intents, 2 groups, 10 SOP KB articles |
