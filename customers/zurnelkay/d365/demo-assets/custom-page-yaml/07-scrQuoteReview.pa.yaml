@@ -158,7 +158,11 @@ Screens:
           Control: Label
           Properties:
             Text: |-
-              =varQuoteBrand & " Standard Price List"
+              =If(
+                  EndsWith(varQuoteBrand, "Parts"),
+                  varQuoteBrand,
+                  varQuoteBrand & " Standard Price List"
+              )
             X: =110
             Y: =108
             Width: =Parent.Width - 126
@@ -348,7 +352,13 @@ Screens:
                           {
                               Name: "QQ - " & varQuoteAccount.'Account Name' & " " & Text(Now(), "mm/dd/yyyy"),
                               'Quote Customers': LookUp(Accounts, 'Account Name' = varQuoteAccount.'Account Name'),
-                              'Price List': LookUp('Price Lists', Name = varQuoteBrand & " Standard Price List")
+                              'Price List': LookUp('Price Lists',
+                                  Name = If(
+                                      EndsWith(varQuoteBrand, "Parts"),
+                                      varQuoteBrand,
+                                      varQuoteBrand & " Standard Price List"
+                                  )
+                              )
                           }
                       ).Name
                   ),

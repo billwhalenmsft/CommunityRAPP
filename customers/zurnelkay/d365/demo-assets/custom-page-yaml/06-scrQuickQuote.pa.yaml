@@ -19,11 +19,12 @@
 #
 #  Variables/collections (initialized in scrHome):
 #    colQuoteLines    - line items collection
-#    varQuoteBrand    - "Zurn" or "Elkay"
+#    varQuoteBrand    - brand or parts price list name
 #    varQuoteAccount  - selected Accounts record
 #    varQuoteSaved    - boolean, quote saved flag
 #    varQuoteError    - error message text
 #    varTempPrice     - temp price from lookup
+#    varProductType   - "Core Products" or "Aftermarket Parts"
 #
 #  NOTE: Column display names may vary between
 #  D365 environments. If a formula shows "column
@@ -40,7 +41,8 @@ Screens:
       OnVisible: |-
         =Set(varQuoteSaved, false);
         Set(varQuoteError, "");
-        Set(varTempPrice, Blank())
+        Set(varTempPrice, Blank());
+        Set(varProductType, "Core Products")
     Children:
       # -- Teal accent bar --
       - rectQuoteBar:
@@ -111,6 +113,50 @@ Screens:
             Fill: =RGBA(237, 235, 233, 1)
 
       # =============================================
+      #  PRODUCT TYPE TOGGLE
+      # =============================================
+
+      # -- Product Type label --
+      - lblProductTypeLbl:
+          Control: Label
+          Properties:
+            Text: ="Product Type"
+            X: =16
+            Y: =86
+            Width: =Parent.Width - 32
+            Height: =20
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+
+      # -- Product Type dropdown --
+      - ddProductType:
+          Control: Classic/DropDown
+          Properties:
+            Items: =["Core Products", "Aftermarket Parts"]
+            Default: ="Core Products"
+            X: =16
+            Y: =106
+            Width: =Parent.Width - 32
+            Height: =36
+            Size: =12
+            BorderColor: =RGBA(200, 198, 196, 1)
+            OnChange: |-
+              =Set(varProductType, ddProductType.Selected.Value);
+              Reset(cbProductSearch);
+              Set(varTempPrice, Blank())
+
+      # -- Divider --
+      - rectQuoteDivider1a:
+          Control: Rectangle
+          Properties:
+            X: =16
+            Y: =150
+            Width: =Parent.Width - 32
+            Height: =1
+            Fill: =RGBA(237, 235, 233, 1)
+
+      # =============================================
       #  BRAND + CUSTOMER
       # =============================================
 
@@ -120,12 +166,13 @@ Screens:
           Properties:
             Text: ="Brand"
             X: =16
-            Y: =86
+            Y: =158
             Width: =Parent.Width - 32
             Height: =20
             Size: =12
             FontWeight: =FontWeight.Semibold
             Color: =RGBA(50, 49, 48, 1)
+            Visible: =varProductType = "Core Products"
 
       # -- Brand dropdown --
       - ddBrand:
@@ -134,11 +181,46 @@ Screens:
             Items: =["Zurn", "Elkay"]
             Default: ="Zurn"
             X: =16
-            Y: =106
+            Y: =178
             Width: =Parent.Width - 32
             Height: =36
             Size: =12
             BorderColor: =RGBA(200, 198, 196, 1)
+            Visible: =varProductType = "Core Products"
+
+      # -- Parts Price List label (shown when Parts selected) --
+      - lblPartsListLbl:
+          Control: Label
+          Properties:
+            Text: ="Parts Price List"
+            X: =16
+            Y: =158
+            Width: =Parent.Width - 32
+            Height: =20
+            Size: =12
+            FontWeight: =FontWeight.Semibold
+            Color: =RGBA(50, 49, 48, 1)
+            Visible: =varProductType = "Aftermarket Parts"
+
+      # -- Parts Price List dropdown (searches Price Lists) --
+      - ddPartsList:
+          Control: Classic/DropDown
+          Properties:
+            Items: |-
+              =Filter(
+                  'Price Lists',
+                  EndsWith(Name, "Parts") || EndsWith(Name, "Aftermarket Parts")
+              ).Name
+            X: =16
+            Y: =178
+            Width: =Parent.Width - 32
+            Height: =36
+            Size: =12
+            BorderColor: =RGBA(200, 198, 196, 1)
+            Visible: =varProductType = "Aftermarket Parts"
+            OnChange: |-
+              =Reset(cbProductSearch);
+              Set(varTempPrice, Blank())
 
       # -- Customer label --
       - lblCustLbl:
@@ -146,7 +228,7 @@ Screens:
           Properties:
             Text: ="Customer"
             X: =16
-            Y: =150
+            Y: =222
             Width: =Parent.Width - 32
             Height: =20
             Size: =12
@@ -163,7 +245,7 @@ Screens:
             IsSearchable: =true
             SelectMultiple: =false
             X: =16
-            Y: =170
+            Y: =242
             Width: =Parent.Width - 32
             Height: =36
             Size: =12
@@ -174,7 +256,7 @@ Screens:
           Control: Rectangle
           Properties:
             X: =16
-            Y: =216
+            Y: =288
             Width: =Parent.Width - 32
             Height: =1
             Fill: =RGBA(237, 235, 233, 1)
@@ -189,7 +271,7 @@ Screens:
           Properties:
             Text: ="Product"
             X: =16
-            Y: =224
+            Y: =296
             Width: =Parent.Width - 32
             Height: =20
             Size: =12
@@ -197,18 +279,25 @@ Screens:
             Color: =RGBA(50, 49, 48, 1)
 
       # -- Product search ComboBox --
-      # Filters by brand: ZN/WK = Zurn, EK = Elkay
-      # NOTE: If 'Product ID' column name differs in your
-      # environment, change to 'Product Number' below and
-      # in SearchFields.
+      # Core Products: filters by brand prefix (ZN/WK = Zurn, EK = Elkay)
+      # Aftermarket Parts: filters by selected parts price list
       - cbProductSearch:
           Control: Classic/ComboBox
           Properties:
             Items: |-
-              =Filter(Products,
-                  If(ddBrand.Selected.Value = "Zurn",
-                      StartsWith('Product ID', "ZN") || StartsWith('Product ID', "WK"),
-                      StartsWith('Product ID', "EK")
+              =If(
+                  varProductType = "Aftermarket Parts",
+                  Filter(Products,
+                      'Product ID' in
+                          Filter('Price List Items',
+                              'Price List'.'Price List' = LookUp('Price Lists', Name = ddPartsList.Selected.Value).'Price List'
+                          ).'Product ID'
+                  ),
+                  Filter(Products,
+                      If(ddBrand.Selected.Value = "Zurn",
+                          StartsWith('Product ID', "ZN") || StartsWith('Product ID', "WK"),
+                          StartsWith('Product ID', "EK")
+                      )
                   )
               )
             DisplayFields: =["Name", "Product ID"]
@@ -216,7 +305,7 @@ Screens:
             IsSearchable: =true
             SelectMultiple: =false
             X: =16
-            Y: =244
+            Y: =316
             Width: =Parent.Width - 32
             Height: =36
             Size: =11
@@ -238,7 +327,7 @@ Screens:
           Properties:
             Text: ="Qty"
             X: =16
-            Y: =288
+            Y: =360
             Width: =80
             Height: =20
             Size: =12
@@ -251,7 +340,7 @@ Screens:
           Properties:
             Text: ="Unit Price"
             X: =104
-            Y: =288
+            Y: =360
             Width: =Parent.Width - 120
             Height: =20
             Size: =12
@@ -265,7 +354,7 @@ Screens:
             Default: ="1"
             Format: =TextFormat.Number
             X: =16
-            Y: =308
+            Y: =380
             Width: =80
             Height: =36
             Size: =12
@@ -285,7 +374,7 @@ Screens:
                   )
               )
             X: =104
-            Y: =308
+            Y: =380
             Width: =Parent.Width - 120
             Height: =36
             Size: =14
@@ -300,7 +389,7 @@ Screens:
           Properties:
             Text: ="+ Add Line"
             X: =16
-            Y: =352
+            Y: =424
             Width: =Parent.Width - 32
             Height: =38
             Fill: =RGBA(0, 133, 117, 1)
@@ -341,7 +430,7 @@ Screens:
           Control: Rectangle
           Properties:
             X: =16
-            Y: =398
+            Y: =470
             Width: =Parent.Width - 32
             Height: =1
             Fill: =RGBA(237, 235, 233, 1)
@@ -357,7 +446,7 @@ Screens:
             Text: |-
               ="Quote Lines (" & CountRows(colQuoteLines) & ")"
             X: =16
-            Y: =406
+            Y: =478
             Width: =Parent.Width - 32
             Height: =22
             Size: =12
@@ -370,7 +459,7 @@ Screens:
           Properties:
             Text: ="Add products above to build your quote"
             X: =16
-            Y: =440
+            Y: =504
             Width: =Parent.Width - 32
             Height: =40
             Size: =11
@@ -385,9 +474,9 @@ Screens:
           Properties:
             Items: =colQuoteLines
             X: =0
-            Y: =432
+            Y: =504
             Width: =Parent.Width
-            Height: =Parent.Height - 572
+            Height: =Parent.Height - 644
             TemplateSize: =56
             TemplatePadding: =0
             Fill: =RGBA(250, 250, 250, 1)
@@ -506,7 +595,12 @@ Screens:
               )
             OnSelect: |-
               =Set(varQuoteAccount, cbAccount.Selected);
-              Set(varQuoteBrand, ddBrand.Selected.Value);
+              Set(varQuoteBrand,
+                  If(varProductType = "Aftermarket Parts",
+                      ddPartsList.Selected.Value,
+                      ddBrand.Selected.Value
+                  )
+              );
               Navigate(scrQuoteReview, ScreenTransition.None)
 
       - btnQuoteBackHome:

@@ -42,7 +42,8 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 # Banner
 # ============================================================
 # Load customer config if available
-$configFile = "$scriptDir\..\customers\$Customer\config\environment.json"
+# Path: customers/{Customer}/d365/config/environment.json (from repo root)
+$configFile = "$scriptDir\..\..\customers\$Customer\d365\config\environment.json"
 $envName = "Demo Environment"
 $envUrl = "(not configured)"
 if (Test-Path $configFile) {
@@ -112,6 +113,7 @@ $steps = @(
     @{ num = 1; name = "Accounts"; script = "01-Accounts.ps1" },
     @{ num = 2; name = "Contacts"; script = "02-Contacts.ps1" },
     @{ num = 3; name = "Products"; script = "03-Products.ps1" },
+    @{ num = 3.5; name = "Parts Products"; script = "03a-PartsProducts.ps1"; conditional = $true },
     @{ num = 4; name = "Case Config"; script = "04-CaseConfig.ps1" },
     @{ num = 5; name = "Queues"; script = "05-Queues.ps1" },
     @{ num = 6; name = "SLAs"; script = "06-SLAs.ps1" },
@@ -138,7 +140,7 @@ $steps = @(
 if ($Only -gt 0) {
     $steps = $steps | Where-Object { $_.num -eq $Only }
     if ($steps.Count -eq 0) {
-        throw "Invalid step number: $Only. Valid: 1-23."
+        throw "Invalid step number: $Only. Valid: 1-23 (use 3.5 for Parts Products)."
     }
 } elseif ($From -gt 1) {
     $steps = $steps | Where-Object { $_.num -ge $From }
@@ -170,8 +172,23 @@ foreach ($s in $steps) {
         continue
     }
 
+    # Conditional step: 03a-PartsProducts only runs if a parts catalog exists for this customer
+    if ($s.conditional) {
+        $partsCatalog = "$scriptDir\..\..\customers\$Customer\d365\data\parts-catalog.json"
+        if (-not (Test-Path $partsCatalog)) {
+            Write-Host "  No parts catalog found for $Customer - skipping $($s.name)" -ForegroundColor DarkGray
+            $results += @{ step = $s.num; name = $s.name; status = "SKIPPED (no catalog)"; duration = "0s" }
+            continue
+        }
+    }
+
     try {
-        & $scriptPath
+        # Pass -Customer for scripts that accept it (03a-PartsProducts)
+        if ($s.script -eq "03a-PartsProducts.ps1") {
+            & $scriptPath -Customer $Customer
+        } else {
+            & $scriptPath
+        }
         $duration = [math]::Round(((Get-Date) - $stepStart).TotalSeconds, 1)
         $results += @{ step = $s.num; name = $s.name; status = "SUCCESS"; duration = "${duration}s" }
     } catch {

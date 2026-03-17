@@ -83,6 +83,7 @@ Screens:
         Set(varQuoteSaved, false);
         Set(varQuoteError, "");
         Set(varQuoteNumber, "");
+        Set(varProductType, "Core Products");
         // varSavedQuote is set by the save Patch on scrQuoteReview;
         // do NOT init with Blank() — Custom Pages cannot type an
         // untyped blank for a record variable.
@@ -129,7 +130,9 @@ Screens:
                 'Original Order Number': ""
             }
         );
-        Clear(colSerialResult)
+        Clear(colSerialResult);
+        // Warranty mode: "equipment" (Otis fleet) or "serial" (Zurn lookup)
+        Set(varWarrantyMode, Coalesce(varWarrantyMode, "equipment"))
     Children:
       # -- Orange accent bar --
       - rectHomeBar:
@@ -176,6 +179,18 @@ Screens:
             Height: =22
             Size: =11
             Color: =RGBA(96, 94, 92, 1)
+
+      # -- Settings gear --
+      - icoSettings:
+          Control: Classic/Icon
+          Properties:
+            Icon: =Icon.Settings
+            X: =Parent.Width - 40
+            Y: =24
+            Width: =24
+            Height: =24
+            Color: =RGBA(96, 94, 92, 1)
+            OnSelect: =Navigate(scrSettings, ScreenTransition.None)
 
       # -- Divider --
       - rectHomeDivider:
@@ -565,7 +580,12 @@ Screens:
       - lblCard5Title:
           Control: Label
           Properties:
-            Text: ="Warranty Lookup"
+            Text: |-
+              =If(
+                  varWarrantyMode = "equipment",
+                  "Equipment & Warranty",
+                  "Warranty Lookup"
+              )
             X: =76
             Y: =622
             Width: =Parent.Width - 130
@@ -576,7 +596,12 @@ Screens:
       - lblCard5Desc:
           Control: Label
           Properties:
-            Text: ="Check warranty status by serial or product"
+            Text: |-
+              =If(
+                  varWarrantyMode = "equipment",
+                  "View fleet units, contracts & warranty at this account",
+                  "Check warranty status by serial or product"
+              )
             X: =76
             Y: =646
             Width: =Parent.Width - 130
@@ -586,7 +611,12 @@ Screens:
       - lblCard5Badge:
           Control: Label
           Properties:
-            Text: ="Live"
+            Text: |-
+              =If(
+                  varWarrantyMode = "equipment",
+                  "FLEET",
+                  "SERIAL"
+              )
             X: =76
             Y: =682
             Width: =50
@@ -616,7 +646,12 @@ Screens:
             BorderThickness: =0
             HoverFill: =RGBA(0, 0, 0, 0.03)
             PressedFill: =RGBA(0, 0, 0, 0.06)
-            OnSelect: =Navigate(scrWarrantyLookup, ScreenTransition.None)
+            OnSelect: |-
+              =If(
+                  varWarrantyMode = "equipment",
+                  Navigate(scrEquipWarranty, ScreenTransition.None),
+                  Navigate(scrWarrantyLookup, ScreenTransition.None)
+              )
 
       # -- Version label --
       - lblVersion:

@@ -1,0 +1,151 @@
+{
+    "customer": "Otis",
+    "priceListName": "Otis Aftermarket Parts",
+    "unitGroupName": "Elevator Service Parts",
+    "baseUnitName": "Each",
+    "validFrom": "2025-01-01",
+    "validTo": "2027-12-31",
+    "productNumberPrefix": "OT",
+    "parts": [
+        {
+            "name": "AT120 Door Operator Assembly",
+            "num": "OT-DO-1001",
+            "category": "Door Equipment",
+            "price": 1185.00,
+            "desc": "Complete AT120 door operator for Gen2 passenger elevators. Includes motor, belt, and controller."
+        },
+        {
+            "name": "DCSS5 Door Operator Assembly",
+            "num": "OT-DO-1002",
+            "category": "Door Equipment",
+            "price": 1340.00,
+            "desc": "DCSS5 center-opening door operator. Variable speed, quiet operation. Fits Gen2 and SkyRise."
+        },
+        {
+            "name": "Door Hanger Roller Set",
+            "num": "OT-DR-1003",
+            "category": "Door Equipment",
+            "price": 84.25,
+            "desc": "Set of 4 nylon door hanger rollers. 7-7/8 inch diameter. Otis ref: 456CL4."
+        },
+        {
+            "name": "Door Gibs - Nylon (Set of 4)",
+            "num": "OT-DG-1004",
+            "category": "Door Equipment",
+            "price": 42.50,
+            "desc": "Replacement nylon door gibs for hoistway doors. Low-friction, quiet operation."
+        },
+        {
+            "name": "Door Interlock Assembly",
+            "num": "OT-DI-1005",
+            "category": "Door Equipment",
+            "price": 215.00,
+            "desc": "6940 series hoistway door interlock. Includes contacts and mechanical lock mechanism."
+        },
+        {
+            "name": "Pickup Roller Assembly",
+            "num": "OT-PR-1006",
+            "category": "Door Equipment",
+            "price": 67.50,
+            "desc": "Car door pickup roller assembly. Engages hoistway door vane for coupled operation."
+        },
+        {
+            "name": "Roller Guide Shoe Assembly",
+            "num": "OT-GS-2001",
+            "category": "Guide Shoes & Rollers",
+            "price": 195.00,
+            "desc": "Complete roller guide shoe assembly for car frame. 3-roller design with spring-loaded tensioner."
+        },
+        {
+            "name": "Guide Shoe Insert Set",
+            "num": "OT-GI-2002",
+            "category": "Guide Shoes & Rollers",
+            "price": 28.00,
+            "desc": "Set of 6 nylon guide shoe inserts (liners). Standard 211 profile. Easy snap-in replacement."
+        },
+        {
+            "name": "Roller Guide Wheel 2.2 inch",
+            "num": "OT-RW-2003",
+            "category": "Guide Shoes & Rollers",
+            "price": 49.00,
+            "desc": "Individual roller guide wheel. 2.20 x 7/8 inch, 0.370 bore. Otis ref: 456CA1A."
+        },
+        {
+            "name": "Car Station Push Button - Single",
+            "num": "OT-PB-3001",
+            "category": "Buttons & Fixtures",
+            "price": 137.00,
+            "desc": "Series 18 surface mount single push button. Illuminated, vandal-resistant. Brushed stainless."
+        },
+        {
+            "name": "Car Station Push Button - Double",
+            "num": "OT-PB-3002",
+            "category": "Buttons & Fixtures",
+            "price": 147.00,
+            "desc": "Series 18 surface mount double push button assembly. Illuminated, vandal-resistant."
+        },
+        {
+            "name": "Hall Lantern Indicator",
+            "num": "OT-HL-3003",
+            "category": "Buttons & Fixtures",
+            "price": 225.00,
+            "desc": "LED hall lantern with direction arrows and chime. Surface mount. Satin finish."
+        },
+        {
+            "name": "Position Indicator Display",
+            "num": "OT-PI-3004",
+            "category": "Buttons & Fixtures",
+            "price": 310.00,
+            "desc": "Digital floor position indicator. LED matrix display. Supports up to 50 floors."
+        },
+        {
+            "name": "GCB Main Control Board",
+            "num": "OT-CB-4001",
+            "category": "Control Boards",
+            "price": 875.00,
+            "desc": "GCB main processor board (GBA26800LB20). Core controller for Gen2 elevator systems."
+        },
+        {
+            "name": "LCB2 Landing Control Board",
+            "num": "OT-CB-4002",
+            "category": "Control Boards",
+            "price": 425.00,
+            "desc": "LCB2 landing call controller board. Manages hall calls and dispatching per floor."
+        },
+        {
+            "name": "Door Control Board DAA",
+            "num": "OT-CB-4003",
+            "category": "Control Boards",
+            "price": 560.00,
+            "desc": "Door control PCB (DAA26801C series). Manages door operator speed profiles and safety edge."
+        },
+        {
+            "name": "Governor Assembly",
+            "num": "OT-SA-5001",
+            "category": "Safety Equipment",
+            "price": 485.00,
+            "desc": "Overspeed governor assembly. Trips safety gear at 115% rated speed. Includes rope and tension weight."
+        },
+        {
+            "name": "Safety Edge - Mechanical",
+            "num": "OT-SA-5002",
+            "category": "Safety Equipment",
+            "price": 165.00,
+            "desc": "Mechanical leading edge safety device for car doors. Triggers door reopening on obstruction."
+        },
+        {
+            "name": "Light Curtain Detector",
+            "num": "OT-SA-5003",
+            "category": "Safety Equipment",
+            "price": 395.00,
+            "desc": "Infrared light curtain door protection system. 2D detection array. Replaces mechanical safety edges."
+        },
+        {
+            "name": "Governor Rope 3/8 inch (per foot)",
+            "num": "OT-CR-6001",
+            "category": "Cables & Ropes",
+            "price": 12.50,
+            "desc": "3/8 inch governor rope. Galvanized steel, 6x19 construction. Sold per linear foot."
+        }
+    ]
+}

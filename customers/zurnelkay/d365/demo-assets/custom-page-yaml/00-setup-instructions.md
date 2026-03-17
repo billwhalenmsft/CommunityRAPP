@@ -232,6 +232,7 @@ If Code View isn't available, use each `.pa.yaml` file as a control-by-control g
 | `varQuoteNumber` | Text | Screen 7 Save button | Screen 7 |
 | `varSavedQuote` | Record (Quote) | Screen 7 Save button | Screen 7 |
 | `varTempPrice` | Number | Screen 6 product picker | Screen 6 |
+| `varProductType` | Text | Screen 6 product type toggle | Screen 6 |
 | `colQuoteLines` | Collection (quote lines) | Screen 6 Add Line button | Screens 6, 7 |
 
 ---
@@ -294,6 +295,72 @@ If Code View isn't available, use each `.pa.yaml` file as a control-by-control g
 
 After running `scripts/21-ShipmentTracking.ps1`, refresh the **Sales Orders** data source
 in the Custom Page editor so the new columns (`Tracking Number`, `Carrier Code`) appear.
+
+---
+
+## Aftermarket Parts Price List Setup
+
+The Quick Quote screen supports **aftermarket parts** in addition to core products. Each customer
+project can have its own parts catalog provisioned into D365.
+
+### How It Works
+
+1. **Parts catalog JSON** — Each customer has a `parts-catalog.json` at
+   `customers/{customer}/d365/data/parts-catalog.json` defining their aftermarket parts
+   with part numbers, categories, descriptions, and prices.
+
+2. **Provisioning script** — Run `d365/scripts/03a-PartsProducts.ps1 -Customer {name}` to create:
+   - A dedicated Price List (e.g., "Otis Aftermarket Parts")
+   - A Unit Group for the customer's parts
+   - All products from the JSON
+   - Price List Items linking products to the price list
+   - Publishes products (Draft → Active)
+
+3. **Quick Quote integration** — The Product Type toggle on `scrQuickQuote` switches between
+   core products (filtered by brand prefix) and aftermarket parts (filtered by customer prefix).
+
+### Setup Steps
+
+1. Copy `templates/parts-catalog-template.json` to `customers/{customer}/d365/data/parts-catalog.json`
+2. Populate with customer-specific parts data (from customer website, catalogs, or provided lists)
+3. Run the provisioning script:
+   ```powershell
+   cd d365/scripts
+   .\03a-PartsProducts.ps1 -Customer otis
+   ```
+4. In the Custom Page editor, refresh the **Products** and **Price List Items** data sources
+5. The parts will appear in the Quick Quote product picker when "Parts" is selected
+
+### Parts Catalog JSON Schema
+
+```json
+{
+    "customer": "Otis",
+    "priceListName": "Otis Aftermarket Parts",
+    "unitGroupName": "Elevator Service Parts",
+    "baseUnitName": "Each",
+    "validFrom": "2025-01-01",
+    "validTo": "2027-12-31",
+    "productNumberPrefix": "OT",
+    "parts": [
+        {
+            "name": "AT120 Door Operator Assembly",
+            "num": "OT-DO-1001",
+            "category": "Door Equipment",
+            "price": 1185.00,
+            "desc": "Complete AT120 door operator for Gen2 passenger elevators."
+        }
+    ]
+}
+```
+
+### Naming Convention for Part Numbers
+
+Use `{PREFIX}-{CATEGORY}-{SEQ}` format:
+- **OT** = Otis, **ZN** = Zurn, **EK** = Elkay, **VR** = Vermeer, etc.
+- Category codes: DO=Door, DR=Door Roller, GS=Guide Shoe, PB=Push Button,
+  CB=Control Board, SA=Safety, CR=Cable/Rope, etc.
+- Sequence: 4-digit number (1001, 1002, ...)
 
 ---
 

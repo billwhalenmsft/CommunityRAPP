@@ -1,0 +1,32 @@
+{
+    "$schema": "https://raw.githubusercontent.com/your-org/rapp/main/schemas/parts-catalog.schema.json",
+    "_comment": "Parts catalog template for D365 demo provisioning. Copy to customers/{customer}/d365/data/parts-catalog.json and populate.",
+    "customer": "",
+    "priceListName": "",
+    "unitGroupName": "Service Parts",
+    "baseUnitName": "Each",
+    "validFrom": "2025-01-01",
+    "validTo": "2027-12-31",
+    "productNumberPrefix": "",
+    "parts": [
+        {
+            "name": "",
+            "num": "",
+            "category": "",
+            "price": 0.00,
+            "desc": ""
+        }
+    ],
+    "_categories_reference": [
+        "Door Equipment",
+        "Guide Shoes & Rollers",
+        "Buttons & Fixtures",
+        "Control Boards",
+        "Safety Equipment",
+        "Cables & Ropes",
+        "Motors & Drives",
+        "Filters & Consumables",
+        "Seals & Gaskets",
+        "Tools & Accessories"
+    ]
+}
