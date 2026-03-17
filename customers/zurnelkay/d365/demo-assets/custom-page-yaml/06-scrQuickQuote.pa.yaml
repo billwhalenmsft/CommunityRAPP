@@ -288,10 +288,7 @@ Screens:
               =If(
                   varProductType = "Aftermarket Parts",
                   Filter(Products,
-                      'Product ID' in
-                          Filter('Price List Items',
-                              'Price List'.'Price List' = LookUp('Price Lists', Name = ddPartsList.Selected.Value).'Price List'
-                          ).'Product ID'
+                      StartsWith('Product ID', "OT-")
                   ),
                   Filter(Products,
                       If(ddBrand.Selected.Value = "Zurn",
