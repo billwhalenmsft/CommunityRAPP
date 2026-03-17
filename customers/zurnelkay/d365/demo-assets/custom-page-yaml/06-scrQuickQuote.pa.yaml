@@ -206,11 +206,7 @@ Screens:
       - ddPartsList:
           Control: Classic/DropDown
           Properties:
-            Items: |-
-              =Filter(
-                  'Price Lists',
-                  EndsWith(Name, "Parts") || EndsWith(Name, "Aftermarket Parts")
-              ).Name
+            Items: =["Otis Aftermarket Parts"]
             X: =16
             Y: =178
             Width: =Parent.Width - 32
