@@ -1,0 +1,104 @@
+kind: TopicMetadata
+schemaVersion: 2.0
+name: Modernization and Sales Handoff
+description: Handles modernization inquiries and facilitates sales team handoff
+
+triggers:
+  phrases:
+    - modernization
+    - upgrade elevator
+    - iot monitoring
+    - otis one
+    - equipment upgrade
+    - new features
+    - energy efficiency
+    - smart elevator
+    - connected elevator
+    - predictive maintenance
+
+modelDescription: |
+  This topic handles customer inquiries about modernization and equipment 
+  upgrades. It surfaces the Otis ONE IoT information, identifies upsell 
+  opportunities, and facilitates handoff to the sales team.
+
+nodes:
+  - kind: Message
+    id: acknowledge
+    message: |
+      🚀 **Modernization Inquiry**
+      
+      Great opportunity to explore upgrade options for this customer!
+
+  - kind: GenerativeAnswers
+    id: surface_otis_one_kb
+    prompt: |
+      Search for KB-003145 (Otis ONE IoT Monitoring Package) and provide:
+      
+      1. Key capabilities of Otis ONE:
+         - Real-time performance monitoring
+         - Predictive maintenance alerts
+         - Remote diagnostics
+         - Usage analytics and reporting
+         - Building manager dashboard
+      
+      2. Supported equipment types
+      3. Typical ROI and customer benefits
+      4. Installation requirements
+
+  - kind: Question
+    id: equipment_assessment
+    question: |
+      Let me assess the modernization opportunity:
+      
+      **Equipment Details:**
+      - Installation year: {equipment.installDate}
+      - Current model: {equipment.model}
+      - Number of units: {account.totalUnits}
+      
+      What is the customer's primary interest?
+      - Energy efficiency (regenerative drives)
+      - IoT monitoring (Otis ONE)
+      - Cab interior refresh
+      - Full modernization
+    variable: customerInterest
+
+  - kind: Condition
+    id: check_equipment_age
+    condition: "equipment.age >= 10"
+    trueActions:
+      - kind: Message
+        message: |
+          ✨ **STRONG MODERNIZATION CANDIDATE**
+          
+          Equipment age: **{equipment.age} years**
+          
+          **Recommended options:**
+          - Full modernization package (~£150K/unit)
+          - Otis ONE IoT monitoring retrofit
+          - Regenerative drives for energy savings (20-30% reduction)
+          
+          **Value Proposition:**
+          - Improved reliability and uptime
+          - Reduced energy costs
+          - Enhanced tenant experience
+          - Predictive maintenance reduces callbacks
+
+  - kind: Message
+    id: sales_handoff
+    message: |
+      📋 **Sales Handoff Checklist**
+      
+      1. ✅ Capture customer requirements in case notes
+      2. ✅ Create sales opportunity in CRM
+      3. ✅ Schedule technical survey with customer
+      4. ✅ Notify Account Manager: {account.accountManager}
+      5. ✅ Send confirmation email with:
+         - Modernization overview brochure
+         - Otis ONE information sheet
+         - Preliminary timeline estimate
+      
+      **Estimated Project Value:** £{estimatedValue}
+
+settings:
+  priority: Normal
+  escalateToAgent: false

@@ -1,0 +1,90 @@
+kind: TopicMetadata
+schemaVersion: 2.0
+name: Billing and Contract Verification
+description: Assists with billing disputes and contract coverage verification
+
+triggers:
+  phrases:
+    - billing dispute
+    - invoice question
+    - contract coverage
+    - what's covered
+    - service contract
+    - is this covered
+    - billing error
+    - charged incorrectly
+    - dispute charge
+    - coverage question
+
+modelDescription: |
+  This topic helps agents verify contract coverage for disputed charges and 
+  guides them through the billing correction process. It surfaces the 
+  Contract Coverage Guide and identifies potential billing errors.
+
+nodes:
+  - kind: Message
+    id: acknowledge
+    message: |
+      💰 **Billing/Contract Inquiry**
+      
+      Let me help verify coverage and resolve any billing concerns.
+
+  - kind: GenerativeAnswers
+    id: surface_coverage_kb
+    prompt: |
+      Search for KB-001050 (Full Maintenance Contract Coverage Guide) and provide:
+      
+      1. What components ARE covered under Full Maintenance contracts:
+         - Door operators, controllers, safety devices, cables, machine components
+      
+      2. What is NOT typically covered:
+         - Cosmetic items, vandalism repair, cab interiors, building modifications
+      
+      3. How to verify if a specific repair should be covered
+
+  - kind: Question
+    id: contract_type_check
+    question: |
+      What type of service contract does this account have?
+      
+      - **Full Maintenance**: Parts AND labor included
+      - **Standard Maintenance**: Labor only, parts billable
+      - **Time & Materials**: All work billable
+    variable: contractType
+
+  - kind: Condition
+    id: check_coverage_error
+    condition: "contractType = 'Full Maintenance' AND chargedItem IN coveredComponents"
+    trueActions:
+      - kind: Message
+        message: |
+          ✅ **Billing Error Confirmed**
+          
+          Based on the Full Maintenance contract, this repair **should be covered**.
+          
+          **Next Steps:**
+          1. Submit billing correction request (CR form)
+          2. Reference Work Order: {relatedWorkOrder.woNumber}
+          3. Credit will appear on next statement
+          4. Send confirmation email to customer
+          
+          **Account Note:** Check contract renewal date and flag if approaching.
+
+  - kind: Message
+    id: contract_renewal_alert
+    message: |
+      📅 **Contract Renewal Check**
+      
+      If the account contract expires within 90 days:
+      - Loop in Account Manager for relationship review
+      - Consider goodwill gesture for billing error
+      - Document interaction for renewal discussion
+      
+      **Retention Risk Factors:**
+      - Multiple billing errors
+      - Unresolved service issues
+      - Competitor activity mentioned
+
+settings:
+  priority: Normal
+  escalateToAgent: false

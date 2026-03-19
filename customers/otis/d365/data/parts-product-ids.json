@@ -1,0 +1,122 @@
+{
+  "OT-DI-1005": {
+    "price": 215.0,
+    "id": "7252c7c6-3222-f111-8342-7c1e52143136",
+    "category": "Door Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-DG-1004": {
+    "price": 42.5,
+    "id": "7052c7c6-3222-f111-8342-7c1e52143136",
+    "category": "Door Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-GS-2001": {
+    "price": 195.0,
+    "id": "ffef92c9-3222-f111-8342-7ced8d18c8d7",
+    "category": "Guide Shoes & Rollers",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-CB-4002": {
+    "price": 425.0,
+    "id": "50d7aecc-3222-f111-8341-6045bda80a72",
+    "category": "Control Boards",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-PB-3001": {
+    "price": 137.0,
+    "id": "21f092c9-3222-f111-8342-7ced8d18c8d7",
+    "category": "Buttons & Fixtures",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-PB-3002": {
+    "price": 147.0,
+    "id": "3173c1c9-3222-f111-8342-7c1e520a58a1",
+    "category": "Buttons & Fixtures",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-DO-1002": {
+    "price": 1340.0,
+    "id": "4d52c7c6-3222-f111-8342-7c1e52143136",
+    "category": "Door Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-HL-3003": {
+    "price": 225.0,
+    "id": "47d7aecc-3222-f111-8341-6045bda80a72",
+    "category": "Buttons & Fixtures",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-CB-4001": {
+    "price": 875.0,
+    "id": "bde5cbcc-3222-f111-8342-7c1e52143136",
+    "category": "Control Boards",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-SA-5002": {
+    "price": 165.0,
+    "id": "e253bccf-3222-f111-8342-7c1e520a58a1",
+    "category": "Safety Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-SA-5001": {
+    "price": 485.0,
+    "id": "860f66d0-3222-f111-8341-7ced8dceb26a",
+    "category": "Safety Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-RW-2003": {
+    "price": 49.0,
+    "id": "34d7aecc-3222-f111-8341-6045bda80a72",
+    "category": "Guide Shoes & Rollers",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-PR-1006": {
+    "price": 67.5,
+    "id": "0d73c1c9-3222-f111-8342-7c1e520a58a1",
+    "category": "Door Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-PI-3004": {
+    "price": 310.0,
+    "id": "b9e5cbcc-3222-f111-8342-7c1e52143136",
+    "category": "Buttons & Fixtures",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-SA-5003": {
+    "price": 395.0,
+    "id": "ad4ea7d2-3222-f111-8341-6045bda80a72",
+    "category": "Safety Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-GI-2002": {
+    "price": 28.0,
+    "id": "b2e5cbcc-3222-f111-8342-7c1e52143136",
+    "category": "Guide Shoes & Rollers",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-CB-4003": {
+    "price": 560.0,
+    "id": "c0e5cbcc-3222-f111-8342-7c1e52143136",
+    "category": "Control Boards",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-CR-6001": {
+    "price": 12.5,
+    "id": "358f8bcf-3222-f111-8342-7ced8d18c8d7",
+    "category": "Cables & Ropes",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-DO-1001": {
+    "price": 1185.0,
+    "id": "58c595c3-3222-f111-8342-7ced8d18c8d7",
+    "category": "Door Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  },
+  "OT-DR-1003": {
+    "price": 84.25,
+    "id": "367547c4-3222-f111-8341-7ced8dceb26a",
+    "category": "Door Equipment",
+    "priceListId": "7703b4c0-3222-f111-8341-6045bda80a72"
+  }
+}

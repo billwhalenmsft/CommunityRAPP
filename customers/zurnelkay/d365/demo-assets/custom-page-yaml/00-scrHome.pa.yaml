@@ -108,15 +108,29 @@ Screens:
         Set(varClaimSubmitted, false);
         Set(varClaimError, "");
         Set(varClaimNumber, "");
-        // Parse serial (4th pipe segment) from JS loader param
-        Set(
-            varPassedSerial,
-            With(
-                { raw: Param("recordId") },
-                If(
-                    !IsBlank(raw) && CountRows(Split(raw, "|")) >= 4,
-                    Last(FirstN(Split(raw, "|"), 4)).Value,
-                    ""
+        // Parse pipe-delimited Param("recordId") from JS loader
+        // Format: "accountId|caseId|accountName|serialNumber"
+        With(
+            { raw: Param("recordId") },
+            If(
+                !IsBlank(raw),
+                With(
+                    { segments: Split(raw, "|") },
+                    // Segment 1: Account ID → used by Equipment screen
+                    Set(
+                        varEWAccountId,
+                        If(CountRows(segments) >= 1, First(segments).Value, "")
+                    );
+                    // Segment 4: Serial from case → used by Equipment screen
+                    Set(
+                        varPassedSerial,
+                        If(
+                            CountRows(segments) >= 4,
+                            Last(FirstN(segments, 4)).Value,
+                            ""
+                        )
+                    );
+                    Set(varEWCallerSerial, varPassedSerial)
                 )
             )
         );

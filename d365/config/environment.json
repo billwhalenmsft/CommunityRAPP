@@ -1,0 +1,257 @@
+{
+    "environment": {
+        "name": "Otis EMEA CCaaS Demo",
+        "url": "https://orgecbce8ef.crm.dynamics.com",
+        "apiVersion": "v9.2"
+    },
+    "customer": {
+        "name": "Otis Elevator",
+        "project": "EMEA CCaaS",
+        "industry": "Manufacturing - Elevators/Lifts",
+        "regions": ["UK", "Italy"],
+        "currentState": {
+            "crm": "D365 Customer Service + Sales + Field Service",
+            "phone": "Ring Central (manual)",
+            "usd": "Unified Service Desk",
+            "painPoints": [
+                "No screen pop on inbound calls",
+                "Swivel chair between Ring Central and D365",
+                "Manual contact/account lookup"
+            ]
+        }
+    },
+    "demo": {
+        "date": "2026-03-20T11:00:00-06:00",
+        "focusAreas": [
+            "Voice/Telephony Integration (PRIMARY)",
+            "Screen Pop with Rich Customer Data",
+            "Embedded Dialer",
+            "Click-to-Call",
+            "Case to Work Order Flow"
+        ],
+        "channels": ["phone", "chat", "email", "portal"],
+        "brands": [
+            "Otis"
+        ],
+        "serviceAccountTypes": [
+            "Commercial Building",
+            "Residential Complex",
+            "Hospital/Healthcare",
+            "Retail/Shopping Center",
+            "Office Tower",
+            "Hotel/Hospitality"
+        ],
+        "incidentTypes": [
+            {
+                "name": "Unit Out of Service",
+                "priority": "High",
+                "slaMinutes": 120,
+                "requiresWorkOrder": true
+            },
+            {
+                "name": "Entrapment",
+                "priority": "Critical",
+                "slaMinutes": 30,
+                "requiresWorkOrder": true
+            },
+            {
+                "name": "Scheduled Maintenance",
+                "priority": "Normal",
+                "slaMinutes": 480,
+                "requiresWorkOrder": true
+            },
+            {
+                "name": "Noise/Vibration Complaint",
+                "priority": "Normal",
+                "slaMinutes": 240,
+                "requiresWorkOrder": true
+            },
+            {
+                "name": "Door Issue",
+                "priority": "High",
+                "slaMinutes": 180,
+                "requiresWorkOrder": true
+            },
+            {
+                "name": "Billing Inquiry",
+                "priority": "Normal",
+                "slaMinutes": 480,
+                "requiresWorkOrder": false
+            },
+            {
+                "name": "Contract Question",
+                "priority": "Normal",
+                "slaMinutes": 480,
+                "requiresWorkOrder": false
+            },
+            {
+                "name": "Modernization Request",
+                "priority": "Low",
+                "slaMinutes": 1440,
+                "requiresWorkOrder": false
+            }
+        ],
+        "customerTiers": {
+            "1": {
+                "label": "Tier 1 - Premium Service",
+                "priority": 9000,
+                "color": "#e74c3c",
+                "description": "24/7 coverage, 2-hour response"
+            },
+            "2": {
+                "label": "Tier 2 - Full Maintenance",
+                "priority": 7000,
+                "color": "#e67e22",
+                "description": "Business hours, 4-hour response"
+            },
+            "3": {
+                "label": "Tier 3 - Basic Maintenance",
+                "priority": 5000,
+                "color": "#3498db",
+                "description": "Business hours, 8-hour response"
+            },
+            "4": {
+                "label": "Tier 4 - On-Call Only",
+                "priority": 2000,
+                "color": "#95a5a6",
+                "description": "Emergency only, billable"
+            }
+        },
+        "hotWords": [
+            "Entrapment",
+            "Stuck",
+            "Emergency",
+            "Fire",
+            "Safety",
+            "Injury",
+            "Out of Service",
+            "Multiple Units"
+        ],
+        "hotWordPriorityBoost": 10000,
+        "sla": {
+            "firstResponseMinutes": 60,
+            "resolutionMinutes": 240,
+            "businessHoursStart": "08:00",
+            "businessHoursEnd": "18:00",
+            "workDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "emergencyCoverage": "24/7"
+        },
+        "caseOrigins": {
+            "phone": 1,
+            "email": 2,
+            "web": 3,
+            "chat": 4,
+            "iot": 5
+        },
+        "agentCount": 35
+    },
+    "telephonyDemo": {
+        "focus": "PRIMARY",
+        "features": [
+            {
+                "name": "Screen Pop",
+                "description": "Auto-identify caller, show service account, contract tier, equipment, recent cases",
+                "priority": 1
+            },
+            {
+                "name": "Embedded Dialer",
+                "description": "Nuance/Teams voice channel - no external app",
+                "priority": 2
+            },
+            {
+                "name": "Click-to-Call",
+                "description": "One-click dialing from contact/account records",
+                "priority": 3
+            },
+            {
+                "name": "Rich Context Panel",
+                "description": "Customer 360 view on screen pop - equipment list, open cases, last service date",
+                "priority": 4
+            }
+        ],
+        "screenPopData": [
+            "Service Account Name",
+            "Contract Tier",
+            "Equipment/Units at Location",
+            "Open Cases",
+            "Last Service Visit",
+            "SLA Status",
+            "Contact History"
+        ],
+        "callPopNotification": {
+            "templateUniqueName": "bw_incoming_call_callpop",
+            "templateName": "Incoming Call - Customer Context",
+            "fields": [
+                { "label": "Customer",   "nativeSlug": "{customerName}",       "ivrSlug": "{va_CustomerName}" },
+                { "label": "Account",    "nativeSlug": "{msdyn_account_name}", "ivrSlug": "{va_AccountName}" },
+                { "label": "Contact",    "nativeSlug": "{msdyn_contact_name}", "ivrSlug": "{va_ContactName}" },
+                { "label": "Tier",       "nativeSlug": "{msdyn_tier}",         "ivrSlug": "{va_Tier}" },
+                { "label": "Open Cases", "nativeSlug": "{msdyn_open_cases}",   "ivrSlug": "{va_OpenCases}" },
+                { "label": "Phone",      "nativeSlug": "{customerPhone}",      "ivrSlug": "{va_Phone}" }
+            ],
+            "notes": "Run 29-CallPopNotification.ps1 to create. Use -UseCopilotStudioIVR for IVR mode."
+        }
+    },
+    "personas": {
+        "agents": [
+            {
+                "name": "Emma Thompson",
+                "role": "Service Coordinator",
+                "region": "UK",
+                "focus": "Inbound calls, case creation, dispatch"
+            },
+            {
+                "name": "Marco Rossi",
+                "role": "Service Coordinator",
+                "region": "Italy",
+                "focus": "Multilingual support, escalations"
+            }
+        ],
+        "customers": [
+            {
+                "name": "David Chen",
+                "title": "Facilities Manager",
+                "company": "Riverside Medical Centre",
+                "phone": "+44 20 7123 4567",
+                "tier": 1,
+                "units": 8,
+                "scenario": "Entrapment emergency"
+            },
+            {
+                "name": "Sophie Williams",
+                "title": "Property Manager",
+                "company": "Metro Office Tower",
+                "phone": "+44 20 7234 5678",
+                "tier": 2,
+                "units": 12,
+                "scenario": "Routine maintenance scheduling"
+            },
+            {
+                "name": "James Morrison",
+                "title": "Operations Director",
+                "company": "Crown Shopping Centre",
+                "phone": "+44 20 7345 6789",
+                "tier": 1,
+                "units": 6,
+                "scenario": "Multiple units down - escalation"
+            }
+        ]
+    },
+    "fieldService": {
+        "integration": true,
+        "workOrderTypes": [
+            "Emergency Repair",
+            "Scheduled Maintenance",
+            "Modernization",
+            "Inspection",
+            "Parts Replacement"
+        ],
+        "equipmentTypes": [
+            "Passenger Elevator",
+            "Freight Elevator", 
+            "Escalator",
+            "Moving Walkway",
+            "Dumbwaiter"
+        ]
+    }
+}

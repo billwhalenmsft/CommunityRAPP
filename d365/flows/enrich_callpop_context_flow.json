@@ -1,0 +1,283 @@
+{
+  "name": "Enrich Call Pop - Customer Context",
+  "description": "Triggered when an Omnichannel voice conversation is created. Looks up the identified contact's parent account, tier, and open case count, then writes those values into the conversation's context variables so the call-pop notification displays them.",
+  "trigger": {
+    "type": "ApiConnection",
+    "kind": "V2",
+    "inputs": {
+      "host": {
+        "connection": {
+          "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+        }
+      },
+      "method": "get",
+      "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/msdyn_ocliveworkitems/onnewitemsv2",
+      "queries": {
+        "$filter": "msdyn_channel eq 192440000"
+      }
+    },
+    "description": "Fires when a new live work item (conversation) is created for the Voice channel (192440000)."
+  },
+  "actions": {
+    "Init_AccountName": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [{ "name": "accountName", "type": "string", "value": "" }]
+      }
+    },
+    "Init_ContactName": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [{ "name": "contactName", "type": "string", "value": "" }]
+      },
+      "runAfter": { "Init_AccountName": ["Succeeded"] }
+    },
+    "Init_Tier": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [{ "name": "tier", "type": "string", "value": "" }]
+      },
+      "runAfter": { "Init_ContactName": ["Succeeded"] }
+    },
+    "Init_OpenCases": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [{ "name": "openCases", "type": "string", "value": "0" }]
+      },
+      "runAfter": { "Init_Tier": ["Succeeded"] }
+    },
+
+    "_comment_1": "── Step 1: Get the customer (contact) from the conversation ──",
+    "Get_Customer_Contact": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/contacts/items/@{triggerBody()?['_msdyn_customer_value']}"
+      },
+      "runAfter": { "Init_OpenCases": ["Succeeded"] },
+      "description": "Fetches the contact record identified by the voice channel's ANI match."
+    },
+
+    "Set_ContactName": {
+      "type": "SetVariable",
+      "inputs": {
+        "name": "contactName",
+        "value": "@{body('Get_Customer_Contact')?['fullname']}"
+      },
+      "runAfter": { "Get_Customer_Contact": ["Succeeded"] }
+    },
+
+    "_comment_2": "── Step 2: Get the parent account + tier ──",
+    "Get_Parent_Account": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/accounts/items/@{body('Get_Customer_Contact')?['_parentcustomerid_value']}"
+      },
+      "runAfter": { "Set_ContactName": ["Succeeded"] },
+      "description": "Looks up the contact's parent account to get account name and tier (cra1f_servicelevel)."
+    },
+
+    "Set_AccountName": {
+      "type": "SetVariable",
+      "inputs": {
+        "name": "accountName",
+        "value": "@{body('Get_Parent_Account')?['name']}"
+      },
+      "runAfter": { "Get_Parent_Account": ["Succeeded"] }
+    },
+
+    "Set_Tier": {
+      "type": "SetVariable",
+      "inputs": {
+        "name": "tier",
+        "value": "@{body('Get_Parent_Account')?['cra1f_servicelevel@OData.Community.Display.V1.FormattedValue']}"
+      },
+      "runAfter": { "Set_AccountName": ["Succeeded"] },
+      "description": "Reads the formatted tier label (Gold / Silver / Bronze) from the account's cra1f_servicelevel field."
+    },
+
+    "_comment_3": "── Step 3: Count open cases for this customer ──",
+    "Get_Open_Cases": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/incidents/items",
+        "queries": {
+          "$filter": "_customerid_value eq '@{body('Get_Customer_Contact')?['contactid']}' and statecode eq 0",
+          "$select": "incidentid",
+          "$top": 100
+        }
+      },
+      "runAfter": { "Set_Tier": ["Succeeded"] },
+      "description": "Queries active (statecode=0) cases where the customer is this contact."
+    },
+
+    "Set_OpenCases": {
+      "type": "SetVariable",
+      "inputs": {
+        "name": "openCases",
+        "value": "@{length(body('Get_Open_Cases')?['value'])}"
+      },
+      "runAfter": { "Get_Open_Cases": ["Succeeded"] }
+    },
+
+    "_comment_4": "── Step 4: Write context variables as individual rows ──",
+    "_comment_4b": "Context vars are stored in msdyn_ocliveworkitemcontextitems (Conversation Context Items), NOT as a field on the conversation. Create one row per variable.",
+
+    "Create_ContextVar_AccountName": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/msdyn_ocliveworkitemcontextitems/items",
+        "body": {
+          "msdyn_name": "msdyn_account_name",
+          "msdyn_value": "@{variables('accountName')}",
+          "msdyn_datatype": 192350000,
+          "msdyn_ocliveworkitemid@odata.bind": "/msdyn_ocliveworkitems(@{triggerBody()?['msdyn_ocliveworkitemid']})"
+        }
+      },
+      "runAfter": { "Set_OpenCases": ["Succeeded"] },
+      "description": "Creates context variable row: Account Name"
+    },
+
+    "Create_ContextVar_ContactName": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/msdyn_ocliveworkitemcontextitems/items",
+        "body": {
+          "msdyn_name": "msdyn_contact_name",
+          "msdyn_value": "@{variables('contactName')}",
+          "msdyn_datatype": 192350000,
+          "msdyn_ocliveworkitemid@odata.bind": "/msdyn_ocliveworkitems(@{triggerBody()?['msdyn_ocliveworkitemid']})"
+        }
+      },
+      "runAfter": { "Set_OpenCases": ["Succeeded"] },
+      "description": "Creates context variable row: Contact Name"
+    },
+
+    "Create_ContextVar_Tier": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/msdyn_ocliveworkitemcontextitems/items",
+        "body": {
+          "msdyn_name": "msdyn_tier",
+          "msdyn_value": "@{variables('tier')}",
+          "msdyn_datatype": 192350000,
+          "msdyn_ocliveworkitemid@odata.bind": "/msdyn_ocliveworkitems(@{triggerBody()?['msdyn_ocliveworkitemid']})"
+        }
+      },
+      "runAfter": { "Set_OpenCases": ["Succeeded"] },
+      "description": "Creates context variable row: Tier"
+    },
+
+    "Create_ContextVar_OpenCases": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/msdyn_ocliveworkitemcontextitems/items",
+        "body": {
+          "msdyn_name": "msdyn_open_cases",
+          "msdyn_value": "@{variables('openCases')}",
+          "msdyn_datatype": 192350000,
+          "msdyn_ocliveworkitemid@odata.bind": "/msdyn_ocliveworkitems(@{triggerBody()?['msdyn_ocliveworkitemid']})"
+        }
+      },
+      "runAfter": { "Set_OpenCases": ["Succeeded"] },
+      "description": "Creates context variable row: Open Cases count"
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "_metadata": {
+    "org_url": "https://orgecbce8ef.crm.dynamics.com",
+    "notification_template": "bw_incoming_call_callpop",
+    "context_variables": {
+      "msdyn_account_name": "Account name from parent account lookup",
+      "msdyn_contact_name": "Contact full name from ANI-matched contact",
+      "msdyn_tier": "Service tier label (Gold/Silver/Bronze) from account.cra1f_servicelevel",
+      "msdyn_open_cases": "Count of active incidents for the identified contact"
+    },
+    "tier_field": {
+      "entity": "account",
+      "column": "cra1f_servicelevel",
+      "values": {
+        "276120000": "Gold",
+        "276120001": "Silver",
+        "276120002": "Bronze"
+      }
+    },
+    "data_flow": [
+      "1. Voice channel receives inbound call → ANI match identifies contact",
+      "2. New msdyn_ocliveworkitem (conversation) created → triggers this flow",
+      "3. Flow reads _msdyn_customer_value to get the contact record",
+      "4. Contact → parentcustomerid_account → account name + cra1f_servicelevel (tier)",
+      "5. Query incidents where _customerid_value = contactid AND statecode = 0 → count",
+      "6. CREATE rows in msdyn_ocliveworkitemcontextitems (one per variable)",
+      "7. Notification template reads {msdyn_account_name}, {msdyn_tier}, etc. from context items"
+    ],
+    "setup_steps": [
+      "1. Open Power Automate → Create → Automated Cloud Flow",
+      "2. Trigger: 'When a row is added' (Dataverse) → Table: 'Conversation' (msdyn_ocliveworkitem)",
+      "3. Add filter: msdyn_channel eq 192440000 (Voice only)",
+      "4. Add actions: Get Contact, Get Account, List Cases (from this JSON)",
+      "5. Step 4: For each context var, 'Add a new row' → Table: 'Conversation Context Item'",
+      "   Set: Name, Value, Data Type = Text (192350000), Conversation = trigger row ID",
+      "6. All 4 'Add row' actions can run in parallel (no dependencies between them)",
+      "7. Save and enable the flow",
+      "8. Test: Place an inbound call — the call pop should now show all 6 fields"
+    ],
+    "important_notes": [
+      "The flow must complete BEFORE the notification times out (120s) — typical execution is 2-5 seconds",
+      "If the contact has no parent account, the account/tier fields will be blank (graceful degradation)",
+      "The msdyn_contextvariables field accepts a JSON string — existing context vars are overwritten by this patch",
+      "To preserve existing context vars, read the current value first and merge (advanced scenario)"
+    ],
+    "alternative_trigger": {
+      "description": "If 'When a row is added' doesn't fire fast enough, use 'When an action is performed' with the msdyn_OnConversationCreate message instead.",
+      "message": "msdyn_OnConversationCreate",
+      "entity": "msdyn_ocliveworkitem"
+    }
+  }
+}

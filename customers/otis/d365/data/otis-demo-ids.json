@@ -1,0 +1,156 @@
+{
+    "products":  [
+
+                 ],
+    "contacts":  [
+                     {
+                         "email":  "david.chen@riversidemedical.nhs.uk",
+                         "account":  "Riverside Medical Centre",
+                         "name":  "David Chen",
+                         "id":  "2fd09570-241f-f111-8341-7c1e5218592b",
+                         "phone":  "+1 713-704-4001"
+                     },
+                     {
+                         "email":  "sophie.williams@canarywharf.com",
+                         "account":  "Canary Wharf Tower",
+                         "name":  "Sophie Williams",
+                         "id":  "1cc5f675-241f-f111-8342-7ced8d18c8d7",
+                         "phone":  "+1 212-417-7100"
+                     },
+                     {
+                         "email":  "james.morrison@westfield.com",
+                         "account":  "Westfield London Shopping Centre",
+                         "name":  "James Morrison",
+                         "id":  "8cb9067a-241f-f111-8342-7c1e520a58a1",
+                         "phone":  "+1 310-277-3901"
+                     },
+                     {
+                         "email":  "emma.richards@networkrail.co.uk",
+                         "account":  "Birmingham New Street Station",
+                         "name":  "Emma Richards",
+                         "id":  "1d181f80-241f-f111-8341-6045bda80a72",
+                         "phone":  "+1 212-340-2712"
+                     },
+                     {
+                         "email":  "michael.thompson@theshard.com",
+                         "account":  "The Shard London",
+                         "name":  "Michael Thompson",
+                         "id":  "11cf8382-241f-f111-8341-7c1e5218592b",
+                         "phone":  "+1 312-875-9001"
+                     },
+                     {
+                         "email":  "sarah.jenkins@marriott.com",
+                         "account":  "Marriott Hotel Manchester",
+                         "name":  "Sarah Jenkins",
+                         "id":  "2acf8382-241f-f111-8341-7c1e5218592b",
+                         "phone":  "+1 404-521-0001"
+                     },
+                     {
+                         "email":  "robert.taylor@parkview.co.uk",
+                         "account":  "Parkview Residential Tower",
+                         "name":  "Robert Taylor",
+                         "id":  "21d57a82-241f-f111-8341-7ced8dceb26a",
+                         "phone":  "+1 212-992-5501"
+                     }
+                 ],
+    "cases":  [
+                  {
+                      "account":  "Riverside Medical Centre",
+                      "title":  "Entrapment - Passenger stuck in Elevator 3",
+                      "priority":  "Critical",
+                      "id":  "b1965788-241f-f111-8342-7ced8d18c8d7"
+                  },
+                  {
+                      "account":  "Canary Wharf Tower",
+                      "title":  "Elevator out of service - Tower A",
+                      "priority":  "High",
+                      "id":  "3bb32e8f-241f-f111-8341-7ced8dd8e369"
+                  },
+                  {
+                      "account":  "Westfield London Shopping Centre",
+                      "title":  "Escalator running rough - Main entrance",
+                      "priority":  "Normal",
+                      "id":  "c888aa8f-241f-f111-8341-7c1e5218592b"
+                  },
+                  {
+                      "account":  "Marriott Hotel Manchester",
+                      "title":  "Door not closing properly - Lift 2",
+                      "priority":  "High",
+                      "id":  "4f1623d9-241f-f111-8342-7c1e52143136"
+                  },
+                  {
+                      "account":  "Birmingham New Street Station",
+                      "title":  "Scheduled maintenance due - Q1 inspection",
+                      "priority":  "Normal",
+                      "id":  "d928d891-241f-f111-8341-7ced8d18ce4d"
+                  },
+                  {
+                      "account":  "Metro Office Park",
+                      "title":  "Billing question - extra visit charges",
+                      "priority":  "Normal",
+                      "id":  "e377bcdb-241f-f111-8342-6045bdedc552"
+                  }
+              ],
+    "accounts":  [
+                     {
+                         "accountNumber":  "OTIS-UK-001",
+                         "name":  "Westfield London Shopping Centre",
+                         "id":  "a41d8f61-241f-f111-8341-6045bda80a72",
+                         "tier":  1
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-002",
+                         "name":  "Canary Wharf Tower",
+                         "id":  "6414e566-241f-f111-8342-6045bdedc552",
+                         "tier":  1
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-003",
+                         "name":  "Riverside Medical Centre",
+                         "id":  "f05e7b68-241f-f111-8342-7ced8d18cb3b",
+                         "tier":  1
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-004",
+                         "name":  "Birmingham New Street Station",
+                         "id":  "47af366a-241f-f111-8341-7c1e5218592b",
+                         "tier":  1
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-005",
+                         "name":  "The Shard London",
+                         "id":  "7a105f6f-241f-f111-8342-6045bdedc552",
+                         "tier":  1
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-006",
+                         "name":  "Marriott Hotel Manchester",
+                         "id":  "6ba085c6-241f-f111-8341-7c1e5218592b",
+                         "tier":  2
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-007",
+                         "name":  "Parkview Residential Tower",
+                         "id":  "1255f4c5-241f-f111-8341-7ced8dd8e369",
+                         "tier":  2
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-008",
+                         "name":  "Crown Shopping Centre",
+                         "id":  "709d0ec5-241f-f111-8342-7ced8d18c8d7",
+                         "tier":  2
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-009",
+                         "name":  "Metro Office Park",
+                         "id":  "ec1962c8-241f-f111-8341-7ced8d18ce4d",
+                         "tier":  3
+                     },
+                     {
+                         "accountNumber":  "OTIS-UK-010",
+                         "name":  "Greenfield School",
+                         "id":  "666559c8-241f-f111-8342-7c1e520a58a1",
+                         "tier":  3
+                     }
+                 ]
+}

@@ -1,0 +1,18 @@
+# Video Pipeline Dependencies
+# Install: pip install -r scripts/video_requirements.txt
+#
+# System dependency: FFmpeg must be installed separately
+#   Windows: winget install ffmpeg  (or download from https://ffmpeg.org)
+#   Mac:     brew install ffmpeg
+#   Linux:   sudo apt install ffmpeg
+#
+# After installing, also run: playwright install chromium
+
+# TTS engines (both supported — Azure for HD voices, edge-tts as free fallback)
+azure-cognitiveservices-speech>=1.40.0
+azure-identity>=1.15.0
+edge-tts>=6.1.0
+
+# Browser recording & video
+playwright>=1.40.0
+pydantic>=2.0.0

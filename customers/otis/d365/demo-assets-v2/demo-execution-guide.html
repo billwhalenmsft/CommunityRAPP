@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otis Elevator — Demo Execution Guide</title>
+    
+    <style>
+        :root {
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-warm: #D83B01;
+            --accent-green: #107C10;
+            --accent-purple: #5C2D91;
+            --accent-teal: #008575;
+            --accent-red: #A4262C;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --nav-width: 280px;
+            --cheat-width: 300px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        
+        /* 3-COLUMN LAYOUT */
+        body.three-column {
+            display: grid;
+            grid-template-columns: var(--nav-width) 1fr var(--cheat-width);
+            min-height: 100vh;
+        }
+        body.three-column.nav-collapsed {
+            grid-template-columns: 0 1fr var(--cheat-width);
+        }
+        body.three-column.cheat-collapsed {
+            grid-template-columns: var(--nav-width) 1fr 0;
+        }
+        body.three-column.nav-collapsed.cheat-collapsed {
+            grid-template-columns: 0 1fr 0;
+        }
+        
+        /* LEFT NAV - Column 1 */
+        .side-nav {
+            grid-column: 1;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            background: white;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: width 0.3s, margin 0.3s;
+        }
+        
+        /* CENTER MAIN CONTENT - Column 2 */
+        .main-content {
+            grid-column: 2;
+            min-height: 100vh;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        /* RIGHT CHEAT SHEET - Column 3 */
+        .cheat-sheet {
+            grid-column: 3;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: width 0.3s, margin 0.3s;
+        }
+        
+        body.nav-collapsed .side-nav {
+            width: 0;
+            margin-left: calc(-1 * var(--nav-width));
+        }
+        .side-nav-header {
+            padding: 16px;
+            background: linear-gradient(135deg, var(--ms-blue), var(--ms-blue-dark));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .side-nav-pin {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.5);
+            color: white;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .side-nav-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        .side-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            color: var(--text);
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        .side-nav-item:hover { background: #F3F2F1; }
+        .side-nav-item.active { background: var(--ms-blue-light); border-left-color: var(--ms-blue); font-weight: 600; }
+        .side-nav-num {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.65rem;
+            color: white;
+        }
+        
+        /* CHEAT SHEET COLLAPSE STATE */
+        body.cheat-collapsed .cheat-sheet {
+            width: 0;
+            margin-right: calc(-1 * var(--cheat-width));
+        }
+        .cheat-sheet-header {
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        .cheat-sheet-toggle {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .cheat-sheet-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+        .cheat-section {
+            margin-bottom: 20px;
+        }
+        .cheat-section h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .cheat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 0.82rem;
+        }
+        .cheat-label {
+            color: rgba(255,255,255,0.6);
+        }
+        .cheat-value {
+            font-weight: 500;
+            text-align: right;
+        }
+        .cheat-value.mono {
+            font-family: 'Consolas', monospace;
+            font-size: 0.78rem;
+        }
+        .cheat-value.small {
+            font-size: 0.75rem;
+        }
+        .cheat-value.tier-badge {
+            background: var(--accent-red);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+        .cheat-link {
+            display: block;
+            color: var(--ms-blue-light);
+            text-decoration: none;
+            padding: 6px 0;
+            font-size: 0.82rem;
+        }
+        .cheat-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* SIMULATION BUTTONS */
+        .sim-btn-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sim-trigger {
+            padding: 12px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .sim-trigger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .sim-trigger:active {
+            transform: translateY(0);
+        }
+        .sim-trigger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .sim-trigger small {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        .sim-trigger.email {
+            background: linear-gradient(135deg, #0078D4 0%, #005A9E 100%);
+            color: white;
+        }
+        .sim-trigger.chat {
+            background: linear-gradient(135deg, #107C10 0%, #0B5C0B 100%);
+            color: white;
+        }
+        .sim-trigger.voice {
+            background: linear-gradient(135deg, #D83B01 0%, #A52A00 100%);
+            color: white;
+        }
+        .sim-status {
+            margin-top: 10px;
+            padding: 8px 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            font-size: 0.78rem;
+            color: #4CAF50;
+        }
+        .sim-status.error { color: #f44336; }
+        .sim-status.pending { color: #FFC107; }
+
+        /* MODE SWITCHER */
+        .mode-selector {
+            display: flex; gap: 3px; margin-bottom: 10px;
+            background: rgba(0,0,0,0.3); border-radius: 6px; padding: 3px;
+        }
+        .mode-btn {
+            flex: 1; padding: 5px 6px; border: none; border-radius: 5px;
+            font-size: 0.7rem; font-weight: 600; cursor: pointer;
+            background: transparent; color: rgba(255,255,255,0.5); transition: all 0.2s;
+        }
+        .mode-btn.active { background: #0078D4; color: #fff; }
+        .mode-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+
+        /* D365 ACTION BUTTONS */
+        .d365-btn {
+            padding: 10px 12px; border: none; border-radius: 8px;
+            font-size: 0.82rem; font-weight: 600; cursor: pointer;
+            text-align: left; transition: transform 0.15s, box-shadow 0.15s;
+            width: 100%; color: white;
+        }
+        .d365-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .d365-btn:active { transform: translateY(0); }
+        .d365-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .d365-btn small { display: block; font-size: 0.68rem; font-weight: 400; opacity: 0.8; margin-top: 2px; }
+        .d365-btn.notify { background: linear-gradient(135deg, #FFB900, #E6A800); color: #1a1a2e; }
+        .d365-btn.case { background: linear-gradient(135deg, #0078D4, #005A9E); }
+        .d365-btn.sla-warn { background: linear-gradient(135deg, #FF8C00, #CC7000); }
+        .d365-btn.sla-breach { background: linear-gradient(135deg, #E81123, #C50F1F); }
+        .d365-btn.triage { background: linear-gradient(135deg, #5C2D91, #3B1D5E); }
+
+        .d365-log {
+            max-height: 80px; overflow-y: auto; font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.68rem; line-height: 1.4; background: rgba(0,0,0,0.3);
+            padding: 6px 8px; border-radius: 6px; margin-top: 8px; color: rgba(255,255,255,0.7);
+        }
+        .d365-log .log-ok { color: #4CAF50; }
+        .d365-log .log-err { color: #f44336; }
+        .d365-log .log-info { color: #64B5F6; }
+
+        /* CONFIG PANEL */
+        .cheat-config {
+            margin-top: 16px;
+            font-size: 0.78rem;
+        }
+        .cheat-config summary {
+            cursor: pointer;
+            color: rgba(255,255,255,0.6);
+            padding: 6px 0;
+        }
+        .cheat-config .config-body {
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+        .cheat-config label {
+            display: block;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+        }
+        .cheat-config input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+        }
+        .cheat-config .config-save {
+            width: 100%;
+            padding: 6px;
+            background: var(--ms-blue);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        
+        /* HERO & CONTAINER */
+        .hero {
+            background: linear-gradient(135deg, #003366 0%, #C4A000 100%);
+            color: white;
+            padding: 28px 32px 24px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 1.6rem; font-weight: 600; margin-bottom: 4px; }
+        .hero .subtitle { font-size: 0.95rem; opacity: 0.92; margin-bottom: 10px; }
+        .hero .meta { display: flex; justify-content: center; gap: 20px; font-size: 0.8rem; opacity: 0.88; flex-wrap: wrap; }
+        .hero-badge { display: inline-block; background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.45); border-radius: 20px; padding: 3px 14px; font-size: 0.68rem; font-weight: 700; margin-top: 10px; text-transform: uppercase; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        .section-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ms-blue); margin-top: 32px; margin-bottom: 10px; }
+        
+        /* FLOATING RESTORE BUTTONS */
+        .nav-restore {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1001;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            background: var(--ms-blue);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            display: none;
+        }
+        body.nav-collapsed .nav-restore { display: flex; align-items: center; justify-content: center; }
+        
+        .cheat-restore {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            z-index: 1001;
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            display: none;
+        }
+        body.cheat-collapsed .cheat-restore { display: flex; align-items: center; justify-content: center; }
+        
+        /* NAV TOGGLE (mobile only) */
+        .nav-toggle {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 1001;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 6px;
+            background: var(--ms-blue);
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        /* PREFLIGHT */
+        .preflight { background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F2 100%); border-left: 4px solid var(--accent-green); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 20px 0; }
+        .preflight h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent-green); margin-bottom: 10px; }
+        .preflight ul { font-size: 0.84rem; color: #2E5A30; line-height: 1.9; padding-left: 18px; }
+        .preflight code { background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.78rem; }
+        
+        /* EXEC SECTIONS */
+        .exec-section { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); margin: 16px 0; border-left: 5px solid var(--ms-blue); overflow: hidden; }
+        .exec-header { display: flex; align-items: center; gap: 14px; padding: 18px 20px; cursor: pointer; }
+        .exec-header:hover { background: rgba(0,120,212,0.03); }
+        .exec-number { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: white; flex-shrink: 0; }
+        .exec-header-text { flex: 1; }
+        .exec-header-text h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 2px; }
+        .exec-header-text .exec-purpose { font-size: 0.8rem; color: var(--text-light); font-style: italic; }
+        .exec-time { font-size: 0.72rem; font-weight: 600; color: var(--text-light); background: var(--bg); padding: 3px 10px; border-radius: 20px; }
+        .exec-expand { font-size: 1.1rem; color: var(--text-light); transition: transform 0.3s; }
+        .exec-section.open .exec-expand { transform: rotate(180deg); }
+        .exec-body { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
+        .exec-section.open .exec-body { max-height: 50000px; }
+        .exec-content { padding: 0 20px 24px 72px; }
+        
+        /* STEP BLOCKS */
+        .step-block { margin: 14px 0; padding: 14px 18px; background: #F8F9FA; border-radius: 8px; border-left: 3px solid var(--ms-blue); }
+        .step-block.voice-step { border-left-color: var(--accent-red); background: #FFF5F5; }
+        .step-block.chat-step { border-left-color: var(--accent-teal); background: #F0FAF9; }
+        .step-block.copilot-step { border-left-color: var(--accent-purple); background: #F8F5FD; }
+        .step-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; }
+        .step-label.prep { background: var(--accent-green); }
+        .step-label.click { background: var(--ms-blue); }
+        .step-label.say { background: var(--accent-warm); }
+        .step-label.show { background: var(--accent-teal); }
+        .step-label.tip { background: #FFB900; color: #5D4510; }
+        .step-label.copilot { background: var(--accent-purple); }
+        .step-label.trigger { background: #5C2D91; }
+        .step-text { font-size: 0.86rem; line-height: 1.55; }
+        .step-text .click-path { font-family: 'Consolas', monospace; background: rgba(0,120,212,0.1); color: var(--ms-blue-dark); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; }
+        
+        /* INLINE TRIGGER BUTTON */
+        .inline-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 8px 0;
+            transition: transform 0.15s;
+        }
+        .inline-trigger:hover { transform: scale(1.02); }
+        .inline-trigger.email { background: var(--ms-blue); color: white; }
+        .inline-trigger.chat { background: var(--accent-teal); color: white; }
+        .inline-trigger.voice { background: var(--accent-red); color: white; }
+        
+        /* TALK TRACK */
+        .talk-track { background: white; border: 1px solid #E0E0E0; border-radius: 8px; padding: 14px 18px; margin: 8px 0; font-style: italic; font-size: 0.84rem; line-height: 1.6; color: #444; position: relative; }
+        .talk-track::before { content: '"'; font-size: 2.5rem; color: var(--accent-warm); position: absolute; top: -6px; left: 8px; opacity: 0.5; }
+        .talk-track p { padding-left: 20px; }
+        
+        /* CALLOUTS */
+        .callout { border-radius: 8px; padding: 12px 16px; margin: 10px 0; font-size: 0.82rem; }
+        .callout.warning { background: #FFF4CE; border-left: 3px solid #FFB900; color: #5D4510; }
+        .callout.success { background: #E8F5E9; border-left: 3px solid var(--accent-green); color: #2E5A30; }
+        .callout.info { background: var(--ms-blue-light); border-left: 3px solid var(--ms-blue); color: #003A6E; }
+        .callout.roi { background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%); border-left: 4px solid #2E7D32; color: #1B5E20; }
+        
+        /* VOICE/CHAT LINES */
+        .voice-line { background: #FFF5F5; border: 1px solid #E8D0D0; border-radius: 8px; padding: 12px 18px 12px 34px; margin: 8px 0; font-style: italic; font-size: 0.84rem; color: #8B3A3A; position: relative; }
+        .voice-line::before { content: '📞'; position: absolute; top: 12px; left: 10px; }
+        .voice-line .voice-label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--accent-red); font-style: normal; margin-bottom: 3px; }
+        .chat-line { background: #F0FAF9; border: 1px solid #C8E6E3; border-radius: 8px; padding: 12px 18px 12px 34px; margin: 8px 0; font-style: italic; font-size: 0.84rem; color: #2D6A65; position: relative; }
+        .chat-line::before { content: '💬'; position: absolute; top: 12px; left: 10px; }
+        .chat-line .chat-label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--accent-teal); font-style: normal; margin-bottom: 3px; }
+        
+        /* STORY BLOCK */
+        .story-block { background: linear-gradient(135deg, #F3F0FF 0%, #FFF8F0 100%); border-left: 4px solid var(--accent-purple); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 20px 0; }
+        .story-block h3 { font-size: 0.95rem; font-weight: 700; color: var(--accent-purple); margin-bottom: 10px; }
+        .story-block dl { margin: 10px 0; }
+        .story-block dt { font-weight: 600; margin-top: 5px; font-size: 0.84rem; }
+        .story-block dd { font-size: 0.8rem; color: var(--text-light); margin-left: 18px; }
+        .story-block ol { margin: 10px 0 10px 18px; font-size: 0.82rem; }
+        .story-block .story-note { font-style: italic; font-size: 0.8rem; color: var(--accent-purple); margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(92,45,145,0.15); }
+        
+        /* DEMO GOLD */
+        .demo-gold { background: linear-gradient(135deg, #FFF8E1 0%, #FFFDF5 100%); border-left: 4px solid #FFB900; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 10px 0; font-size: 0.82rem; }
+        .demo-gold strong { color: #856404; }
+        
+        /* TIMING BAR */
+        .timing-bar { display: flex; gap: 0; margin: 24px 0 10px; border-radius: 6px; overflow: hidden; height: 7px; }
+        .timing-bar .t-seg { height: 100%; }
+        
+        /* FOOTER */
+        footer { text-align: center; padding: 28px; color: var(--text-light); font-size: 0.76rem; border-top: 1px solid var(--border); margin-top: 40px; }
+        
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            body.three-column {
+                grid-template-columns: 0 1fr var(--cheat-width);
+            }
+            .side-nav { position: fixed; left: 0; z-index: 1000; transform: translateX(-100%); }
+            .side-nav.open { transform: translateX(0); }
+            .nav-toggle { display: block; }
+        }
+        @media (max-width: 900px) {
+            body.three-column {
+                grid-template-columns: 1fr;
+            }
+            .cheat-sheet {
+                position: fixed;
+                right: 0;
+                top: 0;
+                z-index: 1000;
+                transform: translateX(100%);
+            }
+            .cheat-sheet.open { transform: translateX(0); }
+        }
+        @media print {
+            body.three-column { display: block; }
+            .side-nav, .cheat-sheet, .nav-toggle { display: none !important; }
+            .exec-body { max-height: none !important; }
+        }
+    </style>
+</head>
+<body class="three-column">
+
+    <!-- FLOATING RESTORE BUTTONS (appear when panels collapsed) -->
+    <button class="nav-restore" id="navRestore" title="Show Navigation">☰</button>
+    <button class="cheat-restore" id="cheatRestore" title="Show Controls">🎮</button>
+
+    <!-- LEFT: SIDE NAV (grid-column: 1) -->
+    <aside class="side-nav" id="sideNav">
+        <div class="side-nav-header">
+            <strong>☰ Sections</strong>
+            <button class="side-nav-pin" id="navPin" title="Hide Navigation">✕</button>
+        </div>
+        <div class="side-nav-body" id="navBody"></div>
+    </aside>
+
+    <!-- CENTER: MAIN CONTENT (grid-column: 2) -->
+    <main class="main-content">
+        <!-- HERO -->
+        <header class="hero">
+            <h1>Demo Execution Guide</h1>
+            <p class="subtitle">Otis Elevator — Customer Service — Click-by-Click Playbook</p>
+            <div class="meta">
+                <span>&#128197; 2026-03-20 — 95 Minutes</span>
+                <span>&#127919; Instant Context, Effortless Service</span>
+                <span>&#128100; You are <strong>Agent</strong> (CSR)</span>
+            </div>
+            <div class="hero-badge">Prescriptive — Every Click, Every Word</div>
+        </header>
+
+        <div class="container">
+
+            <!-- TIMING BAR -->
+            <p class="section-label">Session Timing</p>
+            
+        <div class="timing-bar">
+            <div class="t-seg" style="flex:10; background:#0078D4;" title="Connect & Orient ~10 min"></div><div class="t-seg" style="flex:5; background:#D83B01;" title="Their World Today ~5 min"></div><div class="t-seg" style="flex:21; background:#107C10;" title="Incoming Call — Screen Pop Hero Moment ~20 min"></div><div class="t-seg" style="flex:15; background:#107C10;" title="Live Case Resolution ~15 min"></div><div class="t-seg" style="flex:15; background:#5C2D91;" title="Service Toolkit — Guided Actions ~15 min"></div><div class="t-seg" style="flex:10; background:#5C2D91;" title="Copilot Assistance ~10 min"></div><div class="t-seg" style="flex:5; background:#107C10;" title="Call Wrap-Up & Notes ~5 min"></div><div class="t-seg" style="flex:10; background:#008575;" title="Supervisor View ~10 min"></div><div class="t-seg" style="flex:5; background:#005A9E;" title="Close & Next Steps ~5 min"></div>
+        </div>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.72rem; color:var(--text-light); margin-bottom:32px;">
+            <span style="color:#0078D4;">■ Connect & Orient (10m)</span><span style="color:#D83B01;">■ Their World Today (5m)</span><span style="color:#107C10;">■ Incoming Call — Screen Pop Hero Moment (20m)</span><span style="color:#107C10;">■ Live Case Resolution (15m)</span><span style="color:#5C2D91;">■ Service Toolkit — Guided Actions (15m)</span><span style="color:#5C2D91;">■ Copilot Assistance (10m)</span><span style="color:#107C10;">■ Call Wrap-Up & Notes (5m)</span><span style="color:#008575;">■ Supervisor View (10m)</span><span style="color:#005A9E;">■ Close & Next Steps (5m)</span>
+        </div>
+
+            <!-- THE STORY -->
+            
+        <div class="story-block">
+            <h3>📖 The Story</h3>
+            <p>This demo tells one connected story centered on Westfield London Shopping Centre. All interactions appear in the unified timeline, showing how D365 provides complete context across channels.</p>
+            <dl>
+                
+                <dt>James Morrison 📞</dt>
+                <dd>Primary caller. Centre Manager at Westfield London Shopping Centre.</dd>
+                <dt>David Chen 💬</dt>
+                <dd>Chat scenario. Facilities Manager.</dd>
+                <dt>Sophie Williams 📧</dt>
+                <dd>Email scenario. Building Operations Manager.</dd>
+            </dl>
+            <ol>
+                <li><strong>James calls</strong> — Incoming call triggers screen pop with full Westfield London Shopping Centre context</li><li><strong>David chats</strong> — Chat bot triages, escalates to agent with context preserved</li><li><strong>Supervisor reviews</strong> — Dashboards show agent performance across all channels</li>
+            </ol>
+            <p class="story-note">Everything connects. All interactions appear in the customer's unified timeline.</p>
+        </div>
+
+            <!-- PRE-FLIGHT CHECKLIST -->
+            
+        <div class="preflight">
+            <h3>✅ Pre-Flight Checklist (30 min before demo)</h3>
+            <ul>
+                <li><strong>Browser tabs open (Edge recommended):</strong></li>
+                <li>&emsp;Tab 1: D365 CS Workspace — <code>https://orgecbce8ef.crm.dynamics.com</code></li>
+                <li>&emsp;Tab 2: D365 Admin / Omnichannel Real-Time Analytics</li>
+                <li>&emsp;Tab 3: Outlook Web — <code>https://outlook.office.com</code></li>
+                <li><strong>In D365 Workspace verify:</strong></li>
+                <li>&emsp;"My Active Cases" view with tier-level indicators</li>
+                <li>&emsp;SLA timers visible on at least 2 cases</li>
+                <li>&emsp;Copilot panel accessible (click Copilot icon)</li>
+                <li>&emsp;Presence status "Available" (green circle)</li>
+                <li><strong>Voice Channel ready:</strong> Status "Available" in Omnichannel panel</li>
+                <li><strong>Notification template:</strong> "Otis Voice - Rich Context" assigned to voice workstream (CS Admin Center &gt; Workstreams &gt; Voice &gt; Advanced &gt; Notification)</li>
+                <li><strong>Screen sharing:</strong> Share browser window (not full desktop)</li>
+                <li><strong>Notifications silenced:</strong> Focus Assist ON, Teams DND</li>
+                <li><strong>Secondary phone ready</strong> for incoming call scenario</li>
+                <li><strong>This guide open</strong> on second monitor</li>
+                <li><strong>Quick test:</strong> Open Westfield London Shopping Centre account → confirm data visible</li>
+                <li><strong>Verify case data:</strong> Open any Otis case → confirm Product (e.g. Otis Gen2 Elevator), Subject (e.g. Elevator Emergency), and linked KB articles are visible</li>
+                <li><strong>KB articles published:</strong> All 11 Otis knowledge articles should show status "Published"</li>
+            </ul>
+        </div>
+
+            <!-- DEMO SECTIONS -->
+            <p class="section-label">Demo Flow</p>
+            
+        <div class="exec-section open" style="border-left-color: #0078D4;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #0078D4;">1</div>
+                <div class="exec-header-text">
+                    <h3>Connect & Orient</h3>
+                    <div class="exec-purpose">Build connection, set the frame, brief UI orientation</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    
+                <div class="step-block">
+                    <span class="step-label prep">Prep</span>
+                    <div class="step-text">
+                        Have Tab 1 (D365 Customer Service Workspace) visible. You should be on the
+                        <strong>Home</strong> page showing the default dashboard. Copilot panel closed at start.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        CS Workspace home → point out left nav, session tabs, Copilot panel, multisession concept.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Today I'll show you how Dynamics 365 Customer Service transforms how service teams work. We'll follow a real scenario — an elevator service team handling multiple channels: phone, chat, and email — all in one unified workspace."</p>
+                        <p style="margin-top:12px;">"This is the Customer Service Workspace. Notice the multi-session tabs at the top — agents can work on multiple cases simultaneously without losing context. On the left, you have quick navigation. And this icon here opens Copilot, our AI assistant — we'll use that later."</p>
+                        <p style="margin-top:12px;">"Let me show you what a typical day looks like for our customer service team. I handle the Westfield London Shopping Centre account — they're one of our most important customers with 46 units under a Full Service contract."</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="exec-section " style="border-left-color: #D83B01;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #D83B01;">2</div>
+                <div class="exec-header-text">
+                    <h3>Their World Today</h3>
+                    <div class="exec-purpose">Acknowledge pain points without dwelling</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Before we dive in, I want to make sure I understand the challenges you're facing today. Based on our conversations, I heard a few things that really resonated..."</p>
+                    </div>
+                </div>
+
+                <div class="callout warning" style="background: #FEF3E2; border-left: 4px solid #D83B01;">
+                    <strong>🔥 Key Pain Points to Acknowledge:</strong>
+                    <ul style="margin-top:12px; list-style: none; padding-left: 0;">
+                        <li style="margin-bottom: 12px; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0;">⏱️</span>
+                            <strong>Entrapment response delays</strong> — When someone is trapped, every minute matters. Manual dispatch processes slow down your response time when it's most critical.
+                        </li>
+                        <li style="margin-bottom: 12px; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0;">🔍</span>
+                            <strong>Customer context missing</strong> — Agents answer the phone without knowing who's calling, what elevators they have, or their service history. Customers have to repeat themselves every time.
+                        </li>
+                        <li style="margin-bottom: 12px; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0;">📊</span>
+                            <strong>No real-time visibility</strong> — Supervisors can't see what's happening across the service team. Are SLAs being met? How many entrapments today? You don't know until someone pulls a report.
+                        </li>
+                        <li style="margin-bottom: 12px; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0;">🧠</span>
+                            <strong>Knowledge trapped in people's heads</strong> — Your best technicians have decades of experience, but that knowledge isn't captured anywhere. New agents struggle because procedures aren't readily accessible.
+                        </li>
+                        <li style="margin-bottom: 12px; padding-left: 24px; position: relative;">
+                            <span style="position: absolute; left: 0;">📝</span>
+                            <strong>Contract details hard to find</strong> — When a customer asks "Is this covered?" agents scramble to find the answer. Full vs. Comprehensive vs. Basic — what's included? It shouldn't take 5 minutes to answer.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"First, <strong>response time on entrapments</strong>. When someone's stuck in an elevator, panic sets in fast. But today, your agents have to manually look up customer info, check the service contract, figure out which technician is closest — all while someone's trapped. Every second counts."</p>
+                        <p style="margin-top:12px;">"Second, <strong>your agents are flying blind</strong>. A call comes in, they don't know who it is. Even if caller ID shows a number, they're asking 'What building are you calling from? What elevator?' The customer already gave that information last week. They're frustrated before the conversation even starts."</p>
+                        <p style="margin-top:12px;">"Third, <strong>supervisors don't have visibility</strong>. How many entrapments happened this week? What's our average response time? Are we meeting our SLA commitments? Right now, answering those questions means waiting for someone to build a spreadsheet."</p>
+                        <p style="margin-top:12px;">"And finally, <strong>knowledge is locked up</strong>. Your veteran technicians know everything — which elevator models have quirks, what the common issues are at specific buildings. But when they retire or when a new agent starts, that knowledge doesn't transfer."</p>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label pause">Pause</span>
+                    <div class="step-text">
+                        <em>Wait for acknowledgment. Watch for nodding or verbal confirmation. This builds trust that you understand their world.</em>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Does that resonate with what you're experiencing? <em>[Let them respond — they may add details or prioritize which pain points matter most to them]</em>"</p>
+                        <p style="margin-top:12px;">"Good. So let me show you how Dynamics 365 Customer Service addresses each of these — starting with what happens when that phone rings..."</p>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label tip">Tip</span>
+                    <div class="step-text">
+                        <strong>Read the room:</strong> If they're nodding enthusiastically, you've nailed their pain. If they seem lukewarm, ask "What did I miss?" — you may uncover a pain point that matters more to them. Don't dwell too long — acknowledge their challenges, then pivot to showing the solution.
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="exec-section " style="border-left-color: #107C10;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #107C10;">3</div>
+                <div class="exec-header-text">
+                    <h3>Incoming Call — Screen Pop Hero Moment</h3>
+                    <div class="exec-purpose">HERO: Show instant customer context on incoming call</div>
+                </div>
+                <div class="exec-time">~20 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    
+                <div class="demo-gold">
+                    <strong>🌟 HERO MOMENT:</strong> This is the key differentiator. The incoming call immediately shows complete customer context without any searching.
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label prep">Prep</span>
+                    <div class="step-text">
+                        Ensure Voice Channel status is "Available". Have your secondary phone ready to call in.
+                        <div style="margin-top:8px; padding:8px 12px; background:#fff3cd; border-left:3px solid #ffc107; border-radius:4px; font-size:0.9em;">
+                            <strong>Notification Template:</strong> Verify "Otis Voice - Rich Context" is assigned to the voice workstream
+                            (CS Admin Center &gt; Workstreams &gt; Voice &gt; Advanced &gt; Notification).
+                            The enriched notification shows: Customer, Account, Tier, Open Cases, Phone, and Countdown.
+                            <br><em>Setup: see <code>notification-setup-guide.md</code></em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Now watch what happens when a call comes in..."</p>
+                    </div>
+                </div>
+
+                <div class="step-block voice-step">
+                    <span class="step-label click">Action</span>
+                    <div class="step-text">
+                        <strong>Trigger incoming call from secondary phone.</strong><br>
+                        Call the Voice Channel number. D365 will show the incoming call notification with enriched customer context.
+                    </div>
+                </div>
+
+                <div class="voice-line">
+                    <span class="voice-label">James Morrison (Caller)</span>
+                    "Hi, this is James from Westfield London Shopping Centre. I need help with Entrapment - Passenger stuck in Elevator 3."
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Point out the <strong>enriched notification pop-up</strong> (before accepting):
+                        <ul style="margin-top:8px;">
+                            <li><strong>Customer:</strong> James Morrison — auto-identified from phone number matching</li>
+                            <li><strong>Account:</strong> Westfield London Shopping Centre — resolved from contact's parent account</li>
+                            <li><strong>Service Tier:</strong> <span class="tier-pill t1">1</span> Signature Service Premium — pulled from account record</li>
+                            <li><strong>Open Cases:</strong> Active case count visible immediately</li>
+                            <li><strong>Phone:</strong> Caller's number displayed</li>
+                        </ul>
+                        <div style="margin-top:8px; font-size:0.9em; color:#666;">
+                            After accepting, the <strong>Customer Summary</strong> panel loads with full 360 context: recent interactions, case timeline, equipment list, and account details.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Look at the notification — before I even pick up, the system has already identified James Morrison from Westfield London. I can see they're a Tier 1 Premium customer with active cases. No 'Can I have your account number?' — the system matched the phone number instantly. When I accept, I get the full 360: case history, equipment, contact details — everything an agent needs."</p>
+                    </div>
+                </div>
+
+                <div class="callout roi">
+                    <strong>Value Point:</strong> Agents save 30-45 seconds per call by eliminating "Can I have your account number?" Multiply by thousands of calls per day.
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="exec-section " style="border-left-color: #107C10;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #107C10;">4</div>
+                <div class="exec-header-text">
+                    <h3>Live Case Resolution</h3>
+                    <div class="exec-purpose">Connect the call to an existing case and work it live</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                <div class="demo-gold">
+                    <strong>🔗 STORY CONTINUITY:</strong> James Morrison just called about a passenger trapped in an elevator at Westfield London. There's already an active entrapment case in the system. We're going to open that case directly from this call — exactly as an agent would.
+                </div>
+
+                <div class="sub-header">📞 CONNECTING THE CALL TO THE CASE</div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        After accepting the call, the <strong>Customer Summary</strong> panel on the left shows James Morrison's context. Point out:
+                        <ul style="margin-top:8px;">
+                            <li><strong>Active Cases</strong> for Westfield London — the entrapment case is already visible</li>
+                            <li>Click the case title to open it directly from the conversation panel</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        In the Active Cases list, click <span class="click-path">Entrapment - Passenger stuck in Elevator...</span> to open the existing case.
+                        <div style="margin-top:6px; font-size:0.85em; color:#666;">💡 This is the case that was created when the original emergency was reported. James is calling back for an update — the agent picks up right where the last interaction left off.</div>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Notice I didn't have to search for this case or ask James for a reference number. The system matched him to Westfield London from the phone number, and I can see all their active cases right here. One click and I'm into the entrapment case — with full context from every previous interaction."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">🧠 AUTOMATED CASE INTELLIGENCE</div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Point out the <strong>automated intelligence</strong> that already fired when this case was created:
+                        <ul style="margin-top:8px;">
+                            <li><strong>Hot Word Detection:</strong> "Entrapment" and "trapped" triggered a <span style="background:#D13438;color:white;padding:2px 8px;border-radius:3px;font-weight:bold;">RED EMERGENCY ALERT</span> banner at the top of the form.</li>
+                            <li><strong>Priority:</strong> Automatically set to <strong>Critical</strong> — no manual classification needed.</li>
+                            <li><strong>Tier Level:</strong> <span style="background:#D13438;color:white;padding:2px 6px;border-radius:3px;">Tier 1</span> pulled from the Westfield London account — this triggers the Premium SLA (2-hour response).</li>
+                            <li><strong>Escalation:</strong> Escalated = Yes, Severity = High — supervisor dashboards already show this case.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"All of this happened automatically when the case was filed. The system detected 'entrapment,' set critical priority, pulled the Tier 1 SLA from Westfield's account, and escalated it — all without the agent making a single decision. In a high-pressure entrapment call, that's the difference between a consistent emergency response and human error."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">📦 PRODUCT &amp; ASSET CONTEXT ON THE CASE</div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Point out the product and asset data linked to this case:
+                        <ul style="margin-top:8px;">
+                            <li><strong>Product:</strong> <em>Gen2 Comfort (Passenger Elevator)</em> — the specific elevator line at Westfield. Westfield has 18 Gen2 Comfort passenger elevators, 24 NCE escalators, and 4 Travolators (46 total units).</li>
+                            <li><strong>Customer Asset:</strong> The specific unit (e.g. <code>GEN2-WL-003</code>) should be linked here. This is the individual elevator involved — <em>not just the product model, but the exact physical unit with its own serial number, installation date, and service history.</em></li>
+                            <li><strong>Subject:</strong> <em>Elevator Emergency</em> — categorized under the Otis service hierarchy for reporting and routing.</li>
+                        </ul>
+                        <div style="margin-top:8px; padding:8px 12px; background:#fff3cd; border-left:3px solid #ffc107; border-radius:4px; font-size:0.9em;">
+                            <strong>⚠️ Check:</strong> Verify the Product field shows "Gen2 Comfort" (not blank) and the Customer Asset field links to a specific WL- unit. If blank, this is a data gap we need to address — the agent needs to know <em>which</em> elevator, not just "an elevator."
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Look at the detail here — the case knows this is a Gen2 Comfort passenger elevator at Westfield London. Because we have a full equipment register with 46 assets linked to this building, the agent can see the exact unit, its service history, and warranty status. When the technician arrives, they already know the model, the serial number, and any recent maintenance notes. No guesswork."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">📚 KNOWLEDGE &amp; TIMELINE</div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Scroll down to the <strong>Timeline</strong> and <strong>Related</strong> tabs:
+                        <ul style="margin-top:8px;">
+                            <li><strong>Timeline:</strong> Shows the original call notes, any technician dispatch confirmations, and previous update calls — James can see the agent has full history.</li>
+                            <li><strong>Knowledge Articles:</strong> <em>Entrapment Response Procedure &mdash; Gen2 Premier</em> (KB-001247) and <em>Healthcare Facility Emergency Protocols</em> (KB-002156) are already associated. These give the agent immediate reference without searching.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"James doesn't need to repeat himself. Every note from the original call, the dispatch confirmation, the 5-minute update — it's all here in the timeline. And the knowledge articles? Automatically linked based on the case type. If this agent had never handled an entrapment before, the protocol is one click away."</p>
+                    </div>
+                </div>
+
+                <div class="callout roi">
+                    <strong>Value Point:</strong> The agent opened an existing case directly from the incoming call — no searching, no asking for case numbers. Product, asset, timeline, and knowledge articles were already there. This eliminates the 30-60 seconds agents typically spend hunting for the right record, and ensures continuity across multiple interactions on the same incident.
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="exec-section " style="border-left-color: #5C2D91;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #5C2D91;">5</div>
+                <div class="exec-header-text">
+                    <h3>Service Toolkit — Investigating the Asset</h3>
+                    <div class="exec-purpose">Use the toolkit to look up the specific elevator, run the entrapment script, and dispatch</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                <div class="demo-gold">
+                    <strong>🔗 STORY CONTINUITY:</strong> We're still on the call with James Morrison. The entrapment case is open. Now the agent uses the Service Toolkit to investigate the specific elevator, verify warranty coverage, and follow the entrapment response script — all without leaving the conversation.
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        Click the <strong>wrench icon (🔧)</strong> in the side pane to open the Service Toolkit.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"While I'm talking to James, I'm going to use the Service Toolkit to pull up the specific elevator that's involved. This gives me everything I need without putting him on hold or opening another system."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">🛗 EQUIPMENT LOOKUP — FINDING THE ELEVATOR</div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        In the Service Toolkit Home screen, click <span class="click-path">Equipment &amp; Warranty</span> (Card 5).
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        The <strong>Equipment &amp; Warranty screen</strong> loads <strong>46 Customer Assets</strong> for Westfield London, filtered automatically from the account context:
+                        <ul style="margin-top:8px;">
+                            <li><strong>18 × Gen2 Comfort</strong> Passenger Elevators (GEN2-WL-001 through GEN2-WL-018) — <span style="color:#0078d4;">blue accent</span></li>
+                            <li><strong>24 × NCE</strong> Escalators (NCE-WL-001 through NCE-WL-024) — <span style="color:#107c10;">green accent</span></li>
+                            <li><strong>4 × Travolator</strong> Moving Walkways (TRV-WL-001 through TRV-WL-004) — <span style="color:#ff8c00;">amber accent</span></li>
+                        </ul>
+                        Each row shows: <strong>model + type</strong> (bold), <strong>unit number + serial</strong> (e.g. "Lift #3 · GEN2-WL-003"), contract pill, warranty badge (<span style="color:#2e7d32;font-weight:600;">ACTIVE</span> / <span style="color:#e53935;font-weight:600;">EXPIRED</span>), and a compact warranty summary line.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        Click on <span class="click-path">GEN2-WL-003</span> (the elevator James reported — Elevator 3) to open the detail panel.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        The detail panel shows this specific unit's data:
+                        <ul style="margin-top:8px;">
+                            <li><strong>Product:</strong> Gen2 Comfort — Passenger Elevator</li>
+                            <li><strong>Serial Number:</strong> GEN2-WL-003</li>
+                            <li><strong>Warranty Status:</strong> <span style="color:#2e7d32;font-weight:600;">ACTIVE</span> (under Signature Service Premium contract)</li>
+                            <li><strong>Contract Type:</strong> Signature Service Premium (24/7 OTISLINE®)</li>
+                            <li><strong>Last Service Date:</strong> 2026-03-08 (10 days ago)</li>
+                            <li><strong>Functional Location:</strong> Main Shopping Centre — Levels G-4</li>
+                            <li>Action buttons: <strong>Create Work Order</strong>, <strong>File Warranty Claim</strong>, <strong>View Service History</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Now I know exactly which elevator we're dealing with. GEN2-WL-003 is a Gen2 Comfort passenger elevator — it's under their Signature Service Premium plan, so 24/7 OTISLINE coverage, OEM parts, and priority 2-hour dispatch are all covered. It was last serviced 10 days ago. I have the full history of this specific unit right here in the side pane, and I can create a work order directly from this view — the entitlement is automatically applied. The agent never had to leave the call or open a separate system."</p>
+                    </div>
+                </div>
+
+                <div class="callout roi">
+                    <strong>Value Point:</strong> The agent identified the exact physical unit from a building with 46 assets — without asking James for a serial number. Equipment-level visibility means the technician arrives knowing exactly what model they're working on, when it was last serviced, and what tools they need.
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">📋 ENTRAPMENT RESPONSE SCRIPT</div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        Navigate back to the Toolkit Home, then click <span class="click-path">Agent Scripts → Entrapment Response Protocol</span>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Walk through the script steps — these are the exact steps the agent follows for James's call:
+                        <ol style="margin-top:8px;">
+                            <li><strong>Emergency Verification</strong> — "Can you confirm the exact elevator number?" ✅ We already know: GEN2-WL-003</li>
+                            <li><strong>Occupant Status Check</strong> — "Is the passenger responsive? Any medical concerns?"</li>
+                            <li><strong>Location Confirmation</strong> — Westfield London, Elevator 3, between floors (James to confirm)</li>
+                            <li><strong>Dispatch Technician</strong> — One-click macro creates the work order</li>
+                            <li><strong>Customer Communication</strong> — ETA commitment and 5-minute callback promise</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"This is the power of guided scripts. The agent doesn't have to rely on memory under pressure. Every step is laid out — the exact questions to ask, the data to collect, and the actions to take. Even a new agent on their first entrapment call follows the same protocol as a 10-year veteran."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">⚡ ONE-CLICK DISPATCH</div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        At Step 4 of the script, click the <span class="click-path">Create Emergency Work Order</span> macro button.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        The macro fires and:
+                        <ul style="margin-top:8px;">
+                            <li>Creates a work order pre-filled with: Westfield London, Gen2 Comfort, Entrapment, Emergency priority</li>
+                            <li>Links back to the case we opened from James's call</li>
+                            <li>Triggers dispatch notification to the nearest available technician</li>
+                            <li>Updates the case status and adds a timeline note</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"One click. The work order is created, linked to the case and the specific elevator, dispatch is notified, and the case is updated — all from a single button press. What used to take 3-4 minutes of data entry across multiple screens is now instant. And because it's connected to the case and the asset, the technician gets the equipment details automatically."</p>
+                    </div>
+                </div>
+
+                <div class="callout roi">
+                    <strong>Value Point:</strong> From phone ring to technician dispatch in under 2 minutes. The entire flow — caller ID, existing case, equipment lookup, guided script, work order creation — is a single continuous experience. No tab-switching, no re-entering data, no separate dispatch system. Macros save 2-4 minutes per case; for 50 agents handling 100 cases/day, that's 160+ hours saved per week.
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">⚙️ SETTINGS &amp; WARRANTY MODE</div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        <em>(Optional — show if time allows)</em><br>
+                        Click the <strong>gear icon (⚙️)</strong> on the Home screen to open Settings. The toolkit supports two warranty modes:
+                        <ul style="margin-top:8px;">
+                            <li><strong>Equipment mode</strong> (Otis) — building-level views of all 46 units at Westfield, color-coded by type</li>
+                            <li><strong>Serial mode</strong> (Zurn) — serial number warranty lookup for distributors</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px; padding:12px 16px; background:#e8f5e9; border-left:4px solid #4caf50; border-radius:4px;">
+                    <strong>✅ Equipment Filtering &amp; Search — Working</strong>
+                    <p style="margin:8px 0 0; font-size:0.9em;">The Equipment &amp; Warranty page filters automatically by customer account using the <code>recordId</code> parameter from the session context. When opened from a Westfield London case, only Westfield's 46 units appear. A <strong>search box</strong> at the top lets agents type a serial number, model name, or unit type to instantly narrow the list.</p>
+                </div>
+
+                <div style="margin-top:12px; padding:12px 16px; background:#e3f2fd; border-left:4px solid #1976d2; border-radius:4px;">
+                    <strong>🔧 Otis Signature Service Plans</strong>
+                    <p style="margin:8px 0 0; font-size:0.9em;">Contract type pills in the gallery reflect the Otis Signature Service tiering:</p>
+                    <table style="margin:8px 0 0; font-size:0.88em; border-collapse:collapse;">
+                        <tr><td style="padding:3px 12px 3px 0;"><span style="background:#004e8c;color:#fff;padding:2px 8px;border-radius:3px;font-size:0.85em;font-weight:600;">SIG PREMIUM</span></td><td>24/7 OTISLINE®, predictive IoT (Otis ONE), OEM parts, 2hr priority dispatch</td></tr>
+                        <tr><td style="padding:3px 12px 3px 0;"><span style="background:#0078d4;color:#fff;padding:2px 8px;border-radius:3px;font-size:0.85em;font-weight:600;">SIG PLUS</span></td><td>Business hours + OTISLINE afterhours, preventive maintenance, OEM parts, 4hr SLA</td></tr>
+                        <tr><td style="padding:3px 12px 3px 0;"><span style="background:#107c10;color:#fff;padding:2px 8px;border-radius:3px;font-size:0.85em;font-weight:600;">SIGNATURE</span></td><td>Business hours, basic maintenance, labor included, parts billable, 8hr SLA</td></tr>
+                    </table>
+                </div>
+
+                <div style="margin-top:12px; padding:12px 16px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px;">
+                    <strong>📋 Entitlements &amp; Field Service Integration</strong>
+                    <p style="margin:8px 0 0; font-size:0.9em;">Each account has a D365 <strong>Entitlement</strong> record linked to their Signature Service plan. When a work order is created from this page, the entitlement automatically applies the correct coverage level (parts/labor discount, priority dispatch). SLA timers on cases and work orders inherit the plan's response commitment. Provisioned via <code>30-Entitlements.ps1</code>.</p>
+                </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="exec-section " style="border-left-color: #5C2D91;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #5C2D91;">6</div>
+                <div class="exec-header-text">
+                    <h3>Copilot Assistance</h3>
+                    <div class="exec-purpose">AI-powered suggestions and knowledge</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Now let me show you one of the most powerful features — AI assistance. We have two levels of Copilot: one built right into D365 for case work, and a custom Otis Service Copilot we built specifically for elevator service scenarios."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header">🤖 IN-APP COPILOT (D365 Customer Service)</div>
+
+                <div class="step-block copilot-step">
+                    <span class="step-label copilot">Copilot</span>
+                    <div class="step-text">
+                        Click the <strong>Copilot</strong> icon in the command bar to open the Copilot panel.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Demonstrate Copilot capabilities:
+                        <ul style="margin-top:8px;">
+                            <li><strong>Ask a question:</strong> "What is our warranty policy?"</li>
+                            <li><strong>Summarize:</strong> "Summarize this case"</li>
+                            <li><strong>Draft:</strong> "Draft a response to the customer"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Copilot is my AI assistant. I can ask it questions, have it summarize cases, or draft responses. It pulls from our knowledge base and case history to give accurate, contextual answers."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:25px;">🛗 OTIS SERVICE COPILOT (Copilot Studio)</div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Now let me show you something we built specifically for Otis — a custom AI agent trained on elevator service. This is built in Microsoft Copilot Studio, and it's connected to our D365 knowledge articles."</p>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        Open <span class="click-path">Copilot Studio → Otis Service Copilot</span> (or open Test pane in D365 if embedded)
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        The custom Otis agent with:
+                        <ul style="margin-top:8px;">
+                            <li>Otis branding and logo</li>
+                            <li>Custom instructions for elevator service</li>
+                            <li>Connected to D365 Knowledge Articles</li>
+                            <li>5 specialized service topics</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">🚨 Topic Demo: Entrapment Response</div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Let me show you the most critical scenario — an entrapment. Watch how the agent handles this."</p>
+                    </div>
+                </div>
+
+                <div class="step-block copilot-step">
+                    <span class="step-label copilot">Copilot</span>
+                    <div class="step-text">
+                        Type: <strong class="copilot-prompt" onclick="copyToClipboard(this)" style="cursor:pointer;background:#f3e5f5;padding:4px 8px;border-radius:4px;">"I just got a call - there's someone trapped in an elevator at Riverside Medical Centre. It's Elevator 3, a bed elevator."</strong>
+                        <br><small style="color:#666;">(Click to copy)</small>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Agent should:
+                        <ul style="margin-top:8px;">
+                            <li>Recognize entrapment as emergency priority</li>
+                            <li>Reference <em>Emergency Entrapment Response Protocol</em> (KB-001247) for procedure</li>
+                            <li>Note <em>Healthcare Facility Elevator Compliance Guide</em> (KB-002156) for healthcare SLA (1 hour response)</li>
+                            <li>Provide step-by-step guidance from the published knowledge base</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Notice how the agent immediately recognizes this as an emergency and pulls the right procedure from our knowledge base. It even knows about healthcare-specific SLAs."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">🚪 Topic Demo: Door Troubleshooting</div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Now a more common scenario — a door issue. These make up about 40% of service calls."</p>
+                    </div>
+                </div>
+
+                <div class="step-block copilot-step">
+                    <span class="step-label copilot">Copilot</span>
+                    <div class="step-text">
+                        Type: <strong class="copilot-prompt" onclick="copyToClipboard(this)" style="cursor:pointer;background:#fff3e0;padding:4px 8px;border-radius:4px;">"Imperial Tower on Deansgate is reporting door alignment problems on their SkyRise elevator. Doors are slow to close on floor 15."</strong>
+                        <br><small style="color:#666;">(Click to copy)</small>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Agent pulls <em>Door Issue Diagnostic and Resolution Guide</em> (KA-01244) for troubleshooting, suggests diagnostic steps.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"See how it pulls the right troubleshooting steps for this specific model — the SkyRise. It's not giving generic advice, it's giving model-specific guidance from our knowledge base."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">📄 Topic Demo: Contract Question</div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Agents often get questions about contract coverage. Instead of looking it up manually, they can just ask."</p>
+                    </div>
+                </div>
+
+                <div class="step-block copilot-step">
+                    <span class="step-label copilot">Copilot</span>
+                    <div class="step-text">
+                        Type: <strong class="copilot-prompt" onclick="copyToClipboard(this)" style="cursor:pointer;background:#e3f2fd;padding:4px 8px;border-radius:4px;">"What's covered under a Full service contract? Are emergency calls included?"</strong>
+                        <br><small style="color:#666;">(Click to copy)</small>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Agent references <em>Billing Inquiries and Contract FAQ</em> (KA-01253) for contract coverage, explains tier benefits and service contract differences (Full / Comprehensive / Basic).
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"The agent gives accurate contract information instantly. No more putting customers on hold to check — the answer is right there."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">📈 Topic Demo: Modernization Opportunity</div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Here's where it gets interesting — what happens when a service call is actually a sales opportunity?"</p>
+                    </div>
+                </div>
+
+                <div class="step-block copilot-step">
+                    <span class="step-label copilot">Copilot</span>
+                    <div class="step-text">
+                        Type: <strong class="copilot-prompt" onclick="copyToClipboard(this)" style="cursor:pointer;background:#e8f5e9;padding:4px 8px;border-radius:4px;">"Manchester Central Hotel is asking about upgrading their 25-year-old elevator. What modernization options do we have?"</strong>
+                        <br><small style="color:#666;">(Click to copy)</small>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Agent recognizes sales opportunity, offers to warm transfer to modernization team.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"The agent is trained to recognize when a service call is actually a sales opportunity. Instead of just answering, it offers to connect the customer with our modernization team — that's how we turn service into revenue."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">🔧 Topic Demo: Maintenance Scheduling</div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Finally, routine maintenance scheduling — this is bread and butter work."</p>
+                    </div>
+                </div>
+
+                <div class="step-block copilot-step">
+                    <span class="step-label copilot">Copilot</span>
+                    <div class="step-text">
+                        Type: <strong class="copilot-prompt" onclick="copyToClipboard(this)" style="cursor:pointer;background:#fce4ec;padding:4px 8px;border-radius:4px;">"Schedule a preventive maintenance visit for MediaCityUK"</strong>
+                        <br><small style="color:#666;">(Click to copy)</small>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"The agent helps coordinate scheduling, and because it's connected to D365, it knows the customer's contract, equipment, and service history. Everything an agent needs to give great service — without switching between systems."</p>
+                    </div>
+                </div>
+
+                <div class="callout roi" style="margin-top:20px;">
+                    <strong>💰 Value Point:</strong> Custom Copilot agents reduce average handle time by 30-40% by instantly providing the right knowledge and guiding agents through complex scenarios.
+                </div>
+
+                <div class="callout success">
+                    <strong>Key Message:</strong> Copilot augments agents — it doesn't replace them. It handles the routine so agents can focus on the relationship.
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="exec-section " style="border-left-color: #107C10;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #107C10;">7</div>
+                <div class="exec-header-text">
+                    <h3>Call Wrap-Up & Notes</h3>
+                    <div class="exec-purpose">Show efficient after-call work</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Now let me show you what happens after the call ends. In most contact centers, agents spend 3-5 minutes on after-call work — typing notes, updating fields, sending follow-up emails. Watch how D365 transforms this."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">📝 AUTO-SUMMARY & CASE NOTES</div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        End the call (or simulate ending). Point to the <strong>Case Summary</strong> section at the top of the case form.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        <strong>AI-Generated Case Summary:</strong>
+                        <ul style="margin-top:8px;">
+                            <li>Copilot auto-generated summary of the conversation</li>
+                            <li>Key issues discussed and actions taken</li>
+                            <li>Customer sentiment captured</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Notice the system has already written a summary of the entire interaction. The agent didn't type a single word — Copilot captured the key points, the actions we took, and even the customer's sentiment. The agent can review and edit if needed, but 90% of the time this is accurate enough to save as-is."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">📧 FOLLOW-UP ACTIONS</div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        Point to the <strong>Timeline</strong> section showing:
+                        <ul style="margin-top:8px;">
+                            <li>Call activity auto-logged with duration</li>
+                            <li>Case notes auto-populated</li>
+                            <li>Follow-up task created (if applicable)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Everything is captured in the timeline automatically. The call recording, the duration, the auto-generated notes — it's all here. If this was a callback situation, a follow-up task is already scheduled. The next agent who opens this case sees the complete history without having to ask the customer to repeat anything."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">✉️ COPILOT EMAIL DRAFT</div>
+
+                <div class="step-block copilot-step">
+                    <span class="step-label copilot">Copilot</span>
+                    <div class="step-text">
+                        In Copilot panel, type: <strong>"Draft a follow-up email to the customer confirming what we discussed"</strong>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"And if I need to send a follow-up email, I just ask Copilot. It already has context from the case — it knows the customer name, what we discussed, and the resolution. In seconds I have a professional email ready to send."</p>
+                        <p style="margin-top:12px;">"Think about the time savings here. What used to take 3-5 minutes of after-call work is now under 30 seconds. Multiply that across your team and that's hours back every single day."</p>
+                    </div>
+                </div>
+
+                <div class="callout roi">
+                    <strong>Value Point:</strong> Average after-call work drops from 3-5 minutes to under 30 seconds. For a 50-agent team handling 100 calls/day, that's 200+ hours saved per week — the equivalent of 5 full-time agents.
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="exec-section " style="border-left-color: #008575;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #008575;">8</div>
+                <div class="exec-header-text">
+                    <h3>Supervisor View</h3>
+                    <div class="exec-purpose">Dashboards, analytics, agent performance</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Everything we've shown so far has been from the agent's perspective. Now let me switch to what a supervisor or operations manager sees. This is where you get the visibility you told me was missing today."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header leader">📊 OMNICHANNEL REAL-TIME ANALYTICS</div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        Open a new tab → Navigate to <span class="click-path">Customer Service workspace → Omnichannel Real-Time Analytics</span> (from left nav or site map)
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        <strong>Summary Dashboard:</strong>
+                        <ul style="margin-top:8px;">
+                            <li>Active conversations count and trend</li>
+                            <li>Conversations in queue / waiting</li>
+                            <li>Average wait time and handle time</li>
+                            <li>Customer sentiment distribution</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"This is your real-time command center. Right now I can see how many conversations are active, how long customers are waiting, and the overall sentiment. If wait times spike — for example during a building emergency with multiple callers — I see it immediately, not after someone files a report."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">👥 AGENT STATUS & MONITORING</div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        Click the <strong>Agents</strong> tab in the analytics dashboard.
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        <ul style="margin-top:8px;">
+                            <li>Each agent's current status (Available, Busy, Away)</li>
+                            <li>Active conversation count per agent</li>
+                            <li>Average handle time per agent</li>
+                            <li>Customer sentiment for each agent's conversations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Here I can see every agent on my team. Who's available, who's on a call, who's been on a long call that might need help. If I see an agent with negative sentiment on their current conversation, I can monitor or even join that conversation to assist — before it becomes an escalation."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">📈 HISTORICAL ANALYTICS</div>
+
+                <div class="step-block">
+                    <span class="step-label click">Click</span>
+                    <div class="step-text">
+                        Navigate to <span class="click-path">Customer Service Historical Analytics</span> (from left nav)
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        <ul style="margin-top:8px;">
+                            <li>Case volume trends over time</li>
+                            <li>Resolution time by case type</li>
+                            <li>SLA compliance rates</li>
+                            <li>CSAT / customer satisfaction trends</li>
+                            <li>Top case categories</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"And for longer-term planning, historical analytics shows you the trends. For Otis, this is critical — you can see that entrapment cases spike in older buildings during summer months, or that door issues increase in high-traffic locations. This drives proactive maintenance decisions, not just reactive fire-fighting."</p>
+                        <p style="margin-top:12px;">"You can also track SLA compliance over time. Are we meeting our 30-minute entrapment response commitment? What's our first-call resolution rate? This is the data you need for your quarterly business reviews with building managers."</p>
+                    </div>
+                </div>
+
+                <div class="sub-header" style="margin-top:20px;">🤖 COPILOT ANALYTICS (BONUS)</div>
+
+                <div class="step-block">
+                    <span class="step-label show">Show</span>
+                    <div class="step-text">
+                        If available, show <strong>Copilot Analytics</strong> dashboard:
+                        <ul style="margin-top:8px;">
+                            <li>How often agents are using Copilot</li>
+                            <li>Time saved per interaction</li>
+                            <li>Most common Copilot queries</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"And here's something unique — you can actually measure Copilot's impact. How much time is it saving your agents? Which knowledge articles are being surfaced most? This helps you optimize your knowledge base and identify training gaps."</p>
+                    </div>
+                </div>
+
+                <div class="callout roi">
+                    <strong>Value Point:</strong> Real-time visibility means supervisors catch issues in minutes instead of discovering them in next-day reports. For Otis, where entrapment response time is contractually committed, this is the difference between meeting SLAs and paying penalties.
+                </div>
+
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"The key message here is: no more surprises. Your supervisors know what's happening right now, your managers see the trends, and your leadership gets the KPIs they need — all from one platform, updated in real-time."</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="exec-section " style="border-left-color: #005A9E;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: #005A9E;">9</div>
+                <div class="exec-header-text">
+                    <h3>Close & Next Steps</h3>
+                    <div class="exec-purpose">Summarize value, discuss next steps</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    
+                <div class="step-block">
+                    <span class="step-label say">Say</span>
+                    <div class="talk-track">
+                        <p>"Let me summarize what we've seen today:
+                        <ul style="margin-top:8px;">
+                            <li>Instant customer recognition with screen pop</li>
+                            <li>Unified view across all channels</li>
+                            <li>AI-powered assistance with Copilot</li>
+                            <li>Complete supervisor visibility</li>
+                        </ul>
+                        What questions do you have? What would you like to explore further?"</p>
+                    </div>
+                </div>
+
+                <div class="callout success">
+                    <strong>Next Steps:</strong>
+                    <ul style="margin-top:8px;">
+                        <li>Schedule deep-dive on specific capabilities</li>
+                        <li>Discuss implementation timeline</li>
+                        <li>Identify pilot group</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!--  D A T A   A P P E N D I X                                            -->
+        <!-- ===================================================================== -->
+
+        <div class="exec-section" style="border-left:4px solid #546e7a;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background:#546e7a;">A</div>
+                <div class="exec-header-text">
+                    <h3>Customer Assets &amp; Equipment Data</h3>
+                    <div class="exec-purpose">205 customer assets across 10 accounts &bull; provisioned via 26-CustomerAssets.ps1</div>
+                </div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    <p style="font-size:0.86rem; color:#666;">All units provisioned as <code>msdyn_customerasset</code> records in Dataverse. The Equipment &amp; Warranty screen (scrEquipWarranty) reads these and groups by account.</p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Account</th>
+                                <th>Type</th>
+                                <th>Tier</th>
+                                <th>Units</th>
+                                <th>Equipment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Westfield London Shopping Centre</td>
+                                <td>Retail</td>
+                                <td>1</td>
+                                <td>46</td>
+                                <td>18 Gen2 Comfort, 24 NCE Escalators, 4 Travolators</td>
+                            </tr>
+                            <tr>
+                                <td>Canary Wharf Tower</td>
+                                <td>Office</td>
+                                <td>1</td>
+                                <td>36</td>
+                                <td>32 SkyRise, 4 Gen2 Premier Freight</td>
+                            </tr>
+                            <tr>
+                                <td>Riverside Medical Centre</td>
+                                <td>Healthcare</td>
+                                <td>1</td>
+                                <td>18</td>
+                                <td>12 Gen2 Life, 6 Gen2 Premier Bed</td>
+                            </tr>
+                            <tr>
+                                <td>Birmingham New Street Station</td>
+                                <td>Transport</td>
+                                <td>1</td>
+                                <td>24</td>
+                                <td>8 Gen2 Comfort, 16 NCE Heavy Duty Escalators</td>
+                            </tr>
+                            <tr>
+                                <td>MediaCityUK Salford</td>
+                                <td>Mixed-Use</td>
+                                <td>1</td>
+                                <td>52</td>
+                                <td>20 Gen2 Comfort, 12 Gen2 Premier, 8 NCE Escalators, 12 Link Escalators</td>
+                            </tr>
+                            <tr>
+                                <td>Imperial Tower Milan</td>
+                                <td>Office</td>
+                                <td>2</td>
+                                <td>8</td>
+                                <td>6 SkyRise, 2 Gen2 Premier Freight</td>
+                            </tr>
+                            <tr>
+                                <td>Manchester Central Hotel</td>
+                                <td>Hotel</td>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>3 Gen2 Comfort, 1 GeN2 SWITCH Freight</td>
+                            </tr>
+                            <tr>
+                                <td>Roma Termini Station</td>
+                                <td>Transport</td>
+                                <td>1</td>
+                                <td>12</td>
+                                <td>4 Gen2 Comfort, 8 NCE Heavy Duty Escalators</td>
+                            </tr>
+                            <tr>
+                                <td>Edinburgh Royal Mile Apartments</td>
+                                <td>Residential</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td>3 GeN2 SWITCH</td>
+                            </tr>
+                            <tr>
+                                <td>Napoli Business Park</td>
+                                <td>Office</td>
+                                <td>3</td>
+                                <td>2</td>
+                                <td>2 Gen2 Comfort</td>
+                            </tr>
+                            <tr style="font-weight:600; background:#f5f5f5;">
+                                <td colspan="3">Total</td>
+                                <td>205</td>
+                                <td>Elevators, Escalators, Moving Walkways, Bed Elevators, Freight</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top:12px; font-size:0.86rem;">
+                        <strong>Equipment warranty rules:</strong>
+                        <ul style="margin:4px 0 0 20px; line-height:1.8;">
+                            <li>Tier 1 &amp; 2 accounts: 5-year warranty from install</li>
+                            <li>Tier 3 accounts: 2-year warranty from install</li>
+                            <li>Contract types: Signature Service Premium, Signature Service Plus, Signature Service</li>
+                            <li>Each unit has serial number pattern: <code>{MODEL}-{SITE}-{SEQ}</code> (e.g., GEN2-WL-001)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="exec-section" style="border-left:4px solid #546e7a;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background:#546e7a;">A</div>
+                <div class="exec-header-text">
+                    <h3>Key Numbers &amp; Environment URLs</h3>
+                    <div class="exec-purpose">Quick-reference metrics and links</div>
+                </div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    <table>
+                        <thead>
+                            <tr><th>Metric</th><th>Value</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Service accounts</td><td>10 (6 UK + 4 Italy)</td></tr>
+                            <tr><td>Customer assets</td><td>205 (provisioned via 26-CustomerAssets.ps1)</td></tr>
+                            <tr><td>KB articles</td><td>10+ (entrapment, door diagnostic, billing FAQ, compliance, IoT)</td></tr>
+                            <tr><td>Products</td><td>Gen2, SkyRise, GeN2 SWITCH, NCE, Link, Otis ONE</td></tr>
+                            <tr><td>Contract types</td><td>Signature Service Premium &bull; Signature Service Plus &bull; Signature Service</td></tr>
+                            <tr><td>Toolkit screens</td><td>10+ (Home, Quick Actions, Scripts, Orders, Equipment &amp; Warranty, Quick Quote, Settings)</td></tr>
+                            <tr><td>SLA: Entrapment</td><td>30 min response</td></tr>
+                            <tr><td>SLA: Tier 1</td><td>2 hr response</td></tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top:12px;">
+                        <strong>Environment:</strong> <a href="https://orgecbce8ef.crm.dynamics.com" target="_blank">orgecbce8ef.crm.dynamics.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+
+        <footer>
+            <p>Generated by RAPP D365 Demo Orchestration — March 17, 2026</p>
+            <p>For internal use only. Contains demo data and scripts.</p>
+        </footer>
+    </main>
+
+    <!-- RIGHT: CHEAT SHEET (grid-column: 3) -->
+    <aside class="cheat-sheet" id="cheatSheet">
+        <div class="cheat-sheet-header">
+            <strong>🎮 Controls & Quick Ref</strong>
+            <button class="cheat-sheet-toggle" id="cheatToggle" title="Hide Controls">✕</button>
+        </div>
+        <div class="cheat-sheet-body">
+            
+        <!-- SIMULATION TRIGGERS -->
+        <div class="cheat-section">
+            <h4>🎬 Simulation Triggers</h4>
+            <div class="sim-btn-stack">
+                <button class="sim-trigger email" onclick="triggerSimulation('email')" title="Send customer email to D365 queue">
+                    📧 Send Email<br><small>from Sophie Williams</small>
+                </button>
+                <button class="sim-trigger chat" onclick="triggerSimulation('chat')" title="Start portal chat session">
+                    💬 Start Chat<br><small>as David Chen</small>
+                </button>
+                <button class="sim-trigger voice" onclick="triggerSimulation('voice')" title="Trigger incoming call">
+                    📞 Incoming Call<br><small>from James Morrison</small>
+                </button>
+            </div>
+            <div class="sim-status" id="simStatus">Ready</div>
+        </div>
+
+        <!-- D365 ACTIONS -->
+        <div class="cheat-section">
+            <h4>⚡ D365 Actions</h4>
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="local" onclick="setDemoMode('local')" title="localhost:7071">💻 Local</button>
+                <button class="mode-btn" data-mode="azure" onclick="setDemoMode('azure')" title="Azure Function App">☁️ Azure</button>
+                <button class="mode-btn" data-mode="power_automate" onclick="setDemoMode('power_automate')" title="Power Automate">⚡ PA</button>
+            </div>
+            <div class="sim-btn-stack">
+                <button class="d365-btn notify" onclick="fireD365Action('send_notification')">
+                    🔔 Entrapment Alert<br><small>Toast → Riverside Medical Centre</small>
+                </button>
+                <button class="d365-btn case" onclick="fireD365Action('create_case')">
+                    📋 Create Entrapment Case<br><small>Riverside Medical · Critical · Phone</small>
+                </button>
+                <button class="d365-btn sla-warn" onclick="fireD365Action('sla_warning')">
+                    ⚠️ Marriott SLA Warning<br><small>CAS-19129-N0B2P3 · Billing dispute</small>
+                </button>
+                <button class="d365-btn sla-breach" onclick="fireD365Action('sla_breach')">
+                    🚨 Marriott SLA Breach<br><small>CAS-19129-N0B2P3 · Violated</small>
+                </button>
+                <button class="d365-btn triage" onclick="fireD365Action('ai_triage')">
+                    🤖 Triage Canary Wharf Door Issue<br><small>HERO-002 · Recurring door fault</small>
+                </button>
+            </div>
+            <div class="sim-status" id="d365Status">Ready — Local mode</div>
+            <div class="d365-log" id="d365Log"></div>
+        </div>
+
+        <!-- HERO ACCOUNT -->
+        <div class="cheat-section">
+            <h4>🏢 Hero Account</h4>
+            <div class="cheat-item">
+                <span class="cheat-label">Account</span>
+                <span class="cheat-value">Westfield London Shopping Centre</span>
+            </div>
+            <div class="cheat-item">
+                <span class="cheat-label">Tier</span>
+                <span class="cheat-value tier-badge">1</span>
+            </div>
+            <div class="cheat-item">
+                <span class="cheat-label">Account #</span>
+                <span class="cheat-value mono">OTIS-UK-001</span>
+            </div>
+        </div>
+
+        <!-- HERO CONTACT -->
+        <div class="cheat-section">
+            <h4>👤 Hero Contact</h4>
+            <div class="cheat-item">
+                <span class="cheat-label">Name</span>
+                <span class="cheat-value">James Morrison</span>
+            </div>
+            <div class="cheat-item">
+                <span class="cheat-label">Title</span>
+                <span class="cheat-value">Centre Manager</span>
+            </div>
+            <div class="cheat-item">
+                <span class="cheat-label">Phone</span>
+                <span class="cheat-value mono">+44 20 7946 0958</span>
+            </div>
+        </div>
+
+        <!-- HERO CASE -->
+        <div class="cheat-section">
+            <h4>📋 Hero Case</h4>
+            <div class="cheat-item">
+                <span class="cheat-label">Title</span>
+                <span class="cheat-value small">Entrapment - Passenger stuck in Elevator...</span>
+            </div>
+            <div class="cheat-item">
+                <span class="cheat-label">Priority</span>
+                <span class="cheat-value">Critical</span>
+            </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div class="cheat-section">
+            <h4>📦 Otis Products</h4>
+            <div class="cheat-item"><span class="cheat-label">Elevators</span><span class="cheat-value small">Gen2 · SkyRise · GeN2 SWITCH</span></div>
+            <div class="cheat-item"><span class="cheat-label">Escalator</span><span class="cheat-value small">Link Escalator · NCE</span></div>
+            <div class="cheat-item"><span class="cheat-label">IoT</span><span class="cheat-value small">Otis ONE Platform</span></div>
+            <div class="cheat-item"><span class="cheat-label">Contracts</span><span class="cheat-value small">Full · Comprehensive · Basic</span></div>
+            <div class="cheat-item"><span class="cheat-label">Assets</span><span class="cheat-value small">205 units across 10 accounts</span></div>
+        </div>
+
+        <!-- KB ARTICLES -->
+        <div class="cheat-section">
+            <h4>📚 Key KB Articles</h4>
+            <div class="cheat-item"><span class="cheat-label">KB-001247</span><span class="cheat-value small">Entrapment Protocol</span></div>
+            <div class="cheat-item"><span class="cheat-label">KB-002156</span><span class="cheat-value small">Healthcare Compliance</span></div>
+            <div class="cheat-item"><span class="cheat-label">KB-003145</span><span class="cheat-value small">Otis ONE IoT</span></div>
+            <div class="cheat-item"><span class="cheat-label">KA-01244</span><span class="cheat-value small">Door Diagnostic</span></div>
+            <div class="cheat-item"><span class="cheat-label">KA-01245</span><span class="cheat-value small">Escalator Guide</span></div>
+            <div class="cheat-item"><span class="cheat-label">KA-01253</span><span class="cheat-value small">Billing FAQ</span></div>
+        </div>
+
+        <!-- QUICK LINKS -->
+        <div class="cheat-section">
+            <h4>🔗 Quick Links</h4>
+            <a href="https://orgecbce8ef.crm.dynamics.com" target="_blank" class="cheat-link">D365 Workspace →</a>
+            <a href="https://copilotstudio.microsoft.com" target="_blank" class="cheat-link">Copilot Studio →</a>
+            <a href="https://outlook.office.com" target="_blank" class="cheat-link">Outlook →</a>
+        </div>
+
+        <!-- COPILOT PROMPTS -->
+        <div class="cheat-section">
+            <h4>🤖 COPILOT DEMO PROMPTS</h4>
+            <div class="copilot-prompt-item" onclick="copyToClipboard(this)" style="background:#fff;color:#c62828;padding:10px 12px;border-radius:6px;margin:6px 0;cursor:pointer;font-size:0.8rem;font-weight:500;border-left:4px solid #c62828;">
+                🚨 Entrapment at Westfield London Shopping Centre
+            </div>
+            <div class="copilot-prompt-item" onclick="copyToClipboard(this)" style="background:#fff;color:#e65100;padding:10px 12px;border-radius:6px;margin:6px 0;cursor:pointer;font-size:0.8rem;font-weight:500;border-left:4px solid #e65100;">
+                🚪 Door issues on SkyRise at Imperial Tower
+            </div>
+            <div class="copilot-prompt-item" onclick="copyToClipboard(this)" style="background:#fff;color:#1565c0;padding:10px 12px;border-radius:6px;margin:6px 0;cursor:pointer;font-size:0.8rem;font-weight:500;border-left:4px solid #1565c0;">
+                📄 What's covered under Full Service contract?
+            </div>
+            <div class="copilot-prompt-item" onclick="copyToClipboard(this)" style="background:#fff;color:#2e7d32;padding:10px 12px;border-radius:6px;margin:6px 0;cursor:pointer;font-size:0.8rem;font-weight:500;border-left:4px solid #2e7d32;">
+                📈 Upgrade 25-year-old elevator
+            </div>
+            <div class="copilot-prompt-item" onclick="copyToClipboard(this)" style="background:#fff;color:#7b1fa2;padding:10px 12px;border-radius:6px;margin:6px 0;cursor:pointer;font-size:0.8rem;font-weight:500;border-left:4px solid #7b1fa2;">
+                🔧 Schedule PM visit for MediaCityUK
+            </div>
+            <small style="color:#aaa;display:block;margin-top:8px;text-align:center;">Click to copy</small>
+        </div>
+
+        <!-- FLOW CONFIG -->
+        <details class="cheat-config">
+            <summary>⚙️ Flow URLs</summary>
+            <div class="config-body">
+                <label>Email:</label>
+                <input type="text" id="emailFlowUrl" placeholder="PA HTTP URL">
+                <label>Chat:</label>
+                <input type="text" id="chatFlowUrl" placeholder="PA HTTP URL">
+                <label>Voice:</label>
+                <input type="text" id="voiceFlowUrl" placeholder="PA HTTP URL">
+                <hr style="border-color:rgba(255,255,255,0.1);margin:8px 0;">
+                <label style="font-weight:600;">RAPP Function App:</label>
+                <label>Azure URL:</label>
+                <input type="text" id="rappAzureUrl" value="https://rapp-ov4bzgynnlvii.azurewebsites.net">
+                <label>Function Key:</label>
+                <input type="password" id="rappFuncKey" value="">
+                <label>Local URL:</label>
+                <input type="text" id="rappLocalUrl" value="http://localhost:7071">
+                <hr style="border-color:rgba(255,255,255,0.1);margin:8px 0;">
+                <label style="font-weight:600;">PA D365 Flow URLs:</label>
+                <label>Notification Flow:</label>
+                <input type="text" id="paFlowNotify" placeholder="PA HTTP URL">
+                <label>Create Case Flow:</label>
+                <input type="text" id="paFlowCase" placeholder="PA HTTP URL">
+                <label>SLA Breach Flow:</label>
+                <input type="text" id="paFlowSla" placeholder="PA HTTP URL">
+                <button onclick="saveFlowConfig()" class="config-save">💾 Save</button>
+            </div>
+        </details>
+
+        </div>
+    </aside>
+
+    
+    <script>
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
+        }
+
+        // Copy to clipboard function for Copilot prompts
+        function copyToClipboard(element) {
+            const text = element.innerText.replace(/^[🚨🚪📄📈🔧]\s*/, '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const original = element.style.background;
+                element.style.background = '#c8e6c9';
+                element.style.transition = 'background 0.3s';
+                setTimeout(() => {
+                    element.style.background = original;
+                }, 500);
+            });
+        }
+
+        // Side navigation
+        const sideNav = document.getElementById('sideNav');
+        const navPin = document.getElementById('navPin');
+        const navBody = document.getElementById('navBody');
+        const navRestore = document.getElementById('navRestore');
+        
+        // Cheat sheet
+        const cheatSheet = document.getElementById('cheatSheet');
+        const cheatToggle = document.getElementById('cheatToggle');
+        const cheatRestore = document.getElementById('cheatRestore');
+
+        // Build nav items from sections
+        document.querySelectorAll('.exec-section').forEach((section, idx) => {
+            const header = section.querySelector('.exec-header-text h3');
+            const number = section.querySelector('.exec-number');
+            if (header) {
+                const item = document.createElement('div');
+                item.className = 'side-nav-item';
+                item.innerHTML = `<div class="side-nav-num" style="background:${number ? getComputedStyle(number).background : '#0078D4'}">${idx + 1}</div><span>${header.textContent}</span>`;
+                item.onclick = () => {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    section.classList.add('open');
+                };
+                navBody.appendChild(item);
+            }
+        });
+
+        // Nav pin/hide
+        if (navPin) {
+            navPin.onclick = () => {
+                document.body.classList.add('nav-collapsed');
+            };
+        }
+        
+        // Nav restore (floating button)
+        if (navRestore) {
+            navRestore.onclick = () => {
+                document.body.classList.remove('nav-collapsed');
+            };
+        }
+        
+        // Cheat sheet hide
+        if (cheatToggle) {
+            cheatToggle.onclick = () => {
+                document.body.classList.add('cheat-collapsed');
+            };
+        }
+        
+        // Cheat sheet restore (floating button)
+        if (cheatRestore) {
+            cheatRestore.onclick = () => {
+                document.body.classList.remove('cheat-collapsed');
+            };
+        }
+
+        // Open first section by default
+        document.querySelector('.exec-section')?.classList.add('open');
+        
+        // Flow config persistence
+        function loadFlowConfig() {
+            const saved = localStorage.getItem('demoSimFlowConfig');
+            if (saved) {
+                try {
+                    const config = JSON.parse(saved);
+                    if (document.getElementById('emailFlowUrl')) document.getElementById('emailFlowUrl').value = config.email || '';
+                    if (document.getElementById('chatFlowUrl')) document.getElementById('chatFlowUrl').value = config.chat || '';
+                    if (document.getElementById('voiceFlowUrl')) document.getElementById('voiceFlowUrl').value = config.voice || '';
+                } catch (e) {}
+            }
+        }
+        
+        function saveFlowConfig() {
+            const config = {
+                email: document.getElementById('emailFlowUrl')?.value || '',
+                chat: document.getElementById('chatFlowUrl')?.value || '',
+                voice: document.getElementById('voiceFlowUrl')?.value || ''
+            };
+            localStorage.setItem('demoSimFlowConfig', JSON.stringify(config));
+            updateStatus('Config saved!', 'success');
+        }
+        
+        function updateStatus(message, type = 'success') {
+            const status = document.getElementById('simStatus');
+            if (status) {
+                status.textContent = message;
+                status.className = 'sim-status ' + type;
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadFlowConfig);
+    </script>
+    
+    <script>
+        // Demo Simulation Control Panel Script
+        
+        // Default payloads from demo story
+        const defaultPayloads = {
+            email: {"channel": "email", "delay_seconds": 0, "sender_name": "Sophie Williams", "sender_identifier": "s.williams@westfield.co.uk", "message": "Hi,\n\nI'm writing about the escalator at the main atrium entrance (Unit ESC-003). It has been out of service for two days now and is causing significant congestion during peak hours.\n\nCan you please provide an update on the repair timeline? We have a large retail event this weekend and need it operational.\n\nRegards,\nSophie Williams\nBuilding Operations Manager\nWestfield London Shopping Centre", "subject": "URGENT - Escalator ESC-003 Out of Service - Westfield London", "sentiment": "concerned", "attachments": null, "metadata": null},
+            chat: {"channel": "chat", "delay_seconds": 0, "sender_name": "David Chen", "sender_identifier": "d.chen@westfield.co.uk", "message": "Hi, this is David Chen from Westfield London. We're getting intermittent door faults on the Gen2 elevator in the east wing — Unit ELV-017. It's been happening since this morning. Can someone look into it?", "subject": null, "sentiment": "neutral", "attachments": null, "metadata": null},
+            voice: {"channel": "voice", "delay_seconds": 0, "sender_name": "James Morrison", "sender_identifier": "+44-20-7946-0958", "message": "This is James Morrison, Centre Manager at Westfield London Shopping Centre. We have a passenger trapped in one of our elevators — Unit ELV-012 in the north tower. We need an engineer dispatched immediately.", "subject": null, "sentiment": "urgent", "attachments": null, "metadata": null}
+        };
+        
+        // Load saved flow URLs from localStorage
+        function loadFlowConfig() {
+            const saved = localStorage.getItem('demoSimFlowConfig');
+            if (saved) {
+                const config = JSON.parse(saved);
+                document.getElementById('emailFlowUrl').value = config.email || '';
+                document.getElementById('chatFlowUrl').value = config.chat || '';
+                document.getElementById('voiceFlowUrl').value = config.voice || '';
+            }
+        }
+        
+        // Save flow URLs to localStorage
+        function saveFlowConfig() {
+            const config = {
+                email: document.getElementById('emailFlowUrl').value,
+                chat: document.getElementById('chatFlowUrl').value,
+                voice: document.getElementById('voiceFlowUrl').value
+            };
+            localStorage.setItem('demoSimFlowConfig', JSON.stringify(config));
+            updateStatus('Configuration saved!', 'success');
+        }
+        
+        // Toggle panel collapse
+        function toggleSimPanel() {
+            document.getElementById('simPanel').classList.toggle('collapsed');
+        }
+        
+        // Update status display
+        function updateStatus(message, type = 'success') {
+            const status = document.getElementById('simStatus');
+            status.textContent = message;
+            status.className = 'sim-status ' + type;
+        }
+        
+        // Trigger a simulation
+        async function triggerSimulation(channel) {
+            const urlInput = document.getElementById(channel + 'FlowUrl');
+            const url = urlInput ? urlInput.value : '';
+            
+            if (!url || url.includes('YOUR_')) {
+                updateStatus('⚠️ Configure ' + channel + ' flow URL first', 'error');
+                return;
+            }
+            
+            updateStatus('🔄 Triggering ' + channel + ' simulation...', 'pending');
+            
+            // Disable button during call
+            const buttons = document.querySelectorAll('.sim-btn');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            try {
+                const payload = defaultPayloads[channel] || {};
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    updateStatus('✅ ' + channel.charAt(0).toUpperCase() + channel.slice(1) + ' triggered successfully!', 'success');
+                } else {
+                    throw new Error('HTTP ' + response.status);
+                }
+            } catch (error) {
+                updateStatus('❌ Failed: ' + error.message, 'error');
+            } finally {
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+        
+        // Run full sequence
+        async function runFullSequence() {
+            updateStatus('🎬 Starting full demo sequence...', 'pending');
+            
+            const sequence = ['email', 'chat', 'voice'];
+            const delays = [0, 120000, 120000]; // 0, 2min, 2min
+            
+            for (let i = 0; i < sequence.length; i++) {
+                if (i > 0) {
+                    updateStatus('⏳ Waiting 2 minutes before ' + sequence[i] + '...', 'pending');
+                    await new Promise(resolve => setTimeout(resolve, delays[i]));
+                }
+                await triggerSimulation(sequence[i]);
+            }
+            
+            updateStatus('🎉 Full sequence complete!', 'success');
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadFlowConfig);
+    </script>
+
+    <script>
+    // ── D365 Action Panel Logic ──────────────────────────────
+    (function() {
+        "use strict";
+
+        let demoMode = "local";
+        const D365_STORAGE_KEY = "otisD365ActionConfig";
+
+        const D365_ACTIONS = {
+            send_notification: {
+                label: "Entrapment Alert",
+                local:  { method: "POST", path: "/api/demo/notification",
+                           body: { scenario: "NewCase",
+                                   recipient_email: "admin@D365DemoTSCE30330346.onmicrosoft.com",
+                                   case_title: "ENTRAPMENT - Riverside Medical Centre Elevator 3",
+                                   customer: "Riverside Medical Centre" } },
+                azure:  { method: "POST", path: "/api/demo/notification",
+                           body: { scenario: "NewCase",
+                                   recipient_email: "admin@D365DemoTSCE30330346.onmicrosoft.com",
+                                   case_title: "ENTRAPMENT - Riverside Medical Centre Elevator 3",
+                                   customer: "Riverside Medical Centre" } },
+                power_automate: { flowKey: "notification",
+                                  body: { scenario: "NewCase",
+                                          recipient_email: "admin@D365DemoTSCE30330346.onmicrosoft.com",
+                                          case_title: "ENTRAPMENT - Riverside Medical Centre Elevator 3",
+                                          customer: "Riverside Medical Centre" } }
+            },
+            create_case: {
+                label: "Create Entrapment Case",
+                local:  { method: "POST", path: "/api/demo/create-case",
+                           body: { title: "Entrapment - Passenger stuck in Elevator 3",
+                                   customer_name: "Riverside Medical Centre", priority: 1, origin: "phone",
+                                   description: "Patient transport staff trapped in Elevator 3 between floors 2 and 3. Bed elevator essential for patient movement. Hospital security on scene." } },
+                azure:  { method: "POST", path: "/api/demo/create-case",
+                           body: { title: "Entrapment - Passenger stuck in Elevator 3",
+                                   customer_name: "Riverside Medical Centre", priority: 1, origin: "phone",
+                                   description: "Patient transport staff trapped in Elevator 3 between floors 2 and 3. Bed elevator essential for patient movement. Hospital security on scene." } },
+                power_automate: { flowKey: "create_case",
+                                  body: { title: "Entrapment - Passenger stuck in Elevator 3",
+                                          customer_name: "Riverside Medical Centre", priority: 1, origin: 1 } }
+            },
+            sla_warning: {
+                label: "Marriott SLA Warning",
+                local:  { method: "POST", path: "/api/demo/sla-breach",
+                           body: { breach_type: "warning", send_notification: true,
+                                   case_number: "CAS-19129-N0B2P3" } },
+                azure:  { method: "POST", path: "/api/demo/sla-breach",
+                           body: { breach_type: "warning", send_notification: true,
+                                   case_number: "CAS-19129-N0B2P3" } },
+                power_automate: { flowKey: "sla_breach",
+                                  body: { breach_type: "warning", send_notification: true } }
+            },
+            sla_breach: {
+                label: "Marriott SLA Breach",
+                local:  { method: "POST", path: "/api/demo/sla-breach",
+                           body: { breach_type: "violated", send_notification: true,
+                                   case_number: "CAS-19129-N0B2P3" } },
+                azure:  { method: "POST", path: "/api/demo/sla-breach",
+                           body: { breach_type: "violated", send_notification: true,
+                                   case_number: "CAS-19129-N0B2P3" } },
+                power_automate: { flowKey: "sla_breach",
+                                  body: { breach_type: "violated", send_notification: true } }
+            },
+            ai_triage: {
+                label: "Triage Canary Wharf Door Issue",
+                local:  { method: "POST", path: "/api/demo/ai-triage",
+                           body: { action: "triage_case", customer: "Canary Wharf Tower",
+                                   case_title: "Recurring Door Issue - Tower A Elevator 12" } },
+                azure:  { method: "POST", path: "/api/demo/ai-triage",
+                           body: { action: "triage_case", customer: "Canary Wharf Tower",
+                                   case_title: "Recurring Door Issue - Tower A Elevator 12" } },
+                power_automate: null
+            }
+        };
+
+        function d365Log(msg, type) {
+            var log = document.getElementById("d365Log");
+            if (!log) return;
+            var ts = new Date().toLocaleTimeString();
+            var cls = type === "error" ? "log-err" : type === "success" ? "log-ok" : "log-info";
+            log.innerHTML += '<div class="' + cls + '">[' + ts + '] ' + msg + '</div>';
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function d365Status(msg, type) {
+            var s = document.getElementById("d365Status");
+            if (s) { s.textContent = msg; s.className = "sim-status " + (type || ""); }
+        }
+
+        window.setDemoMode = function(mode) {
+            demoMode = mode;
+            document.querySelectorAll(".mode-btn").forEach(function(b) {
+                b.classList.toggle("active", b.dataset.mode === mode);
+            });
+            var labels = { local: "Local (localhost:7071)", azure: "Azure Function App", power_automate: "Power Automate" };
+            d365Status("Mode: " + labels[mode]);
+            d365Log("Switched to " + labels[mode], "info");
+        };
+
+        window.fireD365Action = async function(actionKey) {
+            var action = D365_ACTIONS[actionKey];
+            if (!action) { d365Status("Unknown: " + actionKey, "error"); return; }
+
+            var spec = action[demoMode];
+            if (!spec && demoMode === "power_automate") {
+                spec = action.azure;
+                d365Log(action.label + ": no PA flow, falling back to Azure", "info");
+            }
+            if (!spec) { d365Status("No config for " + actionKey, "error"); return; }
+
+            d365Status("Firing " + action.label + "...", "pending");
+            d365Log("→ " + action.label + " [" + demoMode + "]", "info");
+
+            document.querySelectorAll(".d365-btn").forEach(function(b) { b.disabled = true; });
+
+            try {
+                var url, headers = { "Content-Type": "application/json" }, body = spec.body;
+
+                if (demoMode === "power_automate" && spec.flowKey) {
+                    var flowMap = {
+                        notification: document.getElementById("paFlowNotify"),
+                        create_case: document.getElementById("paFlowCase"),
+                        sla_breach: document.getElementById("paFlowSla")
+                    };
+                    var el = flowMap[spec.flowKey];
+                    url = el ? el.value : "";
+                    if (!url) throw new Error("Configure " + spec.flowKey + " PA flow URL in settings");
+                } else {
+                    var base = (demoMode === "local")
+                        ? (document.getElementById("rappLocalUrl")?.value || "http://localhost:7071")
+                        : (document.getElementById("rappAzureUrl")?.value || "https://rapp-ov4bzgynnlvii.azurewebsites.net");
+                    url = base + spec.path;
+                    var key = document.getElementById("rappFuncKey")?.value;
+                    if (key && demoMode === "azure") { url += (url.includes("?") ? "&" : "?") + "code=" + encodeURIComponent(key); }
+                }
+
+                var resp = await fetch(url, { method: spec.method || "POST", headers: headers, body: JSON.stringify(body) });
+
+                if (resp.ok) {
+                    var result = await resp.json().catch(function() { return {}; });
+                    d365Status("✅ " + action.label + " succeeded", "");
+                    d365Log("✅ " + action.label + ": " + (result.message || result.status || "OK"), "success");
+                } else {
+                    throw new Error("HTTP " + resp.status + " " + resp.statusText);
+                }
+            } catch (err) {
+                d365Status("❌ " + action.label + ": " + err.message, "error");
+                d365Log("❌ " + action.label + ": " + err.message, "error");
+            } finally {
+                document.querySelectorAll(".d365-btn").forEach(function(b) { b.disabled = false; });
+            }
+        };
+
+        // Load saved D365 config
+        document.addEventListener('DOMContentLoaded', function() {
+            var raw = localStorage.getItem(D365_STORAGE_KEY);
+            if (!raw) return;
+            try {
+                var cfg = JSON.parse(raw);
+                if (cfg.mode) setDemoMode(cfg.mode);
+                if (cfg.rappAzureUrl) document.getElementById("rappAzureUrl").value = cfg.rappAzureUrl;
+                if (cfg.rappFuncKey) document.getElementById("rappFuncKey").value = cfg.rappFuncKey;
+                if (cfg.rappLocalUrl) document.getElementById("rappLocalUrl").value = cfg.rappLocalUrl;
+            } catch(e) { /* ignore */ }
+        });
+
+        // Extend saveFlowConfig to also save D365 config
+        var origSave = window.saveFlowConfig;
+        window.saveFlowConfig = function() {
+            if (origSave) origSave();
+            var d365Cfg = {
+                mode: demoMode,
+                rappAzureUrl: document.getElementById("rappAzureUrl")?.value || "",
+                rappFuncKey: document.getElementById("rappFuncKey")?.value || "",
+                rappLocalUrl: document.getElementById("rappLocalUrl")?.value || ""
+            };
+            localStorage.setItem(D365_STORAGE_KEY, JSON.stringify(d365Cfg));
+        };
+    })();
+    </script>
+
+
+</body>
+</html>

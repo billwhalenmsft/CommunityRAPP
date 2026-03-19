@@ -2626,6 +2626,144 @@
         </div>
 
         <!-- ===================================================================== -->
+        <!-- SECTION 3k: QUICK QUOTE - PRODUCT PICKER -->
+        <!-- ===================================================================== -->
+
+        <div class="exec-section border-solve">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-solve">3k</div>
+                <div class="exec-header-text">
+                    <h3>Quick Quote &mdash; Product Picker</h3>
+                    <div class="exec-purpose">Build quotes from the product catalog with real-time pricing</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="callout info"><strong>Status:</strong> &#9989; Built &mdash; 2 screens (Product Picker + Quote Review). Custom Page in the D365 productivity pane.</div>
+
+                    <p style="font-size:0.86rem; margin:8px 0;">Power Apps Custom Page providing on-the-fly quoting directly in the agent workspace. Supports two modes: <strong>Core Products</strong> (filtered by Zurn/Elkay brand) and <strong>Aftermarket Parts</strong> (filtered by parts price list).</p>
+
+                    <div class="sub-header">2-Screen Flow</div>
+                    <table>
+                        <thead>
+                            <tr><th>#</th><th>Screen</th><th>What it does</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><strong>Product Picker</strong> (scrQuickQuote)</td>
+                                <td>Select product type, brand/price list, customer, add lines with real-time price lookup from Price List Items</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><strong>Quote Review</strong> (scrQuoteReview)</td>
+                                <td>Review line items, grand total, save to D365 Quotes &amp; Quote Lines</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="sub-header">Demo Flow</div>
+                    <ol style="margin:0 0 12px 20px; font-size:0.86rem; line-height:1.8;">
+                        <li>Click Quick Quote card on the Home screen</li>
+                        <li>Product Type = <strong>Core Products</strong>, Brand = <strong>Zurn</strong></li>
+                        <li>Select customer (e.g., Ferguson Enterprises)</li>
+                        <li>Search for a product &mdash; price auto-populates from Price List Items</li>
+                        <li>Set quantity, click <strong>+ Add Line</strong></li>
+                        <li>Add 2&ndash;3 lines, review grand total</li>
+                        <li>Click <strong>Review Quote &rarr;</strong> to see summary</li>
+                    </ol>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Instead of asking the customer to hold while you switch to a separate quoting tool, the agent builds quotes right here in the same workspace. Pricing comes directly from the product catalog &mdash; no spreadsheets, no copy-paste errors.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout roi">
+                        <strong>Value Point:</strong> Agents can create accurate quotes during the call instead of promising to &ldquo;email it later.&rdquo; Faster quote turnaround = higher conversion.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION 3l: SETTINGS & WARRANTY MODE -->
+        <!-- ===================================================================== -->
+
+        <div class="exec-section border-solve">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-solve">3l</div>
+                <div class="exec-header-text">
+                    <h3>Settings &amp; Warranty Mode Toggle</h3>
+                    <div class="exec-purpose">Admin config &mdash; switch between Equipment (Otis) and Serial Warranty (Zurn) modes</div>
+                </div>
+                <div class="exec-time">~2 min</div>
+                <div class="exec-expand">&#9660;</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="callout info"><strong>Status:</strong> &#9989; Built. Settings screen (scrSettings) accessible via the gear icon on the Home screen. Controls which warranty experience Card 5 displays.</div>
+
+                    <p style="font-size:0.86rem; margin:8px 0;">The Service Toolkit Home screen has a dynamic <strong>Card 5</strong> that changes based on the <code>varWarrantyMode</code> variable:</p>
+
+                    <table>
+                        <thead>
+                            <tr><th>Mode</th><th>Card 5 Label</th><th>Navigation Target</th><th>Data Source</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>equipment</code> (default)</td>
+                                <td>Equipment &amp; Warranty</td>
+                                <td>scrEquipWarranty</td>
+                                <td>Customer Assets (msdyn_customerasset)</td>
+                            </tr>
+                            <tr>
+                                <td><code>serial</code></td>
+                                <td>Serial Warranty Lookup</td>
+                                <td>scrSerialWarranty</td>
+                                <td>Product Serials (cr74e_productserial)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="sub-header">When to Toggle</div>
+                    <ul style="margin:0 0 12px 20px; font-size:0.86rem; line-height:1.8;">
+                        <li><strong>Zurn demo:</strong> Set to <code>serial</code> &mdash; shows serial number-based warranty lookup for plumbing products</li>
+                        <li><strong>Otis demo:</strong> Set to <code>equipment</code> &mdash; shows location-based equipment with contract type, service history</li>
+                    </ul>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">
+                            On the Home screen, click the <strong>gear icon (&#9881;&#65039;)</strong> in the top-right corner to open Settings.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            The Settings screen shows the current warranty mode with a simple toggle. Selecting a mode updates <code>varWarrantyMode</code> and returns to the Home screen where Card 5 reflects the change.
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>This shared toolkit is used across different customer verticals. A simple config toggle adapts the warranty experience &mdash; Otis uses equipment-based lookup tied to building locations, Zurn uses serial-based lookup tied to distributor POs. Same agent workspace, different industry context.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
         <!--  C A R E   L E A D E R   V I E W                                     -->
         <!-- ===================================================================== -->
         <h2
@@ -3919,7 +4057,7 @@
                 <div class="exec-number" style="background:#546e7a;">A</div>
                 <div class="exec-header-text">
                     <h3>Queues, Entitlements, Serial Numbers &amp; Warranty</h3>
-                    <div class="exec-purpose">18 queues &bull; 13 entitlements &bull; 7 serials</div>
+                    <div class="exec-purpose">18 queues &bull; 13 entitlements &bull; 45 product serials</div>
                 </div>
                 <div class="exec-expand">&#9660;</div>
             </div>
@@ -3965,61 +4103,160 @@
                     </table>
                     <p style="font-size:0.82rem; color:#666;">SLA: 4 hr first response, 8 hr resolution, M-F 8am-5pm</p>
 
-                    <div class="sub-header">Serial Numbers &amp; Warranty</div>
+                    <div class="sub-header">Product Serials &amp; Warranty (45 total)</div>
+                    <p style="font-size:0.82rem; color:#666;">8 original seed serials + 37 provisioned via <code>27-ProductSerials.ps1</code> from <code>demo-data.json</code>. Covers 10 distributor accounts across all tiers.</p>
+
+                    <div class="sub-header" style="font-size:0.9rem;">&#127919; Demo-Ready Serials (Best for Live Demo)</div>
                     <table>
                         <thead>
                             <tr>
+                                <th>Scenario</th>
                                 <th>Serial Number</th>
                                 <th>Product</th>
+                                <th>Customer</th>
                                 <th>Status</th>
                                 <th>Warranty End</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>234567ABC</code></td>
-                                <td>AquaVantage Flush Valve</td>
+                                <td>&#9989; Active (Hero)</td>
+                                <td><code>ZRN-2025-20200</code></td>
+                                <td>Zurn AquaSense Sensor Faucet</td>
+                                <td>Ferguson Enterprises</td>
                                 <td style="color:#2e7d32; font-weight:600;">ACTIVE</td>
                                 <td>2028-01-10</td>
                             </tr>
                             <tr>
-                                <td><code>123456ABC</code></td>
-                                <td>EZH2O Bottle Filling Station</td>
+                                <td>&#9989; Active (Elkay)</td>
+                                <td><code>ELK-2024-50100</code></td>
+                                <td>Elkay EZH2O Bottle Filling Station</td>
+                                <td>Ferguson Enterprises</td>
                                 <td style="color:#2e7d32; font-weight:600;">ACTIVE</td>
-                                <td>2027-06-15</td>
+                                <td>2027-03-01</td>
                             </tr>
                             <tr>
-                                <td><code>ZRN-2024-10583</code></td>
-                                <td>Wilkins 975XL Backflow</td>
+                                <td>&#9989; Active (Backflow)</td>
+                                <td><code>ZRN-2025-40100</code></td>
+                                <td>Zurn Wilkins 975XL Backflow Preventer</td>
+                                <td>Hajoca Corporation</td>
                                 <td style="color:#2e7d32; font-weight:600;">ACTIVE</td>
-                                <td>2029-03-20</td>
+                                <td>2030-01-20</td>
                             </tr>
                             <tr>
-                                <td><code>ZRN-2025-20091</code></td>
-                                <td>Sensor Faucet Commercial</td>
-                                <td style="color:#2e7d32; font-weight:600;">ACTIVE</td>
-                                <td>2030-01-05</td>
+                                <td>&#9888;&#65039; Expiring Soon</td>
+                                <td><code>ZRN-2023-20600</code></td>
+                                <td>Zurn AquaSense Sensor Faucet</td>
+                                <td>Southern Pipe &amp; Supply</td>
+                                <td style="color:#ef6c00; font-weight:600;">EXPIRING</td>
+                                <td>2026-04-01</td>
                             </tr>
                             <tr>
-                                <td><code>ZRN-2025-30044</code></td>
-                                <td>Hydrant Repair Kit</td>
-                                <td style="color:#2e7d32; font-weight:600;">ACTIVE</td>
-                                <td>2029-11-15</td>
+                                <td>&#9888;&#65039; Expiring Soon</td>
+                                <td><code>ELK-2023-50600</code></td>
+                                <td>Elkay EZH2O Bottle Filling Station</td>
+                                <td>Southern Pipe &amp; Supply</td>
+                                <td style="color:#ef6c00; font-weight:600;">EXPIRING</td>
+                                <td>2026-05-15</td>
                             </tr>
                             <tr>
-                                <td><code>ELK-2021-08832</code></td>
-                                <td>Wall Mount Cooler</td>
+                                <td>&#10060; Expired</td>
+                                <td><code>ZRN-2021-10500</code></td>
+                                <td>Zurn AquaVantage AV Flush Valve</td>
+                                <td>Midwest Pipe &amp; Supply</td>
                                 <td style="color:#e53935; font-weight:600;">EXPIRED</td>
-                                <td>2024-08-15</td>
+                                <td>2024-03-01</td>
                             </tr>
                             <tr>
-                                <td><code>ELK-2023-00471</code></td>
-                                <td>Floor Mount Drinking Fountain</td>
+                                <td>&#10060; Expired</td>
+                                <td><code>ELK-2021-50500</code></td>
+                                <td>Elkay LZSTL8 Bi-Level Drinking Fountain</td>
+                                <td>Midwest Pipe &amp; Supply</td>
                                 <td style="color:#e53935; font-weight:600;">EXPIRED</td>
-                                <td>2025-12-01</td>
+                                <td>2024-06-15</td>
                             </tr>
                         </tbody>
                     </table>
+
+                    <div class="sub-header" style="font-size:0.9rem;">Full Distribution by Account</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Distributor</th>
+                                <th>Tier</th>
+                                <th>Serials</th>
+                                <th>Products</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ferguson Enterprises</td>
+                                <td><span class="tier-pill t1">Tier 1</span></td>
+                                <td>10</td>
+                                <td>AquaVantage, AquaSense, EZH2O, Liv, Trench Drain, Roof Drain</td>
+                            </tr>
+                            <tr>
+                                <td>Hajoca Corporation</td>
+                                <td><span class="tier-pill t1">Tier 1</span></td>
+                                <td>6</td>
+                                <td>AquaVantage, AquaSense, Wilkins 975XL, Lustertone Sinks</td>
+                            </tr>
+                            <tr>
+                                <td>HD Supply</td>
+                                <td><span class="tier-pill t2">Tier 2</span></td>
+                                <td>4</td>
+                                <td>AquaSense, EZH2O, Water Sentry Filter</td>
+                            </tr>
+                            <tr>
+                                <td>Pacific Plumbing Supply</td>
+                                <td><span class="tier-pill t2">Tier 2</span></td>
+                                <td>3</td>
+                                <td>AquaFlush Urinal, Z1000 Floor Drain</td>
+                            </tr>
+                            <tr>
+                                <td>Winsupply Inc.</td>
+                                <td><span class="tier-pill t2">Tier 2</span></td>
+                                <td>3</td>
+                                <td>Water Sentry Filter, EZH2O</td>
+                            </tr>
+                            <tr>
+                                <td>Consolidated Supply Co.</td>
+                                <td><span class="tier-pill t3">Tier 3</span></td>
+                                <td>2</td>
+                                <td>AquaSense, AquaVantage</td>
+                            </tr>
+                            <tr>
+                                <td>ABC Plumbing Wholesale</td>
+                                <td><span class="tier-pill t3">Tier 3</span></td>
+                                <td>2</td>
+                                <td>EZH2O, Bi-Level Fountain</td>
+                            </tr>
+                            <tr>
+                                <td>Gateway Supply Company</td>
+                                <td><span class="tier-pill t3">Tier 3</span></td>
+                                <td>2</td>
+                                <td>Trench Drain, Roof Drain</td>
+                            </tr>
+                            <tr>
+                                <td>Midwest Pipe &amp; Supply</td>
+                                <td style="color:#e53935;">Expired</td>
+                                <td>3</td>
+                                <td>AquaVantage, Bi-Level Fountain, Lustertone Sink</td>
+                            </tr>
+                            <tr>
+                                <td>Southern Pipe &amp; Supply</td>
+                                <td style="color:#ef6c00;">Expiring</td>
+                                <td>2</td>
+                                <td>AquaSense, EZH2O</td>
+                            </tr>
+                            <tr style="font-weight:600; background:#f5f5f5;">
+                                <td colspan="2">Original seed serials</td>
+                                <td>8</td>
+                                <td>234567ABC, 123456ABC, plus 5 others</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size:0.82rem; color:#666;">Serial pattern: <code>ZRN-YYYY-XXXXX</code> (Zurn), <code>ELK-YYYY-XXXXX</code> (Elkay). Data source: <code>cr74e_productserials</code> entity.</p>
                 </div>
             </div>
         </div>
@@ -4093,6 +4330,10 @@
                                 <td>~30 (Zurn + Elkay + Wilkins)</td>
                             </tr>
                             <tr>
+                                <td>Product Serials</td>
+                                <td>45 (8 seed + 37 provisioned across 10 distributors)</td>
+                            </tr>
+                            <tr>
                                 <td>Hot words</td>
                                 <td>6 (Urgent, Emergency, Recall, Safety, Legal, Next Day Air)</td>
                             </tr>
@@ -4103,6 +4344,10 @@
                             <tr>
                                 <td>SLA: Resolution</td>
                                 <td>8 business hours</td>
+                            </tr>
+                            <tr>
+                                <td>Toolkit screens</td>
+                                <td>10 (Home, Quick Actions, Agent Scripts, Order Lookup/Lines/Review/Confirm, Quick Quote/Review, Settings)</td>
                             </tr>
                         </tbody>
                     </table>
@@ -4140,7 +4385,7 @@
     </div>
 
     <footer>
-        Zurn / Elkay &mdash; Demo Execution Guide (Click-by-Click) &bull; March 12, 2026 &bull; Confidential<br>
+        Zurn / Elkay &mdash; Demo Execution Guide (Click-by-Click) &bull; March 17, 2026 &bull; Confidential<br>
         Pairs with: Demo Plan Review &bull; Source: demo-execution-guide.md
     </footer>
 

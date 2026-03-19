@@ -1,0 +1,33 @@
+# Demo Action: Create D365 Case via RAPP
+# Use via: POST /api/trigger/manual/demo_create_case
+# Or via: POST /api/trigger/copilot-studio with agent/action
+
+name: demo_create_case
+description: Create a new case in D365 Customer Service for demo purposes
+trigger_type: manual
+enabled: true
+
+target_agent: d365_demo_prep
+target_action: provision_data
+
+message_template: |
+  Create a new D365 case for demo.
+  Title: {{title}}
+  Customer: {{customer_name}}
+  Priority: {{priority}}
+  Origin: {{origin}}
+
+body_mapping:
+  action: provision_data
+  title: title
+  description: description
+  customer_name: customer_name
+  contact_email: contact_email
+  priority: priority
+  origin: origin
+  case_type: case_type
+
+filters: []
+
+max_retries: 1
+retry_delay_seconds: 5

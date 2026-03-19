@@ -1,0 +1,103 @@
+{
+  "agent_name": "WorkbenchOrchestrator",
+  "agent_id": "sma4_workbench_orchestrator",
+  "description": "Persona Workbench / Cockpit Agent for D365 Sales Prospect-to-Quote pipeline. Assembles persona-specific cockpit views with pipeline state, prioritised tasks, exceptions, approvals, and handoff tracking.",
+  "category": "Sales & Marketing",
+  "module": "Prospect to Quote",
+  "sma_id": "SMA4",
+  "value": "Low",
+  "complexity": "Low",
+  "personas": ["sales_rep", "coordinator", "marketing", "manager"],
+  "demo_conversations": [
+    {
+      "title": "Sales Rep — Morning Cockpit",
+      "persona": "sales_rep",
+      "exchanges": [
+        {
+          "user": "Show me my cockpit view",
+          "agent_action": {"action": "get_cockpit_view", "persona": "sales_rep"},
+          "response": "Good morning Sarah! Here's your workbench:\n\n📊 **Pipeline**: 3 active deals worth $600K\n- Contoso ERP ($320K) — Propose stage, 6 days in, on track\n- Fabrikam CRM ($185K) — Develop stage, 18 days in, ⚠️ AT RISK\n- Northwind Data ($95K) — Qualify stage, 4 days in, on track\n\n✅ **Top Tasks**:\n1. Prepare Contoso proposal deck (due 3/21) — HIGH\n2. Follow up with Fabrikam on tech requirements (due 3/20) — HIGH\n3. Schedule Northwind discovery call (due 3/24)\n\n🤝 **Handoffs**:\n- Waiting on Mike Torres (Coordinator) to finish Contoso quote assembly\n- Fabrikam discount escalation sent to James Harrison (VP)\n\n⚠️ **Alerts**:\n- Fabrikam deal at risk — 18 days in Develop (SLA: 21 days)\n- Fabrikam 18% discount pending VP approval"
+        },
+        {
+          "user": "What's going on with the Fabrikam deal?",
+          "agent_action": {"action": "get_opportunity_detail", "persona": "sales_rep", "opportunity_id": "opp-002"},
+          "response": "**Fabrikam — CRM Rollout** ($185K)\n\n📍 Stage: Develop (18 of 21 SLA days used)\n👤 Owner: You (Sarah Chen)\n🏢 Account: Fabrikam Inc\n📣 Source: LinkedIn ABM campaign\n\n**Issues:**\n- ❌ Decision maker field is empty — needs to be filled before Propose\n- ⚠️ Quote QT-2026-0039 has 18% discount (threshold: 15%)\n- 📋 Discount approval sent to VP James Harrison 2 days ago — still pending\n\n**Recommended Actions:**\n1. Fill in decision maker contact\n2. Follow up with James on the discount approval\n3. Get the technical requirements pinned down before SLA breach in 3 days"
+        },
+        {
+          "user": "Hand off the Contoso quote prep to the coordinator",
+          "agent_action": {"action": "initiate_handoff", "persona": "sales_rep", "handoff_type": "SALES_TO_COORDINATOR", "opportunity_id": "opp-001", "context": "Customer expects proposal by 3/21. Pricing approved."},
+          "response": "✅ **Handoff initiated**\n\n📤 From: You (Sarah Chen)\n📥 To: Mike Torres (Coordinator)\n📋 Deal: Contoso — ERP Modernization\n💬 Context: Customer expects proposal by 3/21. Pricing approved.\n⏱️ SLA: 8 hours for acceptance\n\nMike will see this in his incoming handoff queue. I'll alert you when he accepts."
+        }
+      ]
+    },
+    {
+      "title": "Sales Manager — Approval & Exception Review",
+      "persona": "manager",
+      "exchanges": [
+        {
+          "user": "What needs my attention today?",
+          "agent_action": {"action": "get_cockpit_view", "persona": "manager"},
+          "response": "Good morning James. Here's your executive cockpit:\n\n📊 **Team Pipeline**: 5 deals worth $1.21M across 4 stages\n\n📋 **Pending Approvals** (2):\n1. 🔴 Fabrikam CRM — 18% discount ($185K) — Sarah Chen — 48+ hours pending ⚠️ SLA BREACH\n2. 🟡 Adventure Works FS — $540K high-value sign-off — Lisa Park — 96+ hours pending ⚠️ SLA BREACH\n\n⚠️ **Exceptions** (6 total):\n- 🛑 1 CRITICAL: Adventure Works on credit hold ($410K balance vs $400K limit)\n- 🔴 2 HIGH: Stalled deal + discount breach\n- 🟡 3 MEDIUM: Missing fields + close date slips\n\n🤝 **Handoffs**: Fabrikam discount waiting your review\n\n**Priority Actions:**\n1. Approve or counter Fabrikam discount (SLA breached)\n2. Review Adventure Works — deal blocked by credit hold\n3. Review team pipeline velocity (2 at-risk deals)"
+        },
+        {
+          "user": "Approve the Fabrikam discount",
+          "agent_action": {"action": "route_approval", "persona": "manager", "approval_id": "apr-001", "context": "approve"},
+          "response": "✅ **Approved**: Fabrikam CRM Rollout — 18% discount\n\nQuote QT-2026-0039 is now cleared for delivery.\n\n**Next steps:**\n- Sarah Chen has been notified\n- Quote can be sent to Fabrikam\n- Handoff back to Sarah is in progress"
+        },
+        {
+          "user": "Show me the full exception scan",
+          "agent_action": {"action": "get_exceptions", "persona": "manager"},
+          "response": "**Exception Scan** — 6 issues found\n\n🛑 **CRITICAL** (1):\n- Adventure Works — CREDIT HOLD — Balance $410K exceeds $400K limit\n  → Action: Resolve with Finance before advancing quote\n\n🔴 **HIGH** (3):\n- Adventure Works — STALLED 22 days in Propose (SLA: 14)\n  → Action: Escalate or advance — 8 days past SLA\n- Fabrikam — DISCOUNT 18% exceeds 15% threshold\n  → Action: ✅ Just approved\n- Fabrikam — APPROVAL SLA breached (48+ hours)\n  → Action: ✅ Just resolved\n\n🟡 **MEDIUM** (2):\n- Fabrikam — MISSING FIELDS: decision_maker empty at Develop stage\n- Adventure Works — CLOSE DATE SLIP: Estimated 3/10, now 9 days past"
+        }
+      ]
+    },
+    {
+      "title": "Coordinator — Quote Prep Queue",
+      "persona": "coordinator",
+      "exchanges": [
+        {
+          "user": "Show me my work queue",
+          "agent_action": {"action": "get_cockpit_view", "persona": "coordinator"},
+          "response": "Hey Mike, here's your Deal Desk queue:\n\n📊 **Deals in Quote/Close**: 2 deals requiring your attention\n- Contoso ERP ($320K) — Propose — quote assembly in progress\n- Adventure Works FS ($540K) — Propose — ⛔ BLOCKED by credit hold\n\n✅ **Tasks** (2):\n1. Generate quote for Contoso ERP v2 (due 3/20) — HIGH, $320K deal\n2. Send revised SOW to Adventure Works (due 3/20) — HIGH, $540K deal\n\n🤝 **Handoffs**:\n- Incoming from Sarah Chen: Contoso quote assembly (in progress)\n- Outgoing to Lisa Park: Adventure Works quote (BLOCKED — credit hold)\n\n⚠️ **Blockers**:\n- Adventure Works — credit hold must be resolved before quote delivery"
+        },
+        {
+          "user": "What's the status of my handoff to Lisa Park?",
+          "agent_action": {"action": "get_handoffs", "persona": "coordinator"},
+          "response": "**Your Handoffs:**\n\n📥 **Incoming** (1):\n- Contoso ERP from Sarah Chen — IN PROGRESS\n  - Checklist: 2/4 items done (line items ✅, T&C ✅, credit check ⬜, PDF ⬜)\n\n📤 **Outgoing** (1):\n- Adventure Works FS to Lisa Park — ⛔ BLOCKED\n  - Checklist: 2/4 items done (quote ✅, legal ✅, credit ❌, deliver ⬜)\n  - Blocker: Account on credit hold — balance $410K exceeds $400K limit\n  - **Action needed**: Resolve credit hold with Finance team"
+        }
+      ]
+    },
+    {
+      "title": "Marketing — Campaign Pipeline",
+      "persona": "marketing",
+      "exchanges": [
+        {
+          "user": "How are my campaigns performing in the pipeline?",
+          "agent_action": {"action": "get_pipeline", "persona": "marketing"},
+          "response": "**Campaign Attribution Pipeline:**\n\n📣 **Webinar — Cloud Migration**: 2 deals, $392K\n- Contoso ERP ($320K) — Propose stage ✅\n- WingTip Toys ($72K) — Close stage ✅\n\n📣 **LinkedIn ABM**: 1 deal, $185K\n- Fabrikam CRM ($185K) — Develop stage ⚠️ at risk\n\n📣 **Inbound — Website**: 1 deal, $95K\n- Northwind Data ($95K) — Qualify stage, new\n\n📣 **Partner Referral**: 1 deal, $540K\n- Adventure Works FS ($540K) — Propose stage, stalled\n\n**Summary**: 5 deals, $1.21M total pipeline sourced from 4 campaigns.\nWebinar is your top performer — 2 deals in late stages worth $392K."
+        },
+        {
+          "user": "Did the Northwind MQL hand off to sales properly?",
+          "agent_action": {"action": "get_handoffs", "persona": "marketing"},
+          "response": "✅ **Northwind MQL handoff completed successfully**\n\n📤 You → Sarah Chen (Sales Rep)\n📅 Initiated: March 14, accepted same day, completed March 15\n\n**Checklist**: 3/3 ✅\n- ✅ MQL scoring and lead source reviewed\n- ✅ Discovery call scheduled\n- ✅ Opportunity record created\n\nThe deal is now in Qualify stage with Sarah. Estimated value: $95K."
+        }
+      ]
+    },
+    {
+      "title": "System — Architecture & Health",
+      "persona": "manager",
+      "exchanges": [
+        {
+          "user": "Show me the system architecture",
+          "agent_action": {"action": "get_architecture", "persona": "manager"},
+          "response": "**Persona Workbench / Cockpit (SMA4)**\nModule: D365 Sales — Prospect to Quote\n\n```\n  L0  Workbench Orchestrator\n   ├── L1  Workflow State Agent    (pipeline, quotes, stages)\n   ├── L1  Task Queue Agent        (prioritised work lists)\n   ├── L1  Exception Monitor Agent (6 anomaly detectors)\n   ├── L1  Approval Router Agent   (matrix routing + delegation)\n   └── L1  Handoff Coordinator Agent (cross-role transitions)\n```\n\n**4 Personas**: Sales Rep, Coordinator, Marketing, Manager\n**BPF**: Qualify → Develop → Propose → Close\n**Data**: D365 Sales (CRM) + D365 F&O (ERP, stubbed)"
+        },
+        {
+          "user": "Run a health check",
+          "agent_action": {"action": "health_check", "persona": "manager"},
+          "response": "**System Health Check** ✅\n\n| Agent | Status |\n|-------|--------|\n| Workflow State | ✅ Healthy |\n| Task Queue | ✅ Healthy |\n| Exception Monitor | ✅ Healthy |\n| Approval Router | ✅ Healthy |\n| Handoff Coordinator | ✅ Healthy |\n\n**System Status**: All 5 L1 agents operational."
+        }
+      ]
+    }
+  ]
+}

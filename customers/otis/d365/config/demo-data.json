@@ -1,0 +1,512 @@
+{
+    "_metadata": {
+        "description": "Otis Elevator EMEA Demo Data - Contact Center Focus",
+        "customer": "Otis Elevator",
+        "project": "EMEA CCaaS",
+        "demoDate": "2026-03-20",
+        "focus": "Telephony Integration - Screen Pop, Embedded Dialer, Click-to-Call",
+        "regions": ["UK", "Italy"],
+        "note": "UK accounts with US phone numbers for demo purposes"
+    },
+
+    "serviceAccounts": {
+        "_note": "Buildings/Properties with Otis service contracts - these are the CUSTOMERS",
+        "accounts": [
+            {
+                "name": "Westfield London Shopping Centre",
+                "accountNumber": "OTIS-UK-001",
+                "type": "Retail/Shopping Center",
+                "tier": 1,
+                "contract": "Signature Service Premium",
+                "address": {
+                    "line1": "Ariel Way",
+                    "city": "London",
+                    "postalCode": "W12 7GF",
+                    "country": "UK"
+                },
+                "phone": "+1 310-277-3898",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "Gen2 Comfort", "count": 18, "serial": "GEN2-WL-001-018" },
+                    { "type": "Escalator", "model": "NCE", "count": 24, "serial": "NCE-WL-001-024" },
+                    { "type": "Moving Walkway", "model": "Travolator", "count": 4, "serial": "TRV-WL-001-004" }
+                ],
+                "totalUnits": 46,
+                "lastServiceDate": "2026-03-08",
+                "slaResponseTime": "2 hours",
+                "demoScenario": "High-profile retail - multiple units, escalator focus"
+            },
+            {
+                "name": "Canary Wharf Tower",
+                "accountNumber": "OTIS-UK-002",
+                "type": "Office Tower",
+                "tier": 1,
+                "contract": "Signature Service Premium",
+                "address": {
+                    "line1": "1 Canada Square",
+                    "city": "London",
+                    "postalCode": "E14 5AB",
+                    "country": "UK"
+                },
+                "phone": "+1 212-417-7000",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "SkyRise", "count": 32, "serial": "SKY-CW-001-032" },
+                    { "type": "Freight Elevator", "model": "Gen2 Premier", "count": 4, "serial": "G2P-CW-001-004" }
+                ],
+                "totalUnits": 36,
+                "lastServiceDate": "2026-03-05",
+                "slaResponseTime": "2 hours",
+                "demoScenario": "High-rise office - SkyRise elevators, destination dispatch"
+            },
+            {
+                "name": "Riverside Medical Centre",
+                "accountNumber": "OTIS-UK-003",
+                "type": "Hospital/Healthcare",
+                "tier": 1,
+                "contract": "Signature Service Premium",
+                "address": {
+                    "line1": "Wythenshawe Hospital Campus",
+                    "city": "Manchester",
+                    "postalCode": "M23 9LT",
+                    "country": "UK"
+                },
+                "phone": "+1 713-704-4000",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "Gen2 Life", "count": 12, "serial": "G2L-RM-001-012" },
+                    { "type": "Bed Elevator", "model": "Gen2 Premier", "count": 6, "serial": "G2P-RM-001-006" }
+                ],
+                "totalUnits": 18,
+                "lastServiceDate": "2026-03-10",
+                "slaResponseTime": "1 hour",
+                "demoScenario": "CRITICAL - Healthcare requires fastest response, bed elevators essential"
+            },
+            {
+                "name": "Birmingham New Street Station",
+                "accountNumber": "OTIS-UK-004",
+                "type": "Transportation Hub",
+                "tier": 1,
+                "contract": "Signature Service Premium",
+                "address": {
+                    "line1": "Station Street",
+                    "city": "Birmingham",
+                    "postalCode": "B2 4QA",
+                    "country": "UK"
+                },
+                "phone": "+1 212-340-2583",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "Gen2 Comfort", "count": 8, "serial": "G2C-BN-001-008" },
+                    { "type": "Escalator", "model": "NCE Heavy Duty", "count": 16, "serial": "NCE-BN-001-016" }
+                ],
+                "totalUnits": 24,
+                "lastServiceDate": "2026-03-01",
+                "slaResponseTime": "1 hour",
+                "demoScenario": "High-traffic public space, accessibility critical"
+            },
+            {
+                "name": "The Shard London",
+                "accountNumber": "OTIS-UK-005",
+                "type": "Mixed Use - Office/Hotel/Residential",
+                "tier": 1,
+                "contract": "Signature Service Premium",
+                "address": {
+                    "line1": "32 London Bridge Street",
+                    "city": "London",
+                    "postalCode": "SE1 9SG",
+                    "country": "UK"
+                },
+                "phone": "+1 312-875-9696",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "SkyRise", "count": 44, "serial": "SKY-SH-001-044" },
+                    { "type": "Double Deck Elevator", "model": "SkyRise DD", "count": 8, "serial": "SKDD-SH-001-008" }
+                ],
+                "totalUnits": 52,
+                "lastServiceDate": "2026-03-12",
+                "slaResponseTime": "2 hours",
+                "demoScenario": "Prestige building, landmark property, ultra-high-rise"
+            },
+            {
+                "name": "Marriott Hotel Manchester",
+                "accountNumber": "OTIS-UK-006",
+                "type": "Hotel/Hospitality",
+                "tier": 2,
+                "contract": "Signature Service Plus",
+                "address": {
+                    "line1": "Halle Place, Deansgate",
+                    "city": "Manchester",
+                    "postalCode": "M3 3HL",
+                    "country": "UK"
+                },
+                "phone": "+1 404-521-0000",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "Gen2 Comfort", "count": 6, "serial": "G2C-MH-001-006" },
+                    { "type": "Service Elevator", "model": "Gen2 Premier", "count": 2, "serial": "G2P-MH-001-002" }
+                ],
+                "totalUnits": 8,
+                "lastServiceDate": "2026-02-28",
+                "slaResponseTime": "4 hours",
+                "demoScenario": "Hospitality - guest experience focus"
+            },
+            {
+                "name": "Parkview Residential Tower",
+                "accountNumber": "OTIS-UK-007",
+                "type": "Residential Complex",
+                "tier": 2,
+                "contract": "Signature Service Plus",
+                "address": {
+                    "line1": "15 Canada Square",
+                    "city": "London",
+                    "postalCode": "E14 5GL",
+                    "country": "UK"
+                },
+                "phone": "+1 212-992-5500",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "Gen2 Comfort", "count": 4, "serial": "G2C-PV-001-004" }
+                ],
+                "totalUnits": 4,
+                "lastServiceDate": "2026-03-06",
+                "slaResponseTime": "4 hours",
+                "demoScenario": "Residential property manager - tenant complaints"
+            },
+            {
+                "name": "Crown Shopping Centre",
+                "accountNumber": "OTIS-UK-008",
+                "type": "Retail/Shopping Center",
+                "tier": 2,
+                "contract": "Signature Service Plus",
+                "address": {
+                    "line1": "High Street",
+                    "city": "Bristol",
+                    "postalCode": "BS1 3XD",
+                    "country": "UK"
+                },
+                "phone": "+1 952-883-8800",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "Gen2 Comfort", "count": 4, "serial": "G2C-CS-001-004" },
+                    { "type": "Escalator", "model": "NCE", "count": 8, "serial": "NCE-CS-001-008" }
+                ],
+                "totalUnits": 12,
+                "lastServiceDate": "2026-02-20",
+                "slaResponseTime": "4 hours",
+                "demoScenario": "Mid-tier retail, multiple escalator issues"
+            },
+            {
+                "name": "Metro Office Park",
+                "accountNumber": "OTIS-UK-009",
+                "type": "Office Building",
+                "tier": 3,
+                "contract": "Signature Service",
+                "address": {
+                    "line1": "Thames Valley Park",
+                    "city": "Reading",
+                    "postalCode": "RG6 1PT",
+                    "country": "UK"
+                },
+                "phone": "+1 949-752-1000",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "Gen2 Comfort", "count": 3, "serial": "G2C-MO-001-003" }
+                ],
+                "totalUnits": 3,
+                "lastServiceDate": "2026-02-15",
+                "slaResponseTime": "8 hours",
+                "demoScenario": "Standard office, routine service"
+            },
+            {
+                "name": "Greenfield School",
+                "accountNumber": "OTIS-UK-010",
+                "type": "Education",
+                "tier": 3,
+                "contract": "Signature Service",
+                "address": {
+                    "line1": "Oak Lane",
+                    "city": "Leeds",
+                    "postalCode": "LS8 1DB",
+                    "country": "UK"
+                },
+                "phone": "+1 978-749-4000",
+                "equipment": [
+                    { "type": "Passenger Elevator", "model": "Gen2 Comfort", "count": 2, "serial": "G2C-GS-001-002" }
+                ],
+                "totalUnits": 2,
+                "lastServiceDate": "2026-01-30",
+                "slaResponseTime": "8 hours",
+                "demoScenario": "Education sector, accessibility compliance"
+            }
+        ]
+    },
+
+    "contacts": {
+        "_note": "Facilities managers and property managers who call Otis service desk",
+        "contacts": [
+            {
+                "firstName": "David",
+                "lastName": "Chen",
+                "title": "Facilities Manager",
+                "account": "Riverside Medical Centre",
+                "phone": "+1 713-704-4001",
+                "mobile": "+1 713-555-0123",
+                "email": "david.chen@riversidemedical.nhs.uk",
+                "demoScenario": "Calls about entrapment - high urgency, knows elevator locations"
+            },
+            {
+                "firstName": "Sophie",
+                "lastName": "Williams",
+                "title": "Building Operations Manager",
+                "account": "Canary Wharf Tower",
+                "phone": "+1 212-417-7100",
+                "mobile": "+1 917-555-0234",
+                "email": "sophie.williams@canarywharf.com",
+                "demoScenario": "High-rise expert, tracks SLA carefully"
+            },
+            {
+                "firstName": "James",
+                "lastName": "Morrison",
+                "title": "Centre Manager",
+                "account": "Westfield London Shopping Centre",
+                "phone": "+1 310-277-3901",
+                "mobile": "+1 310-555-0345",
+                "email": "james.morrison@westfield.com",
+                "demoScenario": "Multiple simultaneous issues, escalation path"
+            },
+            {
+                "firstName": "Emma",
+                "lastName": "Richards",
+                "title": "Station Manager",
+                "account": "Birmingham New Street Station",
+                "phone": "+1 212-340-2712",
+                "mobile": "+1 646-555-0456",
+                "email": "emma.richards@networkrail.co.uk",
+                "demoScenario": "Public safety focus, accessibility requirements"
+            },
+            {
+                "firstName": "Michael",
+                "lastName": "Thompson",
+                "title": "Property Director",
+                "account": "The Shard London",
+                "phone": "+1 312-875-9001",
+                "mobile": "+1 312-555-0567",
+                "email": "michael.thompson@theshard.com",
+                "demoScenario": "VIP account, expects white-glove service"
+            },
+            {
+                "firstName": "Sarah",
+                "lastName": "Jenkins",
+                "title": "Hotel Operations Manager",
+                "account": "Marriott Hotel Manchester",
+                "phone": "+1 404-521-0001",
+                "mobile": "+1 404-555-0678",
+                "email": "sarah.jenkins@marriott.com",
+                "demoScenario": "Guest experience priority, visibility to management"
+            },
+            {
+                "firstName": "Robert",
+                "lastName": "Taylor",
+                "title": "Residential Building Manager",
+                "account": "Parkview Residential Tower",
+                "phone": "+1 212-992-5501",
+                "mobile": "+1 917-555-0789",
+                "email": "robert.taylor@parkview.co.uk",
+                "demoScenario": "Tenant complaints, after-hours issues"
+            }
+        ]
+    },
+
+    "products": {
+        "_note": "Elevator models and service contract types - for case context, not sales",
+        "elevatorModels": [
+            {
+                "name": "Gen2 Comfort",
+                "description": "Mid-rise machine-room-less elevator for residential and commercial buildings",
+                "maxFloors": 30,
+                "capacity": "Up to 2500 lbs",
+                "useCase": "Standard commercial and residential"
+            },
+            {
+                "name": "Gen2 Premier",
+                "description": "High-performance elevator for institutional and commercial applications",
+                "maxFloors": 40,
+                "capacity": "Up to 5000 lbs",
+                "useCase": "Healthcare, freight, heavy traffic"
+            },
+            {
+                "name": "Gen2 Life",
+                "description": "Healthcare-optimized elevator with smooth ride and antimicrobial surfaces",
+                "maxFloors": 25,
+                "capacity": "Up to 4500 lbs",
+                "useCase": "Hospitals, medical facilities"
+            },
+            {
+                "name": "SkyRise",
+                "description": "Ultra-high-rise elevator with regenerative drives",
+                "maxFloors": 100,
+                "capacity": "Up to 4000 lbs",
+                "useCase": "High-rise office, mixed-use towers"
+            },
+            {
+                "name": "SkyRise DD",
+                "description": "Double-deck elevator for maximum throughput in skyscrapers",
+                "maxFloors": 100,
+                "capacity": "Up to 8000 lbs (dual car)",
+                "useCase": "Ultra-high-rise, peak traffic management"
+            },
+            {
+                "name": "NCE",
+                "description": "Energy-efficient escalator for retail and transportation",
+                "specs": "30° incline, variable speed",
+                "useCase": "Shopping centers, transit stations"
+            },
+            {
+                "name": "NCE Heavy Duty",
+                "description": "High-traffic escalator for transportation hubs",
+                "specs": "30° incline, rated for continuous operation",
+                "useCase": "Airports, train stations, stadiums"
+            },
+            {
+                "name": "Travolator",
+                "description": "Moving walkway for airports and large retail",
+                "specs": "0° to 12° incline options",
+                "useCase": "Airports, large retail, exhibitions"
+            }
+        ],
+        "serviceContracts": [
+            {
+                "name": "Signature Service Premium",
+                "code": "SIG-PREM",
+                "slaResponse": "2 hours",
+                "coverage": "24/7 OTISLINE® support",
+                "includes": "Predictive IoT monitoring (Otis ONE), OEM parts & labor, priority dispatch, eService portal, capital planner, annual modernization assessment, regular software updates",
+                "tier": 1,
+                "entitlement": {
+                    "description": "Full coverage — all work order products and services at 100% discount",
+                    "discountPercent": 100,
+                    "durationMonths": 60,
+                    "slaKpi": "First Response within 2 hours"
+                }
+            },
+            {
+                "name": "Signature Service Plus",
+                "code": "SIG-PLUS",
+                "slaResponse": "4 hours",
+                "coverage": "Business hours (8am–6pm) + OTISLINE® afterhours",
+                "includes": "Preventive maintenance, OEM parts & labor, eService portal, standard dispatch, connected monitoring (Otis ONE basic)",
+                "tier": 2,
+                "entitlement": {
+                    "description": "Maintenance coverage — preventive service and standard parts at 100% discount, callbacks at 50% discount",
+                    "discountPercent": 100,
+                    "callbackDiscountPercent": 50,
+                    "durationMonths": 36,
+                    "slaKpi": "First Response within 4 hours"
+                }
+            },
+            {
+                "name": "Signature Service",
+                "code": "SIG-STD",
+                "slaResponse": "8 hours",
+                "coverage": "Business hours (8am–6pm)",
+                "includes": "Preventive maintenance, labor coverage, exam & inspection, parts billable separately",
+                "tier": 3,
+                "entitlement": {
+                    "description": "Basic coverage — preventive maintenance labor at 100% discount, parts billable",
+                    "discountPercent": 50,
+                    "durationMonths": 24,
+                    "slaKpi": "First Response within 8 hours"
+                }
+            },
+            {
+                "name": "On-Call Only",
+                "code": "SIG-ONCALL",
+                "slaResponse": "Next business day",
+                "coverage": "Business hours (8am–6pm)",
+                "includes": "Emergency response only, time & materials billing",
+                "tier": 4,
+                "entitlement": {
+                    "description": "No coverage — all work billed at standard T&M rates",
+                    "discountPercent": 0,
+                    "durationMonths": 12,
+                    "slaKpi": "First Response within 24 hours"
+                }
+            }
+        ]
+    },
+
+    "demoCases": {
+        "_note": "Sample cases for demo - covers telephony scenarios",
+        "cases": [
+            {
+                "title": "Entrapment - Passenger stuck in Elevator 3",
+                "account": "Riverside Medical Centre",
+                "contact": "David Chen",
+                "incidentType": "Entrapment",
+                "priority": "Critical",
+                "description": "URGENT: Patient's family member stuck in Elevator 3, main tower. Building security on scene. Caller can hear passenger through intercom.",
+                "equipment": "Gen2 Life - Elevator 3",
+                "status": "Active",
+                "demoUse": "Show critical hot word detection, auto-escalation, supervisor alert"
+            },
+            {
+                "title": "Elevator out of service - Tower A",
+                "account": "Canary Wharf Tower",
+                "contact": "Sophie Williams",
+                "incidentType": "Unit Out of Service",
+                "priority": "High",
+                "description": "Elevator 12 in Tower A stopped at floor 25, doors closed, not responding. Other elevators handling increased load.",
+                "equipment": "SkyRise - Elevator 12",
+                "status": "Active",
+                "demoUse": "Show screen pop with full account context, SLA countdown"
+            },
+            {
+                "title": "Escalator running rough - Main entrance",
+                "account": "Westfield London Shopping Centre",
+                "contact": "James Morrison",
+                "incidentType": "Noise/Vibration Complaint",
+                "priority": "Normal",
+                "description": "Escalator at main entrance making grinding noise. Still operational but concerning customers. Loud enough to hear from 20 feet away.",
+                "equipment": "NCE - Escalator E1",
+                "status": "Active",
+                "demoUse": "Show clickable equipment lookup, schedule maintenance"
+            },
+            {
+                "title": "Door not closing properly - Lift 2",
+                "account": "Marriott Hotel Manchester",
+                "contact": "Sarah Jenkins",
+                "incidentType": "Door Issue",
+                "priority": "High",
+                "description": "Guest reported elevator door on floor 6 keeps reopening. Taking multiple attempts to close. Causing delays for guests.",
+                "equipment": "Gen2 Comfort - Elevator 2",
+                "status": "Active",
+                "demoUse": "Show case creation flow, work order generation"
+            },
+            {
+                "title": "Scheduled maintenance due - Q1 inspection",
+                "account": "Birmingham New Street Station",
+                "contact": "Emma Richards",
+                "incidentType": "Scheduled Maintenance",
+                "priority": "Normal",
+                "description": "Quarterly inspection due for all 8 elevators and 16 escalators. Requesting schedule coordination to minimize passenger impact.",
+                "equipment": "Multiple units",
+                "status": "Scheduled",
+                "demoUse": "Show proactive outbound call scenario"
+            },
+            {
+                "title": "Billing question - extra visit charges",
+                "account": "Metro Office Park",
+                "contact": null,
+                "incidentType": "Billing Inquiry",
+                "priority": "Normal",
+                "description": "Customer questioning invoice for after-hours visit on 2/15. Contract is Basic - need to confirm billable vs covered.",
+                "equipment": null,
+                "status": "Active",
+                "demoUse": "Show non-technical case, contract lookup"
+            }
+        ]
+    },
+
+    "demoPhoneNumbers": {
+        "_note": "For screen pop simulation - US numbers mapped to UK accounts",
+        "numbers": [
+            { "phone": "+1 713-704-4001", "account": "Riverside Medical Centre", "contact": "David Chen" },
+            { "phone": "+1 212-417-7100", "account": "Canary Wharf Tower", "contact": "Sophie Williams" },
+            { "phone": "+1 310-277-3901", "account": "Westfield London Shopping Centre", "contact": "James Morrison" },
+            { "phone": "+1 212-340-2712", "account": "Birmingham New Street Station", "contact": "Emma Richards" },
+            { "phone": "+1 312-875-9001", "account": "The Shard London", "contact": "Michael Thompson" }
+        ]
+    }
+}

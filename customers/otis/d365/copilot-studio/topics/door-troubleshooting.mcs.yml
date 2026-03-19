@@ -1,0 +1,87 @@
+kind: TopicMetadata
+schemaVersion: 2.0
+name: Door Issue Troubleshooting
+description: Handles door operator issues with diagnostic guidance and escalation logic
+
+triggers:
+  phrases:
+    - door issue
+    - door not closing
+    - door reversing
+    - door operator problem
+    - door sensor
+    - elevator door
+    - lift door stuck
+    - door keeps opening
+    - door malfunction
+
+modelDescription: |
+  This topic handles door-related issues which are among the most common 
+  elevator problems. It surfaces the SkyRise troubleshooting guide, asks 
+  diagnostic questions, and identifies recurring issue patterns that 
+  require escalation.
+
+nodes:
+  - kind: Message
+    id: acknowledge
+    message: |
+      🚪 **Door Issue Reported**
+      
+      Let me help you diagnose and resolve this door problem.
+
+  - kind: GenerativeAnswers
+    id: surface_door_kb
+    prompt: |
+      Search for KB-002104 (SkyRise Door Operator Troubleshooting Guide) and 
+      provide the relevant diagnostic questions based on the reported symptoms:
+      - Door reversing multiple times
+      - Slow door operation  
+      - Door not closing completely
+      - Unusual sounds during operation
+
+  - kind: Question
+    id: symptom_check
+    question: |
+      To help diagnose the issue, please confirm:
+      
+      1. Does this happen on **all floors** or **specific floors**?
+      2. How **often** does it occur? (Every time / Sometimes / Rarely)
+      3. Are there any **error codes** displayed on the car operating panel?
+    variable: diagnosticInfo
+
+  - kind: Condition
+    id: check_recurring
+    condition: "case.relatedCasesCount >= 3"
+    trueActions:
+      - kind: Message
+        message: |
+          ⚠️ **RECURRING ISSUE DETECTED**
+          
+          This unit has had **{case.relatedCasesCount}** similar issues in the past 30 days.
+          
+          **Recommended Action:**
+          - Escalate to Field Supervisor
+          - Schedule comprehensive door system inspection
+          - Include sensor replacement and track realignment in scope
+          - Notify Account Manager if tenant complaints logged
+
+  - kind: Message
+    id: resolution_options
+    message: |
+      **Next Steps Based on Diagnosis:**
+      
+      📋 **For intermittent issues:**
+      - Schedule technician visit during low-traffic hours
+      - Request door operator parameter adjustment
+      
+      🔧 **For persistent issues:**
+      - Schedule comprehensive inspection
+      - Consider sensor replacement (KB-001876)
+      
+      📞 **For escalation:**
+      - Contact Field Supervisor
+      - Document tenant impact for account review
+
+settings:
+  priority: Normal
+  escalateToAgent: false

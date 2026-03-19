@@ -10,7 +10,7 @@
 #
 #  Prerequisites (beyond scrQuickQuote):
 #    - 'Quotes' data source added
-#    - 'Quote Lines' data source added
+#    - 'Quote Products' data source added
 #    - 'Price Lists' data source added
 #
 #  Variables from scrQuickQuote:
@@ -30,7 +30,6 @@
 #
 #  Column name notes:
 #    - Quote customer: 'Quote Customers'
-#      (may be 'Potential Customer' in some environments)
 #    - Price list column: 'Price List'
 #    - Quote Lines product: 'Existing Product'
 #    - Quote Lines qty: 'Quantity'
@@ -158,10 +157,11 @@ Screens:
           Control: Label
           Properties:
             Text: |-
-              =If(
-                  EndsWith(varQuoteBrand, "Parts"),
-                  varQuoteBrand,
-                  varQuoteBrand & " Standard Price List"
+              =Switch(varQuoteBrand,
+                  "Zurn", "Zurn Standard Price List",
+                  "Elkay", "Elkay Standard Price List",
+                  "Otis Parts", "Otis Aftermarket Parts",
+                  varQuoteBrand
               )
             X: =110
             Y: =108
@@ -340,23 +340,21 @@ Screens:
             OnSelect: |-
               =Set(varQuoteError, "");
               Set(varQuoteNumber, "");
-              // Step 1: Create the Quote header
-              // Store the Name from Patch immediately — varSavedQuote is untyped
-              // Record so we use varQuoteNumber (a plain string) for the LookUp below.
+              // Step 1: Create the Quote header, store only the Name (string)
               IfError(
                   Set(
                       varQuoteNumber,
                       Patch(
                           Quotes,
-                          Blank(),
+                          Defaults(Quotes),
                           {
                               Name: "QQ - " & varQuoteAccount.'Account Name' & " " & Text(Now(), "mm/dd/yyyy"),
-                              'Quote Customers': LookUp(Accounts, 'Account Name' = varQuoteAccount.'Account Name'),
+                              'Quote Customers': varQuoteAccount,
                               'Price List': LookUp('Price Lists',
-                                  Name = If(
-                                      EndsWith(varQuoteBrand, "Parts"),
-                                      varQuoteBrand,
-                                      varQuoteBrand & " Standard Price List"
+                                  Name = Switch(varQuoteBrand,
+                                      "Zurn", "Zurn Standard Price List",
+                                      "Elkay", "Elkay Standard Price List",
+                                      "Otis Parts", "Otis Aftermarket Parts"
                                   )
                               )
                           }
@@ -364,15 +362,14 @@ Screens:
                   ),
                   Set(varQuoteError, "Error creating quote: " & FirstError.Message)
               );
-              // Step 2: Create Quote Lines for each product line
-              // LookUp by Name returns a typed DataEntity — avoids 'Record' type error
+              // Step 2: Create Quote Products — LookUp inline returns typed DataEntity
               If(
-                  varQuoteNumber <> "",
+                  !IsBlank(varQuoteNumber) && varQuoteNumber <> "",
                   ForAll(
                       colQuoteLines As line,
                       Patch(
-                          'Quote Lines',
-                          Blank(),
+                          'Quote Products',
+                          Defaults('Quote Products'),
                           {
                               Quote: LookUp(Quotes, Name = varQuoteNumber),
                               'Existing Product': LookUp(Products, 'Product ID' = line.ProductNum),

@@ -1,0 +1,40 @@
+﻿{
+    "account":  "Riverside Medical Centre",
+    "testCases":  [
+                      {
+                          "banner":  "RED",
+                          "title":  "Emergency - Passenger Trapped in Service Elevator B2",
+                          "hotWords":  [
+                                           "trapped",
+                                           "injury",
+                                           "fire",
+                                           "emergency"
+                                       ],
+                          "id":  "77ae064d-5d21-f111-8342-7c1e520a58a1",
+                          "type":  "CRITICAL"
+                      },
+                      {
+                          "banner":  "YELLOW",
+                          "title":  "Elevator 5 Out of Service - Maternity Ward Access",
+                          "hotWords":  [
+                                           "out of service",
+                                           "not working",
+                                           "complaint",
+                                           "safety inspection"
+                                       ],
+                          "id":  "7bd09d51-5d21-f111-8341-7ced8dceb26a",
+                          "type":  "HIGH"
+                      },
+                      {
+                          "banner":  "NONE",
+                          "title":  "Scheduled quarterly maintenance - Elevators 1-4",
+                          "hotWords":  [
+
+                                       ],
+                          "id":  "98d9e64e-5d21-f111-8342-7c1e52143136",
+                          "type":  "CONTROL"
+                      }
+                  ],
+    "accountId":  "f05e7b68-241f-f111-8342-7ced8d18cb3b",
+    "contactId":  "2fd09570-241f-f111-8341-7c1e5218592b"
+}

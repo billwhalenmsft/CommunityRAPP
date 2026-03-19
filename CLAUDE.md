@@ -972,6 +972,63 @@ When working with Power Platform integration, note that Microsoft 365 Agents Too
 
 Use the new names by default when writing documentation or code.
 
+## Skills for Copilot Studio (Terminal-Based Agent Authoring)
+
+This repo integrates with Microsoft's [Skills for Copilot Studio](https://github.com/microsoft/skills-for-copilot-studio) plugin — an open-source toolkit from the CAT team that enables authoring, testing, and troubleshooting Copilot Studio agents via YAML files directly from the terminal.
+
+### Installation
+
+```bash
+# In GitHub Copilot CLI or Claude Code:
+/plugin marketplace add microsoft/skills-for-copilot-studio
+/plugin install copilot-studio@microsoft/skills-for-copilot-studio
+
+# Or clone locally:
+git clone https://github.com/microsoft/skills-for-copilot-studio.git .skills-for-copilot-studio
+```
+
+**Also required:** [Copilot Studio VS Code Extension](https://github.com/microsoft/vscode-copilotstudio) for cloning/pushing agents.
+
+### Available Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/copilot-studio:author` | Create/edit YAML — topics, actions, knowledge sources, triggers, variables |
+| `/copilot-studio:test` | Test published agents — point-tests, batch suites, evaluation analysis |
+| `/copilot-studio:troubleshoot` | Debug — wrong topic routing, validation errors, unexpected behavior |
+
+### RAPP → Copilot Studio Workflow
+
+1. **Generate** agent via RAPP (`transcript_to_agent` or transpiler) → outputs in `transpiled/`
+2. **Clone** target Copilot Studio agent via VS Code extension → outputs in `copilotstudioclones/`
+3. **Refine** with `/copilot-studio:author` using CAT team best practices
+4. **Push** via VS Code extension, then **Publish** in Copilot Studio UI
+5. **Test** with `/copilot-studio:test` and **troubleshoot** with `/copilot-studio:troubleshoot`
+
+### Key Integration Points
+
+| RAPP Asset | Plugin Usage |
+|---|---|
+| `transpiled/` agents | Apply generated YAML topics + instructions to cloned agents |
+| `copilotstudioclones/` | Working directory for plugin authoring |
+| `utils/copilot_studio_api.py` | Programmatic bulk deployment (complements plugin's per-agent authoring) |
+| `docs/copilot_studio_testing_guide.md` | 100+ test prompts to automate via `/copilot-studio:test` |
+
+### Multi-Agent Disambiguation (CAT Team Pattern)
+
+For complex multi-agent setups (e.g., Zurn Elkay 7-agent suite), use **agent-level instructions** instead of trigger phrase engineering:
+
+```
+/copilot-studio:author Configure agent instructions to route queries:
+  - Drains CI: drainage products, Watts, JR Smith, MiFab
+  - Drinking Water CI: fountains, bottle fillers, Elkay, Oasis
+  - Sinks CI: stainless steel sinks, Just Manufacturing
+```
+
+The orchestrator model uses these instructions for intelligent disambiguation, which scales much better than trigger-based approaches.
+
+**Full guide:** `docs/COPILOT_STUDIO_SKILLS_INTEGRATION.md`
+
 ## Important Notes
 
 - **Never commit `local.settings.json`** - contains secrets

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Presenter Cheat Sheet — Zurn Elkay Technical Deep-Dive</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            color: #E0E0E0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { font-size: 28px; font-weight: 300; color: #4FC3F7; margin-bottom: 8px; }
+        .subtitle { font-size: 16px; color: #888; margin-bottom: 24px; }
+        .timing-bar {
+            display: flex; gap: 2px; margin-bottom: 24px; border-radius: 6px; overflow: hidden; height: 8px;
+        }
+        .t-seg { height: 100%; }
+        .timing-legend {
+            display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: #999; margin-bottom: 32px;
+        }
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            border-left: 4px solid #0078D4;
+            page-break-inside: avoid;
+        }
+        .section.appendix { border-left-color: #605E5C; opacity: 0.7; }
+        .section h2 {
+            font-size: 20px; font-weight: 600; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .section h2 .time {
+            font-size: 14px; font-weight: 400; color: #4FC3F7;
+            background: rgba(79,195,247,0.15); padding: 2px 10px; border-radius: 12px;
+        }
+        .section h2 .rank {
+            font-size: 13px; font-weight: 400; color: #888;
+        }
+        .key-points { font-size: 15px; line-height: 1.8; color: #CCC; padding-left: 18px; }
+        .key-points li { margin-bottom: 4px; }
+        .key-points strong { color: #4FC3F7; }
+        .danger { color: #FF6B6B; font-weight: 600; }
+        .gold { color: #FFD54F; }
+        .green { color: #81C784; }
+        .questions {
+            margin-top: 10px; padding: 10px 16px;
+            background: rgba(255,183,77,0.1); border-radius: 8px;
+            font-size: 14px; color: #FFB74D;
+        }
+        .questions strong { display: block; margin-bottom: 4px; }
+        hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 32px 0; }
+        @media print {
+            body { background: white; color: #333; }
+            .section { border: 1px solid #DDD; }
+            .key-points strong, .gold, .green { color: #0078D4; }
+            .danger { color: #D83B01; }
+        }
+    </style>
+</head>
+<body>
+    <h1>📋 Presenter Cheat Sheet</h1>
+    <div class="subtitle">Zurn Elkay — D365 Customer Service Technical Architecture — Wed March 19 @ 10:00 CT — 60 min</div>
+
+    <div class="timing-bar">
+        <div class="t-seg" style="flex:2; background:#0078D4;" title="Welcome 2m"></div>
+        <div class="t-seg" style="flex:8; background:#0078D4;" title="Admin Center 8m"></div>
+        <div class="t-seg" style="flex:8; background:#008575;" title="Architecture 8m"></div>
+        <div class="t-seg" style="flex:7; background:#D83B01;" title="ERP Integration 7m"></div>
+        <div class="t-seg" style="flex:7; background:#107C10;" title="Omnichannel 7m"></div>
+        <div class="t-seg" style="flex:7; background:#5C2D91;" title="Routing 7m"></div>
+        <div class="t-seg" style="flex:8; background:#5C2D91;" title="Copilot 8m"></div>
+        <div class="t-seg" style="flex:5; background:#FFB900;" title="Licensing 5m"></div>
+        <div class="t-seg" style="flex:5; background:#605E5C;" title="Q&A 5m"></div>
+    </div>
+    <div class="timing-legend">
+        <span style="color:#0078D4;">■ Welcome + Admin Center (10m)</span>
+        <span style="color:#008575;">■ Architecture (8m)</span>
+        <span style="color:#D83B01;">■ ERP Integration (7m)</span>
+        <span style="color:#107C10;">■ Omnichannel (7m)</span>
+        <span style="color:#5C2D91;">■ Routing + Copilot (15m)</span>
+        <span style="color:#FFB900;">■ Licensing (5m)</span>
+        <span style="color:#605E5C;">■ Q&A (5m)</span>
+    </div>
+
+    <!-- SECTION: Admin Center -->
+    <div class="section" style="border-left-color:#0078D4;">
+        <h2>🏠 Copilot Service Admin Center <span class="time">0:03–0:10 (7 min)</span> <span class="rank">#1 Priority</span></h2>
+        <ul class="key-points">
+            <li><strong>Official name:</strong> "Copilot Service admin center" (rebranded — reflects Copilot-first positioning)</li>
+            <li><strong>3 site map areas:</strong></li>
+            <li style="margin-left:20px;"><strong>Customer support</strong> → channels, queues, routing rules, Copilot settings</li>
+            <li style="margin-left:20px;"><strong>Support experience</strong> → agent workspaces, productivity tools, KB, SLAs, templates</li>
+            <li style="margin-left:20px;"><strong>Operations</strong> → analytics dashboards, calendar, facilities, site map customization</li>
+            <li><strong>"Create your contact center" wizard</strong> — guided setup walks through channel + routing configuration in minutes</li>
+            <li><strong>Search settings bar</strong> at top — type any feature name to jump directly (e.g., type "queue" → instant)</li>
+            <li><strong>5 security roles:</strong> System Administrator, System Customizer, CSR Manager, App Profile Manager, Omnichannel administrator</li>
+            <li><strong>Workstreams</strong> = plumbing — each channel type gets one, defines routing + work distribution</li>
+            <li><strong>Capacity profiles</strong> — control concurrent workload per agent per channel (1 voice + 3 chats typical)</li>
+            <li class="gold">💎 ZE context: 200 agents, dual-brand → separate queues per brand from ONE environment. Demo the search bar to find "queue" instantly.</li>
+        </ul>
+        <div class="questions">
+            <strong>🎯 Likely questions:</strong>
+            "Can we have different settings per brand?" → Yes, via separate queues + workstreams per brand.<br>
+            "Who can access Admin Center?" → 5 roles: System Admin, System Customizer, CSR Manager, App Profile Manager, Omnichannel Admin.<br>
+            "Is there a setup wizard?" → Yes, "Create your contact center" walks through channels, queues, routing in minutes.<br>
+            "Was Admin Center renamed?" → Yes, now "Copilot Service admin center" — reflects Copilot-first strategy.
+        </div>
+        <div class="questions" style="margin-top:8px;">
+            <strong>📖 Slide resources (clickable in deck):</strong>
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/cs-admin-center" style="color:#4FC3F7;">Admin Center Overview</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/implement/security-roles" style="color:#4FC3F7;">Security Roles</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/provision-channels" style="color:#4FC3F7;">Provision Channels</a>
+        </div>
+    </div>
+
+    <!-- SECTION: Architecture -->
+    <div class="section" style="border-left-color:#008575;">
+        <h2>🏗️ Architecture Overview <span class="time">0:10–0:18 (8 min)</span> <span class="rank">#7 (moved up)</span></h2>
+        <ul class="key-points">
+            <li>5-layer model: <strong>Channels → Orchestration → Agent Experience → Intelligence → Data</strong></li>
+            <li><strong>Everything runs on Dataverse</strong> — one platform, not bolted-together modules</li>
+            <li><strong>Two deployment models (per MS Learn):</strong></li>
+            <li style="margin-left:20px;"><strong>Embedded</strong> — Contact Center built into D365 CS. Single UX, shared Dataverse. Most common.</li>
+            <li style="margin-left:20px;"><strong>Standalone</strong> — Contact Center with bring-your-own CRM (Salesforce, ServiceNow, etc.). Separate Dataverse instance.</li>
+            <li><strong>CS Enterprise vs Contact Center:</strong> Enterprise = case mgmt + KB; Contact Center adds real-time voice/chat/digital channels</li>
+            <li class="green">Green point: Not every agent needs Contact Center license → back-office case workers only need CS Enterprise = cost savings</li>
+            <li><strong>Reference architecture dataflow:</strong> Phone/Chat/Social → ACS/channels → Unified Routing → Agent Desktop (with Copilot + KB + CRM)</li>
+            <li><strong>Teams collaboration:</strong> Swarm + embedded Teams chat for expert consultation without leaving workspace</li>
+            <li>Show the layer diagram — let them absorb it, then reference back throughout the session</li>
+        </ul>
+        <div class="questions">
+            <strong>🎯 Likely questions:</strong>
+            "Embedded vs Standalone — which for us?" → Embedded. You're already on D365 CS, so Contact Center layers on top.<br>
+            "Can we use Teams for internal collaboration during cases?" → Yes, swarming and embedded Teams chat are built in.
+        </div>
+        <div class="questions" style="margin-top:8px;">
+            <strong>📖 Slide resources:</strong>
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/implement/overview" style="color:#4FC3F7;">D365 CS Overview</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/contact-center/implement/overview-contact-center" style="color:#4FC3F7;">Contact Center Overview</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/contact-center/implement/reference-architecture-contact-center" style="color:#4FC3F7;">Reference Architecture</a>
+        </div>
+    </div>
+
+    <!-- SECTION: ERP Integration -->
+    <div class="section" style="border-left-color:#D83B01;">
+        <h2>🔌 ERP & Core Integrations <span class="time">0:18–0:25 (7 min)</span> <span class="rank">#2 Priority</span></h2>
+        <ul class="key-points">
+            <li><strong>4 integration patterns:</strong></li>
+            <li style="margin-left:20px;"><strong>Dual-Write</strong> — sub-second bidirectional sync, OOB infrastructure with 14 application scenarios. <span class="danger">⚠️ F&O only — NOT available for SAP natively.</span></li>
+            <li style="margin-left:20px;"><strong>Virtual Tables</strong> — on-demand CRUD (full read/write, not read-only!), no data replication, queries source at runtime.</li>
+            <li style="margin-left:20px;"><strong>Power Automate</strong> — event-driven flows, SAP RFC/BAPI connector, scheduled batch sync.</li>
+            <li style="margin-left:20px;"><strong>Azure Integration Services</strong> — enterprise middleware: Logic Apps SAP adapter, Service Bus, API Management.</li>
+            <li class="danger">⚠️ Zurn Elkay likely uses SAP → emphasize patterns 2-4 (Virtual Tables, Power Automate, Azure Integration). Dual-write requires F&O.</li>
+            <li><strong>SAP-specific connectors:</strong> Power Automate SAP connector (RFC/BAPI), Logic Apps SAP adapter, SAP OData → Virtual Tables, SAP BTP event bridge</li>
+            <li><strong>Agent view:</strong> Order history, warranty, products visible on case form — no swivel-chair between systems</li>
+            <li class="gold">💎 ZE recommendation: Hybrid approach — Virtual Tables for real-time order lookups + Power Automate for master data batch sync</li>
+        </ul>
+        <div class="questions">
+            <strong>🎯 Likely questions:</strong>
+            "What's the latency for order lookups?" → Virtual Tables: 1-3 seconds on-demand. Dual-Write: sub-second cached (but F&O only).<br>
+            "Can we write back to SAP?" → Yes, bidirectional via Power Automate SAP connector or Azure Logic Apps adapter.<br>
+            "What about real-time inventory?" → Virtual Tables for on-demand or Azure Service Bus for near-real-time events.<br>
+            "Is Dual-Write available for SAP?" → No, Dual-Write is native to F&O only. For SAP, use Virtual Tables + Power Automate + Azure Integration Services.<br>
+            "Do Virtual Tables replicate data?" → No, queries source system at runtime. Full CRUD supported, not just read-only.
+        </div>
+        <div class="questions" style="margin-top:8px;">
+            <strong>📖 Slide resources:</strong>
+            <a href="https://learn.microsoft.com/en-us/dynamics365/fin-ops-core/dev-itpro/data-entities/dual-write/dual-write-overview" style="color:#4FC3F7;">Dual-Write</a> |
+            <a href="https://learn.microsoft.com/en-us/power-apps/maker/data-platform/create-edit-virtual-entities" style="color:#4FC3F7;">Virtual Tables</a> |
+            <a href="https://learn.microsoft.com/en-us/power-automate/sap-integration/overview" style="color:#4FC3F7;">SAP + Power Automate</a> |
+            <a href="https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-using-sap-connector" style="color:#4FC3F7;">Logic Apps SAP Adapter</a>
+        </div>
+    </div>
+
+    <!-- SECTION: Omnichannel & Voice -->
+    <div class="section" style="border-left-color:#107C10;">
+        <h2>📞 Omnichannel & Telephony <span class="time">0:25–0:32 (7 min)</span> <span class="rank">#3 Priority</span></h2>
+        <ul class="key-points">
+            <li><strong>3 voice deployment approaches (per MS Learn):</strong></li>
+            <li style="margin-left:20px;"><strong>1. BYOT / Direct Routing</strong> — keep existing carrier + numbers, needs SBC, preserves SIP context (caller ID, IVR selections). Most enterprises choose this.</li>
+            <li style="margin-left:20px;"><strong>2. Microsoft Calling Plan</strong> — simplest, Microsoft-provided PSTN. SIP context may be stripped. Good for greenfield.</li>
+            <li style="margin-left:20px;"><strong>3. Teams Phone integration</strong> — sync existing Teams Phone numbers into D365 Contact Center. Requires Enterprise Voice license + Graph permissions.</li>
+            <li><strong>PCI DSS compliant</strong> — take card payments over voice channel. Critical for billing scenarios.</li>
+            <li><strong>Codecs:</strong> G.711 (standard) and Opus (adaptive bandwidth). E.164 encoding for phone numbers.</li>
+            <li><strong>SLA boundaries vary by approach:</strong> Approach 1 = carrier SLA + ACS SLA + D365 SLA. Approach 2 = Microsoft end-to-end. Approach 3 = Teams Phone + D365.</li>
+            <li><strong>Digital channels (NEW slide in deck):</strong> 9 channels — Voice, Live Chat, SMS, WhatsApp, Facebook, LINE, WeChat, Apple Messages, Custom (via Direct Line)</li>
+            <li><strong>4-phase migration:</strong> Discover (audit) → Design (map to D365) → Pilot (1-2 channels) → Scale (full rollout)</li>
+            <li>Voice features: real-time transcription, sentiment analysis, call recording, IVR with Copilot Studio bots</li>
+            <li class="gold">💎 ZE recommendation: Phase 1 = digital channels in D365 + legacy voice; Phase 2 = pilot voice via Direct Routing; Phase 3 = full migration. SBC splits traffic during transition.</li>
+        </ul>
+        <div class="questions">
+            <strong>🎯 Likely questions:</strong>
+            "Can we keep our current phone provider?" → Yes, Approach 1 (BYOT/Direct Routing) with your SBC. Most popular for enterprises.<br>
+            "Do we have to migrate everything at once?" → No, 4-phase approach. SBC can split traffic — same number to legacy OR D365 based on rules.<br>
+            "Is it PCI compliant?" → Yes, PCI DSS compliant for card-present-not-present scenarios.<br>
+            "What about Teams Phone — we already use that?" → Approach 3 lets you sync Teams Phone numbers into D365. Needs Enterprise Voice + Graph permissions.<br>
+            "Which channels should we start with?" → Start with Live Chat + SMS (low friction), then add voice in Phase 2.
+        </div>
+        <div class="questions" style="margin-top:8px;">
+            <strong>📖 Slide resources:</strong>
+            <a href="https://learn.microsoft.com/en-us/dynamics365/contact-center/administer/voice-channel-install" style="color:#4FC3F7;">Voice Channel Setup</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/channels" style="color:#4FC3F7;">Channels Overview</a> |
+            <a href="https://azure.microsoft.com/en-us/pricing/details/communication-services/" style="color:#4FC3F7;">ACS Pricing</a>
+        </div>
+    </div>
+
+    <!-- SECTION: Routing -->
+    <div class="section" style="border-left-color:#5C2D91;">
+        <h2>🔀 Routing, Queues & SLA <span class="time">0:32–0:39 (7 min)</span> <span class="rank">#4 Priority</span></h2>
+        <ul class="key-points">
+            <li><strong>Two-stage engine (per MS Learn):</strong></li>
+            <li style="margin-left:20px;"><strong>Stage 1 — Classification:</strong> Rule-based (if/then on case fields) OR ML-based ("Intelligent Skill Finder" via AI Builder — reads description, predicts skills)</li>
+            <li style="margin-left:20px;"><strong>Stage 2 — Assignment:</strong> Prioritize → Match skills/capacity/presence → Assign to best available agent</li>
+            <li><strong>Both rule-based and ML can run together</strong> — ML classifies, rules override/supplement</li>
+            <li><strong>Skills-based matching:</strong> Exact match (brand: Zurn) + proficiency rating (drains expert: 8/10)</li>
+            <li><strong>SLA architecture:</strong> KPIs (first response, resolution), warning/failure actions, pause when customer-wait status</li>
+            <li><strong>Overflow:</strong> Queue full → backup queue, relax skill requirements, offer callback</li>
+            <li><strong>Zurn Elkay SLA values (from config):</strong> First response = 240 min, Resolution = 480 min, Business hours 8AM-5PM M-F</li>
+            <li class="gold">💎 ZE example: Intelligent Skill Finder reads "leaking drain valve, emergency" → auto-classifies Brand=Zurn, Product=Drains, Priority=Urgent, Skill=plumbing → routes to Zurn Drains Queue → assigns highest-proficiency available agent</li>
+        </ul>
+        <div class="questions">
+            <strong>🎯 Likely questions:</strong>
+            "Can ML and rules work together?" → Yes, ML handles initial classification, rules can override or supplement. Best of both worlds.<br>
+            "How does skills matching work?" → Exact match on required skills (brand, product) + proficiency scoring for best-fit agent selection.<br>
+            "What happens if no agent has the right skills?" → Overflow rules: relax skill requirements after configurable timeout, route to backup queue, or offer callback.<br>
+            "Can SLAs pause when waiting on customer?" → Yes, SLA timer pauses when case status is set to customer-wait.
+        </div>
+        <div class="questions" style="margin-top:8px;">
+            <strong>📖 Slide resources:</strong>
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/overview-unified-routing" style="color:#4FC3F7;">Unified Routing</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/set-up-skill-based-routing" style="color:#4FC3F7;">Skill-Based Routing</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/set-up-isf-model" style="color:#4FC3F7;">Intelligent Skill Finder</a>
+        </div>
+    </div>
+
+    <!-- SECTION: Copilot & AI -->
+    <div class="section" style="border-left-color:#5C2D91;">
+        <h2>🤖 Copilot & AI Architecture <span class="time">0:39–0:47 (8 min)</span> <span class="rank">#5 Priority</span></h2>
+        <ul class="key-points">
+            <li><strong>Three AI surfaces:</strong> In-App Copilot (agent-facing), Copilot Studio (customer-facing bots), Built-in ML (platform intelligence)</li>
+            <li><strong>8 specific Copilot features (per MS Learn):</strong></li>
+            <li style="margin-left:20px;">Case summary (structured or paragraph, <strong>min 38 words</strong> of linked content required)</li>
+            <li style="margin-left:20px;">Conversation summary (real-time during live interactions)</li>
+            <li style="margin-left:20px;">Email draft (context-aware from case data) + Chat response draft</li>
+            <li style="margin-left:20px;">Ask a question (natural language over KB + Dataverse)</li>
+            <li style="margin-left:20px;">Resolution notes (auto-generated from conversation) + Knowledge draft (article creation from resolved cases)</li>
+            <li style="margin-left:20px;">Copilot analytics report (track adoption, quality, deflection)</li>
+            <li><strong>Agent sessions billing:</strong> Each bot conversation = 1 session, regardless of whether it escalates to human</li>
+            <li><strong>M365 Copilot integration:</strong> Outlook (summarize case from email), Teams (CRM data lookup in chat) — requires Copilot for Service plugin</li>
+            <li><strong>Copilot Studio autonomous agents:</strong> Multi-step bots that check warranty → create case → schedule callback autonomously</li>
+            <li><strong>Grounding & security:</strong> RAG on YOUR data only (Dataverse + KB + configured sources). No public internet. RBAC enforced — Copilot sees only what the agent can see.</li>
+            <li class="green">🔒 Zero training on your data. Azure OpenAI commitment. Data stays in geo. Audit logged. Responsible AI transparency cards available.</li>
+            <li class="gold">💎 ZE Quick Win: Enable case summary + email draft first (highest ROI, lowest effort). Then build FAQ bot in Copilot Studio for top 20 drains/faucet questions.</li>
+        </ul>
+        <div class="questions">
+            <strong>🎯 Likely questions:</strong>
+            "Does Copilot use our data for training?" → <span class="danger">Absolutely not.</span> Azure OpenAI commitment: zero training on customer data.<br>
+            "Can we control what Copilot accesses?" → Yes, admin toggle per feature in admin center. RBAC limits data access to what agent can see.<br>
+            "What about hallucination?" → RAG grounding on your KB reduces this significantly. Copilot cites sources. Min 38 words of context required for case summary.<br>
+            "What's a Copilot session vs an agent session?" → Each bot conversation = 1 agent session. Included with Contact Center or sold as add-on packs.<br>
+            "Can Copilot work in Outlook/Teams?" → Yes, via "Copilot for Service" plugin — summarizes cases from Outlook, looks up CRM data in Teams.<br>
+            "What should we enable first?" → Case summary + email draft — highest agent productivity gain with minimal setup.
+        </div>
+        <div class="questions" style="margin-top:8px;">
+            <strong>📖 Slide resources:</strong>
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/configure-copilot-features" style="color:#4FC3F7;">Configure Copilot</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/use/use-copilot-features" style="color:#4FC3F7;">Copilot Features Guide</a> |
+            <a href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio" style="color:#4FC3F7;">Copilot Studio</a> |
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/responsible-ai-overview" style="color:#4FC3F7;">Responsible AI FAQ</a>
+        </div>
+    </div>
+
+    <!-- SECTION: Licensing -->
+    <div class="section" style="border-left-color:#FFB900;">
+        <h2>💰 Licensing & Cost <span class="time">0:47–0:52 (5 min)</span> <span class="rank">#6 Priority</span></h2>
+        <ul class="key-points">
+            <li><strong>Two main licenses:</strong></li>
+            <li style="margin-left:20px;"><strong>CS Enterprise</strong> — case management, KB, SLA, email. For back-office case workers.</li>
+            <li style="margin-left:20px;"><strong>Contact Center</strong> — adds real-time voice, chat, digital channels, unified routing, Copilot.</li>
+            <li><strong>Contact Center has two models (per MS Learn):</strong></li>
+            <li style="margin-left:20px;"><strong>Embedded</strong> — built into D365 CS, shared Dataverse. Most common for D365 customers.</li>
+            <li style="margin-left:20px;"><strong>Standalone</strong> — bring your own CRM (Salesforce, ServiceNow). Separate licensing.</li>
+            <li><strong>Agent sessions:</strong> Each bot conversation = 1 agent session, regardless of escalation. Included with Contact Center or purchased as add-on packs.</li>
+            <li><strong>Voice pricing:</strong> ACS pay-per-minute per-participant. PSTN = additional calling plan or carrier cost depending on deployment approach.</li>
+            <li><strong>30-day free trial</strong> available — great for pilot / proof of concept</li>
+            <li><strong>Consumption add-ons:</strong> PSTN minutes, Copilot Studio messages, SMS, Dataverse storage</li>
+            <li class="gold">💎 ZE sizing estimate (from slides):</li>
+            <li style="margin-left:20px;">75 Zurn frontline agents → Contact Center license</li>
+            <li style="margin-left:20px;">45 Elkay frontline agents → Contact Center license</li>
+            <li style="margin-left:20px;">50 back-office / warranty agents → CS Enterprise license</li>
+            <li style="margin-left:20px;">10 warranty specialist agents → CS Enterprise license</li>
+            <li style="margin-left:20px;">20 supervisors → Contact Center + Supervisor add-on</li>
+            <li class="green">Cost optimization: Self-service deflection via Copilot Studio bots reduces voice minutes → significant cost savings</li>
+            <li>Point to Microsoft account team for exact pricing — <span class="danger">don't quote dollar amounts</span></li>
+        </ul>
+        <div class="questions">
+            <strong>🎯 Likely questions:</strong>
+            "Does everyone need a Contact Center license?" → No! Back-office case workers only need CS Enterprise. Big cost savings.<br>
+            "What about bot/Copilot costs?" → Agent sessions included with Contact Center. Additional packs available if needed.<br>
+            "Is there a trial?" → Yes, 30-day free trial available for Contact Center. Great for pilot.<br>
+            "What's the voice cost model?" → ACS pay-per-minute per-participant, plus calling plan or carrier costs depending on deployment approach.<br>
+            "Embedded vs Standalone pricing?" → Embedded adds to existing D365 CS license. Standalone is separate — different pricing tier.
+        </div>
+        <div class="questions" style="margin-top:8px;">
+            <strong>📖 Slide resources:</strong>
+            <a href="https://learn.microsoft.com/en-us/dynamics365/customer-service/implement/overview" style="color:#4FC3F7;">D365 CS Licensing</a> |
+            <a href="https://www.microsoft.com/en-us/dynamics-365/products/contact-center/pricing" style="color:#4FC3F7;">Contact Center Pricing</a> |
+            <a href="https://azure.microsoft.com/en-us/pricing/details/communication-services/" style="color:#4FC3F7;">ACS Voice Pricing</a>
+        </div>
+    </div>
+
+    <!-- SECTION: Q&A -->
+    <div class="section" style="border-left-color:#605E5C;">
+        <h2>❓ Q&A & Next Steps <span class="time">0:52–0:57 (5 min)</span></h2>
+        <ul class="key-points">
+            <li>Offer <strong>deeper dives</strong> on any topic — especially ERP integration (SAP-specific patterns) and voice architecture (deployment approach selection)</li>
+            <li>Suggest <strong>agent mix exercise</strong> — map 200 agents to license types (CS Enterprise vs Contact Center) to optimize cost</li>
+            <li>Propose <strong>Admin Center hands-on</strong> — live walkthrough in sandbox using the "Create your contact center" wizard</li>
+            <li>Mention <strong>Copilot pilot</strong> — enable case summary + email draft (quick win), then build FAQ bot for top drains/faucets questions</li>
+            <li>Offer <strong>30-day Contact Center trial</strong> setup</li>
+            <li><strong>Share deck + appendix + March 12 demo recording</strong> post-session</li>
+            <li>Propose follow-up session: <strong>Voice architecture deep-dive</strong> — compare the 3 deployment approaches for Zurn Elkay's specific carrier setup</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <div class="section appendix">
+        <h2>📎 Appendix Topics (if asked / share post-session)</h2>
+        <ul class="key-points">
+            <li><strong>#8 Data Model:</strong> Dataverse = system of record. All standard tables (Case, Account, Contact, KB Article). Custom tables supported. Full API access (REST/OData). Synapse Link for analytics export. Dual-write for F&O only.</li>
+            <li><strong>#9 Knowledge:</strong> Native KB with lifecycle (draft→review→publish→archive→expire). Copilot uses KB for RAG grounding. Search providers add external sources (SharePoint, websites). Integrated authoring with rich text + media.</li>
+            <li><strong>#10 Analytics:</strong> Three surfaces — historical (Power BI embedded dashboards), real-time (Omnichannel supervisor view), AI-driven (Copilot analytics, topic clustering, sentiment trending, forecasting). All built-in, no extra license.</li>
+            <li><strong>#11 Compliance:</strong> SOC 1/2/3, ISO 27001/27018, HIPAA BAA, GDPR, FedRAMP (GCC/GCC-H). Customer-Managed Keys (CMK) supported. EU Data Boundary. Copilot data not used for training — Azure OpenAI data processing commitment.</li>
+        </ul>
+    </div>
+
+    <div style="text-align:center; padding:20px; font-size:13px; color:#555;">
+        Generated 2026-03-17 — Open <strong>zurn-technical-deep-dive.html</strong> for the full 29-slide deck
+    </div>
+</body>
+</html>

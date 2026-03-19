@@ -1,0 +1,249 @@
+{
+  "name": "Demo Action - Send D365 Notification",
+  "description": "Sends an in-app toast notification to a D365 user via the appnotification entity. Triggered from Demo Execution Guide buttons.",
+  "trigger": {
+    "type": "Request",
+    "kind": "Http",
+    "inputs": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "description": "NewCase, SLAWarning, SLAViolated, or Custom",
+            "default": "NewCase"
+          },
+          "recipient_email": {
+            "type": "string",
+            "description": "Target user email or * for all users"
+          },
+          "case_title": {
+            "type": "string",
+            "description": "Case subject line"
+          },
+          "case_number": {
+            "type": "string",
+            "description": "D365 case number"
+          },
+          "case_id": {
+            "type": "string",
+            "description": "D365 case GUID (enables clickable toast)"
+          },
+          "customer": {
+            "type": "string",
+            "description": "Customer/account name"
+          }
+        },
+        "required": ["scenario"]
+      }
+    }
+  },
+  "actions": {
+    "Initialize_Scenario": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [{
+          "name": "scenario",
+          "type": "string",
+          "value": "@{coalesce(triggerBody()?['scenario'], 'NewCase')}"
+        }]
+      }
+    },
+    "Switch_Scenario": {
+      "type": "Switch",
+      "expression": "@variables('scenario')",
+      "cases": {
+        "NewCase": {
+          "actions": {
+            "Set_Title_NewCase": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "notifTitle",
+                "value": "New Case Assigned"
+              }
+            },
+            "Set_Body_NewCase": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "notifBody",
+                "value": "New case from @{coalesce(triggerBody()?['customer'], 'Customer')}: @{coalesce(triggerBody()?['case_title'], 'Support Request')}"
+              }
+            },
+            "Set_Icon_NewCase": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "iconType",
+                "value": "100000001"
+              }
+            }
+          }
+        },
+        "SLAWarning": {
+          "actions": {
+            "Set_Title_SLAWarning": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "notifTitle",
+                "value": "⚠️ SLA Warning"
+              }
+            },
+            "Set_Body_SLAWarning": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "notifBody",
+                "value": "Case @{coalesce(triggerBody()?['case_number'], '')} is approaching SLA deadline for @{coalesce(triggerBody()?['customer'], 'Customer')}"
+              }
+            },
+            "Set_Icon_SLAWarning": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "iconType",
+                "value": "100000003"
+              }
+            }
+          }
+        },
+        "SLAViolated": {
+          "actions": {
+            "Set_Title_SLAViolated": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "notifTitle",
+                "value": "🚨 SLA BREACHED"
+              }
+            },
+            "Set_Body_SLAViolated": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "notifBody",
+                "value": "CRITICAL: Case @{coalesce(triggerBody()?['case_number'], '')} has BREACHED SLA. Immediate action required for @{coalesce(triggerBody()?['customer'], 'Customer')}."
+              }
+            },
+            "Set_Icon_SLAViolated": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "iconType",
+                "value": "100000002"
+              }
+            }
+          }
+        }
+      },
+      "default": {
+        "actions": {
+          "Set_Title_Default": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "notifTitle",
+              "value": "@{coalesce(triggerBody()?['case_title'], 'Notification')}"
+            }
+          },
+          "Set_Body_Default": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "notifBody",
+              "value": "@{coalesce(triggerBody()?['customer'], 'Update available')}"
+            }
+          },
+          "Set_Icon_Default": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "iconType",
+              "value": "100000000"
+            }
+          }
+        }
+      },
+      "runAfter": {
+        "Initialize_Scenario": ["Succeeded"]
+      }
+    },
+    "Get_Recipient_User": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/systemusers/items",
+        "queries": {
+          "$filter": "internalemailaddress eq '@{coalesce(triggerBody()?['recipient_email'], 'admin@D365DemoTSCE30330346.onmicrosoft.com')}'",
+          "$select": "systemuserid,fullname",
+          "$top": 1
+        }
+      },
+      "runAfter": {
+        "Switch_Scenario": ["Succeeded"]
+      }
+    },
+    "Create_AppNotification": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/appnotifications/items",
+        "body": {
+          "title": "@variables('notifTitle')",
+          "body": "@variables('notifBody')",
+          "icontype": "@int(variables('iconType'))",
+          "toasttype": 200000000,
+          "ownerid@odata.bind": "/systemusers(@{first(body('Get_Recipient_User')?['value'])?['systemuserid']})"
+        }
+      },
+      "runAfter": {
+        "Get_Recipient_User": ["Succeeded"]
+      }
+    },
+    "Response": {
+      "type": "Response",
+      "kind": "Http",
+      "inputs": {
+        "statusCode": 200,
+        "body": {
+          "status": "success",
+          "message": "Notification sent",
+          "scenario": "@variables('scenario')",
+          "recipient": "@{first(body('Get_Recipient_User')?['value'])?['fullname']}",
+          "timestamp": "@{utcNow()}"
+        }
+      },
+      "runAfter": {
+        "Create_AppNotification": ["Succeeded"]
+      }
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "_metadata": {
+    "org_url": "https://orgecbce8ef.crm.dynamics.com",
+    "icon_types": {
+      "Info": 100000000,
+      "Success": 100000001,
+      "Failure": 100000002,
+      "Warning": 100000003
+    },
+    "toast_types": {
+      "Timed": 200000000,
+      "Hidden": 200000001
+    },
+    "setup_steps": [
+      "1. Create new Instant Cloud Flow in Power Automate",
+      "2. Add trigger: 'When an HTTP request is received' — paste the schema from this file",
+      "3. Add action: 'List rows' from Dataverse — systemusers table with email filter",
+      "4. Add action: 'Add a new row' from Dataverse — appnotifications table",
+      "5. Add action: 'Response' — return JSON with status",
+      "6. Save and copy the HTTP POST URL",
+      "7. Paste URL into Demo Control Panel > Flow Configuration > Notification URL"
+    ]
+  }
+}

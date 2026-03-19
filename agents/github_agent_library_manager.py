@@ -14,17 +14,24 @@ class GitHubAgentLibraryManager(BasicAgent):
     Handles both individual agent operations (discover, search, install) and GUID-based agent groups.
     """
     
-    # GitHub repository configuration
+    # GitHub repository configuration — primary (community templates)
     GITHUB_REPO = "kody-w/AI-Agent-Templates"
     GITHUB_BRANCH = "main"
     GITHUB_RAW_BASE = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{GITHUB_BRANCH}"
     GITHUB_API_BASE = f"https://api.github.com/repos/{GITHUB_REPO}"
+
+    # Secondary repo — AIBAST industry agent library (87 agents across 16 verticals)
+    AIBAST_REPO = "billwhalenmsft/RAPP-Agent-Repo"
+    AIBAST_BRANCH = "main"
+    AIBAST_RAW_BASE = f"https://raw.githubusercontent.com/{AIBAST_REPO}/{AIBAST_BRANCH}"
+    AIBAST_API_BASE = f"https://api.github.com/repos/{AIBAST_REPO}"
+    AIBAST_AGENTS_PATH = "agents/@aibast-agents-library"
     
     def __init__(self):
         self.name = 'GitHubAgentLibrary'
         self.metadata = {
             "name": self.name,
-            "description": "Comprehensive manager for the GitHub Agent Template Library at kody-w/AI-Agent-Templates. Discovers, searches, installs, and manages 65+ pre-built agents from the public repository. Also creates GUID-based agent groups for custom deployments. All agents are downloaded from GitHub raw URLs and automatically integrated into your system.",
+            "description": "Comprehensive manager for two GitHub Agent Libraries: (1) kody-w/AI-Agent-Templates with 65+ community agents, and (2) billwhalenmsft/RAPP-Agent-Repo with 87 AIBAST industry-vertical agents across manufacturing, financial services, healthcare, energy, government, retail, and more. Discovers, searches, installs, and manages agents from both repositories. Also creates GUID-based agent groups for custom deployments.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -182,6 +189,66 @@ class GitHubAgentLibraryManager(BasicAgent):
             logging.error(f"Error fetching manifest: {str(e)}")
             return None
     
+    def _fetch_aibast_catalog(self, force_refresh=False):
+        """Fetch the AIBAST industry library catalog from billwhalenmsft/RAPP-Agent-Repo.
+        
+        Since this repo has no manifest.json, we scan the directory tree via the GitHub API
+        and cache the result alongside the primary manifest.
+        """
+        cache_attr = '_aibast_cache'
+        cache_time_attr = '_aibast_last_fetch'
+        if not force_refresh and getattr(self, cache_attr, None) and getattr(self, cache_time_attr, None):
+            if (datetime.now() - getattr(self, cache_time_attr)).seconds < 300:
+                return getattr(self, cache_attr)
+
+        catalog = {"stacks": []}
+        try:
+            resp = requests.get(f"{self.AIBAST_API_BASE}/contents/{self.AIBAST_AGENTS_PATH}", timeout=10)
+            resp.raise_for_status()
+            stack_dirs = [item for item in resp.json() if item["type"] == "dir" and item["name"] != "templates"]
+
+            for stack_dir in stack_dirs:
+                category = stack_dir["name"]  # e.g. "manufacturing_stacks"
+                industry = category.replace("_stacks", "").replace("_", " ").title()
+                resp2 = requests.get(stack_dir["url"], timeout=10)
+                if resp2.status_code != 200:
+                    continue
+                agent_dirs = [item for item in resp2.json() if item["type"] == "dir"]
+                agents_in_stack = []
+                for agent_dir in agent_dirs:
+                    agent_name = agent_dir["name"].replace("_stack", "").replace("_", " ").title()
+                    agent_id = f"aibast_{agent_dir['name'].replace('_stack', '_agent')}"
+                    filename = agent_dir["name"].replace("_stack", "_agent") + ".py"
+                    # Build raw download URL based on convention: stack_dir/agent_name_agent.py
+                    raw_url = f"{self.AIBAST_RAW_BASE}/{self.AIBAST_AGENTS_PATH}/{category}/{agent_dir['name']}/{filename}"
+                    agents_in_stack.append({
+                        "id": agent_id,
+                        "name": f"{agent_name} Agent",
+                        "filename": filename,
+                        "url": raw_url,
+                        "type": "aibast_stack",
+                        "stack_name": f"{industry} Stack",
+                        "stack_path": f"{self.AIBAST_AGENTS_PATH}/{category}/{agent_dir['name']}",
+                        "industry": industry,
+                        "description": f"{agent_name} agent from the AIBAST {industry} vertical",
+                        "features": [industry, agent_name.lower(), "industry vertical", "synthetic demo data"],
+                        "size_formatted": "~15KB",
+                    })
+                if agents_in_stack:
+                    catalog["stacks"].append({
+                        "name": f"{industry} Stack",
+                        "path": f"{self.AIBAST_AGENTS_PATH}/{category}",
+                        "industry": industry,
+                        "agents": agents_in_stack,
+                        "source": "aibast",
+                    })
+        except Exception as e:
+            logging.warning(f"Failed to fetch AIBAST catalog: {e}")
+
+        setattr(self, cache_attr, catalog)
+        setattr(self, cache_time_attr, datetime.now())
+        return catalog
+
     def _discover_agents(self, params):
         """Discover all available agents in the GitHub library"""
         manifest = self._fetch_manifest()
@@ -194,23 +261,30 @@ class GitHubAgentLibraryManager(BasicAgent):
         # Get singular agents
         singular_agents = manifest.get('agents', [])
         
-        # Get stack agents
+        # Get stack agents from primary repo
         stacks = manifest.get('stacks', [])
+        
+        # Get AIBAST stacks
+        aibast = self._fetch_aibast_catalog()
+        aibast_stacks = aibast.get('stacks', [])
         
         # Filter by category if provided
         if category:
             category_key = f"{category}_stacks"
             stacks = [s for s in stacks if s.get('path', '').startswith(category_key)]
+            aibast_stacks = [s for s in aibast_stacks if category.replace('_', ' ').title() in s.get('industry', '')]
         
         # Count total agents
         total_singular = len(singular_agents)
         total_stack_agents = sum(len(stack.get('agents', [])) for stack in stacks)
+        total_aibast_agents = sum(len(stack.get('agents', [])) for stack in aibast_stacks)
         
         response = f"🔍 GitHub Agent Library Discovery\n\n"
-        response += f"**Repository:** {self.GITHUB_REPO}\n"
-        response += f"**Total Agents Available:** {total_singular + total_stack_agents}\n"
+        response += f"**Repositories:** {self.GITHUB_REPO} + {self.AIBAST_REPO}\n"
+        response += f"**Total Agents Available:** {total_singular + total_stack_agents + total_aibast_agents}\n"
         response += f"  • Singular Agents: {total_singular}\n"
-        response += f"  • Stack Agents: {total_stack_agents}\n\n"
+        response += f"  • Community Stack Agents: {total_stack_agents}\n"
+        response += f"  • AIBAST Industry Agents: {total_aibast_agents}\n\n"
         
         # Show singular agents
         if singular_agents:
@@ -223,9 +297,9 @@ class GitHubAgentLibraryManager(BasicAgent):
             if len(singular_agents) > 10:
                 response += f"   ... and {len(singular_agents) - 10} more singular agents\n\n"
         
-        # Show stack agents by industry
+        # Show community stack agents
         if stacks:
-            response += f"## 🏢 Agent Stacks ({len(stacks)} stacks)\n\n"
+            response += f"## 🏢 Community Stacks ({len(stacks)} stacks)\n\n"
             for stack in stacks[:5]:  # Show first 5 stacks
                 response += f"### {stack['name']}\n"
                 response += f"**Industry:** {stack.get('industry', 'General')}\n"
@@ -242,6 +316,17 @@ class GitHubAgentLibraryManager(BasicAgent):
             
             if len(stacks) > 5:
                 response += f"... and {len(stacks) - 5} more stacks\n\n"
+
+        # Show AIBAST industry stacks
+        if aibast_stacks:
+            response += f"## 🏗️ AIBAST Industry Library ({len(aibast_stacks)} verticals, {total_aibast_agents} agents)\n\n"
+            for stack in aibast_stacks:
+                agent_count = len(stack.get('agents', []))
+                agent_names = ", ".join(a['name'] for a in stack.get('agents', [])[:4])
+                if agent_count > 4:
+                    agent_names += f", +{agent_count - 4} more"
+                response += f"  • **{stack['industry']}** ({agent_count}): {agent_names}\n"
+            response += "\n"
         
         response += f"\n💡 **Tips:**\n"
         response += f"• Use `action='search', search_query='keyword'` to find specific agents\n"
@@ -292,6 +377,23 @@ class GitHubAgentLibraryManager(BasicAgent):
                         'relevance': self._calculate_relevance(agent, search_query)
                     })
         
+        # Search AIBAST industry library
+        aibast = self._fetch_aibast_catalog()
+        for stack in aibast.get('stacks', []):
+            if category:
+                if category.replace('_', ' ').title() not in stack.get('industry', ''):
+                    continue
+            for agent in stack.get('agents', []):
+                if self._matches_search(agent, search_query):
+                    results.append({
+                        'agent': agent,
+                        'type': 'aibast_stack',
+                        'stack_name': stack['name'],
+                        'stack_path': stack.get('path', ''),
+                        'stack_industry': stack.get('industry', 'General'),
+                        'relevance': self._calculate_relevance(agent, search_query)
+                    })
+        
         # Sort by relevance
         results.sort(key=lambda x: x['relevance'], reverse=True)
         
@@ -311,7 +413,7 @@ class GitHubAgentLibraryManager(BasicAgent):
             response += f"   • ID: `{agent['id']}`\n"
             response += f"   • Type: {result['type']}\n"
             
-            if result['type'] == 'stack':
+            if result['type'] in ('stack', 'aibast_stack'):
                 response += f"   • Stack: {result['stack_name']} ({result['stack_industry']})\n"
                 response += f"   • Stack Path: `{result['stack_path']}`\n"
             
@@ -323,7 +425,7 @@ class GitHubAgentLibraryManager(BasicAgent):
             
             response += f"\n   **Install Command:**\n"
             response += f"   `action='install', agent_id='{agent['id']}'"
-            if result['type'] == 'stack':
+            if result['type'] in ('stack', 'aibast_stack'):
                 response += f", stack_path='{result['stack_path']}'"
             response += f"`\n\n"
         
@@ -391,6 +493,23 @@ class GitHubAgentLibraryManager(BasicAgent):
                     if agent['id'] == agent_id:
                         agent_info = agent
                         source_type = 'stack'
+                        agent_info['stack_info'] = {
+                            'name': stack['name'],
+                            'path': stack.get('path', ''),
+                            'industry': stack.get('industry', 'General')
+                        }
+                        break
+                if agent_info:
+                    break
+        
+        # Check AIBAST industry library
+        if not agent_info:
+            aibast = self._fetch_aibast_catalog()
+            for stack in aibast.get('stacks', []):
+                for agent in stack.get('agents', []):
+                    if agent['id'] == agent_id:
+                        agent_info = agent
+                        source_type = 'aibast_stack'
                         agent_info['stack_info'] = {
                             'name': stack['name'],
                             'path': stack.get('path', ''),
@@ -622,6 +741,22 @@ class GitHubAgentLibraryManager(BasicAgent):
         # Check stack agents
         if not agent_info:
             for stack in manifest.get('stacks', []):
+                for agent in stack.get('agents', []):
+                    if agent['id'] == agent_id:
+                        agent_info = agent
+                        agent_info['stack_info'] = {
+                            'name': stack['name'],
+                            'industry': stack.get('industry', 'General'),
+                            'path': stack.get('path', '')
+                        }
+                        break
+                if agent_info:
+                    break
+        
+        # Check AIBAST industry library
+        if not agent_info:
+            aibast = self._fetch_aibast_catalog()
+            for stack in aibast.get('stacks', []):
                 for agent in stack.get('agents', []):
                     if agent['id'] == agent_id:
                         agent_info = agent

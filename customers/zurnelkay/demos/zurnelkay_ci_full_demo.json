@@ -1,0 +1,95 @@
+{
+  "demo_name": "Zurn Elkay Competitive Intelligence System",
+  "description": "AI-powered competitive intelligence platform with 7 specialized agents covering 5 business units, cross-BU synthesis, and orchestrated quarterly workflows.",
+  "agent": {
+    "name": "Zurn Elkay CI Agent Swarm",
+    "description": "Multi-agent competitive intelligence system purpose-built for Zurn Elkay Water Solutions"
+  },
+  "overview": {
+    "customer": "Zurn Elkay Water Solutions",
+    "challenge": "CI analysts spend weeks manually gathering data, each BU does CI differently making roll-ups difficult, and coordinated competitor moves across parent companies like Watts are missed.",
+    "key_differentiator": "Purpose-built multi-agent CI system with parent company coordination tracking, confidence calibration, and CEO-ready executive briefings.",
+    "traditional_timeline": "4-6 weeks per quarterly CI cycle",
+    "agent_swarm_timeline": "hours with automated data gathering and human review"
+  },
+
+  "conversation_flow": [
+    {
+      "step_number": 1,
+      "description": "ACT 1: Architecture Overview",
+      "user_message": "Show me how the Zurn Elkay CI system is structured.",
+      "agent_response": "The system is a 3-level agent hierarchy: Level 0 CI Orchestrator coordinates all agents and validates quality. Level 1 has 5 dedicated BU agents (Drains, Wilkins, Drinking Water, Sinks, Commercial Brass) each specialized for their competitive landscape. Level 2 Cross-BU Synthesizer aggregates reports and detects coordination patterns across parent companies like Watts, Morris Group, Lixil, and Geberit.",
+      "agent_reference": "zurnelkay_ci_orchestrator_agent"
+    },
+    {
+      "step_number": 2,
+      "description": "Single BU Deep Dive — Run Drains quarterly analysis",
+      "user_message": "Run a quarterly competitive intelligence analysis for the Drains business unit.",
+      "agent_response": "Quarterly CI Report for Drains BU generated. Top 3 significant changes: 1) JR Smith launched new acid-resistant trench drain system (HIGH confidence), 2) Watts/Josam filing patents for connected drain monitoring (MEDIUM confidence), 3) MiFab expanding Canadian distribution with new FOG separator lineup (HIGH confidence). Each finding includes sources from PM Engineer, Supply House Times, and NSF certification databases.",
+      "agent_reference": "zurnelkay_drains_ci_agent"
+    },
+    {
+      "step_number": 3,
+      "description": "Parent Company Coordination — Check Watts across Drains",
+      "user_message": "Check for coordinated moves by Watts Water Technologies across their drain brands.",
+      "agent_response": "Parent Company Coordination Alert: Watts Water Technologies owns Josam, Wade, Blucher, Ames, Febco, and Powers. Detected 3 coordinated signals: 1) Shared IoT sensor platform appearing in both Josam drains and Watts valves (HIGH confidence), 2) Unified cloud dashboard across brands (MEDIUM confidence), 3) Cross-brand product bundling at ASPE trade show (HIGH confidence). Assessment: Watts is executing a portfolio-level digital platform strategy across drainage and valve products.",
+      "agent_reference": "zurnelkay_drains_ci_agent"
+    },
+    {
+      "step_number": 4,
+      "description": "ACT 2: BU Differentiation",
+      "user_message": "Show how each BU agent is specialized. What does the Wilkins agent track for digital innovation?",
+      "agent_response": "Wilkins CI Agent specializes in Backflow Prevention, PRVs, and TMVs with a focus on digital/smart valve technology. Digital Innovation Report: Competitors with Bluetooth connectivity: Watts (SentryPlus Alert), Caleffi (Digital series). Cloud dashboards: Watts (IntelliStation). Mobile apps: Watts (SentryPlus), Caleffi (CaleffiApp). Building management integration: Watts leads with BACnet integration. Feature comparison matrix generated with 12 capabilities across 4 competitors.",
+      "agent_reference": "zurnelkay_wilkins_ci_agent"
+    },
+    {
+      "step_number": 5,
+      "description": "Competitor Deep Dive — Analyze Watts in Wilkins category",
+      "user_message": "Give me a deep analysis of Watts as a competitor in the Wilkins space.",
+      "agent_response": "Watts Competitor Analysis for Wilkins category: Portfolio strategy shows brand consolidation under Watts Master brand. Key moves: 1) Digital platform investment in SentryPlus family expanding from backflow to PRVs, 2) Healthcare vertical focus with Powers TMV integration into Watts ecosystem, 3) Hired 4 Honeywell building automation engineers (LinkedIn source, MEDIUM confidence). Strategic assessment: Watts is positioning for connected building ecosystem play, not just product competition. This represents a fundamental shift from product to platform strategy.",
+      "agent_reference": "zurnelkay_wilkins_ci_agent"
+    },
+    {
+      "step_number": 6,
+      "description": "Source Transparency — Drinking Water certifications",
+      "user_message": "Show me NSF certification changes in the Drinking Water category with full source attribution.",
+      "agent_response": "NSF Certification Updates for Drinking Water: 1) Elkay ezH2O received NSF 61 recertification (Source: NSF International database, HIGH confidence, verified 2025-11-15), 2) Oasis International new POU filtration received NSF 53 for lead reduction (Source: NSF listing, HIGH confidence), 3) Halsey Taylor HydroBoost registered for NSF 372 lead-free compliance (Source: Halsey Taylor press release, MEDIUM confidence). All entries include verification URLs. Third-party sources prioritized over company PR.",
+      "agent_reference": "zurnelkay_drinking_water_ci_agent"
+    },
+    {
+      "step_number": 7,
+      "description": "Healthcare Focus — Sinks competitive landscape",
+      "user_message": "What healthcare innovations are happening in the Sinks competitive space?",
+      "agent_response": "Healthcare Sinks Innovation Report: Key innovations: 1) Just Manufacturing launched antimicrobial stainless steel sink line with EPA-registered coating (HIGH confidence), 2) Bradley added touchless ligature-resistant fixtures for behavioral health (HIGH confidence), 3) T&S Brass released hands-free faucet with 0.5 GPM laminar flow for surgical scrub compliance (MEDIUM confidence). Morris Group coordination alert: Just Manufacturing AND T&S Brass are Morris Group companies — their healthcare sink + faucetry integration represents a coordinated bundled solution play.",
+      "agent_reference": "zurnelkay_sinks_ci_agent"
+    },
+    {
+      "step_number": 8,
+      "description": "Platform Competition — Commercial Brass strategic shift",
+      "user_message": "What platform launches are happening in Commercial Brass?",
+      "agent_response": "Commercial Brass Platform Report: Major strategic shift detected. 1) Sloan launched Sloan Connect enterprise restroom management platform — hardware + SaaS subscription model, cloud analytics, predictive maintenance (HIGH confidence). 2) Kohler expanding Kohler Connect portfolio into commercial with fleet management tools (MEDIUM confidence). Business model shift: Both competitors moving from pure hardware to hardware + recurring SaaS revenue. This is platform competition, not product competition. Sloan hiring Honeywell building automation experts signals deeper BMS integration plans.",
+      "agent_reference": "zurnelkay_commercial_brass_ci_agent"
+    },
+    {
+      "step_number": 9,
+      "description": "ACT 3: Enterprise Intelligence",
+      "user_message": "Now show me the cross-BU synthesis — what patterns emerge across all five business units?",
+      "agent_response": "Cross-BU Enterprise Synthesis: Top 5 Enterprise Signals: 1) Watts Water Technologies executing coordinated digital platform strategy across 4 of 5 BU categories (CRITICAL), 2) Healthcare vertical convergence — 3 BUs seeing healthcare-specific competitive moves (HIGH), 3) Platform/SaaS business model shift in Commercial Brass spreading to other categories (HIGH), 4) Morris Group bundling strategy across Sinks and Commercial Brass (MEDIUM), 5) NSF/certification activity accelerating across Drinking Water and Wilkins (MEDIUM). Cross-BU Pattern: Digital transformation is the dominant strategic theme across competitors.",
+      "agent_reference": "zurnelkay_crossbu_synthesizer_agent"
+    },
+    {
+      "step_number": 10,
+      "description": "Executive Briefing — CEO-ready output",
+      "user_message": "Generate the executive briefing for the quarterly strategy review.",
+      "agent_response": "Executive Briefing — Q4 2025: Zurn Elkay faces a market inflection point. Watts Water Technologies is executing a coordinated digital platform strategy across your competitive landscape, moving from product competition to ecosystem competition. Sloan and Kohler are pioneering hardware+SaaS models in Commercial Brass. Healthcare represents a convergence opportunity across Sinks, Drinking Water, and Commercial Brass. Critical recommendation: Accelerate connected product roadmap and evaluate platform strategy before competitors establish ecosystem lock-in. This briefing is ready for CEO/COO review with full source attribution.",
+      "agent_reference": "zurnelkay_crossbu_synthesizer_agent"
+    },
+    {
+      "step_number": 11,
+      "description": "System Management — Orchestrator health check",
+      "user_message": "Run a system health check on the entire CI agent swarm.",
+      "agent_response": "System Health Check: Overall status: HEALTHY. All 5 BU agents responsive — Drains (OK), Wilkins (OK), Drinking Water (OK), Sinks (OK), Commercial Brass (OK). Cross-BU Synthesizer (OK). Quality validation: All reports meet required field standards, confidence calibration within normal range, source attribution present on all findings. Last quarterly workflow completed successfully in 4.2 hours with 0 retries needed.",
+      "agent_reference": "zurnelkay_ci_orchestrator_agent"
+    }
+  ]
+}

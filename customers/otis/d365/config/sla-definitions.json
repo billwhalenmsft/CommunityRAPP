@@ -1,0 +1,259 @@
+{
+  "slaDefinitions": {
+    "metadata": {
+      "description": "SLA Definitions for Otis EMEA Customer Service Demo",
+      "lastUpdated": "2026-03-15",
+      "applicableTo": "UK Service Contracts"
+    },
+    "entitlements": [
+      {
+        "id": "SLA-TIER1-PREMIUM",
+        "name": "Tier 1 Premium Service SLA",
+        "description": "SLA for Tier 1 Premium Service contract customers (24/7 coverage)",
+        "applicableTo": {
+          "contractType": "Premium Service - 24/7",
+          "tier": "Tier 1"
+        },
+        "kpis": [
+          {
+            "name": "First Response",
+            "warning": "45 minutes",
+            "failure": "60 minutes",
+            "applicableDays": "24/7 including holidays",
+            "pauseConditions": ["On Hold - Waiting for Customer"]
+          },
+          {
+            "name": "Resolution Time",
+            "warningByPriority": {
+              "Critical": "2 hours",
+              "High": "4 hours",
+              "Normal": "8 hours"
+            },
+            "failureByPriority": {
+              "Critical": "4 hours",
+              "High": "8 hours",
+              "Normal": "24 hours"
+            },
+            "applicableDays": "24/7 including holidays",
+            "pauseConditions": ["On Hold - Waiting for Customer", "On Hold - Waiting for Parts"]
+          }
+        ],
+        "accounts": ["Westfield London Shopping Centre", "Canary Wharf Tower", "Riverside Medical Centre", "The Shard London", "Birmingham New Street Station"]
+      },
+      {
+        "id": "SLA-TIER1-HEALTHCARE",
+        "name": "Healthcare Priority SLA",
+        "description": "Enhanced SLA for healthcare facilities with 1-hour entrapment response",
+        "applicableTo": {
+          "contractType": "Premium Service - 24/7",
+          "tier": "Tier 1",
+          "vertical": "Healthcare"
+        },
+        "kpis": [
+          {
+            "name": "First Response",
+            "warning": "30 minutes",
+            "failure": "45 minutes",
+            "applicableDays": "24/7 including holidays",
+            "pauseConditions": ["On Hold - Waiting for Customer"]
+          },
+          {
+            "name": "Emergency Resolution (Entrapment)",
+            "warning": "45 minutes",
+            "failure": "60 minutes",
+            "applicableDays": "24/7 including holidays",
+            "escalationOnFailure": "Regional Operations Manager"
+          },
+          {
+            "name": "Standard Resolution",
+            "warningByPriority": {
+              "Critical": "2 hours",
+              "High": "4 hours",
+              "Normal": "6 hours"
+            },
+            "failureByPriority": {
+              "Critical": "3 hours",
+              "High": "6 hours",
+              "Normal": "12 hours"
+            },
+            "applicableDays": "24/7 including holidays",
+            "pauseConditions": ["On Hold - Waiting for Customer", "On Hold - Waiting for Parts"]
+          }
+        ],
+        "accounts": ["Riverside Medical Centre"]
+      },
+      {
+        "id": "SLA-TIER2-STANDARD",
+        "name": "Tier 2 Standard Service SLA",
+        "description": "SLA for Tier 2 Full Maintenance contract customers (business hours)",
+        "applicableTo": {
+          "contractType": "Full Maintenance",
+          "tier": "Tier 2"
+        },
+        "kpis": [
+          {
+            "name": "First Response",
+            "warning": "2 hours",
+            "failure": "4 hours",
+            "applicableDays": "Monday-Friday 8:00-18:00, excluding UK bank holidays",
+            "pauseConditions": ["On Hold - Waiting for Customer"]
+          },
+          {
+            "name": "Resolution Time",
+            "warningByPriority": {
+              "Critical": "4 hours",
+              "High": "8 hours",
+              "Normal": "24 hours"
+            },
+            "failureByPriority": {
+              "Critical": "8 hours",
+              "High": "16 hours",
+              "Normal": "48 hours"
+            },
+            "applicableDays": "Monday-Friday 8:00-18:00, excluding UK bank holidays",
+            "pauseConditions": ["On Hold - Waiting for Customer", "On Hold - Waiting for Parts"]
+          }
+        ],
+        "accounts": ["Marriott Hotel Manchester", "Parkview Residential Tower", "Greenfield School", "Metro Office Park", "Crown Shopping Centre"]
+      }
+    ],
+    "priorityDefinitions": [
+      {
+        "priority": "Critical",
+        "description": "Elevator safety issue or entrapment requiring immediate response",
+        "criteria": [
+          "Passenger entrapment",
+          "Safety device malfunction",
+          "Elevator runaway or freefall indication",
+          "Fire service mode activation (non-drill)",
+          "Structural/mechanical damage affecting safety"
+        ],
+        "color": "#FF0000",
+        "icon": "🔴"
+      },
+      {
+        "priority": "High",
+        "description": "Major service disruption affecting building operations",
+        "criteria": [
+          "Elevator out of service (bank with limited redundancy)",
+          "Recurring issue (3+ occurrences in 30 days)",
+          "VIP/tenant escalation",
+          "Pre-scheduled event affected",
+          "Healthcare facility non-emergency issue"
+        ],
+        "color": "#FF8C00",
+        "icon": "🟠"
+      },
+      {
+        "priority": "Normal",
+        "description": "Standard service request or inquiry",
+        "criteria": [
+          "Single elevator out with redundancy available",
+          "Maintenance scheduling",
+          "Billing inquiries",
+          "Contract questions",
+          "Modernization inquiries"
+        ],
+        "color": "#FFD700",
+        "icon": "🟡"
+      }
+    ],
+    "statusReasons": {
+      "Active": [
+        "In Progress",
+        "Researching",
+        "Waiting for Details",
+        "On Hold"
+      ],
+      "Resolved": [
+        "Problem Solved",
+        "Customer Confirmed",
+        "Escalated to Sales",
+        "No Action Required"
+      ],
+      "Cancelled": [
+        "Duplicate Case",
+        "Customer Request",
+        "Test Case"
+      ]
+    },
+    "escalationMatrix": {
+      "firstLevelSupervisor": {
+        "triggers": [
+          "SLA Warning threshold reached",
+          "Customer requests escalation",
+          "Recurring issue identified"
+        ],
+        "responsibleRole": "Service Supervisor",
+        "responseTime": "15 minutes"
+      },
+      "secondLevelManager": {
+        "triggers": [
+          "SLA Failure threshold reached",
+          "Supervisor escalation after 30 minutes",
+          "Revenue impact > £10,000",
+          "Contract renewal at risk"
+        ],
+        "responsibleRole": "Regional Operations Manager",
+        "responseTime": "30 minutes"
+      },
+      "executiveEscalation": {
+        "triggers": [
+          "Safety incident",
+          "Media attention",
+          "Legal/regulatory involvement",
+          "Contract value > £500,000 at risk"
+        ],
+        "responsibleRole": "VP Service Operations",
+        "responseTime": "Immediate"
+      }
+    }
+  },
+  "demoCaseTimers": {
+    "HERO-001": {
+      "caseName": "Entrapment - Riverside Medical Centre",
+      "slaEntitlement": "SLA-TIER1-HEALTHCARE",
+      "currentStatus": "In SLA",
+      "firstResponseStatus": "Met (2 min 45 sec)",
+      "resolutionStatus": "In Progress",
+      "timeRemaining": "52 minutes",
+      "timerColor": "green"
+    },
+    "HERO-002": {
+      "caseName": "Recurring Door Issue - Canary Wharf",
+      "slaEntitlement": "SLA-TIER1-PREMIUM",
+      "currentStatus": "In SLA",
+      "firstResponseStatus": "Met",
+      "resolutionStatus": "Scheduled for resolution",
+      "timeRemaining": "On schedule for March 17",
+      "timerColor": "green"
+    },
+    "HERO-003": {
+      "caseName": "Modernization Inquiry - The Shard",
+      "slaEntitlement": "SLA-TIER1-PREMIUM",
+      "currentStatus": "In SLA",
+      "firstResponseStatus": "Met",
+      "resolutionStatus": "Waiting for customer",
+      "timeRemaining": "Paused (customer action required)",
+      "timerColor": "blue"
+    },
+    "HERO-004": {
+      "caseName": "Billing Dispute - Marriott Hotel",
+      "slaEntitlement": "SLA-TIER2-STANDARD",
+      "currentStatus": "Warning",
+      "firstResponseStatus": "Met",
+      "resolutionStatus": "Approaching deadline",
+      "timeRemaining": "2 hours",
+      "timerColor": "yellow"
+    },
+    "HERO-005": {
+      "caseName": "PM Callback - Westfield London",
+      "slaEntitlement": "SLA-TIER1-PREMIUM",
+      "currentStatus": "In SLA",
+      "firstResponseStatus": "Met (via chat)",
+      "resolutionStatus": "Scheduled for resolution",
+      "timeRemaining": "On schedule for March 19",
+      "timerColor": "green"
+    }
+  }
+}

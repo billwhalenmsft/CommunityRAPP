@@ -1,0 +1,114 @@
+{
+    "_metadata": {
+        "description": "Zurn Elkay Demo Data - Product Serials for Warranty Lookup",
+        "customer": "Zurn Elkay",
+        "project": "Mfg Customer Service",
+        "demoDate": "2026-03-19",
+        "focus": "Serial-based Warranty Lookup, Distributor Service",
+        "brands": ["Zurn", "Elkay"],
+        "note": "Product Serials tied to real distributor accounts in Dataverse. Serial patterns: ZRN-YYYY-XXXXX (Zurn), ELK-YYYY-XXXXX (Elkay)."
+    },
+
+    "productSerials": {
+        "_note": "Each entry becomes a cr74e_productserial record. Fields: Serial ID, Product Name, Warranty Start, Warranty End, Original Order Number, Customer (distributor account name).",
+        "serials": [
+            {
+                "_comment": "--- FERGUSON ENTERPRISES (Tier-1 Strategic) ---",
+                "customer": "Ferguson Enterprises",
+                "items": [
+                    { "serialNumber": "ZRN-2024-10100", "productName": "Zurn AquaVantage AV Flush Valve", "warrantyStart": "2024-06-15", "warrantyEnd": "2027-06-15", "orderNumber": "PO-94820" },
+                    { "serialNumber": "ZRN-2024-10101", "productName": "Zurn AquaVantage AV Flush Valve", "warrantyStart": "2024-06-15", "warrantyEnd": "2027-06-15", "orderNumber": "PO-94820" },
+                    { "serialNumber": "ZRN-2024-10102", "productName": "Zurn AquaVantage AV Flush Valve", "warrantyStart": "2024-06-20", "warrantyEnd": "2027-06-20", "orderNumber": "PO-95102" },
+                    { "serialNumber": "ZRN-2025-20200", "productName": "Zurn AquaSense Sensor Faucet", "warrantyStart": "2025-01-10", "warrantyEnd": "2028-01-10", "orderNumber": "PO-95102" },
+                    { "serialNumber": "ZRN-2025-20201", "productName": "Zurn AquaSense Sensor Faucet", "warrantyStart": "2025-01-10", "warrantyEnd": "2028-01-10", "orderNumber": "PO-95102" },
+                    { "serialNumber": "ELK-2024-50100", "productName": "Elkay EZH2O Bottle Filling Station", "warrantyStart": "2024-03-01", "warrantyEnd": "2027-03-01", "orderNumber": "PO-94820" },
+                    { "serialNumber": "ELK-2024-50101", "productName": "Elkay EZH2O Bottle Filling Station", "warrantyStart": "2024-03-01", "warrantyEnd": "2027-03-01", "orderNumber": "PO-94820" },
+                    { "serialNumber": "ELK-2025-50200", "productName": "Elkay EZH2O Liv Built-in Filtered Station", "warrantyStart": "2025-02-14", "warrantyEnd": "2028-02-14", "orderNumber": "PO-94820" },
+                    { "serialNumber": "ZRN-2023-30100", "productName": "Zurn Z886 Trench Drain System", "warrantyStart": "2023-04-01", "warrantyEnd": "2028-04-01", "orderNumber": "PO-93201" },
+                    { "serialNumber": "ZRN-2023-30101", "productName": "Zurn Z100 Roof Drain", "warrantyStart": "2023-04-10", "warrantyEnd": "2028-04-10", "orderNumber": "PO-93201" }
+                ]
+            },
+            {
+                "_comment": "--- HAJOCA CORPORATION (Tier-1 Strategic) ---",
+                "customer": "Hajoca Corporation",
+                "items": [
+                    { "serialNumber": "ZRN-2025-20300", "productName": "Zurn AquaSense Sensor Faucet", "warrantyStart": "2025-02-01", "warrantyEnd": "2028-02-01", "orderNumber": "PO-HJ-4412" },
+                    { "serialNumber": "ZRN-2024-10200", "productName": "Zurn AquaVantage AV Flush Valve", "warrantyStart": "2024-09-15", "warrantyEnd": "2027-09-15", "orderNumber": "PO-HJ-4412" },
+                    { "serialNumber": "ZRN-2024-10201", "productName": "Zurn AquaVantage AV Flush Valve", "warrantyStart": "2024-09-15", "warrantyEnd": "2027-09-15", "orderNumber": "PO-HJ-4412" },
+                    { "serialNumber": "ZRN-2025-40100", "productName": "Zurn Wilkins 975XL Backflow Preventer", "warrantyStart": "2025-01-20", "warrantyEnd": "2030-01-20", "orderNumber": "PO-HJ-4412" },
+                    { "serialNumber": "ELK-2024-60100", "productName": "Elkay Lustertone DLRS3322 Sink", "warrantyStart": "2024-07-10", "warrantyEnd": "2027-07-10", "orderNumber": "PO-HJ-4412" },
+                    { "serialNumber": "ELK-2025-60200", "productName": "Elkay Lustertone Undermount Sink", "warrantyStart": "2025-03-01", "warrantyEnd": "2028-03-01", "orderNumber": "PO-HJ-4412" }
+                ]
+            },
+            {
+                "_comment": "--- HD SUPPLY (Tier-2 Key) ---",
+                "customer": "HD Supply",
+                "items": [
+                    { "serialNumber": "ZRN-2025-20400", "productName": "Zurn AquaSense Sensor Faucet", "warrantyStart": "2025-01-05", "warrantyEnd": "2028-01-05", "orderNumber": "PO-HD-7845" },
+                    { "serialNumber": "ZRN-2025-20401", "productName": "Zurn AquaSense Sensor Faucet", "warrantyStart": "2025-01-05", "warrantyEnd": "2028-01-05", "orderNumber": "PO-HD-7845" },
+                    { "serialNumber": "ELK-2025-50300", "productName": "Elkay EZH2O Bottle Filling Station", "warrantyStart": "2025-03-10", "warrantyEnd": "2028-03-10", "orderNumber": "PO-HD-7845" },
+                    { "serialNumber": "ELK-2025-60300", "productName": "Elkay EWF3000 Water Sentry Plus Filter", "warrantyStart": "2025-02-20", "warrantyEnd": "2026-02-20", "orderNumber": "PO-HD-7845" }
+                ]
+            },
+            {
+                "_comment": "--- PACIFIC PLUMBING SUPPLY (Tier-2 Key) ---",
+                "customer": "Pacific Plumbing Supply",
+                "items": [
+                    { "serialNumber": "ZRN-2024-10300", "productName": "Zurn AquaFlush Urinal Flush Valve", "warrantyStart": "2024-08-01", "warrantyEnd": "2027-08-01", "orderNumber": "PO-PP-2241" },
+                    { "serialNumber": "ZRN-2024-10301", "productName": "Zurn AquaFlush Urinal Flush Valve", "warrantyStart": "2024-08-01", "warrantyEnd": "2027-08-01", "orderNumber": "PO-PP-2241" },
+                    { "serialNumber": "ZRN-2025-30200", "productName": "Zurn Z1000 Floor Drain", "warrantyStart": "2025-01-15", "warrantyEnd": "2030-01-15", "orderNumber": "PO-PP-2241" }
+                ]
+            },
+            {
+                "_comment": "--- WINSUPPLY INC. (Tier-2 Key) ---",
+                "customer": "Winsupply Inc.",
+                "items": [
+                    { "serialNumber": "ELK-2025-60400", "productName": "Elkay EWF3000 Water Sentry Plus Filter", "warrantyStart": "2025-01-20", "warrantyEnd": "2026-01-20", "orderNumber": "PO-WS-8830" },
+                    { "serialNumber": "ELK-2025-60401", "productName": "Elkay EWF3000 Water Sentry Plus Filter", "warrantyStart": "2025-01-20", "warrantyEnd": "2026-01-20", "orderNumber": "PO-WS-8830" },
+                    { "serialNumber": "ELK-2024-50300", "productName": "Elkay EZH2O Bottle Filling Station", "warrantyStart": "2024-11-01", "warrantyEnd": "2027-11-01", "orderNumber": "PO-WS-8830" }
+                ]
+            },
+            {
+                "_comment": "--- CONSOLIDATED SUPPLY CO. (Tier-3 Standard) ---",
+                "customer": "Consolidated Supply Co.",
+                "items": [
+                    { "serialNumber": "ZRN-2025-20500", "productName": "Zurn AquaSense Sensor Faucet", "warrantyStart": "2025-03-01", "warrantyEnd": "2028-03-01", "orderNumber": "PO-CS-1198" },
+                    { "serialNumber": "ZRN-2024-10400", "productName": "Zurn AquaVantage AV Flush Valve", "warrantyStart": "2024-11-15", "warrantyEnd": "2027-11-15", "orderNumber": "PO-CS-1198" }
+                ]
+            },
+            {
+                "_comment": "--- ABC PLUMBING WHOLESALE (Tier-3 Standard) ---",
+                "customer": "ABC Plumbing Wholesale",
+                "items": [
+                    { "serialNumber": "ELK-2025-50400", "productName": "Elkay EZH2O Bottle Filling Station", "warrantyStart": "2025-02-10", "warrantyEnd": "2028-02-10", "orderNumber": "PO-ABC-5567" },
+                    { "serialNumber": "ELK-2024-60500", "productName": "Elkay LZSTL8 Bi-Level Drinking Fountain", "warrantyStart": "2024-05-20", "warrantyEnd": "2027-05-20", "orderNumber": "PO-ABC-5567" }
+                ]
+            },
+            {
+                "_comment": "--- GATEWAY SUPPLY COMPANY (Tier-3 Standard) ---",
+                "customer": "Gateway Supply Company",
+                "items": [
+                    { "serialNumber": "ZRN-2025-30300", "productName": "Zurn Z886 Trench Drain System", "warrantyStart": "2025-01-05", "warrantyEnd": "2030-01-05", "orderNumber": "PO-GW-3310" },
+                    { "serialNumber": "ZRN-2024-30400", "productName": "Zurn Z100 Roof Drain", "warrantyStart": "2024-10-01", "warrantyEnd": "2029-10-01", "orderNumber": "PO-GW-3310" }
+                ]
+            },
+            {
+                "_comment": "--- EXPIRED WARRANTIES (for demo contrast) ---",
+                "customer": "Midwest Pipe & Supply",
+                "items": [
+                    { "serialNumber": "ZRN-2021-10500", "productName": "Zurn AquaVantage AV Flush Valve", "warrantyStart": "2021-03-01", "warrantyEnd": "2024-03-01", "orderNumber": "PO-MW-OLD-001" },
+                    { "serialNumber": "ELK-2021-50500", "productName": "Elkay LZSTL8 Bi-Level Drinking Fountain", "warrantyStart": "2021-06-15", "warrantyEnd": "2024-06-15", "orderNumber": "PO-MW-OLD-002" },
+                    { "serialNumber": "ELK-2022-60600", "productName": "Elkay Lustertone DLRS3322 Sink", "warrantyStart": "2022-01-10", "warrantyEnd": "2025-01-10", "orderNumber": "PO-MW-OLD-003" }
+                ]
+            },
+            {
+                "_comment": "--- EXPIRING SOON (for demo urgency) ---",
+                "customer": "Southern Pipe & Supply",
+                "items": [
+                    { "serialNumber": "ZRN-2023-20600", "productName": "Zurn AquaSense Sensor Faucet", "warrantyStart": "2023-04-01", "warrantyEnd": "2026-04-01", "orderNumber": "PO-SP-3300" },
+                    { "serialNumber": "ELK-2023-50600", "productName": "Elkay EZH2O Bottle Filling Station", "warrantyStart": "2023-05-15", "warrantyEnd": "2026-05-15", "orderNumber": "PO-SP-3301" }
+                ]
+            }
+        ]
+    }
+}

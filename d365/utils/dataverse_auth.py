@@ -21,19 +21,27 @@ class DataverseSession:
         self._authenticate()
 
     def _authenticate(self):
-        """Acquire token via `az account get-access-token`."""
-        result = subprocess.run(
-            ["az", "account", "get-access-token", "--resource", self.org_url],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        token_data = json.loads(result.stdout)
-        token = token_data["accessToken"]
+        """Acquire token via AzureCliCredential (azure-identity SDK) with subprocess fallback."""
+        try:
+            from azure.identity import AzureCliCredential
+            cred = AzureCliCredential()
+            token = cred.get_token(f"{self.org_url}/.default")
+            access_token = token.token
+        except Exception:
+            # Fallback to subprocess with shell=True so az.cmd is found on Windows
+            result = subprocess.run(
+                ["az", "account", "get-access-token", "--resource", self.org_url],
+                capture_output=True,
+                text=True,
+                check=True,
+                shell=True,
+            )
+            token_data = json.loads(result.stdout)
+            access_token = token_data["accessToken"]
 
         self._session.headers.update(
             {
-                "Authorization": f"Bearer {token}",
+                "Authorization": f"Bearer {access_token}",
                 "OData-MaxVersion": "4.0",
                 "OData-Version": "4.0",
                 "Accept": "application/json",

@@ -43,6 +43,9 @@ deployment/
 run.bat
 run.ps1
 
+# Skills for Copilot Studio plugin (cloned dependency)
+.skills-for-copilot-studio/
+
 # 365 Vigilant Spark - Hook Logs (contain conversation data)
 .claude/hooks/*.log
 .claude/hooks/awakening-count

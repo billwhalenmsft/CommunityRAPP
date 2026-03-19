@@ -210,15 +210,12 @@ Screens:
           Properties:
             Items: |-
               =Filter(Products,
-                  Switch(ddBrand.Selected.Value,
-                      "Zurn", StartsWith('Product ID', "ZN") || StartsWith('Product ID', "WK"),
-                      "Elkay", StartsWith('Product ID', "EK"),
-                      "Otis Parts", StartsWith('Product ID', "OT-"),
-                      false
-                  )
+                  (ddBrand.Selected.Value = "Zurn" && (StartsWith('Product ID', "ZN") || StartsWith('Product ID', "WK"))) ||
+                  (ddBrand.Selected.Value = "Elkay" && StartsWith('Product ID', "EK")) ||
+                  (ddBrand.Selected.Value = "Otis Parts" && StartsWith('Product ID', "OT-"))
               )
             DisplayFields: =["Name", "Product ID"]
-            SearchFields: =["Name", "Product ID"]
+            SearchFields: =["Name"]
             IsSearchable: =true
             SelectMultiple: =false
             X: =16

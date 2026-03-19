@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otis Service Copilot - Demo Script</title>
+    <style>
+        :root {
+            --otis-blue: #1e4d8c;
+            --otis-light: #e8f0f8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; padding: 20px; }
+        .header { background: var(--otis-blue); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+        .header img { width: 60px; height: 60px; border-radius: 50%; background: white; }
+        .header h1 { font-size: 24px; }
+        .header p { opacity: 0.9; }
+        .section { background: white; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section h2 { color: var(--otis-blue); margin-bottom: 15px; border-bottom: 2px solid var(--otis-light); padding-bottom: 10px; }
+        .prompt-card { background: var(--otis-light); border-left: 4px solid var(--otis-blue); padding: 12px 15px; margin: 10px 0; border-radius: 0 8px 8px 0; cursor: pointer; transition: all 0.2s; }
+        .prompt-card:hover { background: #d0e4f5; transform: translateX(5px); }
+        .prompt-card.copied { background: #c8e6c9; border-left-color: #4caf50; }
+        .prompt-text { font-size: 14px; color: #333; }
+        .category { font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+        .demo-step { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0; }
+        .demo-step h3 { color: var(--otis-blue); font-size: 16px; display: flex; align-items: center; gap: 10px; }
+        .step-number { background: var(--otis-blue); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .demo-prompt { background: #fff3e0; padding: 10px; border-radius: 5px; margin: 10px 0; font-style: italic; cursor: pointer; }
+        .demo-prompt:hover { background: #ffe0b2; }
+        .expected { background: #e8f5e9; padding: 10px; border-radius: 5px; margin: 10px 0; font-size: 13px; }
+        .talking-points { list-style: none; padding-left: 0; }
+        .talking-points li { padding: 5px 0 5px 25px; position: relative; font-size: 13px; }
+        .talking-points li::before { content: "💡"; position: absolute; left: 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        .copy-toast { position: fixed; bottom: 20px; right: 20px; background: #4caf50; color: white; padding: 12px 20px; border-radius: 8px; display: none; animation: slideIn 0.3s; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .quick-test { background: #fff8e1; }
+        .instructions { background: #e3f2fd; padding: 15px; border-radius: 8px; }
+        .instructions ol { padding-left: 20px; }
+        .instructions li { margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="width:60px;height:60px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;">🛗</div>
+        <div>
+            <h1>Otis Service Copilot</h1>
+            <p>Demo Script & Test Prompts</p>
+        </div>
+    </div>
+
+    <div class="section instructions">
+        <h2>📋 Test Instructions</h2>
+        <ol>
+            <li>Open <strong>Copilot Studio</strong> → Select <strong>Otis Service Copilot</strong></li>
+            <li>Open the <strong>Test pane</strong> (right side)</li>
+            <li><strong>Click any prompt below</strong> to copy it to clipboard</li>
+            <li>Paste in the Test pane and observe the response</li>
+        </ol>
+    </div>
+
+    <div class="section quick-test">
+        <h2>⚡ Quick Test Sequence</h2>
+        <p style="margin-bottom:15px;color:#666;">Click each in order to test basic flow:</p>
+        <div class="prompt-card" onclick="copyPrompt(this)">
+            <div class="prompt-text">Hello, I need help with an elevator issue</div>
+        </div>
+        <div class="prompt-card" onclick="copyPrompt(this)">
+            <div class="prompt-text">There's an entrapment at Riverside Medical Centre</div>
+        </div>
+        <div class="prompt-card" onclick="copyPrompt(this)">
+            <div class="prompt-text">What's the procedure for this?</div>
+        </div>
+        <div class="prompt-card" onclick="copyPrompt(this)">
+            <div class="prompt-text">Thanks, now I have a different question - what's covered under a Gold contract?</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Topic-Specific Test Prompts</h2>
+        <div class="grid">
+            <div>
+                <h3 style="color:#c62828;margin:15px 0 10px;">🚨 Entrapment</h3>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Emergency</div>
+                    <div class="prompt-text">I have an entrapment - someone is stuck in an elevator</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Healthcare Emergency</div>
+                    <div class="prompt-text">Emergency! Patient transport staff trapped in elevator at Riverside Medical Centre</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">KB Reference</div>
+                    <div class="prompt-text">What's the entrapment response procedure for a Gen2 Premier?</div>
+                </div>
+            </div>
+            <div>
+                <h3 style="color:#f57c00;margin:15px 0 10px;">🚪 Door Issues</h3>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">General</div>
+                    <div class="prompt-text">Elevator doors won't close properly</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Specific Model</div>
+                    <div class="prompt-text">The SkyRise elevator at Imperial Tower has door alignment issues</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Troubleshooting</div>
+                    <div class="prompt-text">How do I troubleshoot door sensor problems?</div>
+                </div>
+            </div>
+            <div>
+                <h3 style="color:#1976d2;margin:15px 0 10px;">📄 Billing & Contracts</h3>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Coverage Question</div>
+                    <div class="prompt-text">What's covered under my Gold contract?</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">SLA Question</div>
+                    <div class="prompt-text">What's the SLA response time for Tier 1 Premium accounts?</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Account Lookup</div>
+                    <div class="prompt-text">Can you check the contract for Riverside Medical Centre?</div>
+                </div>
+            </div>
+            <div>
+                <h3 style="color:#388e3c;margin:15px 0 10px;">📈 Modernization</h3>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Sales Opportunity</div>
+                    <div class="prompt-text">Customer interested in upgrading their elevator</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Age-Based</div>
+                    <div class="prompt-text">The Manchester Central elevator is 20 years old, what are the options?</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Sales Transfer</div>
+                    <div class="prompt-text">Transfer this to sales - customer wants to discuss replacement</div>
+                </div>
+            </div>
+            <div>
+                <h3 style="color:#7b1fa2;margin:15px 0 10px;">🔧 Maintenance</h3>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Scheduling</div>
+                    <div class="prompt-text">Schedule a preventive maintenance visit</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Status Check</div>
+                    <div class="prompt-text">When is the next PM due for unit RM-E03?</div>
+                </div>
+                <div class="prompt-card" onclick="copyPrompt(this)">
+                    <div class="category">Reschedule</div>
+                    <div class="prompt-text">Customer wants to reschedule their maintenance appointment</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎬 Hero Case Demo Script</h2>
+        
+        <div class="demo-step">
+            <h3><span class="step-number">1</span> Healthcare Entrapment Emergency</h3>
+            <div class="demo-prompt" onclick="copyPrompt(this)">
+                "I just got a call - there's someone trapped in an elevator at Riverside Medical Centre. It's Elevator 3, a bed elevator. The facilities manager David Chen called it in."
+            </div>
+            <div class="expected">
+                <strong>Expected:</strong> Agent recognizes entrapment emergency, references KB-001247 for procedure, notes healthcare SLA (1 hour), provides step-by-step guidance.
+            </div>
+            <ul class="talking-points">
+                <li>Notice how the agent prioritizes safety and immediate action</li>
+                <li>It references the correct KB article for entrapment procedures</li>
+                <li>Healthcare SLA is automatically considered</li>
+            </ul>
+        </div>
+
+        <div class="demo-step">
+            <h3><span class="step-number">2</span> High-Rise Door Issue</h3>
+            <div class="demo-prompt" onclick="copyPrompt(this)">
+                "Imperial Tower on Deansgate is reporting door alignment problems on their SkyRise elevator. Doors are slow to close on floor 15."
+            </div>
+            <div class="expected">
+                <strong>Expected:</strong> Agent references KB-002154 for SkyRise door troubleshooting, checks contract status, suggests diagnostic steps.
+            </div>
+            <ul class="talking-points">
+                <li>Agent pulls relevant troubleshooting steps from knowledge base</li>
+                <li>Suggests remote diagnostic options</li>
+                <li>Considers safety implications</li>
+            </ul>
+        </div>
+
+        <div class="demo-step">
+            <h3><span class="step-number">3</span> Contract/Billing Question</h3>
+            <div class="demo-prompt" onclick="copyPrompt(this)">
+                "Customer at MediaCity wants to know what's covered under their Silver contract. Are emergency calls included?"
+            </div>
+            <div class="expected">
+                <strong>Expected:</strong> Agent references KB-003106 for contract coverage guide, explains Silver tier benefits and limitations.
+            </div>
+            <ul class="talking-points">
+                <li>Agent accurately describes contract coverage</li>
+                <li>Can upsell to Gold if appropriate</li>
+                <li>References authoritative knowledge source</li>
+            </ul>
+        </div>
+
+        <div class="demo-step">
+            <h3><span class="step-number">4</span> Modernization Opportunity</h3>
+            <div class="demo-prompt" onclick="copyPrompt(this)">
+                "Manchester Central Hotel is asking about upgrading their 25-year-old elevator. What modernization options do we have?"
+            </div>
+            <div class="expected">
+                <strong>Expected:</strong> Agent recognizes sales opportunity, provides general info, offers to warm transfer to modernization sales team.
+            </div>
+            <ul class="talking-points">
+                <li>Agent identifies this as a sales opportunity</li>
+                <li>Provides helpful context without overstepping</li>
+                <li>Smoothly transitions to sales handoff</li>
+            </ul>
+        </div>
+
+        <div class="demo-step">
+            <h3><span class="step-number">5</span> IoT Alert Response</h3>
+            <div class="demo-prompt" onclick="copyPrompt(this)">
+                "We got an IoT anomaly alert for elevator at MediaCityUK. Sensor shows unusual vibration patterns."
+            </div>
+            <div class="expected">
+                <strong>Expected:</strong> Agent references KB-003145 for IoT monitoring interpretation, suggests proactive maintenance scheduling.
+            </div>
+            <ul class="talking-points">
+                <li>Proactive service before customer notices issue</li>
+                <li>Explains IoT alert significance</li>
+                <li>Recommends preventive action</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="toast" class="copy-toast">✓ Copied to clipboard!</div>
+
+    <script>
+        function copyPrompt(element) {
+            const text = element.querySelector('.prompt-text, .demo-prompt')?.innerText || element.innerText;
+            const cleanText = text.replace(/^"|"$/g, '').trim();
+            navigator.clipboard.writeText(cleanText);
+            
+            element.classList.add('copied');
+            setTimeout(() => element.classList.remove('copied'), 1000);
+            
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 2000);
+        }
+    </script>
+</body>
+</html>

@@ -23,6 +23,7 @@ import threading
 from utils.azure_file_storage import safe_json_loads
 from utils.storage_factory import get_storage_manager
 from utils.result import Result, Success, Failure, AgentLoadError, APIError, partition_results
+from utils.agent_registry import build_registry, format_registry_summary
 
 
 # =============================================================================
@@ -134,6 +135,12 @@ def _get_cached_agents(user_guid=None, force_refresh=False):
             logging.info("Loading/refreshing agents cache")
             _cached_agents = load_agents_from_folder(user_guid)
             _cached_agents_created_at = time.time()
+            # Build and persist the agent registry on cache refresh
+            try:
+                registry = build_registry(_cached_agents)
+                logging.info(format_registry_summary(registry))
+            except Exception as e:
+                logging.warning(f"Agent registry build failed (non-blocking): {e}")
         
         return _cached_agents.copy()  # Return a copy to prevent mutation
 
@@ -1894,6 +1901,357 @@ async def copilot_studio_trigger(req: func.HttpRequest) -> func.HttpResponse:
             status_code=500,
             mimetype="application/json",
             headers=cors_headers
+        )
+
+
+# =============================================================================
+# DEMO ACTION ENDPOINTS
+# =============================================================================
+# Lightweight endpoints for the Demo Action Panel buttons.
+# These run locally with `func start` and work with the deployed Function App.
+# Each endpoint handles one demo action directly — no agent routing overhead.
+# =============================================================================
+
+def _find_agent(name_hint: str):
+    """Find an agent by name with case-insensitive/partial matching."""
+    agents = _get_cached_agents()
+    # Exact match
+    if name_hint in agents:
+        return agents[name_hint]
+    # Case-insensitive
+    lower = name_hint.lower()
+    for k, v in agents.items():
+        if k.lower() == lower:
+            return v
+    # Partial (underscore-separated tokens match)
+    tokens = set(lower.replace("-", "_").split("_"))
+    for k, v in agents.items():
+        agent_tokens = set(k.lower().replace("-", "_").split("_"))
+        if tokens.issubset(agent_tokens) or agent_tokens.issubset(tokens):
+            return v
+    return None
+
+
+@app.route(route="demo/notification", auth_level=func.AuthLevel.ANONYMOUS, methods=["POST", "OPTIONS"])
+def demo_notification(req: func.HttpRequest) -> func.HttpResponse:
+    """Send a D365 in-app toast notification. Used by Demo Action Panel."""
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+
+    try:
+        payload = req.get_json()
+        scenario = payload.get("scenario", "NewCase")
+        recipient = payload.get("recipient_email", "admin@D365DemoTSCE30330346.onmicrosoft.com")
+        case_title = payload.get("case_title", "ENTRAPMENT - Riverside Medical Centre Elevator 3")
+        customer = payload.get("customer", "Riverside Medical Centre")
+
+        # Use Dataverse API directly for speed
+        try:
+            from d365.utils.dataverse_auth import get_dataverse_session
+            org_url = "https://orgecbce8ef.crm.dynamics.com"
+            session = get_dataverse_session(org_url)
+
+            # Lookup the recipient systemuser
+            safe_email = recipient.replace("'", "''")
+            users_resp = session.get(
+                f"{org_url}/api/data/v9.2/systemusers",
+                params={"$filter": f"internalemailaddress eq '{safe_email}'",
+                        "$select": "systemuserid,fullname", "$top": 1}
+            )
+            users = users_resp.json().get("value", [])
+            if not users:
+                # Fallback — get first enabled user
+                users_resp = session.get(
+                    f"{org_url}/api/data/v9.2/systemusers",
+                    params={"$filter": "isdisabled eq false",
+                            "$select": "systemuserid,fullname", "$top": 1,
+                            "$orderby": "createdon asc"}
+                )
+                users = users_resp.json().get("value", [])
+            if not users:
+                return func.HttpResponse(
+                    json.dumps({"status": "error", "message": "No systemuser found for notification"}),
+                    status_code=404, mimetype="application/json", headers=cors_headers
+                )
+
+            user_id = users[0]["systemuserid"]
+            user_name = users[0].get("fullname", "Agent")
+
+            # Map scenario to icon/toast
+            icon_map = {"NewCase": 100000001, "SLAWarning": 100000003,
+                        "SLABreach": 100000002, "Escalation": 100000004}
+            icon = icon_map.get(scenario, 100000001)
+
+            body_text = f"{customer}: {case_title}"
+            notif_body = {
+                "title": f"[{scenario}] {customer}",
+                "body": body_text,
+                "icontype": icon,
+                "toasttype": 200000000,  # Timed toast
+                "ownerid@odata.bind": f"/systemusers({user_id})"
+            }
+
+            resp = session.post(f"{org_url}/api/data/v9.2/appnotifications", notif_body)
+            resp.raise_for_status()
+
+            result = f"Toast sent to {user_name}: {body_text}"
+        except ImportError:
+            result = "Dataverse auth module not available. Run: az login"
+
+        return func.HttpResponse(
+            json.dumps({"status": "success", "message": result, "scenario": scenario}),
+            status_code=200, mimetype="application/json", headers=cors_headers
+        )
+    except Exception as e:
+        logging.error(f"Demo notification error: {e}")
+        return func.HttpResponse(
+            json.dumps({"status": "error", "message": str(e)}),
+            status_code=500, mimetype="application/json", headers=cors_headers
+        )
+
+
+@app.route(route="demo/create-case", auth_level=func.AuthLevel.ANONYMOUS, methods=["POST", "OPTIONS"])
+def demo_create_case(req: func.HttpRequest) -> func.HttpResponse:
+    """Create a D365 case. Used by Demo Action Panel."""
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+
+    try:
+        payload = req.get_json()
+        title = payload.get("title", "Entrapment - Passenger stuck in Elevator 3")
+        customer_name = payload.get("customer_name", "Riverside Medical Centre")
+        priority = payload.get("priority", 1)
+        origin_raw = payload.get("origin", "phone")
+        description = payload.get("description", "Patient transport staff trapped in Elevator 3 between floors 2 and 3. Bed elevator essential for patient movement. Hospital security on scene.")
+
+        # Map string origin names to Dataverse codes
+        origin_map = {"phone": 1, "email": 2, "web": 3, "teams": 2483, "iot": 192350000}
+        if isinstance(origin_raw, str) and not origin_raw.isdigit():
+            origin_code = origin_map.get(origin_raw.lower(), 3)
+        else:
+            origin_code = int(origin_raw)
+        priority = int(priority)
+
+        # Use Dataverse API directly for speed
+        try:
+            from d365.utils.dataverse_auth import get_dataverse_session
+            org_url = "https://orgecbce8ef.crm.dynamics.com"
+            session = get_dataverse_session(org_url)
+
+            # Lookup account — try exact match, then contains, then first available
+            safe_name = customer_name.replace("'", "''")
+            accounts = []
+            for filt in [f"name eq '{safe_name}'", f"contains(name,'{safe_name}')"]:
+                acct_resp = session.get(
+                    f"{org_url}/api/data/v9.2/accounts",
+                    params={"$filter": filt, "$select": "accountid,name,description", "$top": 1}
+                )
+                accounts = acct_resp.json().get("value", [])
+                if accounts:
+                    break
+            if not accounts:
+                acct_resp = session.get(
+                    f"{org_url}/api/data/v9.2/accounts",
+                    params={"$select": "accountid,name,description", "$top": 1}
+                )
+                accounts = acct_resp.json().get("value", [])
+
+            # Derive tier from account description or payload
+            # cr377_tierlevel: 192350000=Tier1, 192350001=Tier2, 192350002=Tier3, 192350003=Tier4
+            tier_map = {1: 192350000, 2: 192350001, 3: 192350002, 4: 192350003}
+            tier_value = None
+            explicit_tier = payload.get("tier")
+            if explicit_tier is not None:
+                tier_value = tier_map.get(int(explicit_tier))
+            elif accounts:
+                acct_desc = (accounts[0].get("description") or "").lower()
+                # Check explicit "Tier: N" first
+                for t in [1, 2, 3, 4]:
+                    if f"tier: {t}" in acct_desc or f"tier {t}" in acct_desc:
+                        tier_value = tier_map[t]
+                        break
+                # Fallback: derive from contract type
+                if tier_value is None:
+                    if "premium" in acct_desc:
+                        tier_value = tier_map[1]
+                    elif "full maintenance" in acct_desc:
+                        tier_value = tier_map[2]
+                    elif "basic" in acct_desc:
+                        tier_value = tier_map[3]
+
+            case_body = {
+                "title": title,
+                "description": description or f"Demo case created via Action Panel at {datetime.utcnow().isoformat()}Z",
+                "prioritycode": priority,
+                "caseorigincode": origin_code,
+            }
+            if accounts:
+                case_body["customerid_account@odata.bind"] = f"/accounts({accounts[0]['accountid']})"
+            if tier_value is not None:
+                case_body["cr377_tierlevel"] = tier_value
+
+            resp = session.post(f"{org_url}/api/data/v9.2/incidents", case_body)
+            resp.raise_for_status()
+
+            # Get the created case ID from the response
+            case_id = resp.headers.get("OData-EntityId", "").split("(")[-1].rstrip(")")
+
+            # Fetch the ticket number
+            if case_id:
+                detail = session.get(f"{org_url}/api/data/v9.2/incidents({case_id})", params={"$select": "ticketnumber,title"})
+                detail_data = detail.json()
+                ticket = detail_data.get("ticketnumber", "")
+            else:
+                ticket = ""
+
+            result = f"Case created: {ticket} — {title}"
+            return func.HttpResponse(
+                json.dumps({"status": "success", "message": result, "case_id": case_id, "case_number": ticket}),
+                status_code=200, mimetype="application/json", headers=cors_headers
+            )
+        except ImportError:
+            return func.HttpResponse(
+                json.dumps({"status": "error", "message": "Dataverse auth module not available. Run: az login"}),
+                status_code=500, mimetype="application/json", headers=cors_headers
+            )
+
+    except Exception as e:
+        logging.error(f"Demo create case error: {e}")
+        return func.HttpResponse(
+            json.dumps({"status": "error", "message": str(e)}),
+            status_code=500, mimetype="application/json", headers=cors_headers
+        )
+
+
+@app.route(route="demo/sla-breach", auth_level=func.AuthLevel.ANONYMOUS, methods=["POST", "OPTIONS"])
+def demo_sla_breach(req: func.HttpRequest) -> func.HttpResponse:
+    """Simulate SLA breach on a case. Used by Demo Action Panel."""
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+
+    try:
+        payload = req.get_json()
+        breach_type = payload.get("breach_type", "violated")
+        case_number = payload.get("case_number", "")
+        case_id = payload.get("case_id", "")
+        send_notification = payload.get("send_notification", True)
+
+        try:
+            from d365.utils.dataverse_auth import get_dataverse_session
+            org_url = "https://orgecbce8ef.crm.dynamics.com"
+            session = get_dataverse_session(org_url)
+
+            # Find the case
+            if case_id:
+                filter_str = f"incidentid eq {case_id}"
+            elif case_number:
+                filter_str = f"ticketnumber eq '{case_number}'"
+            else:
+                # Get the most recent active case
+                filter_str = "statecode eq 0"
+
+            resp = session.get(
+                f"{org_url}/api/data/v9.2/incidents",
+                params={
+                    "$filter": filter_str,
+                    "$select": "incidentid,ticketnumber,title,_ownerid_value,prioritycode",
+                    "$top": 1,
+                    "$orderby": "createdon desc"
+                }
+            )
+            cases = resp.json().get("value", [])
+            if not cases:
+                return func.HttpResponse(
+                    json.dumps({"status": "error", "message": "No matching case found"}),
+                    status_code=404, mimetype="application/json", headers=cors_headers
+                )
+
+            case = cases[0]
+            cid = case["incidentid"]
+            ticket = case.get("ticketnumber", "")
+
+            # Update case to high priority with breach note
+            note = "*** SLA BREACHED ***" if breach_type == "violated" else "SLA Warning - approaching deadline"
+            session.patch(
+                f"{org_url}/api/data/v9.2/incidents({cid})",
+                {"prioritycode": 1, "description": f"{note}\n[Demo simulation at {datetime.utcnow().isoformat()}Z]"}
+            )
+
+            notif_msg = ""
+            if send_notification:
+                owner_id = case.get("_ownerid_value", "")
+                if owner_id:
+                    icon = 100000002 if breach_type == "violated" else 100000003
+                    title = "SLA BREACHED" if breach_type == "violated" else "SLA Warning"
+                    body_text = f"Case {ticket} ({case.get('title', '')}) {'has BREACHED SLA' if breach_type == 'violated' else 'is approaching SLA deadline'}"
+                    session.post(f"{org_url}/api/data/v9.2/appnotifications", {
+                        "title": title,
+                        "body": body_text,
+                        "icontype": icon,
+                        "toasttype": 200000000,
+                        "ownerid@odata.bind": f"/systemusers({owner_id})"
+                    })
+                    notif_msg = " + notification sent"
+
+            return func.HttpResponse(
+                json.dumps({
+                    "status": "success",
+                    "message": f"SLA {breach_type} on {ticket}{notif_msg}",
+                    "case_number": ticket, "case_id": cid, "breach_type": breach_type
+                }),
+                status_code=200, mimetype="application/json", headers=cors_headers
+            )
+        except ImportError:
+            return func.HttpResponse(
+                json.dumps({"status": "error", "message": "Dataverse auth module not available. Run: az login"}),
+                status_code=500, mimetype="application/json", headers=cors_headers
+            )
+
+    except Exception as e:
+        logging.error(f"Demo SLA breach error: {e}")
+        return func.HttpResponse(
+            json.dumps({"status": "error", "message": str(e)}),
+            status_code=500, mimetype="application/json", headers=cors_headers
+        )
+
+
+@app.route(route="demo/ai-triage", auth_level=func.AuthLevel.ANONYMOUS, methods=["POST", "OPTIONS"])
+def demo_ai_triage(req: func.HttpRequest) -> func.HttpResponse:
+    """Run AI triage on a case via the triage orchestrator agent. Used by Demo Action Panel."""
+    origin = req.headers.get('origin')
+    cors_headers = build_cors_response(origin)
+    if req.method == 'OPTIONS':
+        return func.HttpResponse(status_code=200, headers=cors_headers)
+
+    try:
+        payload = req.get_json()
+
+        agent = _find_agent("carrier_case_triage_orchestrator")
+        if not agent:
+            return func.HttpResponse(
+                json.dumps({"status": "error", "message": "Triage agent not loaded"}),
+                status_code=404, mimetype="application/json", headers=cors_headers
+            )
+
+        result = agent.perform(
+            action=payload.get("action", "triage_case"),
+            **{k: v for k, v in payload.items() if k != "action"}
+        )
+        return func.HttpResponse(
+            json.dumps({"status": "success", "message": str(result)[:2000]}),
+            status_code=200, mimetype="application/json", headers=cors_headers
+        )
+    except Exception as e:
+        logging.error(f"Demo AI triage error: {e}")
+        return func.HttpResponse(
+            json.dumps({"status": "error", "message": str(e)}),
+            status_code=500, mimetype="application/json", headers=cors_headers
         )
 
 

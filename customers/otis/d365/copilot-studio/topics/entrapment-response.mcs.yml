@@ -1,0 +1,75 @@
+kind: TopicMetadata
+schemaVersion: 2.0
+name: Entrapment Response Protocol
+description: Handles entrapment and emergency rescue situations with priority dispatch
+
+triggers:
+  phrases:
+    - entrapment
+    - trapped in elevator
+    - stuck in lift
+    - passenger trapped
+    - emergency rescue
+    - someone stuck
+    - person stuck
+    - people trapped
+    - customer trapped
+    - lift stuck
+
+modelDescription: |
+  This topic handles urgent entrapment situations where a passenger is trapped 
+  in an elevator. It activates emergency response protocols, surfaces relevant 
+  knowledge articles, and guides the agent through proper dispatch procedures 
+  based on account SLA tier.
+
+nodes:
+  - kind: Message
+    id: acknowledge_emergency
+    message: |
+      ⚠️ **ENTRAPMENT CASE DETECTED**
+      
+      Activating emergency response protocol. Here's what you need:
+
+  - kind: GenerativeAnswers
+    id: surface_kb
+    prompt: |
+      Search for and surface the following knowledge articles:
+      - KB-001247: Entrapment Response Procedure - Gen2 Premier
+      - KB-002156: Healthcare Facility Emergency Protocols (if healthcare facility)
+      
+      Provide a summary of the key steps from KB-001247:
+      1. Initial Response (0-2 minutes)
+      2. Dispatch Protocol
+      3. Communication Cadence (5-minute callbacks)
+
+  - kind: Condition
+    id: check_account_tier
+    condition: "account.contractType contains 'Healthcare' or account.tier = 'H1'"
+    trueActions:
+      - kind: Message
+        message: |
+          🏥 **Healthcare Priority: 1-Hour SLA Active**
+          - Apply enhanced response protocol (KB-002156)
+          - Contact hospital security for coordination
+          - Patient impact assessment required
+    falseActions:
+      - kind: Message
+        message: |
+          📋 **Standard Priority: Check Account SLA**
+          - Tier 1 Premium: 2-hour response
+          - Tier 2 Standard: 4-hour response
+
+  - kind: Message
+    id: dispatch_guidance
+    message: |
+      **Dispatch Checklist:**
+      ✅ Establish intercom contact with trapped person
+      ✅ Confirm number of passengers and any medical conditions
+      ✅ Identify nearest qualified technician with entrapment certification
+      ✅ Contact technician and confirm ETA
+      ✅ Schedule 5-minute callback with customer
+      ✅ Send email confirmation with technician ETA
+
+settings:
+  priority: High
+  escalateToAgent: false

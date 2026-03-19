@@ -1,0 +1,98 @@
+﻿{
+    "WK-DC-4002":  {
+                       "price":  485,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "a73393c1-9112-f111-8406-7ced8dceb26a"
+                   },
+    "ZN-EZ-1002":  {
+                       "price":  189,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "7a3393c1-9112-f111-8406-7ced8dceb26a"
+                   },
+    "ZN-SF-2001":  {
+                       "price":  320,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "5bcf8bbf-9112-f111-8407-7ced8d18c8d7"
+                   },
+    "ZN-AS-2002":  {
+                       "price":  165,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "b3f6c7c2-9112-f111-8407-7ced8dceb433"
+                   },
+    "WK-RP-4001":  {
+                       "price":  1250,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "b9f6c7c2-9112-f111-8407-7ced8dceb433"
+                   },
+    "EK-WC-5002":  {
+                       "price":  780,
+                       "brand":  "Elkay",
+                       "priceListId":  "6cfa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "75bf65c0-9112-f111-8407-7c1e52143136"
+                   },
+    "ZN-UR-1003":  {
+                       "price":  215,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "58cf8bbf-9112-f111-8407-7ced8d18c8d7"
+                   },
+    "ZN-TD-3002":  {
+                       "price":  425,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "94a00ac1-9112-f111-8406-6045bda80a72"
+                   },
+    "EK-BF-5001":  {
+                       "price":  1150,
+                       "brand":  "Elkay",
+                       "priceListId":  "6cfa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "8a9382bf-9112-f111-8406-7c1e5218592b"
+                   },
+    "EK-DF-5003":  {
+                       "price":  1450,
+                       "brand":  "Elkay",
+                       "priceListId":  "6cfa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "f02289c5-9112-f111-8407-7ced8d18c8d7"
+                   },
+    "ZN-FD-3001":  {
+                       "price":  89,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "6b9382bf-9112-f111-8406-7c1e5218592b"
+                   },
+    "ZN-RD-3003":  {
+                       "price":  195,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "3dc557c2-9112-f111-8407-7c1e520a58a1"
+                   },
+    "EK-UM-6002":  {
+                       "price":  520,
+                       "brand":  "Elkay",
+                       "priceListId":  "6cfa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "e7f6c7c2-9112-f111-8407-7ced8dceb433"
+                   },
+    "EK-FL-6003":  {
+                       "price":  65,
+                       "brand":  "Elkay",
+                       "priceListId":  "6cfa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "b13393c1-9112-f111-8406-7ced8dceb26a"
+                   },
+    "EK-SS-6001":  {
+                       "price":  385,
+                       "brand":  "Elkay",
+                       "priceListId":  "6cfa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "ac3393c1-9112-f111-8406-7ced8dceb26a"
+                   },
+    "ZN-AV-1001":  {
+                       "price":  245,
+                       "brand":  "Zurn",
+                       "priceListId":  "69fa0c6e-8d12-f111-8407-7c1e520a58a1",
+                       "id":  "1b495fbc-9112-f111-8407-7c1e520a58a1"
+                   }
+}

@@ -1,0 +1,27 @@
+﻿{
+    "Distributors":  {
+                         "Winsupply Inc.":  "8367912d-8d12-f111-8406-6045bda80a72",
+                         "Lakeside Plumbing Parts":  "6c969627-8d12-f111-8406-6045bda80a72",
+                         "Pacific Plumbing Supply":  "efb65226-8d12-f111-8406-7ced8dceb26a",
+                         "HD Supply":  "224aaf26-8d12-f111-8407-7c1e52143136",
+                         "Wolseley Industrial Group":  "1671c132-8d12-f111-8407-7c1e52143136",
+                         "Southern Pipe \u0026 Supply":  "3971c132-8d12-f111-8407-7c1e52143136",
+                         "Metro Building Supply":  "9897142a-8d12-f111-8407-7c1e520a58a1",
+                         "Consolidated Supply Co.":  "20a6a230-8d12-f111-8407-7ced8d18c8d7",
+                         "Gateway Supply Company":  "6b4aaf26-8d12-f111-8407-7c1e52143136",
+                         "ABC Plumbing Wholesale":  "1330372a-8d12-f111-8407-7ced8d18c8d7",
+                         "Midwest Pipe \u0026 Supply":  "d96fb733-8d12-f111-8406-6045bda80a72",
+                         "Ferguson Enterprises":  "9b1e5a20-8d12-f111-8406-7ced8dceb26a",
+                         "Hajoca Corporation":  "cebfdb23-8d12-f111-8407-7c1e520a58a1"
+                     },
+    "Manufacturers":  {
+                          "Zurn Industries":  "8bc2781a-8d12-f111-8407-7c1e52143136",
+                          "Elkay Manufacturing":  "3d228930-8d12-f111-8407-7c1e520a58a1"
+                      },
+    "EndUsers":  {
+                     "Greenfield School District":  "f66fb733-8d12-f111-8406-6045bda80a72",
+                     "City of Mesa Water Dept":  "77b7ec36-8d12-f111-8407-7c1e520a58a1",
+                     "Johnson Residence":  "7567912d-8d12-f111-8406-6045bda80a72",
+                     "Marriott Downtown Milwaukee":  "0870b733-8d12-f111-8406-6045bda80a72"
+                 }
+}

@@ -1,0 +1,221 @@
+{
+  "_description": "Copilot Studio Configuration for Otis EMEA CCaaS Demo",
+  "_lastUpdated": "2026-03-15",
+  
+  "copilotAgent": {
+    "name": "Otis Service Copilot",
+    "description": "AI assistant for Otis EMEA elevator service representatives",
+    "environment": "Customer Service workspace",
+    "capabilities": [
+      "Knowledge article search and suggestions",
+      "Case summary generation",
+      "Similar case recommendations",
+      "Draft email responses",
+      "SLA and entitlement context"
+    ]
+  },
+  
+  "knowledgeSources": {
+    "description": "Configure these knowledge sources in Copilot Studio for KB article surfacing",
+    "sources": [
+      {
+        "name": "Dataverse Knowledge Articles",
+        "type": "dataverse",
+        "entity": "knowledgearticle",
+        "status": "Published articles only",
+        "filters": {
+          "category": ["Emergency Procedures", "Technical Troubleshooting", "Contract Information", "Products & Services"],
+          "keywords": "Include articles with keywords matching common support queries"
+        },
+        "setupSteps": [
+          "1. Go to Copilot Studio > ai.cloud.microsoft.com",
+          "2. Open your Customer Service Copilot",
+          "3. Go to Knowledge > Add knowledge source",
+          "4. Select 'Dataverse' and choose 'Knowledge Articles' table",
+          "5. Set filter to 'statecode eq 3' (Published only)",
+          "6. Enable for agent assistance"
+        ]
+      }
+    ]
+  },
+  
+  "systemInstructions": {
+    "description": "Custom instructions to add to Copilot's system prompt",
+    "baseInstructions": [
+      "You are an AI assistant helping Otis elevator service representatives.",
+      "Always prioritize safety - entrapment cases are highest priority.",
+      "Reference knowledge articles by their KB number (e.g., KB-001247).",
+      "When suggesting technician dispatch, consider the account's SLA tier.",
+      "For healthcare facilities, apply enhanced response protocols (1-hour SLA).",
+      "When handling recurring issues, search for related historical cases."
+    ],
+    "contextualInstructions": {
+      "entrapment": [
+        "Immediately surface KB-001247 (Entrapment Response Procedure)",
+        "For healthcare facilities, also surface KB-002156",
+        "Guide agent through communication cadence (5-minute callbacks)",
+        "Suggest nearest available technician based on skills"
+      ],
+      "doorIssues": [
+        "Surface KB-002104 (SkyRise Door Troubleshooting) for SkyRise elevators",
+        "Ask diagnostic questions from KB to gather technician context",
+        "Check for recurring issue pattern (3+ occurrences triggers escalation)"
+      ],
+      "billing": [
+        "Surface KB-001050 (Contract Coverage Guide)",
+        "Help agent verify if repair should be covered",
+        "Guide through billing correction process if error found"
+      ],
+      "modernization": [
+        "Surface KB-003145 (Otis ONE IoT Monitoring)",
+        "Identify upsell opportunities based on equipment age",
+        "Facilitate handoff to sales team"
+      ]
+    }
+  },
+  
+  "topicConfiguration": {
+    "description": "Suggested Copilot Studio topics for demo scenarios",
+    "topics": [
+      {
+        "name": "Entrapment Response",
+        "trigger": "When case title or description contains 'entrapment', 'trapped', 'stuck'",
+        "actions": [
+          "Surface entrapment KB articles",
+          "Show account SLA details",
+          "Draft initial customer communication",
+          "Prepare dispatch recommendation"
+        ],
+        "outputToAgent": "Entrapment Protocol activated. KB-001247 attached. Account SLA: {sla_response_time}. Recommend immediate dispatch."
+      },
+      {
+        "name": "Recurring Issue Alert",
+        "trigger": "When Copilot detects 3+ cases for same equipment in 30 days",
+        "actions": [
+          "Surface related historical cases",
+          "Identify pattern in previous resolutions",
+          "Recommend escalation to Field Supervisor",
+          "Draft customer communication about comprehensive inspection"
+        ],
+        "outputToAgent": "Recurring issue detected: {count} cases in {days} days. Pattern: {pattern}. Recommend escalation for comprehensive inspection."
+      },
+      {
+        "name": "Healthcare Priority",
+        "trigger": "When account tier includes 'Healthcare' or account name contains 'Medical', 'Hospital', 'NHS'",
+        "actions": [
+          "Apply enhanced SLA (1-hour response)",
+          "Surface KB-002156 (Healthcare Protocols)",
+          "Flag patient impact assessment",
+          "Prioritize dispatch queue"
+        ],
+        "outputToAgent": "Healthcare facility detected. Enhanced SLA active (1-hour response). Assess patient impact: Is patient transport affected? Are patients in elevator?"
+      },
+      {
+        "name": "Contract Coverage Check",
+        "trigger": "When agent asks 'Is this covered?' or customer disputes billing",
+        "actions": [
+          "Surface KB-001050 (Coverage Guide)",
+          "Check part/repair against coverage list",
+          "Verify work order coding",
+          "Guide through correction process if needed"
+        ],
+        "outputToAgent": "Coverage check: {part_name} is {covered/not covered} under {contract_type}. {guidance}"
+      }
+    ]
+  },
+  
+  "demoScenarioMapping": {
+    "description": "Maps hero cases to expected Copilot behaviors for demo",
+    "heroCases": {
+      "HERO-001": {
+        "title": "Entrapment - Riverside Medical Centre",
+        "expectedCopilotBehavior": [
+          "Immediately identify as entrapment + healthcare",
+          "Surface KB-001247 and KB-002156",
+          "Show 1-hour SLA timer",
+          "Recommend emergency dispatch",
+          "Draft customer callback template"
+        ],
+        "demoTalkTrack": "Notice how Copilot immediately recognizes this as a healthcare entrapment, surfaces the relevant KB articles, and shows the enhanced SLA requirements."
+      },
+      "HERO-002": {
+        "title": "Recurring Door Issue - Canary Wharf",
+        "expectedCopilotBehavior": [
+          "Detect recurring issue pattern",
+          "Link to previous cases CAS-00798, CAS-00815",
+          "Surface KB-002104 door troubleshooting",
+          "Recommend escalation + comprehensive inspection"
+        ],
+        "demoTalkTrack": "See how Copilot identifies this is the third occurrence, links the historical cases, and proactively recommends escalation rather than another quick fix."
+      },
+      "HERO-003": {
+        "title": "Modernization Inquiry - The Shard",
+        "expectedCopilotBehavior": [
+          "Recognize sales opportunity",
+          "Surface KB-003145 Otis ONE",
+          "Calculate equipment age (2013 installation)",
+          "Draft consultation scheduling email"
+        ],
+        "demoTalkTrack": "Watch how Copilot spots the modernization opportunity and helps the agent provide informed guidance while setting up the sales handoff."
+      },
+      "HERO-004": {
+        "title": "Billing Dispute - Marriott Hotel",
+        "expectedCopilotBehavior": [
+          "Surface KB-001050 coverage guide",
+          "Identify door operator IS covered",
+          "Flag billing error",
+          "Draft credit confirmation email"
+        ],
+        "demoTalkTrack": "Copilot helps the agent quickly verify the contract coverage, identifies the billing error, and drafts a professional response to recover customer trust."
+      },
+      "HERO-005": {
+        "title": "PM Callback - Westfield London",
+        "expectedCopilotBehavior": [
+          "Recognize scheduling inquiry",
+          "Pull scheduled maintenance details",
+          "Draft confirmation email with scope",
+          "Include security coordination requirements"
+        ],
+        "demoTalkTrack": "Even for routine follow-ups, Copilot helps the agent provide complete information efficiently, including the proactive security coordination."
+      }
+    }
+  },
+  
+  "setupChecklist": [
+    {
+      "step": 1,
+      "task": "Publish Knowledge Articles",
+      "location": "Customer Service Hub > Knowledge Articles",
+      "action": "Publish all 5 KB articles from knowledge-articles.json",
+      "validation": "Articles show 'Published' status"
+    },
+    {
+      "step": 2,
+      "task": "Enable Copilot in App Profile",
+      "location": "Customer Service admin center > Agent experience > Workspaces",
+      "action": "Edit app profile, enable Copilot features",
+      "validation": "Copilot pane visible in workspace"
+    },
+    {
+      "step": 3,
+      "task": "Configure Knowledge Source",
+      "location": "Copilot Studio > Knowledge sources",
+      "action": "Add Dataverse knowledge articles as source",
+      "validation": "Knowledge articles surface when queried"
+    },
+    {
+      "step": 4,
+      "task": "Add Custom Instructions",
+      "location": "Copilot Studio > Settings > Instructions",
+      "action": "Add Otis-specific instructions from this config",
+      "validation": "Copilot responses reflect elevator service context"
+    },
+    {
+      "step": 5,
+      "task": "Test with Hero Cases",
+      "location": "Customer Service workspace",
+      "action": "Open each hero case and verify Copilot suggestions",
+      "validation": "Expected behaviors match demoScenarioMapping"
+    }
+  ]
+}

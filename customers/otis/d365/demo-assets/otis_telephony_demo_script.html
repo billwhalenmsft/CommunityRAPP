@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otis EMEA CCaaS Demo - Telephony Focus</title>
+    <style>
+        :root {
+            --otis-blue: #003366;
+            --otis-gold: #C4A000;
+            --accent: #0078d4;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        header {
+            background: var(--otis-blue);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { font-size: 2rem; }
+        header .demo-date {
+            background: var(--otis-gold);
+            color: var(--otis-blue);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: var(--otis-blue);
+            border-bottom: 3px solid var(--otis-gold);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario {
+            border-left: 4px solid var(--accent);
+            padding: 15px 20px;
+            margin: 15px 0;
+            background: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+        .scenario h3 { color: var(--otis-blue); margin-bottom: 10px; }
+        .scenario .steps { margin-top: 10px; }
+        .scenario .steps li { margin: 8px 0; padding: 5px 0; }
+        
+        .talking-point {
+            background: #e7f3ff;
+            border-left: 4px solid var(--accent);
+            padding: 12px 15px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        
+        .key-value {
+            background: linear-gradient(135deg, var(--success) 0%, #20c997 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .before-after > div { padding: 20px; border-radius: 8px; }
+        .before { background: #ffe6e6; border: 2px solid var(--danger); }
+        .after { background: #e6ffe6; border: 2px solid var(--success); }
+        .before h4 { color: var(--danger); }
+        .after h4 { color: var(--success); }
+        
+        .call-script {
+            background: #fff3cd;
+            border: 2px solid var(--warning);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .call-script h4 { color: #856404; margin-bottom: 15px; }
+        .call-script ol { margin-left: 20px; }
+        .call-script li { margin: 10px 0; }
+        
+        .screen-pop-preview {
+            background: #1a1a2e;
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+        }
+        .screen-pop-preview .header { 
+            background: var(--accent); 
+            margin: -20px -20px 15px -20px; 
+            padding: 15px 20px; 
+            border-radius: 8px 8px 0 0;
+        }
+        .screen-pop-preview .field { margin: 8px 0; display: flex; }
+        .screen-pop-preview .label { color: #888; width: 180px; }
+        .screen-pop-preview .value { color: #4fc3f7; }
+        .screen-pop-preview .value.critical { color: #ff5252; font-weight: bold; }
+        .screen-pop-preview .value.premium { color: var(--otis-gold); }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent);
+        }
+        .timeline-item {
+            position: relative;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+        .timeline-item .time { color: var(--accent); font-weight: bold; }
+        
+        @media print {
+            body { background: white; }
+            .section { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🛗 Otis EMEA CCaaS Demo</h1>
+                <p>D365 Customer Service + Voice Channel Integration</p>
+            </div>
+            <div class="demo-date">
+                📅 March 20, 2026 @ 11:00 AM CT
+            </div>
+        </header>
+
+        <!-- CONTEXT -->
+        <div class="section">
+            <h2>📋 Demo Context</h2>
+            <div class="before-after">
+                <div class="before">
+                    <h4>❌ Today: Ring Central + USD</h4>
+                    <ul>
+                        <li>Manual phone number lookup from Ring Central</li>
+                        <li>Search by Contact Phone or Account in side panel</li>
+                        <li>No automatic customer identification</li>
+                        <li>35 agents switching between two systems</li>
+                        <li>Call script in separate USD window</li>
+                    </ul>
+                </div>
+                <div class="after">
+                    <h4>✅ Tomorrow: D365 + Voice Channel</h4>
+                    <ul>
+                        <li><strong>Screen pop</strong> auto-identifies caller</li>
+                        <li>Rich context: contract, equipment, history</li>
+                        <li><strong>Embedded dialer</strong> - no app switching</li>
+                        <li><strong>Click-to-call</strong> from any record</li>
+                        <li>Integrated call script with agent guidance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- KEY VALUE PROPS -->
+        <div class="section">
+            <h2>💎 Key Value Messages</h2>
+            <div class="key-value">
+                <strong>30+ seconds saved per call</strong> - No manual lookup, instant customer identification
+            </div>
+            <div class="key-value">
+                <strong>Single pane of glass</strong> - Voice, case, and work order in one interface
+            </div>
+            <div class="key-value">
+                <strong>Faster entrapment response</strong> - Critical incidents auto-prioritized, dispatched faster
+            </div>
+            <div class="key-value">
+                <strong>End Ring Central dependency</strong> - Full telephony in D365, no swivel chair
+            </div>
+        </div>
+
+        <!-- SCENARIO 1: INBOUND CALL WITH SCREEN POP -->
+        <div class="section">
+            <h2>🎬 Scenario 1: Inbound Call - Unit Out of Service</h2>
+            
+            <div class="talking-point">
+                "Let me show you what Emma sees when a call comes in from a known customer..."
+            </div>
+
+            <div class="screen-pop-preview">
+                <div class="header">📞 Incoming Call: +1 310-277-3901</div>
+                <div class="field"><span class="label">Service Account:</span><span class="value">Westfield London Shopping Centre</span></div>
+                <div class="field"><span class="label">Account Number:</span><span class="value">OTIS-UK-001</span></div>
+                <div class="field"><span class="label">Contract Tier:</span><span class="value premium">⭐ Tier 1 - Premium Service</span></div>
+                <div class="field"><span class="label">Units at Site:</span><span class="value">24 elevators, 8 escalators</span></div>
+                <div class="field"><span class="label">Contact:</span><span class="value">David Chen - Facilities Manager</span></div>
+                <div class="field"><span class="label">Open Cases:</span><span class="value critical">2 Active</span></div>
+                <div class="field"><span class="label">Last Service:</span><span class="value">March 8, 2026 - Routine Maintenance</span></div>
+                <div class="field"><span class="label">SLA Status:</span><span class="value">2-hour response guaranteed</span></div>
+            </div>
+
+            <div class="call-script">
+                <h4>📜 Agent Script (Embedded)</h4>
+                <ol>
+                    <li>"Good morning, Otis Service Desk, this is Emma. I can see you're calling from Westfield London Shopping Centre. How can I help you today?"</li>
+                    <li><strong>Listen for:</strong> Unit out of service → Select Incident Type: "Unit Out of Service"</li>
+                    <li>"Which unit is affected?" <em>[Select from equipment list pre-populated]</em></li>
+                    <li>"Are there any specific access instructions for the engineer?"</li>
+                    <li><em>[Auto-check: Premium contract = no PO required]</em></li>
+                    <li>"I'm dispatching an engineer now. With your Premium contract, we guarantee a 2-hour response. Is there anything else I can help with?"</li>
+                </ol>
+            </div>
+
+            <div class="scenario">
+                <h3>Demo Steps</h3>
+                <ol class="steps">
+                    <li>Trigger inbound call (test number or simulation)</li>
+                    <li><strong>HIGHLIGHT:</strong> Screen pop appears automatically with full customer context</li>
+                    <li>Accept call - customer record opens</li>
+                    <li>Show agent script panel on left</li>
+                    <li>Create case - Incident Type: "Unit Out of Service"</li>
+                    <li>Select equipment from pre-populated list (no typing!)</li>
+                    <li>Click "Convert to Work Order" - show seamless handoff</li>
+                    <li>End call - show call recording attached to case</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- SCENARIO 2: CRITICAL ENTRAPMENT -->
+        <div class="section">
+            <h2>🚨 Scenario 2: Critical Call - Entrapment (Hot Word Detection)</h2>
+            
+            <div class="talking-point">
+                "Watch what happens when the system detects a critical keyword..."
+            </div>
+
+            <div class="scenario">
+                <h3>Setup</h3>
+                <p>Caller says: "We have someone <strong>stuck</strong> in the elevator"</p>
+            </div>
+
+            <div class="screen-pop-preview">
+                <div class="header" style="background: var(--danger);">🚨 CRITICAL: Entrapment Detected</div>
+                <div class="field"><span class="label">Priority Override:</span><span class="value critical">CRITICAL - 30min SLA</span></div>
+                <div class="field"><span class="label">Auto-Actions:</span><span class="value">• Case escalated to supervisor<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• Nearest engineer notified<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• Emergency protocol initiated</span></div>
+            </div>
+
+            <div class="scenario">
+                <h3>Demo Steps</h3>
+                <ol class="steps">
+                    <li>Start call where customer mentions "stuck" or "trapped"</li>
+                    <li><strong>HIGHLIGHT:</strong> Hot word detection triggers priority boost</li>
+                    <li>Case auto-categorized as "Entrapment"</li>
+                    <li>Show supervisor notification (Teams alert)</li>
+                    <li>Show emergency dispatch workflow</li>
+                </ol>
+            </div>
+
+            <div class="talking-point">
+                "In your current system, this would require the agent to manually recognize the urgency and escalate. Here, the system does it automatically within seconds."
+            </div>
+        </div>
+
+        <!-- SCENARIO 3: CLICK TO CALL -->
+        <div class="section">
+            <h2>📱 Scenario 3: Click-to-Call Outbound</h2>
+            
+            <div class="talking-point">
+                "Now let me show you the outbound experience - no more copying numbers..."
+            </div>
+
+            <div class="scenario">
+                <h3>Demo Steps</h3>
+                <ol class="steps">
+                    <li>Open a contact record (David Chen)</li>
+                    <li>Click the phone number - call initiates in embedded dialer</li>
+                    <li><strong>HIGHLIGHT:</strong> No Ring Central window, no copy-paste</li>
+                    <li>Show call controls (mute, hold, transfer) within D365</li>
+                    <li>Show how call activity auto-logged to contact/account</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- SCENARIO 4: SUPERVISOR VIEW -->
+        <div class="section">
+            <h2>👔 Scenario 4: Supervisor Dashboard</h2>
+            
+            <div class="scenario">
+                <h3>Demo Steps</h3>
+                <ol class="steps">
+                    <li>Switch to James (Supervisor) view</li>
+                    <li>Show Omnichannel real-time dashboard</li>
+                    <li><strong>Metrics to highlight:</strong>
+                        <ul>
+                            <li>Agents online/available</li>
+                            <li>Calls in queue</li>
+                            <li>Average handle time</li>
+                            <li>SLA compliance</li>
+                        </ul>
+                    </li>
+                    <li>Show whisper/monitor capability</li>
+                    <li>Show queue transfer between agents</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- DEMO TIMELINE -->
+        <div class="section">
+            <h2>⏱️ Suggested Demo Timeline (45 min)</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="time">0:00 - 0:05</div>
+                    <strong>Intro & Context</strong><br>
+                    Current pain points, what we'll show today
+                </div>
+                <div class="timeline-item">
+                    <div class="time">0:05 - 0:15</div>
+                    <strong>Scenario 1: Inbound Call + Screen Pop</strong><br>
+                    The "wow moment" - automatic customer identification
+                </div>
+                <div class="timeline-item">
+                    <div class="time">0:15 - 0:25</div>
+                    <strong>Scenario 2: Entrapment / Critical Call</strong><br>
+                    Hot word detection, auto-escalation
+                </div>
+                <div class="timeline-item">
+                    <div class="time">0:25 - 0:30</div>
+                    <strong>Scenario 3: Click-to-Call Outbound</strong><br>
+                    Embedded dialer, no app switching
+                </div>
+                <div class="timeline-item">
+                    <div class="time">0:30 - 0:35</div>
+                    <strong>Scenario 4: Supervisor View</strong><br>
+                    Real-time monitoring, queue management
+                </div>
+                <div class="timeline-item">
+                    <div class="time">0:35 - 0:45</div>
+                    <strong>Q&A and Discussion</strong><br>
+                    Address specific questions, next steps
+                </div>
+            </div>
+        </div>
+
+        <!-- TECHNICAL NOTES -->
+        <div class="section">
+            <h2>🔧 Technical Notes for Demo</h2>
+            <ul>
+                <li><strong>Environment:</strong> https://orgecbce8ef.crm.dynamics.com</li>
+                <li><strong>Voice Channel:</strong> Ensure Omnichannel voice is configured</li>
+                <li><strong>Test Numbers:</strong> Set up test calling party numbers that map to demo accounts</li>
+                <li><strong>Fallback:</strong> If live voice unavailable, use call simulation</li>
+                <li><strong>Screen Recording:</strong> Have backup video of screen pop in case of connectivity issues</li>
+            </ul>
+        </div>
+
+        <!-- OBJECTION HANDLING -->
+        <div class="section">
+            <h2>💬 Objection Handling</h2>
+            <div class="scenario">
+                <h3>"We have customized USD heavily - can we keep our customizations?"</h3>
+                <p>→ "Yes, the agent scripts and workflows you've built in USD can be migrated to Customer Service workspace. We can also enhance them with AI-powered suggestions."</p>
+            </div>
+            <div class="scenario">
+                <h3>"What about our existing Ring Central numbers?"</h3>
+                <p>→ "You can port your existing numbers to Microsoft voice channels, or use Direct Routing to keep your existing carrier while getting the integrated experience."</p>
+            </div>
+            <div class="scenario">
+                <h3>"How does this work with Field Service?"</h3>
+                <p>→ "That's one of the biggest advantages - it's all the same platform. When Emma creates a work order, it flows directly to Field Service scheduling. No integration needed."</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+{
+  "name": "Demo Action - Trigger SLA Breach",
+  "description": "Simulates an SLA breach by updating a case's SLA timer fields and optionally sending warning/violation notifications. Triggered from Demo Execution Guide buttons.",
+  "trigger": {
+    "type": "Request",
+    "kind": "Http",
+    "inputs": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "case_number": {
+            "type": "string",
+            "description": "D365 case ticket number to breach"
+          },
+          "case_id": {
+            "type": "string",
+            "description": "D365 case GUID (use instead of case_number if known)"
+          },
+          "breach_type": {
+            "type": "string",
+            "description": "warning (near breach) or violated (breached)",
+            "default": "violated"
+          },
+          "send_notification": {
+            "type": "boolean",
+            "description": "Send toast notification to case owner",
+            "default": true
+          }
+        },
+        "required": ["breach_type"]
+      }
+    }
+  },
+  "actions": {
+    "Find_Case": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/incidents/items",
+        "queries": {
+          "$filter": "@{if(not(empty(triggerBody()?['case_id'])), concat('incidentid eq ', triggerBody()?['case_id']), concat('ticketnumber eq ''', coalesce(triggerBody()?['case_number'], ''), ''''))}",
+          "$select": "incidentid,ticketnumber,title,_ownerid_value,prioritycode",
+          "$top": 1
+        }
+      }
+    },
+    "Set_Case_Variables": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [{
+          "name": "caseRecord",
+          "type": "object",
+          "value": "@first(body('Find_Case')?['value'])"
+        }]
+      },
+      "runAfter": {
+        "Find_Case": ["Succeeded"]
+      }
+    },
+    "Update_Case_Priority": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "patch",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/incidents/items/@{variables('caseRecord')?['incidentid']}",
+        "body": {
+          "prioritycode": 1,
+          "description": "@{if(equals(triggerBody()?['breach_type'], 'violated'), '*** SLA BREACHED *** - Immediate action required', '⚠️ SLA Warning - Approaching deadline')}\n\n[Auto-updated by demo simulation at @{utcNow()}]"
+        }
+      },
+      "runAfter": {
+        "Set_Case_Variables": ["Succeeded"]
+      }
+    },
+    "Condition_Send_Notification": {
+      "type": "If",
+      "expression": {
+        "and": [
+          {
+            "equals": ["@coalesce(triggerBody()?['send_notification'], true)", true]
+          }
+        ]
+      },
+      "actions": {
+        "Send_Toast_Notification": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+              }
+            },
+            "method": "post",
+            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/appnotifications/items",
+            "body": {
+              "title": "@{if(equals(triggerBody()?['breach_type'], 'violated'), '🚨 SLA BREACHED', '⚠️ SLA Warning')}",
+              "body": "@{if(equals(triggerBody()?['breach_type'], 'violated'), concat('CRITICAL: Case ', variables('caseRecord')?['ticketnumber'], ' (', variables('caseRecord')?['title'], ') has BREACHED SLA. Immediate action required.'), concat('Case ', variables('caseRecord')?['ticketnumber'], ' (', variables('caseRecord')?['title'], ') is approaching SLA deadline. Please respond soon.'))}",
+              "icontype": "@{if(equals(triggerBody()?['breach_type'], 'violated'), 100000002, 100000003)}",
+              "toasttype": 200000000,
+              "ownerid@odata.bind": "/systemusers(@{variables('caseRecord')?['_ownerid_value']})"
+            }
+          }
+        }
+      },
+      "runAfter": {
+        "Update_Case_Priority": ["Succeeded"]
+      }
+    },
+    "Response": {
+      "type": "Response",
+      "kind": "Http",
+      "inputs": {
+        "statusCode": 200,
+        "body": {
+          "status": "success",
+          "message": "@{if(equals(triggerBody()?['breach_type'], 'violated'), 'SLA breach triggered', 'SLA warning triggered')}",
+          "case_number": "@{variables('caseRecord')?['ticketnumber']}",
+          "case_id": "@{variables('caseRecord')?['incidentid']}",
+          "breach_type": "@{triggerBody()?['breach_type']}",
+          "notification_sent": "@{coalesce(triggerBody()?['send_notification'], true)}",
+          "timestamp": "@{utcNow()}"
+        }
+      },
+      "runAfter": {
+        "Condition_Send_Notification": ["Succeeded"]
+      }
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "_metadata": {
+    "org_url": "https://orgecbce8ef.crm.dynamics.com",
+    "breach_types": {
+      "warning": "Sets case to high priority, sends Warning (yellow) toast",
+      "violated": "Sets case to high priority, sends Failure (red) toast"
+    },
+    "setup_steps": [
+      "1. Create new Instant Cloud Flow in Power Automate",
+      "2. Add trigger: 'When an HTTP request is received' — paste the schema above",
+      "3. Add action: 'List rows' from Dataverse — incidents table to find the case",
+      "4. Add action: 'Update a row' from Dataverse — incidents table to set priority/description",
+      "5. Add condition: if send_notification is true",
+      "6. Inside condition: Add action 'Add a new row' — appnotifications table",
+      "7. Add action: 'Response' — return JSON with status",
+      "8. Save and copy the HTTP POST URL",
+      "9. Paste URL into Demo Control Panel > Flow Configuration > SLA Breach URL"
+    ]
+  }
+}

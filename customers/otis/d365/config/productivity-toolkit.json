@@ -1,0 +1,604 @@
+{
+  "agentScripts": [
+    {
+      "id": "SCRIPT-001",
+      "name": "Entrapment Response Protocol",
+      "description": "Guided script for handling elevator entrapment calls - highest priority emergency response",
+      "triggerCondition": "Case Type = Entrapment OR Priority = Critical",
+      "icon": "🚨",
+      "estimatedDuration": "5-8 minutes",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "title": "Emergency Verification",
+          "type": "script",
+          "scriptText": "\"I understand someone is trapped in the elevator. I'm treating this as an emergency and dispatching help immediately. Can you confirm the building address and which elevator?\"",
+          "actions": [
+            {
+              "label": "Start Emergency Timer",
+              "type": "macro",
+              "macroId": "MACRO-START-TIMER"
+            }
+          ],
+          "fieldUpdates": [
+            {
+              "field": "priority",
+              "value": "Critical"
+            }
+          ]
+        },
+        {
+          "stepNumber": 2,
+          "title": "Occupant Status Check",
+          "type": "script",
+          "scriptText": "\"Is the person in the elevator responsive and able to communicate? Are there any medical concerns we should be aware of?\"",
+          "conditionalBranch": {
+            "condition": "Medical Emergency",
+            "ifYes": {
+              "action": "Display 911 coordination script",
+              "nextStep": "2A"
+            },
+            "ifNo": {
+              "nextStep": 3
+            }
+          }
+        },
+        {
+          "stepNumber": "2A",
+          "title": "Medical Emergency Protocol",
+          "type": "alert",
+          "alertText": "⚠️ MEDICAL EMERGENCY - Coordinate with 911",
+          "scriptText": "\"I'm noting the medical concern. Have you called 911? If not, please do so now. I'll stay on the line and coordinate our technician response with emergency services.\"",
+          "actions": [
+            {
+              "label": "Add Medical Alert to Case",
+              "type": "macro",
+              "macroId": "MACRO-MEDICAL-FLAG"
+            }
+          ]
+        },
+        {
+          "stepNumber": 3,
+          "title": "Location Confirmation",
+          "type": "dataEntry",
+          "fields": [
+            {
+              "label": "Building/Address",
+              "field": "account.address",
+              "required": true
+            },
+            {
+              "label": "Elevator Number",
+              "field": "equipment.unitNumber",
+              "required": true
+            },
+            {
+              "label": "Floor Location",
+              "field": "customField.floorLocation",
+              "required": true,
+              "placeholder": "Between floors X and Y"
+            }
+          ],
+          "scriptText": "\"I'm confirming the location now. The elevator is stuck between floors [X] and [Y] at [Building Name], correct?\""
+        },
+        {
+          "stepNumber": 4,
+          "title": "Dispatch Technician",
+          "type": "action",
+          "scriptText": "\"I'm dispatching our nearest available technician now. Let me give you the estimated arrival time.\"",
+          "actions": [
+            {
+              "label": "Create Emergency Work Order",
+              "type": "macro",
+              "macroId": "MACRO-EMERGENCY-WO",
+              "primary": true
+            },
+            {
+              "label": "Find Nearest Tech",
+              "type": "lookup",
+              "lookupType": "fieldTechnician",
+              "filter": "nearestAvailable"
+            }
+          ],
+          "displayData": [
+            {
+              "label": "Technician",
+              "source": "workOrder.technicianName"
+            },
+            {
+              "label": "ETA",
+              "source": "workOrder.eta"
+            },
+            {
+              "label": "Tech Phone",
+              "source": "workOrder.technicianPhone"
+            }
+          ]
+        },
+        {
+          "stepNumber": 5,
+          "title": "Customer Communication",
+          "type": "script",
+          "scriptText": "\"[Technician Name] is on the way and will arrive in approximately [ETA]. Their direct number is [Tech Phone]. In the meantime, please keep the elevator intercom line open with the occupant. Is there anything else you need right now?\"",
+          "actions": [
+            {
+              "label": "Send ETA Email",
+              "type": "email",
+              "templateId": "TEMPLATE-ENTRAPMENT-ETA"
+            }
+          ]
+        },
+        {
+          "stepNumber": 6,
+          "title": "Wrap-Up & Follow-Up",
+          "type": "script",
+          "scriptText": "\"I'll call you back in 10 minutes with an update unless you hear from the technician first. Is [phone number] the best number to reach you?\"",
+          "actions": [
+            {
+              "label": "Schedule Callback",
+              "type": "activity",
+              "activityType": "phonecall",
+              "dueIn": "10 minutes"
+            },
+            {
+              "label": "Complete Script",
+              "type": "macro",
+              "macroId": "MACRO-SCRIPT-COMPLETE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SCRIPT-002",
+      "name": "Service Request Intake",
+      "description": "Standard script for taking new service requests - covers all non-emergency issues",
+      "triggerCondition": "New Case OR Case Type NOT IN (Entrapment, Unit Out of Service)",
+      "icon": "📝",
+      "estimatedDuration": "3-5 minutes",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "title": "Greeting & Account Verification",
+          "type": "script",
+          "scriptText": "\"Thank you for calling Otis Service. I see you're calling from [Account Name]. How can I help you today?\"",
+          "displayData": [
+            {
+              "label": "Account",
+              "source": "account.name"
+            },
+            {
+              "label": "Tier",
+              "source": "account.tier",
+              "highlight": true
+            },
+            {
+              "label": "Contract",
+              "source": "account.contractType"
+            }
+          ]
+        },
+        {
+          "stepNumber": 2,
+          "title": "Issue Details",
+          "type": "dataEntry",
+          "fields": [
+            {
+              "label": "Issue Type",
+              "field": "case.type",
+              "type": "dropdown",
+              "options": ["Door Issue", "Noise/Vibration", "Leveling Problem", "Button/Display Issue", "General Malfunction", "Billing Question", "Contract Question", "Other"]
+            },
+            {
+              "label": "Elevator/Unit",
+              "field": "equipment.unitNumber",
+              "type": "lookup"
+            },
+            {
+              "label": "Description",
+              "field": "case.description",
+              "type": "textarea"
+            }
+          ],
+          "scriptText": "\"Can you describe what's happening? Which elevator is affected?\""
+        },
+        {
+          "stepNumber": 3,
+          "title": "Priority Assessment",
+          "type": "conditional",
+          "conditions": [
+            {
+              "question": "Is the elevator currently operational?",
+              "ifNo": {
+                "action": "Set Priority = High",
+                "message": "Unit inoperable - elevated priority"
+              }
+            },
+            {
+              "question": "Is this a safety concern?",
+              "ifYes": {
+                "action": "Set Priority = High",
+                "message": "Safety issue flagged"
+              }
+            },
+            {
+              "question": "Is this affecting building operations significantly?",
+              "ifYes": {
+                "action": "Set Priority = High",
+                "message": "Operational impact noted"
+              }
+            }
+          ]
+        },
+        {
+          "stepNumber": 4,
+          "title": "Resolution Path",
+          "type": "branch",
+          "options": [
+            {
+              "label": "Schedule Service Visit",
+              "nextStep": "4A",
+              "condition": "requiresWorkOrder = true"
+            },
+            {
+              "label": "Transfer to Billing",
+              "nextStep": "4B",
+              "condition": "issueType = Billing"
+            },
+            {
+              "label": "Resolve Now (KB)",
+              "nextStep": "4C",
+              "condition": "canResolveWithKB = true"
+            }
+          ]
+        },
+        {
+          "stepNumber": "4A",
+          "title": "Schedule Service",
+          "type": "action",
+          "scriptText": "\"I'll schedule a service visit for you. When would be a convenient time for our technician to come?\"",
+          "actions": [
+            {
+              "label": "Create Work Order",
+              "type": "macro",
+              "macroId": "MACRO-CREATE-WO"
+            },
+            {
+              "label": "View Schedule",
+              "type": "page",
+              "pageId": "scheduling-assistant"
+            }
+          ]
+        },
+        {
+          "stepNumber": "4B",
+          "title": "Billing Transfer",
+          "type": "transfer",
+          "scriptText": "\"I'll transfer you to our billing department. They'll be able to help you with that. One moment please.\"",
+          "actions": [
+            {
+              "label": "Transfer to Billing Queue",
+              "type": "transfer",
+              "queueId": "billing-queue"
+            }
+          ]
+        },
+        {
+          "stepNumber": "4C",
+          "title": "Knowledge Base Resolution",
+          "type": "knowledge",
+          "scriptText": "\"I found some information that might help. Let me walk you through this.\"",
+          "knowledgeSearch": {
+            "searchTerms": ["{{case.type}}", "{{equipment.model}}"],
+            "maxResults": 3
+          }
+        },
+        {
+          "stepNumber": 5,
+          "title": "Summary & Close",
+          "type": "script",
+          "scriptText": "\"To summarize, I've created case number [Case Number] for [Issue Description]. [Next Steps]. Is there anything else I can help you with today?\"",
+          "actions": [
+            {
+              "label": "Send Confirmation Email",
+              "type": "email",
+              "templateId": "TEMPLATE-CASE-CONFIRMATION"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SCRIPT-003",
+      "name": "Contract Renewal Discussion",
+      "description": "Script for handling contract renewal inquiries and retention conversations",
+      "triggerCondition": "Case Type = Contract Question AND account.contractExpiry < 90 days",
+      "icon": "📄",
+      "estimatedDuration": "5-10 minutes",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "title": "Acknowledge & Review",
+          "type": "script",
+          "scriptText": "\"I see your contract is coming up for renewal on [Expiry Date]. I'd be happy to discuss your options. Let me pull up your account details.\"",
+          "displayData": [
+            {
+              "label": "Current Contract",
+              "source": "account.contractType"
+            },
+            {
+              "label": "Expiry Date",
+              "source": "account.contractExpiry",
+              "highlight": true
+            },
+            {
+              "label": "Annual Value",
+              "source": "account.acv"
+            },
+            {
+              "label": "Units Covered",
+              "source": "account.totalUnits"
+            }
+          ]
+        },
+        {
+          "stepNumber": 2,
+          "title": "Service Review",
+          "type": "data",
+          "displayData": [
+            {
+              "label": "Service Calls (12 mo)",
+              "source": "metrics.serviceCalls12Mo"
+            },
+            {
+              "label": "PM Visits Completed",
+              "source": "metrics.pmVisits"
+            },
+            {
+              "label": "Avg Response Time",
+              "source": "metrics.avgResponseTime"
+            },
+            {
+              "label": "Customer Satisfaction",
+              "source": "metrics.csat"
+            }
+          ],
+          "scriptText": "\"Over the past year, we've completed [X] service calls and [Y] preventive maintenance visits. Your average response time has been [Z]. How has your experience been overall?\""
+        },
+        {
+          "stepNumber": 3,
+          "title": "Address Concerns",
+          "type": "note",
+          "placeholder": "Document any concerns or issues the customer raises",
+          "scriptText": "\"I want to make sure we're addressing any concerns you might have. Is there anything about our service that you'd like to see improved?\""
+        },
+        {
+          "stepNumber": 4,
+          "title": "Present Options",
+          "type": "options",
+          "scriptText": "\"Based on your current coverage and needs, here are some options to consider:\"",
+          "options": [
+            {
+              "label": "Renew Current Plan",
+              "description": "Continue with same coverage and terms",
+              "action": "MACRO-RENEW-SAME"
+            },
+            {
+              "label": "Upgrade to Plus",
+              "description": "Add 24/7 coverage and priority response",
+              "action": "MACRO-UPGRADE-PLUS"
+            },
+            {
+              "label": "Add IoT Monitoring",
+              "description": "eService package for predictive maintenance",
+              "action": "MACRO-ADD-ESERVICE"
+            },
+            {
+              "label": "Request Account Manager Call",
+              "description": "Schedule detailed consultation",
+              "action": "MACRO-AM-CALLBACK"
+            }
+          ]
+        },
+        {
+          "stepNumber": 5,
+          "title": "Next Steps",
+          "type": "script",
+          "scriptText": "\"I'll make sure [selected action/next step]. Our Account Manager [AM Name] will follow up with the formal renewal proposal. When would be a good time for them to call?\"",
+          "actions": [
+            {
+              "label": "Create AM Task",
+              "type": "activity",
+              "activityType": "task",
+              "assignTo": "accountManager"
+            },
+            {
+              "label": "Send Options Summary",
+              "type": "email",
+              "templateId": "TEMPLATE-RENEWAL-OPTIONS"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "macros": [
+    {
+      "id": "MACRO-START-TIMER",
+      "name": "Start Emergency Timer",
+      "description": "Starts SLA timer for critical cases",
+      "icon": "⏱️",
+      "actions": [
+        {
+          "type": "updateField",
+          "entity": "incident",
+          "field": "prioritycode",
+          "value": 1
+        },
+        {
+          "type": "updateField",
+          "entity": "incident",
+          "field": "new_emergencystarttime",
+          "value": "{{now}}"
+        }
+      ]
+    },
+    {
+      "id": "MACRO-EMERGENCY-WO",
+      "name": "Create Emergency Work Order",
+      "description": "Creates a high-priority work order and triggers dispatch",
+      "icon": "🚨",
+      "actions": [
+        {
+          "type": "createRecord",
+          "entity": "msdyn_workorder",
+          "fields": {
+            "msdyn_name": "EMERGENCY - {{case.title}}",
+            "msdyn_serviceaccount": "{{case.customerid}}",
+            "msdyn_primaryincidenttype": "Entrapment",
+            "msdyn_priority": 1,
+            "msdyn_systemstatus": "Open - Unscheduled"
+          }
+        },
+        {
+          "type": "triggerFlow",
+          "flowId": "emergency-dispatch-flow"
+        }
+      ]
+    },
+    {
+      "id": "MACRO-CREATE-WO",
+      "name": "Create Work Order",
+      "description": "Creates a standard work order from case",
+      "icon": "🔧",
+      "actions": [
+        {
+          "type": "openForm",
+          "entity": "msdyn_workorder",
+          "prefill": {
+            "msdyn_name": "Service Request - {{case.title}}",
+            "msdyn_serviceaccount": "{{case.customerid}}",
+            "msdyn_agreement": "{{account.contractId}}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "MACRO-SCRIPT-COMPLETE",
+      "name": "Mark Script Complete",
+      "description": "Updates case notes with script completion",
+      "icon": "✓",
+      "actions": [
+        {
+          "type": "createNote",
+          "entity": "incident",
+          "subject": "Agent Script Completed",
+          "noteText": "Completed {{script.name}} at {{now}}. All steps executed."
+        }
+      ]
+    },
+    {
+      "id": "MACRO-SEND-KB",
+      "name": "Send Knowledge Article",
+      "description": "Emails selected KB article to customer",
+      "icon": "📚",
+      "actions": [
+        {
+          "type": "email",
+          "templateId": "kb-article-share",
+          "attachKB": true
+        }
+      ]
+    },
+    {
+      "id": "MACRO-AM-CALLBACK",
+      "name": "Schedule Account Manager Callback",
+      "description": "Creates task for Account Manager follow-up",
+      "icon": "📞",
+      "actions": [
+        {
+          "type": "createTask",
+          "subject": "Customer Callback - {{account.name}} Contract Renewal",
+          "assignTo": "{{account.accountManager}}",
+          "dueDate": "+1 business day",
+          "description": "Customer requested callback regarding contract renewal. See case {{case.ticketnumber}} for details."
+        }
+      ]
+    }
+  ],
+  "quickResponses": [
+    {
+      "id": "QR-GREETING",
+      "category": "Greetings",
+      "title": "Standard Greeting",
+      "text": "Thank you for calling Otis Service. My name is {{agent.name}}. How can I help you today?"
+    },
+    {
+      "id": "QR-HOLD",
+      "category": "Hold",
+      "title": "Brief Hold Request",
+      "text": "May I place you on a brief hold while I look into that? It should only take a moment."
+    },
+    {
+      "id": "QR-DISPATCH-ETA",
+      "category": "Dispatch",
+      "title": "Technician ETA",
+      "text": "I've dispatched a technician who will arrive within {{eta}} minutes. Their name is {{tech.name}} and their direct number is {{tech.phone}}."
+    },
+    {
+      "id": "QR-CASE-CREATED",
+      "category": "Confirmation",
+      "title": "Case Created",
+      "text": "I've created case number {{case.ticketnumber}} for this issue. You can reference this number if you need to follow up."
+    },
+    {
+      "id": "QR-TRANSFER",
+      "category": "Transfer",
+      "title": "Transfer Notification",
+      "text": "I'm going to transfer you to our {{department}} team who can better assist you with this. Please hold for just a moment."
+    },
+    {
+      "id": "QR-CLOSING",
+      "category": "Closing",
+      "title": "Standard Closing",
+      "text": "Is there anything else I can help you with today? Thank you for calling Otis Service. Have a great day."
+    },
+    {
+      "id": "QR-EMPATHY-FRUSTRATION",
+      "category": "Empathy",
+      "title": "Acknowledge Frustration",
+      "text": "I completely understand your frustration, and I'm sorry you've experienced this issue. Let me make this right for you."
+    },
+    {
+      "id": "QR-ESCALATION",
+      "category": "Escalation",
+      "title": "Escalation Notice",
+      "text": "I want to make sure this gets the attention it deserves. I'm escalating this to our {{team}} team who will follow up with you within {{timeframe}}."
+    }
+  ],
+  "smartAssist": {
+    "enabled": true,
+    "features": [
+      {
+        "name": "Similar Case Suggestions",
+        "description": "AI suggests similar resolved cases",
+        "trigger": "onCaseLoad"
+      },
+      {
+        "name": "KB Article Recommendations",
+        "description": "Suggests relevant knowledge articles based on case content",
+        "trigger": "onCaseUpdate"
+      },
+      {
+        "name": "Next Best Action",
+        "description": "Suggests next steps based on case type and status",
+        "trigger": "onAgentScriptStep"
+      },
+      {
+        "name": "Sentiment Analysis",
+        "description": "Detects customer sentiment during conversation",
+        "trigger": "onConversation"
+      }
+    ]
+  }
+}

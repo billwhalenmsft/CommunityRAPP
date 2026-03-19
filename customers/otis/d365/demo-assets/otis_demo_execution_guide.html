@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otis EMEA CCaaS Demo — Execution Guide</title>
+    <style>
+        :root {
+            --otis-navy: #003366;
+            --otis-gold: #C4A000;
+            --otis-light-blue: #0078D4;
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-warm: #D83B01;
+            --accent-green: #107C10;
+            --accent-purple: #5C2D91;
+            --accent-teal: #008575;
+            --accent-red: #A4262C;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--otis-navy) 0%, #00457C 50%, var(--otis-light-blue) 100%);
+            color: white;
+            padding: 50px 40px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: 'OTIS';
+            position: absolute;
+            top: 15px;
+            left: 30px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            opacity: 0.9;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--otis-gold), #FFD700, var(--otis-gold));
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.92;
+            font-weight: 300;
+            margin-bottom: 16px;
+        }
+
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            font-size: 0.88rem;
+            opacity: 0.88;
+            flex-wrap: wrap;
+        }
+
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--otis-gold);
+            color: var(--otis-navy);
+            border-radius: 20px;
+            padding: 6px 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-top: 14px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Section label */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--otis-navy);
+            margin-top: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* Pre-flight checklist */
+        .preflight {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F2 100%);
+            border-left: 4px solid var(--accent-green);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+
+        .preflight h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+        }
+
+        .preflight ul {
+            font-size: 0.88rem;
+            color: #2E5A30;
+            line-height: 2;
+            padding-left: 20px;
+        }
+
+        .preflight li {
+            margin-bottom: 2px;
+        }
+
+        .preflight code {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.82rem;
+        }
+
+        /* Collapsible sections */
+        .exec-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+            border-left: 5px solid var(--otis-navy);
+            transition: box-shadow 0.2s;
+            overflow: hidden;
+        }
+
+        .exec-section:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .exec-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 22px 24px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .exec-header:hover {
+            background: rgba(0, 51, 102, 0.03);
+        }
+
+        .exec-number {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .exec-header-text {
+            flex: 1;
+        }
+
+        .exec-header-text h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .exec-header-text .exec-purpose {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .exec-time {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .exec-expand {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .exec-section.open .exec-expand {
+            transform: rotate(180deg);
+        }
+
+        .exec-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .exec-section.open .exec-body {
+            max-height: 50000px;
+        }
+
+        .exec-content {
+            padding: 0 24px 28px 82px;
+        }
+
+        /* Step blocks */
+        .step-block {
+            margin: 16px 0;
+            padding: 16px 20px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            border-left: 3px solid var(--otis-navy);
+        }
+
+        .step-block.voice-step {
+            border-left-color: var(--accent-red);
+            background: #FFF5F5;
+        }
+
+        .step-block.phone-step {
+            border-left-color: var(--accent-green);
+            background: #F0FFF4;
+        }
+
+        .step-block.screen-pop-step {
+            border-left-color: var(--otis-gold);
+            background: #FFFCF0;
+        }
+
+        .step-block.copilot-step {
+            border-left-color: var(--accent-purple);
+            background: #F8F5FD;
+        }
+
+        .step-block.transition-step {
+            border-left-color: #FFB900;
+            background: #FFFCF0;
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .step-label.prep {
+            background: var(--accent-green);
+        }
+
+        .step-label.click {
+            background: var(--otis-navy);
+        }
+
+        .step-label.say {
+            background: var(--accent-warm);
+        }
+
+        .step-label.show {
+            background: var(--accent-teal);
+        }
+
+        .step-label.tip {
+            background: #FFB900;
+            color: #5D4510;
+        }
+
+        .step-label.caution {
+            background: var(--accent-red);
+        }
+
+        .step-label.phone {
+            background: var(--accent-green);
+        }
+
+        .step-label.screen-pop {
+            background: var(--otis-gold);
+            color: var(--otis-navy);
+        }
+
+        .step-label.transition {
+            background: #605E5C;
+        }
+
+        .step-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .step-text strong {
+            color: var(--text);
+        }
+
+        .step-text em {
+            color: var(--accent-warm);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .step-text .click-path {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            background: rgba(0, 51, 102, 0.1);
+            color: var(--otis-navy);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        /* Verbatim talk track */
+        .talk-track {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 10px 0;
+            font-style: italic;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: #444;
+            position: relative;
+        }
+
+        .talk-track::before {
+            content: '\201C';
+            font-size: 3rem;
+            color: var(--otis-gold);
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            font-style: normal;
+            opacity: 0.5;
+        }
+
+        .talk-track p {
+            padding-left: 24px;
+        }
+
+        /* Sub-topic headers */
+        .sub-header {
+            margin: 28px 0 10px;
+            font-size: 1.02rem;
+            font-weight: 600;
+            color: var(--otis-navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-header.phone {
+            color: var(--accent-green);
+        }
+
+        .sub-header.screen-pop {
+            color: var(--otis-gold);
+        }
+
+        .sub-header.context {
+            color: var(--accent-teal);
+        }
+
+        /* Callout boxes */
+        .callout {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .callout.warning {
+            background: #FFF4CE;
+            border-left: 3px solid #FFB900;
+            color: #5D4510;
+        }
+
+        .callout.critical {
+            background: #FDE7E9;
+            border-left: 3px solid var(--accent-red);
+            color: #5D1015;
+        }
+
+        .callout.success {
+            background: #E8F5E9;
+            border-left: 3px solid var(--accent-green);
+            color: #2E5A30;
+        }
+
+        .callout.info {
+            background: var(--ms-blue-light);
+            border-left: 3px solid var(--ms-blue);
+            color: #003A6E;
+        }
+
+        .callout.roi {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            border-left: 4px solid #2E7D32;
+            color: #1B5E20;
+            padding: 14px 18px;
+            font-size: 0.85rem;
+        }
+
+        .callout.roi::before {
+            content: "💰 ";
+        }
+
+        .callout.roi strong {
+            color: #1B5E20;
+        }
+
+        .callout strong {
+            font-weight: 700;
+        }
+
+        /* Demo Gold */
+        .demo-gold {
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%);
+            border-left: 4px solid var(--otis-gold);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 0.88rem;
+        }
+
+        .demo-gold strong {
+            color: var(--otis-navy);
+        }
+
+        /* Data reference tables */
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.82rem;
+        }
+
+        .ref-table th {
+            background: #F3F2F1;
+            font-weight: 600;
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 2px solid #D2D0CE;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .ref-table td {
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: top;
+        }
+
+        .ref-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ref-table tbody tr:hover {
+            background: #F9F9F9;
+        }
+
+        .ref-table code {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.76rem;
+            background: #F0F0F0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #333;
+        }
+
+        .ref-section-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--otis-navy);
+            margin: 20px 0 6px;
+        }
+
+        .ref-note {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin: 6px 0 16px;
+            padding-left: 12px;
+            border-left: 2px solid var(--border);
+        }
+
+        /* Tier badges */
+        .tier-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tier-pill.t-platinum {
+            background: linear-gradient(135deg, #E8E8E8, #CFD8DC);
+            color: #37474F;
+        }
+
+        .tier-pill.t-gold {
+            background: linear-gradient(135deg, #FFD54F, #FFC107);
+            color: #5D4037;
+        }
+
+        .tier-pill.t-silver {
+            background: linear-gradient(135deg, #E0E0E0, #BDBDBD);
+            color: #424242;
+        }
+
+        /* Story block */
+        .story-block {
+            background: linear-gradient(135deg, #E8EAF6 0%, #FFF8E1 100%);
+            border-left: 4px solid var(--otis-navy);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+
+        .story-block h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--otis-navy);
+            margin-bottom: 12px;
+        }
+
+        .story-block p {
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+
+        /* Timing bar */
+        .timing-bar {
+            display: flex;
+            gap: 0;
+            margin: 28px 0 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 8px;
+        }
+
+        .timing-bar .t-seg {
+            height: 100%;
+        }
+
+        /* Scenario card */
+        .scenario-card {
+            background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .scenario-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            color: var(--otis-navy);
+            margin-bottom: 10px;
+        }
+
+        .scenario-card .scenario-icon {
+            font-size: 1.5rem;
+        }
+
+        .scenario-card p {
+            font-size: 0.88rem;
+            color: var(--text-light);
+        }
+
+        /* Persona card */
+        .persona-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin: 12px 0;
+        }
+
+        .persona-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--otis-navy);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .persona-info h4 {
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .persona-info p {
+            font-size: 0.82rem;
+            color: var(--text-light);
+        }
+
+        /* Copy blocks */
+        .copy-block {
+            background: #F5F5F5;
+            border: 1px dashed #BBB;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.82rem;
+            white-space: pre-wrap;
+            position: relative;
+        }
+
+        .copy-block .copy-label {
+            position: absolute;
+            top: -10px;
+            left: 12px;
+            background: var(--otis-navy);
+            color: white;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* NAV TOGGLE (Hamburger) */
+        .nav-toggle {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 9998;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: var(--otis-navy);
+            color: white;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .nav-toggle:hover {
+            background: var(--ms-blue-dark);
+            transform: scale(1.05);
+        }
+
+        .nav-toggle.open {
+            background: var(--accent-red);
+        }
+
+        .side-nav-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+        }
+
+        .side-nav-backdrop.visible {
+            display: block;
+        }
+
+        .side-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100vh;
+            background: white;
+            z-index: 10000;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .side-nav.open {
+            transform: translateX(0);
+        }
+
+        .side-nav-header {
+            padding: 18px 20px 14px;
+            background: linear-gradient(135deg, var(--otis-navy), #00457C);
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .side-nav-header span {
+            font-size: 1rem;
+        }
+
+        .side-nav-pin {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.68rem;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .side-nav-pin:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .side-nav-pin.pinned {
+            background: var(--otis-gold);
+            border-color: var(--otis-gold);
+            color: var(--otis-navy);
+        }
+
+        .side-nav-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .side-nav-group {
+            padding: 10px 18px 4px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-light);
+        }
+
+        .side-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 18px;
+            font-size: 0.8rem;
+            color: var(--text);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .side-nav-item:hover {
+            background: #F3F2F1;
+        }
+
+        .side-nav-item.active {
+            background: var(--ms-blue-light);
+            border-left-color: var(--otis-navy);
+            font-weight: 600;
+        }
+
+        .side-nav-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.68rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .side-nav-label {
+            line-height: 1.3;
+        }
+
+        /* Push content when pinned */
+        body.nav-pinned .container {
+            margin-left: 340px;
+        }
+
+        body.nav-pinned .hero {
+            padding-left: 340px;
+        }
+
+        body.nav-pinned .side-nav {
+            box-shadow: 1px 0 3px rgba(0, 0, 0, 0.08);
+        }
+
+        body.nav-pinned .side-nav-backdrop {
+            display: none !important;
+        }
+
+        body.nav-pinned .nav-toggle {
+            left: 330px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+        }
+
+        /* Border color helpers */
+        .border-setup { border-left-color: var(--ms-blue); }
+        .border-screen-pop { border-left-color: var(--otis-gold); }
+        .border-dialer { border-left-color: var(--accent-green); }
+        .border-context { border-left-color: var(--accent-teal); }
+        .border-transfer { border-left-color: var(--accent-purple); }
+        .border-close { border-left-color: var(--ms-blue-dark); }
+
+        .bg-setup { background: var(--ms-blue); }
+        .bg-screen-pop { background: var(--otis-gold); color: var(--otis-navy); }
+        .bg-dialer { background: var(--accent-green); }
+        .bg-context { background: var(--accent-teal); }
+        .bg-transfer { background: var(--accent-purple); }
+        .bg-close { background: var(--ms-blue-dark); }
+
+        @media (max-width: 900px) {
+            .side-nav { width: 280px; }
+            body.nav-pinned .container { margin-left: 300px; }
+            body.nav-pinned .hero { padding-left: 300px; }
+            body.nav-pinned .nav-toggle { left: 290px; }
+        }
+
+        @media print {
+            .nav-toggle, .side-nav, .side-nav-backdrop { display: none !important; }
+            body.nav-pinned .container { margin-left: auto; }
+            body.nav-pinned .hero { padding-left: 50px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV TOGGLE (Hamburger) -->
+    <button class="nav-toggle" id="navToggle" aria-label="Open navigation">&#9776;</button>
+
+    <!-- SIDE NAV -->
+    <div class="side-nav-backdrop" id="navBackdrop"></div>
+    <div class="side-nav" id="sideNav">
+        <div class="side-nav-header">
+            <strong>&#9776; Demo Sections</strong>
+            <button class="side-nav-pin" id="navPin">PIN</button>
+        </div>
+        <div class="side-nav-body" id="navBody"></div>
+    </div>
+
+    <!-- HERO -->
+    <header class="hero">
+        <h1>CCaaS Demo Execution Guide</h1>
+        <p class="subtitle">Otis EMEA — Telephony Integration — Click-by-Click Playbook</p>
+        <div class="meta">
+            <span>📅 March 20, 2026 — 11:00 AM CT</span>
+            <span>🎯 Replace Ring Central with D365 Voice</span>
+            <span>👤 You are <strong>Sarah</strong> (CSR) — Team Lead is <strong>James</strong></span>
+        </div>
+        <div class="hero-badge">Telephony Focus — Screen Pop, Embedded Dialer, Click-to-Call</div>
+    </header>
+
+    <div class="container">
+
+        <!-- TIMING BAR -->
+        <p class="section-label">Session Timing (60 min)</p>
+        <div class="timing-bar">
+            <div class="t-seg" style="flex:10; background:var(--ms-blue);" title="Setup & Orient ~10 min"></div>
+            <div class="t-seg" style="flex:15; background:var(--otis-gold);" title="Screen Pop ~15 min"></div>
+            <div class="t-seg" style="flex:15; background:var(--accent-green);" title="Embedded Dialer ~15 min"></div>
+            <div class="t-seg" style="flex:10; background:var(--accent-teal);" title="Customer Context ~10 min"></div>
+            <div class="t-seg" style="flex:5; background:var(--accent-purple);" title="Call Transfer ~5 min"></div>
+            <div class="t-seg" style="flex:5; background:var(--ms-blue-dark);" title="Close ~5 min"></div>
+        </div>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.72rem; color:var(--text-light); margin-bottom:24px;">
+            <span>🔵 Setup (10m)</span>
+            <span>🟡 Screen Pop (15m)</span>
+            <span>🟢 Dialer (15m)</span>
+            <span>🔷 Context (10m)</span>
+            <span>🟣 Transfer (5m)</span>
+            <span>🔵 Close (5m)</span>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- THE STORY -->
+        <!-- ============================================== -->
+
+        <div class="story-block">
+            <h3>📖 The Demo Story — A Day at Otis EMEA Customer Care</h3>
+            <p><strong>Setting:</strong> You are <em>Sarah</em>, a Customer Service Representative at Otis EMEA's Manchester contact center. It's a busy Thursday morning. You've just logged into your new Dynamics 365 Customer Service workspace — Otis is piloting it to replace the legacy Ring Central system.</p>
+            <p><strong>The Call:</strong> Your phone rings. The screen instantly shows caller information — it's <em>David Chen</em>, Facilities Manager at Riverside Medical Centre NHS Trust in London. Before you even say hello, you see: this is a <span class="tier-pill t-gold">Gold</span> service contract customer, they have 8 elevators under contract, and there's an open case about a recent inspection.</p>
+            <p><strong>The Problem:</strong> David reports a passenger elevator stuck between floors. Someone is trapped. You need to dispatch an engineer immediately while keeping David informed and calm.</p>
+            <p><strong>The Differentiator:</strong> Unlike Ring Central, everything David needs is at your fingertips — no switching apps, no searching for records, no asking "Can you spell your name?" The system <em>knows</em> who's calling.</p>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- PRE-FLIGHT CHECKLIST -->
+        <!-- ============================================== -->
+
+        <div class="preflight">
+            <h3>✅ Pre-Flight Checklist (15 min before demo)</h3>
+            <ul>
+                <li><strong>Browser tabs open (Edge recommended):</strong></li>
+                <li>&emsp;Tab 1: D365 CS Workspace — <code>https://orgecbce8ef.crm.dynamics.com</code></li>
+                <li>&emsp;Tab 2: D365 Omnichannel Real-Time Analytics (open but stay on Tab 1)</li>
+                <li><strong>In D365 Workspace verify:</strong></li>
+                <li>&emsp;Presence status "Available" (green circle, bottom-left)</li>
+                <li>&emsp;Voice channel enabled in Omnichannel panel</li>
+                <li>&emsp;Test contact record opens: search "David Chen"</li>
+                <li><strong>Phone ready:</strong> Second phone to simulate inbound call from David Chen: <code>+1 713-704-4001</code></li>
+                <li><strong>Screen sharing:</strong> Share Edge browser window (not full desktop)</li>
+                <li><strong>Notifications silenced:</strong> Focus Assist ON, Teams DND, Outlook notifications OFF</li>
+                <li><strong>This guide open</strong> on second monitor (or pinned side panel)</li>
+            </ul>
+        </div>
+
+        <!-- QUICK REFERENCE URLS -->
+        <div class="callout info">
+            <strong>Quick Reference</strong><br>
+            D365 Org: <code>https://orgecbce8ef.crm.dynamics.com</code><br>
+            Test Caller (David Chen): <code>+1 713-704-4001</code><br>
+            Demo Account: Riverside Medical Centre NHS Trust
+        </div>
+
+        <!-- ============================================== -->
+        <!-- HERO RECORDS -->
+        <!-- ============================================== -->
+
+        <p class="section-label">Quick Reference — Hero Records</p>
+
+        <div class="exec-section" style="border-left-color: var(--otis-gold);">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: var(--otis-gold); color: var(--otis-navy);">★</div>
+                <div class="exec-header-text">
+                    <h3>Hero Records — Riverside Medical Centre</h3>
+                    <div class="exec-purpose">Account, contacts, service contract, active cases</div>
+                </div>
+                <div class="exec-time">Reference</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <p class="ref-section-title">🏢 Hero Account — Riverside Medical Centre NHS Trust</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Field</th><th>Value</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Account Name</td><td><strong>Riverside Medical Centre NHS Trust</strong></td></tr>
+                            <tr><td>Account Number</td><td><code>OTIS-UK-003</code></td></tr>
+                            <tr><td>Service Tier</td><td><span class="tier-pill t-gold">Gold</span></td></tr>
+                            <tr><td>Elevators Under Contract</td><td>8</td></tr>
+                            <tr><td>Contract Value</td><td>£185,000/year</td></tr>
+                            <tr><td>Location</td><td>123 Healthcare Drive, London</td></tr>
+                            <tr><td>Response SLA</td><td>2-hour emergency response</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">👤 Hero Contact — David Chen</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Field</th><th>Value</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Name</td><td><strong>David Chen</strong> 📞</td></tr>
+                            <tr><td>Title</td><td>Facilities Manager</td></tr>
+                            <tr><td>Business Phone</td><td><code>+1 713-704-4001</code></td></tr>
+                            <tr><td>Mobile</td><td><code>+1 713-704-4002</code></td></tr>
+                            <tr><td>Email</td><td>david.chen@riversidemedical.nhs.uk</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="ref-note">David is the primary caller for this demo. His phone number triggers the screen pop.</p>
+
+                    <p class="ref-section-title">📋 All Demo Contacts</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Name</th><th>Account</th><th>Phone</th><th>Role</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>David Chen</strong></td><td>Riverside Medical</td><td>+1 713-704-4001</td><td>Facilities Manager</td></tr>
+                            <tr><td>Sophie Williams</td><td>Canary Wharf Tower</td><td>+1 212-417-7100</td><td>Building Operations Director</td></tr>
+                            <tr><td>James Morrison</td><td>Heathrow Terminal 5</td><td>+1 310-277-3901</td><td>Airport Operations Manager</td></tr>
+                            <tr><td>Emma Richards</td><td>The Shard</td><td>+1 212-340-2712</td><td>Property Manager</td></tr>
+                            <tr><td>Michael Thompson</td><td>One Canada Square</td><td>+1 312-875-9001</td><td>Chief Engineer</td></tr>
+                            <tr><td>Sarah Jenkins</td><td>Marriott Park Lane</td><td>+1 404-521-0001</td><td>Hotel Operations Manager</td></tr>
+                            <tr><td>Robert Taylor</td><td>University College London</td><td>+1 212-992-5501</td><td>Estates Director</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">🎫 Active Demo Cases</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Case</th><th>Account</th><th>Type</th><th>Priority</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Elevator Entrapment - East Wing</td><td>Riverside Medical</td><td>Emergency</td><td>Critical</td></tr>
+                            <tr><td>Annual Inspection Due</td><td>Canary Wharf Tower</td><td>Maintenance</td><td>Normal</td></tr>
+                            <tr><td>Escalator Handrail Issue</td><td>Heathrow T5</td><td>Repair</td><td>High</td></tr>
+                            <tr><td>Noise Complaint - Lift 3</td><td>The Shard</td><td>Service</td><td>Normal</td></tr>
+                            <tr><td>Modernization Quote Request</td><td>One Canada Square</td><td>Sales</td><td>Normal</td></tr>
+                            <tr><td>Emergency Response Training</td><td>Marriott Park Lane</td><td>Service</td><td>Normal</td></tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECTION 1: SETUP & ORIENT -->
+        <!-- ============================================== -->
+
+        <p class="section-label">Demo Execution</p>
+
+        <div class="exec-section border-setup">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-setup">1</div>
+                <div class="exec-header-text">
+                    <h3>Setup & Orient</h3>
+                    <div class="exec-purpose">Introduce the scenario, set the stage for Sarah's day</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="sub-header">Step 1: Set the Scene</div>
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Let me show you what a day looks like for Sarah, one of our customer service reps in Manchester. She's part of Otis's 35-agent team handling escalations and service requests for EMEA customers. Right now, she's using Ring Central for voice — she has to look up callers manually, switch between apps, and often asks customers to repeat information she should already have.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Today we're piloting Dynamics 365 Customer Service with built-in voice. Sarah logs in once, and everything — phone, CRM, service history — is in one place. Let me show you what that looks like.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-header">Step 2: Show the Workspace</div>
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">Open D365 Customer Service Workspace. Point to:</div>
+                    </div>
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                <li><strong>Session tabs</strong> — Each interaction opens as a tab (like browser tabs)</li>
+                                <li><strong>Presence indicator</strong> — Green = Available for calls</li>
+                                <li><strong>Omnichannel panel</strong> — Shows incoming work items</li>
+                                <li><strong>Case list</strong> — Sarah's active cases at a glance</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>This is Sarah's home. No toggle between Ring Central and Salesforce—or whatever CRM you're using today. It's unified. Now, let's see what happens when a call comes in.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout roi"><strong>ROI — Reduced Context Switching:</strong> Agents spend 15-20% of their time switching between apps. For 35 agents at $45K average salary, that's roughly $315K/year in lost productivity. A unified workspace reclaims that time.</div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECTION 2: SCREEN POP — THE HERO MOMENT -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-screen-pop" style="border-left-width:6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-screen-pop">2</div>
+                <div class="exec-header-text">
+                    <h3>📞 SCREEN POP — The Hero Moment</h3>
+                    <div class="exec-purpose">Inbound call → instant caller recognition → context before "Hello"</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="callout critical">
+                        <strong>THIS IS THE KEY DIFFERENTIATOR.</strong> Make sure the screen pop is visible and dramatic. Have your second phone ready to call from +1 713-704-4001.
+                    </div>
+
+                    <div class="sub-header phone">📱 Step 1: Make the Call</div>
+                    <div class="step-block phone-step">
+                        <span class="step-label phone">Phone</span>
+                        <div class="step-text">Use your second phone to call the D365 voice number. The caller ID should show: <strong>+1 713-704-4001</strong> (David Chen's number).</div>
+                    </div>
+
+                    <div class="sub-header screen-pop">✨ Step 2: The Screen Pop Magic</div>
+                    <div class="step-block screen-pop-step">
+                        <span class="step-label screen-pop">Screen Pop</span>
+                        <div class="step-text">
+                            <strong>BEFORE accepting the call</strong>, point to the incoming call notification:<br><br>
+                            <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                <li>📞 <strong>Caller Name:</strong> David Chen</li>
+                                <li>🏢 <strong>Account:</strong> Riverside Medical Centre NHS Trust</li>
+                                <li>⭐ <strong>Service Tier:</strong> Gold (2-hour SLA)</li>
+                                <li>🎫 <strong>Open Case:</strong> "Elevator Entrapment - East Wing"</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="demo-gold">
+                        <strong>🎯 DEMO GOLD:</strong> "Before Sarah even says hello, she knows: this is David Chen, Facilities Manager at Riverside Medical, a Gold customer with a 2-hour emergency SLA. And there's already an open case about an elevator entrapment. With Ring Central, she'd be asking 'Can you spell your name? What's your account number?' Now she can say: 'Hi David, I see you're calling about the East Wing elevator. Are they still trapped?'"
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">Accept the call. The full customer record opens automatically.</div>
+                    </div>
+
+                    <div class="sub-header context">🎯 Step 3: Immediate Context</div>
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Point to everything Sarah now sees without searching:
+                            <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                <li><strong>Contact card:</strong> David's name, title, all phone numbers, email</li>
+                                <li><strong>Account tile:</strong> Riverside Medical – 8 elevators, Gold contract, £185K/year</li>
+                                <li><strong>Recent interactions:</strong> Last call 3 days ago, topic: inspection scheduling</li>
+                                <li><strong>Open cases:</strong> The entrapment case is highlighted</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>In the old world, Sarah would be pulling up Ring Central, then switching to Salesforce, searching for 'David Chen', hoping she spells it right, then trying to find his account, then looking for open cases. That's 90 seconds of 'please hold' time. Here, she has everything in under 3 seconds—before she even picks up.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>And look at this—the system recognizes David is a Gold customer. That means 2-hour emergency response. If someone's trapped, Sarah's clock is already ticking. She doesn't have to look that up.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout roi"><strong>ROI — Average Handle Time:</strong> Screen pop alone reduces AHT by 15-30 seconds per call. For 35 agents handling 50 calls/day, that's 729 hours/year reclaimed. At $25/hour loaded cost, that's ~$18K/year saved—just from knowing who's calling.</div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECTION 3: EMBEDDED DIALER -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-dialer">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-dialer">3</div>
+                <div class="exec-header-text">
+                    <h3>📱 Embedded Dialer & Click-to-Call</h3>
+                    <div class="exec-purpose">Outbound calling without leaving D365</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="sub-header">Scenario: Callback to David</div>
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Let's say the call dropped, or Sarah needs to call David back with an update on the engineer dispatch. Watch how easy this is.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-header phone">Step 1: Click-to-Call from Contact</div>
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">Navigate to David Chen's contact record. Click the <strong>phone icon</strong> next to his business phone number.</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">The dialer pops up with David's number pre-filled. One click to dial.</div>
+                    </div>
+
+                    <div class="demo-gold">
+                        <strong>🎯 DEMO GOLD:</strong> "No copy-paste. No opening Ring Central in another window. No misdialing. Click the number, it calls. And watch—the call is automatically logged to the case timeline."
+                    </div>
+
+                    <div class="sub-header phone">Step 2: Click-to-Call from Case</div>
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">Open the "Elevator Entrapment - East Wing" case. In the contact section, click David's phone number.</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Sarah can click-to-call from anywhere—the contact record, the case, the account, the timeline. The context travels with her. When she makes this call, it's automatically associated with this case.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-header phone">Step 3: Embedded Dialer Panel</div>
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">Open the <strong>Omnichannel panel</strong> → Show the <strong>dialer tab</strong>.</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Sarah can also:
+                            <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                <li>Dial any number manually</li>
+                                <li>See recent calls</li>
+                                <li>Transfer calls</li>
+                                <li>Put calls on hold</li>
+                                <li>Conference in another agent</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>All the features you have in Ring Central—hold, transfer, conference—they're all here. But they're connected to your CRM. When Sarah transfers this call to the engineering team, the case context goes with it. The engineer sees everything Sarah saw.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout roi"><strong>ROI — Automatic Call Logging:</strong> Agents spend 2-3 minutes per call on manual logging. With auto-logging, that's eliminated. For 35 agents × 50 calls/day × 2.5 min = 4,375 hours/year saved. At $25/hour, that's ~$109K/year in productivity gains.</div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECTION 4: CUSTOMER CONTEXT -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-context">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-context">4</div>
+                <div class="exec-header-text">
+                    <h3>🎯 Customer Context & History</h3>
+                    <div class="exec-purpose">Everything Sarah needs—without asking David</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="sub-header">Step 1: Account Overview</div>
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">Click into the <strong>Riverside Medical Centre</strong> account record.</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            Point to:
+                            <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                <li><strong>Contract tier:</strong> Gold — 2-hour emergency SLA</li>
+                                <li><strong>Elevators:</strong> 8 units under contract</li>
+                                <li><strong>Annual value:</strong> £185,000</li>
+                                <li><strong>All contacts:</strong> David Chen, plus building manager, CFO</li>
+                                <li><strong>Service history:</strong> Recent inspections, past issues</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Sarah doesn't have to ask David 'which elevator' or 'what's your service level'. It's all here. She can see this account has had 3 service calls in the past 90 days—two for the East Wing elevator. That's a pattern. Maybe they need a modernization conversation, not just another repair.</p>
+                        </div>
+                    </div>
+
+                    <div class="sub-header">Step 2: Timeline — The Full Story</div>
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">Open the <strong>Timeline</strong> on the case or account.</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            The timeline shows:
+                            <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                <li>📞 Phone call from David last week</li>
+                                <li>📧 Email confirmation of inspection</li>
+                                <li>📝 Internal note from engineer</li>
+                                <li>🎫 Related cases</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="demo-gold">
+                        <strong>🎯 DEMO GOLD:</strong> "In Ring Central, Sarah would have this call, but she wouldn't know about the email David sent yesterday or the note from the engineer who visited last week. Here, she sees the complete picture. The voice channel feeds into the same timeline as email, chat, and field service."
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>This is the power of unified customer service. It's not just about the phone call—it's about every interaction. When your field engineer visits next week, they'll see this phone call in the timeline. When your account manager reviews the contract renewal, they'll know about these service issues. Everything connects.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout roi"><strong>ROI — First Contact Resolution:</strong> When agents have full context, FCR improves 15-25%. For Otis handling 50K calls/year, a 10% improvement in FCR eliminates 5,000 repeat contacts at $8 each = $40K/year saved.</div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECTION 5: CALL TRANSFER -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-transfer">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-transfer">5</div>
+                <div class="exec-header-text">
+                    <h3>↗️ Warm Transfer & Collaboration</h3>
+                    <div class="exec-purpose">Hand off with context—no cold transfers</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="sub-header">Scenario: Escalate to Engineering</div>
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>David's situation is urgent—someone's trapped. Sarah needs to bring in the engineering dispatch team. With Ring Central, she'd transfer the call and David would have to explain everything again. Let's see how D365 handles this.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label click">Click</span>
+                        <div class="step-text">In the call controls, click <strong>Transfer</strong> → <strong>Consult</strong> (warm transfer).</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label show">Show</span>
+                        <div class="step-text">
+                            The transfer dialog shows:
+                            <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                <li>Queue selector: "Engineering Dispatch"</li>
+                                <li>Available agents in that queue</li>
+                                <li>Option to add notes before transfer</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Sarah can do a warm transfer—she stays on the line, briefs the engineer, then drops off. Or she can add a note that travels with the transfer. Either way, the engineer sees everything: David's record, the account, the case, the whole timeline. No more 'Can you start from the beginning?'</p>
+                        </div>
+                    </div>
+
+                    <div class="demo-gold">
+                        <strong>🎯 DEMO GOLD:</strong> "This is what 35 agents × 50 calls/day looks like at scale. Every transfer keeps context. Every escalation preserves history. Your customers don't repeat themselves. Your agents don't waste time."
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SECTION 6: CLOSE -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-close">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-close">6</div>
+                <div class="exec-header-text">
+                    <h3>🎯 Close & Key Differentiators</h3>
+                    <div class="exec-purpose">Summarize the value vs. Ring Central</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="sub-header">Summary: Ring Central vs. D365 Voice</div>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Capability</th><th>Ring Central Today</th><th>D365 Voice</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Caller Recognition</td><td>Manual lookup</td><td><strong>Instant screen pop</strong></td></tr>
+                            <tr><td>Customer Context</td><td>Switch to CRM</td><td><strong>Embedded in workspace</strong></td></tr>
+                            <tr><td>Call Logging</td><td>Manual entry</td><td><strong>Automatic</strong></td></tr>
+                            <tr><td>Transfer Context</td><td>Lost on transfer</td><td><strong>Preserved</strong></td></tr>
+                            <tr><td>Service Level Awareness</td><td>Look up separately</td><td><strong>Shown on screen pop</strong></td></tr>
+                            <tr><td>Integration</td><td>Separate system</td><td><strong>Native to CRM</strong></td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>What we've shown you today isn't about replacing Ring Central with a different phone system. It's about connecting your phone system to everything else—your customers, your cases, your service contracts, your field engineers. When David calls, Sarah doesn't just answer a phone. She opens a relationship.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>For Otis EMEA, with 35 agents handling thousands of calls, this means: faster resolution, happier customers, and agents who spend time solving problems instead of searching for information. That's the value of unified customer service.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>Next Steps:</strong>
+                        <ul style="margin-top:8px; padding-left:20px;">
+                            <li>Pilot with 5 agents in Manchester?</li>
+                            <li>Integration workshop with IT?</li>
+                            <li>ROI deep-dive with finance?</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- APPENDIX: ALL ACCOUNTS -->
+        <!-- ============================================== -->
+
+        <p class="section-label">Appendix — Demo Data</p>
+
+        <div class="exec-section" style="border-left:4px solid #546e7a;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background:#546e7a;">A</div>
+                <div class="exec-header-text">
+                    <h3>All Demo Accounts (10)</h3>
+                    <div class="exec-purpose">UK buildings with Otis service contracts</div>
+                </div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Account</th><th>Number</th><th>Type</th><th>Elevators</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Westfield London Shopping Centre</td><td>OTIS-UK-001</td><td>Commercial - Retail</td><td>12</td></tr>
+                            <tr><td>Canary Wharf Tower</td><td>OTIS-UK-002</td><td>Commercial - Office</td><td>24</td></tr>
+                            <tr><td>Riverside Medical Centre NHS Trust</td><td>OTIS-UK-003</td><td>Healthcare</td><td>8</td></tr>
+                            <tr><td>Heathrow Terminal 5</td><td>OTIS-UK-004</td><td>Transportation</td><td>32</td></tr>
+                            <tr><td>Manchester Arndale Centre</td><td>OTIS-UK-005</td><td>Commercial - Retail</td><td>10</td></tr>
+                            <tr><td>The Shard</td><td>OTIS-UK-006</td><td>Commercial - Office</td><td>36</td></tr>
+                            <tr><td>Birmingham Grand Central</td><td>OTIS-UK-007</td><td>Transportation</td><td>8</td></tr>
+                            <tr><td>One Canada Square</td><td>OTIS-UK-008</td><td>Commercial - Office</td><td>32</td></tr>
+                            <tr><td>Marriott Hotel Park Lane</td><td>OTIS-UK-009</td><td>Hospitality</td><td>6</td></tr>
+                            <tr><td>University College London</td><td>OTIS-UK-010</td><td>Education</td><td>14</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        Otis EMEA — CCaaS Demo Execution Guide — March 20, 2026 — Confidential<br>
+        Telephony Integration Focus — Replace Ring Central with D365 Voice
+    </footer>
+
+    <script>
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
+        }
+
+        // ── Side Navigation ──
+        (function () {
+            var toggle = document.getElementById('navToggle');
+            var nav = document.getElementById('sideNav');
+            var backdrop = document.getElementById('navBackdrop');
+            var pinBtn = document.getElementById('navPin');
+            var navBody = document.getElementById('navBody');
+            var pinned = false;
+
+            // Build nav from page structure
+            var container = document.querySelector('.container');
+            var kids = container.children;
+            var html = '';
+            var idx = 0;
+
+            for (var i = 0; i < kids.length; i++) {
+                var el = kids[i];
+
+                // Section labels become group headers
+                if (el.classList.contains('section-label')) {
+                    html += '<div class="side-nav-group">' + el.textContent + '</div>';
+                }
+
+                // Exec sections become nav items
+                if (el.classList.contains('exec-section')) {
+                    var numEl = el.querySelector('.exec-number');
+                    var titleEl = el.querySelector('.exec-header-text h3');
+                    if (!numEl || !titleEl) continue;
+
+                    var num = numEl.textContent.trim();
+                    var title = titleEl.textContent.trim();
+                    var id = 'nav-sec-' + idx;
+                    el.id = id;
+
+                    // Get computed background color
+                    var bg = window.getComputedStyle(numEl).backgroundColor;
+                    var fg = window.getComputedStyle(numEl).color;
+
+                    html += '<a class="side-nav-item" data-target="' + id + '">';
+                    html += '<span class="side-nav-num" style="background:' + bg + ';color:' + fg + ';">' + num + '</span>';
+                    html += '<span class="side-nav-label">' + title + '</span></a>';
+                    idx++;
+                }
+            }
+
+            navBody.innerHTML = html;
+
+            // Click nav item -> scroll to section
+            navBody.addEventListener('click', function (e) {
+                var item = e.target.closest('.side-nav-item');
+                if (!item) return;
+                var target = document.getElementById(item.getAttribute('data-target'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (!target.classList.contains('open')) {
+                        target.classList.add('open');
+                    }
+                    if (!pinned) closeNav();
+                }
+            });
+
+            // Open / Close nav
+            function openNav() {
+                nav.classList.add('open');
+                backdrop.classList.add('visible');
+                toggle.classList.add('open');
+                toggle.innerHTML = '\u2715';
+            }
+            function closeNav() {
+                if (pinned) return;
+                nav.classList.remove('open');
+                backdrop.classList.remove('visible');
+                toggle.classList.remove('open');
+                toggle.innerHTML = '\u2630';
+            }
+
+            toggle.addEventListener('click', function () {
+                if (nav.classList.contains('open') && !pinned) closeNav();
+                else openNav();
+            });
+            backdrop.addEventListener('click', closeNav);
+
+            // Pin nav open
+            pinBtn.addEventListener('click', function () {
+                pinned = !pinned;
+                pinBtn.classList.toggle('pinned', pinned);
+                document.body.classList.toggle('nav-pinned', pinned);
+                pinBtn.textContent = pinned ? 'UNPIN' : 'PIN';
+                if (pinned) {
+                    backdrop.classList.remove('visible');
+                    nav.classList.add('open');
+                    toggle.classList.add('open');
+                    toggle.innerHTML = '\u2715';
+                }
+            });
+
+            // Highlight active section on scroll
+            var sections = document.querySelectorAll('.exec-section[id]');
+            var navItems = navBody.querySelectorAll('.side-nav-item');
+
+            function highlightNav() {
+                var scrollPos = window.scrollY + 150;
+                sections.forEach(function (sec, i) {
+                    var top = sec.offsetTop;
+                    var bottom = top + sec.offsetHeight;
+                    if (scrollPos >= top && scrollPos < bottom) {
+                        navItems.forEach(function (item) { item.classList.remove('active'); });
+                        navItems[i].classList.add('active');
+                    }
+                });
+            }
+            window.addEventListener('scroll', highlightNav);
+            highlightNav();
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+{
+  "demoName": "Otis Service Copilot Demo",
+  "version": "1.0",
+  "lastUpdated": "2026-03-16",
+  "description": "Test prompts and demo script for Otis Service Copilot in Copilot Studio",
+  
+  "testPrompts": {
+    "entrapment": [
+      "I have an entrapment - someone is stuck in an elevator",
+      "Emergency! Patient transport staff trapped in elevator at Riverside Medical Centre",
+      "What's the entrapment response procedure for a Gen2 Premier?",
+      "We have people stuck in Elevator 3, building A"
+    ],
+    "doorIssues": [
+      "Elevator doors won't close properly",
+      "The SkyRise elevator at Imperial Tower has door alignment issues",
+      "How do I troubleshoot door sensor problems?",
+      "Door keeps reopening on floor 15"
+    ],
+    "billing": [
+      "What's covered under my Gold contract?",
+      "Customer is asking about their service agreement",
+      "What's the SLA response time for Tier 1 Premium accounts?",
+      "Can you check the contract for Riverside Medical Centre?"
+    ],
+    "modernization": [
+      "Customer interested in upgrading their elevator",
+      "The Manchester Central elevator is 20 years old, what are the options?",
+      "Can you tell me about modernization packages?",
+      "Transfer this to sales - customer wants to discuss replacement"
+    ],
+    "maintenance": [
+      "Schedule a preventive maintenance visit",
+      "When is the next PM due for unit RM-E03?",
+      "Customer wants to reschedule their maintenance appointment",
+      "Set up quarterly inspections for Imperial Tower"
+    ],
+    "knowledgeArticles": [
+      "What does KB-001247 say about entrapment procedures?",
+      "Find me the article about healthcare facility protocols",
+      "How do I check contract coverage for a customer?",
+      "What's the IoT monitoring setup procedure?"
+    ]
+  },
+
+  "heroCaseDemoScript": [
+    {
+      "step": 1,
+      "scenario": "Healthcare Entrapment Emergency",
+      "caseRef": "CAS-19121-P9C5M0",
+      "prompt": "I just got a call - there's someone trapped in an elevator at Riverside Medical Centre. It's Elevator 3, a bed elevator. The facilities manager David Chen called it in.",
+      "expectedBehavior": "Agent should recognize entrapment emergency, reference KB-001247 for procedure, note healthcare SLA (1 hour), and provide step-by-step response guidance.",
+      "talkingPoints": [
+        "Notice how the agent prioritizes safety and immediate action",
+        "It references the correct KB article for entrapment procedures",
+        "Healthcare SLA is automatically considered"
+      ]
+    },
+    {
+      "step": 2,
+      "scenario": "High-Rise Door Issue",
+      "caseRef": "CAS-19122-D8K3R5",
+      "prompt": "Imperial Tower on Deansgate is reporting door alignment problems on their SkyRise elevator. Doors are slow to close on floor 15.",
+      "expectedBehavior": "Agent should reference KB-002154 for SkyRise door troubleshooting, check if it's a Gold contract account, suggest diagnostic steps.",
+      "talkingPoints": [
+        "Agent pulls relevant troubleshooting steps from knowledge base",
+        "Suggests remote diagnostic options",
+        "Considers safety implications"
+      ]
+    },
+    {
+      "step": 3,
+      "scenario": "Contract/Billing Question",
+      "caseRef": "CAS-19123-B2L9N7",
+      "prompt": "Customer at MediaCity wants to know what's covered under their Silver contract. Are emergency calls included?",
+      "expectedBehavior": "Agent should reference KB-003106 for contract coverage guide, explain Silver tier benefits and limitations.",
+      "talkingPoints": [
+        "Agent accurately describes contract coverage",
+        "Can upsell to Gold if appropriate",
+        "References authoritative knowledge source"
+      ]
+    },
+    {
+      "step": 4,
+      "scenario": "Modernization Opportunity",
+      "caseRef": "CAS-19124-M1P4T2",
+      "prompt": "Manchester Central Hotel is asking about upgrading their 25-year-old elevator. What modernization options do we have?",
+      "expectedBehavior": "Agent should recognize sales opportunity, provide general info, then offer to warm transfer to modernization sales team.",
+      "talkingPoints": [
+        "Agent identifies this as a sales opportunity",
+        "Provides helpful context without overstepping",
+        "Smoothly transitions to sales handoff"
+      ]
+    },
+    {
+      "step": 5,
+      "scenario": "IoT Alert Response",
+      "caseRef": "CAS-19125-I5X7Z8",
+      "prompt": "We got an IoT anomaly alert for elevator at MediaCityUK. Sensor shows unusual vibration patterns.",
+      "expectedBehavior": "Agent should reference KB-003145 for IoT monitoring interpretation, suggest proactive maintenance scheduling.",
+      "talkingPoints": [
+        "Proactive service before customer notices issue",
+        "Explains IoT alert significance",
+        "Recommends preventive action"
+      ]
+    }
+  ],
+
+  "quickTestSequence": [
+    "Hello, I need help with an elevator issue",
+    "There's an entrapment at Riverside Medical Centre",
+    "What's the procedure for this?",
+    "Thanks, now I have a different question - what's covered under a Gold contract?",
+    "Can you help me schedule maintenance for Imperial Tower?"
+  ],
+
+  "copilotStudioTestInstructions": [
+    "1. Open Copilot Studio and select 'Otis Service Copilot'",
+    "2. Open the Test pane (right side)",
+    "3. Type each prompt and observe the response",
+    "4. Verify the agent triggers the correct topic",
+    "5. Verify KB articles are referenced when appropriate",
+    "6. Check that the Otis logo appears in responses"
+  ]
+}

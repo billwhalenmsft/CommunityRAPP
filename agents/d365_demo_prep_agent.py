@@ -9,14 +9,20 @@ Actions:
   - validate_environment: Check D365 org has expected demo data
   - provision_data: Generate accounts, contacts, and other demo records
   - run_powershell: Execute a numbered provisioning step (01-25)
+  - generate_config_from_inputs: Create environment.json + demo-data.json from input schema
+  - generate_demo_data: Use GPT-4o to generate realistic demo data from inputs
+  - orchestrate_full_setup: End-to-end demo setup from inputs to provisioned D365
 
 Requires: Azure CLI `az login` completed for Dataverse token acquisition.
 """
 
 import json
 import logging
+import os
 import subprocess
+from datetime import datetime
 from pathlib import Path
+from typing import Dict, Any, Optional
 
 from agents.basic_agent import BasicAgent
 
@@ -43,8 +49,8 @@ class D365DemoPrepAgent(BasicAgent):
                 "Dynamics 365 Customer Service demo preparation agent. "
                 "Provisions demo data (accounts, contacts, cases, queues, SLAs, KB articles), "
                 "validates that a D365 org is demo-ready, lists customer configurations, "
-                "and runs PowerShell provisioning steps. "
-                "Use this agent when working with D365/Dataverse demo environments."
+                "runs PowerShell provisioning steps, and can generate complete demo configs from inputs. "
+                "NEW: Use 'generate_config_from_inputs' or 'orchestrate_full_setup' for turnkey demo prep."
             ),
             "parameters": {
                 "type": "object",
@@ -57,7 +63,11 @@ class D365DemoPrepAgent(BasicAgent):
                             "'get_config' returns a customer's environment.json, "
                             "'validate_environment' checks the D365 org for expected data, "
                             "'provision_data' generates core demo records via API, "
-                            "'run_powershell' executes a numbered provisioning script (01-25)"
+                            "'run_powershell' executes a numbered provisioning script (01-25), "
+                            "'generate_config_from_inputs' creates environment.json + demo-data.json from input schema, "
+                            "'generate_demo_data' uses GPT-4o to generate realistic demo data, "
+                            "'generate_demo_assets' creates HTML demo execution guide and supporting assets, "
+                            "'orchestrate_full_setup' runs end-to-end setup from inputs to D365 with demo assets"
                         ),
                         "enum": [
                             "list_customers",
@@ -65,11 +75,15 @@ class D365DemoPrepAgent(BasicAgent):
                             "validate_environment",
                             "provision_data",
                             "run_powershell",
+                            "generate_config_from_inputs",
+                            "generate_demo_data",
+                            "generate_demo_assets",
+                            "orchestrate_full_setup",
                         ],
                     },
                     "customer_name": {
                         "type": "string",
-                        "description": "Customer folder name (e.g. 'zurnelkay'). Required for all actions except list_customers.",
+                        "description": "Customer folder name (e.g. 'zurnelkay', 'otis'). Required for most actions.",
                     },
                     "step_number": {
                         "type": "integer",
@@ -78,6 +92,19 @@ class D365DemoPrepAgent(BasicAgent):
                     "dry_run": {
                         "type": "boolean",
                         "description": "If true, show plan without making changes. Default: false.",
+                    },
+                    "inputs": {
+                        "type": "object",
+                        "description": "Input data following d365_input_schema.json for generate_config_from_inputs or orchestrate_full_setup.",
+                    },
+                    "d365_org_url": {
+                        "type": "string",
+                        "description": "D365 organization URL (e.g., 'https://orgecbce8ef.crm.dynamics.com')",
+                    },
+                    "steps_to_run": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of step numbers to run for orchestrate_full_setup (default: [1,2,3,4,5,6,7,8])",
                     },
                 },
                 "required": ["action"],
@@ -105,6 +132,33 @@ class D365DemoPrepAgent(BasicAgent):
                 return self._run_powershell(
                     kwargs.get("customer_name"),
                     kwargs.get("step_number"),
+                )
+            elif action == "generate_config_from_inputs":
+                return self._generate_config_from_inputs(
+                    kwargs.get("customer_name"),
+                    kwargs.get("inputs"),
+                    kwargs.get("d365_org_url"),
+                    kwargs.get("dry_run", False),
+                )
+            elif action == "generate_demo_data":
+                return self._generate_demo_data(
+                    kwargs.get("customer_name"),
+                    kwargs.get("inputs"),
+                    kwargs.get("dry_run", False),
+                )
+            elif action == "generate_demo_assets":
+                return self._generate_demo_assets(
+                    kwargs.get("customer_name"),
+                    kwargs.get("inputs"),
+                    kwargs.get("dry_run", False),
+                )
+            elif action == "orchestrate_full_setup":
+                return self._orchestrate_full_setup(
+                    kwargs.get("customer_name"),
+                    kwargs.get("inputs"),
+                    kwargs.get("d365_org_url"),
+                    kwargs.get("steps_to_run"),
+                    kwargs.get("dry_run", False),
                 )
             else:
                 return f"Unknown action: {action}"
@@ -359,3 +413,352 @@ class D365DemoPrepAgent(BasicAgent):
         resp = session.post(entity_set, body, headers={"Prefer": "return=representation"})
         resp.raise_for_status()
         return next(iter(resp.json().values()))
+
+    # ------------------------------------------------------------------
+    # NEW: Input-driven config and data generation
+    # ------------------------------------------------------------------
+
+    def _generate_config_from_inputs(
+        self,
+        customer_name: str,
+        inputs: Optional[Dict[str, Any]],
+        d365_org_url: Optional[str],
+        dry_run: bool = False
+    ) -> str:
+        """Generate environment.json and demo-data.json from input schema."""
+        if not customer_name:
+            return "Error: customer_name is required."
+        if not inputs:
+            return "Error: inputs object is required (follow d365_input_schema.json format)."
+
+        # Extract from inputs
+        customer_info = inputs.get("customer", {})
+        discovery = inputs.get("discovery", {})
+        demo_reqs = inputs.get("demo_requirements", {})
+        data_sources = inputs.get("data_sources", {})
+        metadata = inputs.get("metadata", {})
+
+        # Validate required fields
+        if not customer_info.get("name"):
+            return "Error: inputs.customer.name is required."
+        if not demo_reqs.get("tiers"):
+            return "Error: inputs.demo_requirements.tiers is required."
+
+        customer_dir = CUSTOMERS_DIR / customer_name / "d365"
+        config_dir = customer_dir / "config"
+
+        # Build environment.json
+        tiers_dict = {}
+        for tier in demo_reqs.get("tiers", []):
+            tier_name = tier.get("name", "Standard")
+            tiers_dict[tier_name] = {
+                "priority": tier.get("priority", 3),
+                "sla": {
+                    "firstResponseMinutes": tier.get("sla_first_response_minutes", 240),
+                    "resolutionMinutes": tier.get("sla_resolution_minutes", 1440)
+                }
+            }
+
+        environment_config = {
+            "environment": {
+                "name": f"{customer_info.get('name')} Demo",
+                "type": "demo",
+                "url": d365_org_url or "https://YOUR_ORG.crm.dynamics.com",
+                "region": customer_info.get("region", "NA")
+            },
+            "demo": {
+                "brands": customer_info.get("brands", [customer_info.get("name")]),
+                "industry": customer_info.get("industry", "other"),
+                "customerTiers": tiers_dict,
+                "agentCount": discovery.get("agent_count", 10),
+                "hotWords": demo_reqs.get("hot_words", ["urgent", "emergency", "safety"]),
+                "channels": discovery.get("channels", ["phone"]),
+                "currentSystem": discovery.get("current_system", ""),
+                "useCase": discovery.get("use_case", "case_management")
+            },
+            "dataSources": {
+                "website": data_sources.get("website", ""),
+                "productsPage": data_sources.get("products_page", ""),
+                "supportPage": data_sources.get("support_page", "")
+            },
+            "metadata": {
+                "createdBy": metadata.get("created_by", "D365DemoPrep"),
+                "createdDate": metadata.get("created_date", datetime.now().strftime("%Y-%m-%d")),
+                "demoDate": metadata.get("demo_date", ""),
+                "projectId": metadata.get("project_id", ""),
+                "notes": metadata.get("notes", "")
+            }
+        }
+
+        if dry_run:
+            return f"**Dry Run — Would create for {customer_name}:**\n```json\n{json.dumps(environment_config, indent=2)}\n```"
+
+        # Create directories
+        config_dir.mkdir(parents=True, exist_ok=True)
+        (customer_dir / "data").mkdir(parents=True, exist_ok=True)
+        (customer_dir / "demo-assets").mkdir(parents=True, exist_ok=True)
+
+        # Write environment.json
+        env_path = config_dir / "environment.json"
+        with open(env_path, "w", encoding="utf-8") as f:
+            json.dump(environment_config, f, indent=2)
+
+        # Create stub demo-data.json (will be populated by generate_demo_data)
+        demo_data_stub = {
+            "serviceAccounts": {"accounts": []},
+            "contacts": {"contacts": []},
+            "products": {"products": []},
+            "demoCases": {"cases": []},
+            "kbArticles": {"articles": []},
+            "_generated": False,
+            "_note": "Run generate_demo_data to populate with GPT-4o generated content"
+        }
+        demo_data_path = config_dir / "demo-data.json"
+        with open(demo_data_path, "w", encoding="utf-8") as f:
+            json.dump(demo_data_stub, f, indent=2)
+
+        # Save original inputs for reference
+        inputs_path = config_dir / "inputs.json"
+        with open(inputs_path, "w", encoding="utf-8") as f:
+            json.dump(inputs, f, indent=2)
+
+        return (
+            f"**Config generated for {customer_name}:**\n"
+            f"✓ Created: {env_path}\n"
+            f"✓ Created: {demo_data_path} (stub — run generate_demo_data to populate)\n"
+            f"✓ Saved inputs to: {inputs_path}\n\n"
+            f"Next step: Run `generate_demo_data` action to populate demo-data.json with GPT-4o generated content."
+        )
+
+    def _generate_demo_data(
+        self,
+        customer_name: str,
+        inputs: Optional[Dict[str, Any]] = None,
+        dry_run: bool = False
+    ) -> str:
+        """Use GPT-4o to generate realistic demo data based on inputs."""
+        if not customer_name:
+            return "Error: customer_name is required."
+
+        # Load inputs from file if not provided
+        config_dir = CUSTOMERS_DIR / customer_name / "d365" / "config"
+        if not inputs:
+            inputs_path = config_dir / "inputs.json"
+            if inputs_path.exists():
+                with open(inputs_path, "r", encoding="utf-8") as f:
+                    inputs = json.load(f)
+            else:
+                return f"Error: No inputs provided and no inputs.json found at {inputs_path}"
+
+        # Import the data generator
+        try:
+            from d365.utils.d365_data_generator import D365DataGenerator
+            generator = D365DataGenerator()
+        except ImportError as e:
+            return f"Error: Could not import D365DataGenerator. Ensure d365/utils/d365_data_generator.py exists. {e}"
+
+        customer_info = inputs.get("customer", {})
+        demo_reqs = inputs.get("demo_requirements", {})
+        discovery = inputs.get("discovery", {})
+
+        if dry_run:
+            return (
+                f"**Dry Run — Would generate for {customer_name}:**\n"
+                f"- Industry: {customer_info.get('industry')}\n"
+                f"- Brands: {customer_info.get('brands')}\n"
+                f"- Tiers: {[t.get('name') for t in demo_reqs.get('tiers', [])]}\n"
+                f"- Case types: {demo_reqs.get('case_types')}\n"
+                f"- Account count: {demo_reqs.get('account_count', {})}\n"
+                f"- Case count: {demo_reqs.get('case_count', 20)}\n"
+                f"- KB article count: {demo_reqs.get('kb_article_count', 10)}"
+            )
+
+        # Generate data using GPT-4o
+        try:
+            demo_data = generator.generate_full_demo_data(
+                customer_name=customer_info.get("name", customer_name),
+                industry=customer_info.get("industry", "other"),
+                brands=customer_info.get("brands", [customer_name]),
+                region=customer_info.get("region", "NA"),
+                tiers=[t.get("name") for t in demo_reqs.get("tiers", [{"name": "Standard"}])],
+                case_types=demo_reqs.get("case_types", ["support", "inquiry", "complaint"]),
+                hero_scenario=demo_reqs.get("hero_scenario"),
+                hot_words=demo_reqs.get("hot_words", ["urgent", "emergency"]),
+                account_count=demo_reqs.get("account_count", {"manufacturers": 1, "distributors": 5, "end_users": 10}),
+                case_count=demo_reqs.get("case_count", 20),
+                kb_article_count=demo_reqs.get("kb_article_count", 10),
+                channels=discovery.get("channels", ["phone"]),
+                pain_points=discovery.get("pain_points", [])
+            )
+        except Exception as e:
+            logging.error(f"Data generation failed: {e}")
+            return f"Error generating demo data: {e}"
+
+        # Write demo-data.json
+        config_dir.mkdir(parents=True, exist_ok=True)
+        demo_data_path = config_dir / "demo-data.json"
+        with open(demo_data_path, "w", encoding="utf-8") as f:
+            json.dump(demo_data, f, indent=2)
+
+        # Summary
+        accounts = demo_data.get("serviceAccounts", {}).get("accounts", [])
+        contacts = demo_data.get("contacts", {}).get("contacts", [])
+        cases = demo_data.get("demoCases", {}).get("cases", [])
+        kb_articles = demo_data.get("kbArticles", {}).get("articles", [])
+
+        return (
+            f"**Demo data generated for {customer_name}:**\n"
+            f"✓ Accounts: {len(accounts)}\n"
+            f"✓ Contacts: {len(contacts)}\n"
+            f"✓ Cases: {len(cases)}\n"
+            f"✓ KB Articles: {len(kb_articles)}\n"
+            f"✓ Saved to: {demo_data_path}\n\n"
+            f"Next step: Run PowerShell provisioning steps or use `orchestrate_full_setup`."
+        )
+
+    def _orchestrate_full_setup(
+        self,
+        customer_name: str,
+        inputs: Optional[Dict[str, Any]],
+        d365_org_url: Optional[str],
+        steps_to_run: Optional[list] = None,
+        dry_run: bool = False
+    ) -> str:
+        """End-to-end demo setup: config generation, data generation, and provisioning."""
+        if not customer_name:
+            return "Error: customer_name is required."
+        if not inputs:
+            return "Error: inputs object is required."
+        if not d365_org_url:
+            return "Error: d365_org_url is required for provisioning."
+
+        results = []
+        results.append(f"## D365 Demo Orchestration — {customer_name}\n")
+
+        # Step 1: Generate config
+        results.append("### Step 1: Generate Configuration")
+        if dry_run:
+            results.append("Would generate environment.json and demo-data.json stub")
+        else:
+            config_result = self._generate_config_from_inputs(customer_name, inputs, d365_org_url, False)
+            results.append(config_result)
+
+        # Step 2: Generate demo data with GPT-4o
+        results.append("\n### Step 2: Generate Demo Data (GPT-4o)")
+        if dry_run:
+            results.append("Would generate realistic demo data using GPT-4o")
+        else:
+            data_result = self._generate_demo_data(customer_name, inputs, False)
+            results.append(data_result)
+
+        # Step 3: Run provisioning steps
+        default_steps = steps_to_run or [1, 2, 7]  # Accounts, Contacts, Cases by default
+        results.append(f"\n### Step 3: Provision D365 (Steps: {default_steps})")
+
+        if dry_run:
+            results.append(f"Would run PowerShell steps: {default_steps}")
+        else:
+            for step in default_steps:
+                results.append(f"\n**Running step {step}...**")
+                step_result = self._run_powershell(customer_name, step)
+                results.append(step_result[:500])  # Truncate long outputs
+
+        # Step 4: Generate demo assets (HTML execution guide, etc.)
+        results.append("\n### Step 4: Generate Demo Assets")
+        if dry_run:
+            results.append("Would generate HTML demo execution guide and supporting assets")
+        else:
+            assets_result = self._generate_demo_assets(customer_name, inputs, False)
+            results.append(assets_result)
+
+        # Step 5: Validate
+        results.append("\n### Step 5: Validate Environment")
+        if dry_run:
+            results.append("Would validate D365 org has expected demo data")
+        else:
+            validation = self._validate_environment(customer_name)
+            results.append(validation)
+
+        return "\n".join(results)
+
+    def _generate_demo_assets(
+        self,
+        customer_name: str,
+        inputs: Optional[Dict[str, Any]] = None,
+        dry_run: bool = False
+    ) -> str:
+        """Generate HTML demo execution guide and supporting assets."""
+        if not customer_name:
+            return "Error: customer_name is required."
+
+        config_dir = CUSTOMERS_DIR / customer_name / "d365" / "config"
+        demo_assets_dir = CUSTOMERS_DIR / customer_name / "d365" / "demo-assets"
+
+        # Load inputs from file if not provided
+        if not inputs:
+            inputs_path = config_dir / "inputs.json"
+            if inputs_path.exists():
+                with open(inputs_path, "r", encoding="utf-8") as f:
+                    inputs = json.load(f)
+            else:
+                return f"Error: No inputs provided and no inputs.json found at {inputs_path}"
+
+        # Load environment config
+        env_path = config_dir / "environment.json"
+        if not env_path.exists():
+            return f"Error: No environment.json found at {env_path}. Run generate_config_from_inputs first."
+
+        with open(env_path, "r", encoding="utf-8") as f:
+            environment_config = json.load(f)
+
+        # Load demo data
+        demo_data_path = config_dir / "demo-data.json"
+        if not demo_data_path.exists():
+            return f"Error: No demo-data.json found at {demo_data_path}. Run generate_demo_data first."
+
+        with open(demo_data_path, "r", encoding="utf-8") as f:
+            demo_data = json.load(f)
+
+        # Check if demo data is populated
+        if not demo_data.get("_generated", False) and not demo_data.get("serviceAccounts", {}).get("accounts"):
+            return "Error: demo-data.json appears empty. Run generate_demo_data first to populate it."
+
+        if dry_run:
+            return (
+                f"**Dry Run — Would generate for {customer_name}:**\n"
+                f"- Demo Execution Guide (HTML)\n"
+                f"- Data Validation Report (HTML)\n"
+                f"- Quick Reference Card (HTML)\n"
+                f"- Output directory: {demo_assets_dir}"
+            )
+
+        # Import the asset generator
+        try:
+            from d365.utils.demo_asset_generator import DemoAssetGenerator
+            generator = DemoAssetGenerator()
+        except ImportError as e:
+            return f"Error: Could not import DemoAssetGenerator. Ensure d365/utils/demo_asset_generator.py exists. {e}"
+
+        # Generate all assets
+        try:
+            customer_info = inputs.get("customer", {})
+            created_files = generator.generate_all_assets(
+                customer_name=customer_info.get("name", customer_name),
+                inputs=inputs,
+                demo_data=demo_data,
+                environment_config=environment_config,
+                output_dir=demo_assets_dir
+            )
+        except Exception as e:
+            logging.error(f"Demo asset generation failed: {e}")
+            return f"Error generating demo assets: {e}"
+
+        # Build result summary
+        results = [f"**Demo assets generated for {customer_name}:**"]
+        for asset_type, path in created_files.items():
+            results.append(f"✓ {asset_type}: {path}")
+
+        results.append(f"\n**Open the demo execution guide:**")
+        results.append(f"File: {demo_assets_dir / 'demo-execution-guide.html'}")
+
+        return "\n".join(results)

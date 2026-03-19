@@ -1,0 +1,33 @@
+# Demo Action: Send D365 Notification via RAPP
+# Use via: POST /api/trigger/manual/demo_send_notification
+# Or via: POST /api/trigger/copilot-studio with agent/action
+
+name: demo_send_notification
+description: Send an in-app toast notification to a D365 user
+trigger_type: manual
+enabled: true
+
+# Target - uses a PowerShell script via the D365DemoPrep agent
+target_agent: d365_demo_prep
+target_action: run_powershell
+
+message_template: |
+  Send a D365 in-app notification.
+  Scenario: {{scenario}}
+  Recipient: {{recipient_email}}
+  Case: {{case_title}} ({{case_number}})
+
+body_mapping:
+  script_number: "28"
+  scenario: scenario
+  recipient_email: recipient_email
+  case_title: case_title
+  case_number: case_number
+  case_id: case_id
+  customer: customer
+
+# No filters needed - manual triggers always run
+filters: []
+
+max_retries: 1
+retry_delay_seconds: 5

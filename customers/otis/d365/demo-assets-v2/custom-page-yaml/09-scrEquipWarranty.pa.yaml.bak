@@ -1,0 +1,1382 @@
+# ============================================================
+#  EQUIPMENT & WARRANTY MANAGEMENT (scrEquipWarranty)
+#  Format: Power Apps pa.yaml SchemaV3
+# ============================================================
+#
+#  Otis-specific equipment & warranty lookup page.
+#  On load: shows all units at the customer location
+#  (elevators, escalators, moving walkways) with warranty
+#  status badges and contract type.
+#  Selecting a unit shows detail panel + action buttons.
+#
+#  Data source: 'Customer Assets' (D365 FS)
+#               with fields: Name, 'Asset Tag', Product,
+#               'Serial Number (msdyn_name)', Account, 'Contract Type',
+#               'Warranty Start Date', 'Warranty End Date',
+#               'Functional Location', 'Last Serviced On', Status.
+# ============================================================
+
+Screens:
+  scrEquipWarranty:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      Height: =900
+      OnVisible: |-
+        =// --- Initialise state ---
+        Set(varEWSelectedUnit, Blank());
+        Set(varEWActionMsg, "");
+        Set(varEWShowActions, false);
+        Set(varEWShowClaimForm, false);
+        Set(varEWClaimSubmitted, false);
+        Set(varEWClaimError, "");
+        Set(varEWShowHistory, false);
+        Set(varEWSearch, "");
+        Set(varEWUnitMode, false);
+        Clear(colEWClaimHistory);
+
+        // --- Parse pipe-delimited Param("recordId") ---
+        // Format: "accountId|caseId|accountName|serialNumber"
+        // scrHome already parses these into varEWAccountId and
+        // varEWCallerSerial. Param() is only available on the
+        // initial page load (from the JS side-pane loader), NOT
+        // on internal Navigate() calls. So we use the globals
+        // set by scrHome as primary, and Param() as fallback
+        // (for the rare case where Equipment is the landing screen).
+        With(
+            { raw: Param("recordId") },
+            If(
+                !IsBlank(raw),
+                With(
+                    { segments: Split(raw, "|") },
+                    // Segment 1: Account ID
+                    If(
+                        IsBlank(varEWAccountId) || varEWAccountId = "",
+                        Set(
+                            varEWAccountId,
+                            If(CountRows(segments) >= 1, First(segments).Value, "")
+                        )
+                    );
+                    // Segment 4: Serial number (from case's productserialnumber)
+                    If(
+                        IsBlank(varEWCallerSerial) || varEWCallerSerial = "",
+                        Set(
+                            varEWCallerSerial,
+                            If(
+                                CountRows(segments) >= 4,
+                                Last(FirstN(segments, 4)).Value,
+                                ""
+                            )
+                        )
+                    )
+                )
+            )
+        );
+
+        // Fetch all assets/equipment at this account
+        If(
+            !IsBlank(varEWAccountId),
+            ClearCollect(
+                colLocationUnits,
+                SortByColumns(
+                    Filter(
+                        'Customer Assets',
+                        Account.Account = GUID(varEWAccountId)
+                    ),
+                    "msdyn_name", SortOrder.Ascending
+                )
+            ),
+            // Fallback: show all assets if no account scoped
+            ClearCollect(
+                colLocationUnits,
+                SortByColumns(
+                    'Customer Assets',
+                    "msdyn_name", SortOrder.Ascending
+                )
+            )
+        );
+
+        // --- Auto-select unit if serial was passed from case ---
+        If(
+            !IsBlank(varEWCallerSerial) && varEWCallerSerial <> "",
+            With(
+                { matched: LookUp(colLocationUnits, 'Serial Number (msdyn_name)' = varEWCallerSerial) },
+                If(
+                    !IsBlank(matched),
+                    Set(varEWSelectedUnit, matched);
+                    Set(varEWShowActions, true);
+                    Set(varEWUnitMode, true),
+                    // Serial didn't match any asset - fall through to facility view
+                    Set(varEWUnitMode, false)
+                )
+            ),
+            Set(varEWUnitMode, false)
+        )
+      Width: =380
+    Children:
+
+      # ──────────────────────────────────────
+      #  HEADER
+      # ──────────────────────────────────────
+      - rectEWBar:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =6
+            Width: =Parent.Width
+
+      - icoEWIcon:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            Height: =32
+            Icon: =Icon.Lock
+            Width: =32
+            X: =16
+            Y: =18
+
+      - lblEWTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =41
+            Size: =20
+            Text: ="Equipment & Warranty"
+            Width: =258
+            X: =58
+            Y: =7
+
+      - lblEWSubtitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =22
+            Size: =11
+            Text: |-
+              =If(
+                  CountRows(colLocationUnits) > 0,
+                  CountRows(colLocationUnits) & " units at this location",
+                  "No equipment found"
+              )
+            Width: =Parent.Width - 74
+            X: =58
+            Y: =48
+
+      - btnEWHome:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 120, 212, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 120, 212, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =32
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+            Size: =10
+            Text: ="Home"
+            Width: =52
+            X: =Parent.Width - 68
+            Y: =22
+
+      - rectEWDivider1:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =78
+
+      # ──────────────────────────────────────
+      #  CALLER UNIT BANNER (unit-specific mode)
+      #  Shows when case has a serial number linked
+      # ──────────────────────────────────────
+      - rectCallerBanner:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 0.3)
+            BorderThickness: =1
+            Fill: =RGBA(0, 78, 140, 0.08)
+            Height: =52
+            Visible: =varEWUnitMode && !IsBlank(varEWSelectedUnit)
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =84
+
+      - lblCallerIcon:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(0, 78, 140, 0.15)
+            FontWeight: =FontWeight.Bold
+            Height: =32
+            Size: =16
+            Text: ="T"
+            Visible: =varEWUnitMode && !IsBlank(varEWSelectedUnit)
+            Width: =32
+            X: =24
+            Y: =94
+
+      - lblCallerLabel:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              ="Calling from: " & varEWSelectedUnit.'Serial Number (msdyn_name)'
+            Visible: =varEWUnitMode && !IsBlank(varEWSelectedUnit)
+            Width: =Parent.Width - 128
+            X: =62
+            Y: =87
+
+      - lblCallerDetail:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =18
+            Size: =9
+            Text: |-
+              =varEWSelectedUnit.'Asset Tag'
+              & " | " & Concat(varEWSelectedUnit.'Contract Type', Value, ",")
+            Visible: =varEWUnitMode && !IsBlank(varEWSelectedUnit)
+            Width: =Parent.Width - 128
+            X: =62
+            Y: =107
+
+      - btnToggleView:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =28
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Set(varEWUnitMode, !varEWUnitMode);
+              If(
+                  varEWUnitMode && !IsBlank(varEWCallerSerial),
+                  With(
+                      { matched: LookUp(colLocationUnits, 'Serial Number (msdyn_name)' = varEWCallerSerial) },
+                      If(!IsBlank(matched), Set(varEWSelectedUnit, matched); Set(varEWShowActions, true))
+                  )
+              )
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =9
+            Text: |-
+              =If(varEWUnitMode, "View All " & CountRows(colLocationUnits) & " Units", "Focus on Caller Unit")
+            Visible: =!IsBlank(varEWCallerSerial) && varEWCallerSerial <> ""
+            Width: =Parent.Width - 32
+            X: =16
+            Y: |-
+              =If(
+                  varEWUnitMode && !IsBlank(varEWSelectedUnit),
+                  140,
+                  84
+              )
+
+      # ──────────────────────────────────────
+      #  SEARCH BOX
+      # ──────────────────────────────────────
+      - txtEWSearch:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            BorderThickness: =1
+            Color: =RGBA(50, 49, 48, 1)
+            Default: =""
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =34
+            HintText: ="Search by serial, model, or unit type…"
+            OnChange: =Set(varEWSearch, Self.Text)
+            Size: =11
+            Visible: =!varEWUnitMode
+            Width: =Parent.Width - 32
+            X: =16
+            Y: |-
+              =If(
+                  !IsBlank(varEWCallerSerial) && varEWCallerSerial <> "",
+                  118,
+                  86
+              )
+
+      # ──────────────────────────────────────
+      #  EQUIPMENT LIST (scrollable gallery)
+      # ──────────────────────────────────────
+      - galUnitList:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            BorderColor: =RGBA(237, 235, 233, 1)
+            BorderThickness: =0
+            Fill: =RGBA(250, 250, 250, 1)
+            Height: |-
+              =If(
+                  IsBlank(varEWSelectedUnit),
+                  Parent.Height - 178,
+                  272
+              )
+            Items: |-
+              =If(
+                  IsBlank(varEWSearch) || varEWSearch = "",
+                  colLocationUnits,
+                  Filter(
+                      colLocationUnits,
+                      varEWSearch in 'Serial Number (msdyn_name)'
+                      || varEWSearch in 'Asset Tag'
+                  )
+              )
+            TemplateFill: |-
+              =If(
+                  ThisItem.'Serial Number (msdyn_name)' = varEWSelectedUnit.'Serial Number (msdyn_name)',
+                  RGBA(222, 236, 249, 1),
+                  RGBA(255, 255, 255, 1)
+              )
+            TemplatePadding: =0
+            TemplateSize: =90
+            Visible: =CountRows(colLocationUnits) > 0 && !varEWUnitMode
+            Width: =Parent.Width - 32
+            X: =16
+            Y: |-
+              =If(
+                  !IsBlank(varEWCallerSerial) && varEWCallerSerial <> "",
+                  156,
+                  126
+              )
+          Children:
+            # ---- row background card ----
+            - rectUnitRow:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(237, 235, 233, 1)
+                  BorderThickness: =1
+                  Fill: |-
+                    =If(
+                        ThisItem.'Serial Number (msdyn_name)' = varEWSelectedUnit.'Serial Number (msdyn_name)',
+                        RGBA(222, 236, 249, 1),
+                        RGBA(255, 255, 255, 1)
+                    )
+                  Height: =86
+                  OnSelect: |-
+                    =Set(varEWSelectedUnit, ThisItem);
+                    Set(varEWShowActions, true);
+                    Set(varEWShowClaimForm, false);
+                    Set(varEWShowHistory, false);
+                    Set(varEWClaimSubmitted, false);
+                    Set(varEWActionMsg, "")
+                  Width: =Parent.Width - 4
+                  X: =2
+                  Y: =2
+
+            # ---- colored left accent bar (type indicator) ----
+            - rectUnitAccent:
+                Control: Rectangle@2.3.0
+                Properties:
+                  Fill: |-
+                    =If(
+                        "Escalator" in ThisItem.'Asset Tag', RGBA(16, 124, 16, 1),
+                        "Walkway" in ThisItem.'Asset Tag', RGBA(255, 140, 0, 1),
+                        RGBA(0, 120, 212, 1)
+                    )
+                  Height: =82
+                  OnSelect: =Select(rectUnitRow)
+                  Width: =4
+                  X: =2
+                  Y: =4
+
+            # ---- type icon with colored background ----
+            - lblUnitTypeIcon:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: |-
+                    =If(
+                        "Escalator" in ThisItem.'Asset Tag', RGBA(16, 124, 16, 1),
+                        "Walkway" in ThisItem.'Asset Tag', RGBA(183, 110, 0, 1),
+                        RGBA(0, 78, 140, 1)
+                    )
+                  Fill: |-
+                    =If(
+                        "Escalator" in ThisItem.'Asset Tag', RGBA(223, 246, 221, 1),
+                        "Walkway" in ThisItem.'Asset Tag', RGBA(255, 243, 205, 1),
+                        RGBA(222, 236, 249, 1)
+                    )
+                  FontWeight: =FontWeight.Bold
+                  Height: =40
+                  OnSelect: =Select(rectUnitRow)
+                  Size: =18
+                  Text: |-
+                    =If(
+                        "Escalator" in ThisItem.'Asset Tag', "↗",
+                        "Walkway" in ThisItem.'Asset Tag', "→",
+                        "↕"
+                    )
+                  Width: =40
+                  X: =14
+                  Y: =24
+
+            # ---- primary: model + type (from Asset Tag) ----
+            - lblUnitName:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(50, 49, 48, 1)
+                  FontWeight: =FontWeight.Semibold
+                  Height: =22
+                  OnSelect: =Select(rectUnitRow)
+                  Size: =12
+                  Text: =ThisItem.'Asset Tag'
+                  Width: =Parent.Width - 162
+                  X: =62
+                  Y: =6
+
+            # ---- secondary: unit number + serial + location ----
+            - lblUnitSerial:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(96, 94, 92, 1)
+                  Height: =18
+                  OnSelect: =Select(rectUnitRow)
+                  Size: =10
+                  Text: |-
+                    =With(
+                        {
+                            serial: ThisItem.'Serial Number (msdyn_name)',
+                            tag: ThisItem.'Asset Tag'
+                        },
+                        With(
+                            { suffix: IfError(Text(Value(Right(serial, 3)), "#"), Right(serial, 3)) },
+                            If(
+                                "Elevator" in tag || "Lift" in tag, "Lift #" & suffix,
+                                "Escalator" in tag, "Escalator #" & suffix,
+                                "Walkway" in tag, "Walkway #" & suffix,
+                                "#" & suffix
+                            )
+                        )
+                        & " · " & serial
+                        & If(
+                            !IsBlank(ThisItem.'Functional Location'),
+                            " · " & ThisItem.'Functional Location'.Name,
+                            ""
+                        )
+                    )
+                  Width: =Parent.Width - 162
+                  X: =62
+                  Y: =28
+
+            # ---- tertiary: warranty summary line ----
+            - lblUnitWarrLine:
+                Control: Label@2.5.1
+                Properties:
+                  Color: =RGBA(140, 138, 137, 1)
+                  Height: =16
+                  OnSelect: =Select(rectUnitRow)
+                  Size: =9
+                  Text: |-
+                    =If(
+                        !IsBlank(ThisItem.'Warranty End Date'),
+                        If(
+                            DateDiff(Today(), ThisItem.'Warranty End Date', TimeUnit.Days) > 0,
+                            "Active — "
+                            & Text(
+                                DateDiff(Today(), ThisItem.'Warranty End Date', TimeUnit.Days),
+                                "#"
+                            )
+                            & " days remaining",
+                            "Expired "
+                            & Text(ThisItem.'Warranty End Date', "dd/mm/yyyy")
+                        ),
+                        ""
+                    )
+                  Width: =Parent.Width - 162
+                  X: =62
+                  Y: =48
+
+            # ---- contract type pill ----
+            - lblUnitContract:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: |-
+                    =With(
+                        { ct: Concat(ThisItem.'Contract Type', Value, ",") },
+                        If(
+                            "Signature Service Premium" in ct || "HASSLE FREE" in ct, RGBA(255, 255, 255, 1),
+                            "Signature Service Plus" in ct || "Silver" in ct, RGBA(255, 255, 255, 1),
+                            "Signature Service" in ct || "Gold" in ct, RGBA(255, 255, 255, 1),
+                            RGBA(96, 94, 92, 1)
+                        )
+                    )
+                  Fill: |-
+                    =With(
+                        { ct: Concat(ThisItem.'Contract Type', Value, ",") },
+                        If(
+                            "Signature Service Premium" in ct || "HASSLE FREE" in ct, RGBA(0, 78, 140, 1),
+                            "Signature Service Plus" in ct || "Silver" in ct, RGBA(0, 120, 212, 1),
+                            "Signature Service" in ct || "Gold" in ct, RGBA(16, 124, 16, 1),
+                            RGBA(237, 235, 233, 1)
+                        )
+                    )
+                  FontWeight: =FontWeight.Semibold
+                  Height: =20
+                  OnSelect: =Select(rectUnitRow)
+                  Size: =8
+                  Text: |-
+                    =With(
+                        { ct: Concat(ThisItem.'Contract Type', Value, ",") },
+                        If(
+                            "Signature Service Premium" in ct || "HASSLE FREE" in ct, "SIG PREMIUM",
+                            "Signature Service Plus" in ct || "Silver" in ct, "SIG PLUS",
+                            "Signature Service" in ct || "Gold" in ct, "SIGNATURE",
+                            Upper(ct)
+                        )
+                    )
+                  Width: =80
+                  X: =Parent.Width - 90
+                  Y: =8
+
+            # ---- warranty status pill ----
+            - lblUnitWarrStatus:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  Color: |-
+                    =If(
+                        IsBlank(ThisItem.'Warranty End Date'),
+                        RGBA(97, 96, 96, 1),
+                        If(
+                            DateDiff(Today(), ThisItem.'Warranty End Date', TimeUnit.Days) > 0,
+                            RGBA(16, 124, 16, 1),
+                            RGBA(197, 54, 1, 1)
+                        )
+                    )
+                  Fill: |-
+                    =If(
+                        IsBlank(ThisItem.'Warranty End Date'),
+                        RGBA(237, 235, 233, 1),
+                        If(
+                            DateDiff(Today(), ThisItem.'Warranty End Date', TimeUnit.Days) > 0,
+                            RGBA(223, 246, 221, 1),
+                            RGBA(253, 231, 233, 1)
+                        )
+                    )
+                  FontWeight: =FontWeight.Bold
+                  Height: =20
+                  OnSelect: =Select(rectUnitRow)
+                  Size: =8
+                  Text: |-
+                    =If(
+                        IsBlank(ThisItem.'Warranty End Date'),
+                        "N/A",
+                        If(
+                            DateDiff(Today(), ThisItem.'Warranty End Date', TimeUnit.Days) > 0,
+                            "WARRANTY",
+                            "EXPIRED"
+                        )
+                    )
+                  Width: =80
+                  X: =Parent.Width - 90
+                  Y: =34
+
+            # ---- bottom separator ----
+            - rectUnitSep:
+                Control: Rectangle@2.3.0
+                Properties:
+                  Fill: =RGBA(237, 235, 233, 1)
+                  Height: =1
+                  Width: =Parent.Width
+                  Y: =85
+
+      # ──────────────────────────────────────
+      #  EMPTY STATE
+      # ──────────────────────────────────────
+      - lblEWEmpty:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =60
+            Size: =12
+            Text: ="No equipment records found for this account.\nEnsure Customer Assets are linked."
+            Visible: =CountRows(colLocationUnits) = 0
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =120
+
+      # ──────────────────────────────────────
+      #  SELECTED UNIT — DETAIL PANEL
+      #  (appears below the compressed gallery)
+      # ──────────────────────────────────────
+      - rectDetailCard:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 0.3)
+            BorderThickness: =1
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =370
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 172, 402)
+
+      # ---- detail: unit photo ----
+      - imgUnitPhoto:
+          Control: Image@2.3.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            Height: =140
+            Image: |-
+              =With(
+                  {
+                      isEsc: "Escalator" in varEWSelectedUnit.'Asset Tag',
+                      isWlk: "Walkway" in varEWSelectedUnit.'Asset Tag',
+                      mdl: If(!IsBlank(varEWSelectedUnit.Product), varEWSelectedUnit.Product.Name, ""),
+                      sn: varEWSelectedUnit.'Serial Number (msdyn_name)'
+                  },
+                  "data:image/svg+xml," & EncodeUrl(
+                      "<svg xmlns='http://www.w3.org/2000/svg' width='348' height='140'>"
+                      & "<defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'>"
+                      & "<stop offset='0%25' stop-color='" & If(isEsc, "%23107C10", isWlk, "%23B86E00", "%23004E8C") & "'/>"
+                      & "<stop offset='100%25' stop-color='" & If(isEsc, "%230A5C0A", isWlk, "%238B5500", "%23002D52") & "'/>"
+                      & "</linearGradient></defs>"
+                      & "<rect width='348' height='140' rx='6' fill='url(%23g)'/>"
+                      & If(
+                          isEsc,
+                          "<line x1='104' y1='110' x2='244' y2='30' stroke='rgba(255,255,255,0.25)' stroke-width='3'/>"
+                          & "<line x1='100' y1='110' x2='240' y2='30' stroke='rgba(255,255,255,0.25)' stroke-width='3'/>"
+                          & "<text x='174' y='80' text-anchor='middle' fill='rgba(255,255,255,0.12)' font-family='Segoe UI' font-size='64' font-weight='700'>&#x2197;</text>",
+                          isWlk,
+                          "<rect x='80' y='62' width='188' height='16' rx='3' fill='rgba(255,255,255,0.1)'/>"
+                          & "<rect x='80' y='62' width='188' height='1' fill='rgba(255,255,255,0.2)'/>"
+                          & "<rect x='80' y='77' width='188' height='1' fill='rgba(255,255,255,0.2)'/>"
+                          & "<text x='174' y='80' text-anchor='middle' fill='rgba(255,255,255,0.12)' font-family='Segoe UI' font-size='64' font-weight='700'>&#x2192;</text>",
+                          "<rect x='139' y='15' width='70' height='100' rx='3' fill='none' stroke='rgba(255,255,255,0.2)' stroke-width='2'/>"
+                          & "<rect x='141' y='17' width='33' height='96' fill='rgba(255,255,255,0.05)'/>"
+                          & "<rect x='175' y='17' width='33' height='96' fill='rgba(255,255,255,0.08)'/>"
+                          & "<line x1='174' y1='17' x2='174' y2='113' stroke='rgba(255,255,255,0.3)' stroke-width='1'/>"
+                          & "<text x='174' y='80' text-anchor='middle' fill='rgba(255,255,255,0.12)' font-family='Segoe UI' font-size='64' font-weight='700'>&#x2195;</text>"
+                      )
+                      & "<text x='16' y='132' fill='rgba(255,255,255,0.4)' font-family='Segoe UI' font-size='10' font-weight='600'>OTIS</text>"
+                      & "<text x='332' y='132' text-anchor='end' fill='rgba(255,255,255,0.5)' font-family='Segoe UI' font-size='11' font-weight='600'>" & mdl & "</text>"
+                      & "<text x='332' y='18' text-anchor='end' fill='rgba(255,255,255,0.3)' font-family='Segoe UI' font-size='9'>" & sn & "</text>"
+                      & "</svg>"
+                  )
+              )
+            ImagePosition: =ImagePosition.Fill
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 36
+            X: =18
+            Y: =If(varEWUnitMode, 178, 408)
+
+      # ---- detail: unit ID ----
+      - lblDetIdLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: ="Unit ID"
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =90
+            X: =24
+            Y: =If(varEWUnitMode, 324, 554)
+
+      - lblDetIdVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: =varEWSelectedUnit.'Asset Tag'
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 148
+            X: =118
+            Y: =If(varEWUnitMode, 324, 554)
+
+      # ---- detail: serial ----
+      - lblDetSerialLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: ="Serial"
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =90
+            X: =24
+            Y: =If(varEWUnitMode, 346, 576)
+
+      - lblDetSerialVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =If(
+                  IsBlank(varEWSelectedUnit.'Serial Number (msdyn_name)'),
+                  "—",
+                  varEWSelectedUnit.'Serial Number (msdyn_name)'
+              )
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 148
+            X: =118
+            Y: =If(varEWUnitMode, 346, 576)
+
+      # ---- detail: product / model ----
+      - lblDetModelLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: ="Model"
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =90
+            X: =24
+            Y: =If(varEWUnitMode, 368, 598)
+
+      - lblDetModelVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: =varEWSelectedUnit.Product.Name
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 148
+            X: =118
+            Y: =If(varEWUnitMode, 368, 598)
+
+      # ---- detail: location ----
+      - lblDetLocLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: ="Location"
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =90
+            X: =24
+            Y: =If(varEWUnitMode, 390, 620)
+
+      - lblDetLocVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =If(
+                  !IsBlank(varEWSelectedUnit.'Functional Location'),
+                  varEWSelectedUnit.'Functional Location'.Name,
+                  "—"
+              )
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 148
+            X: =118
+            Y: =If(varEWUnitMode, 390, 620)
+
+      # ---- detail: contract type ----
+      - lblDetContractLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: ="Contract"
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =90
+            X: =24
+            Y: =If(varEWUnitMode, 412, 642)
+
+      - lblDetContractVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: |-
+              =With(
+                  { ct: Concat(varEWSelectedUnit.'Contract Type', Value, ",") },
+                  If(
+                      "Signature Service Premium" in ct || "HASSLE FREE" in ct, RGBA(0, 78, 140, 1),
+                      "Signature Service Plus" in ct || "Silver" in ct, RGBA(0, 120, 212, 1),
+                      "Signature Service" in ct || "Gold" in ct, RGBA(16, 124, 16, 1),
+                      RGBA(50, 49, 48, 1)
+                  )
+              )
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =With(
+                  { ct: Concat(varEWSelectedUnit.'Contract Type', Value, ",") },
+                  If(IsBlank(ct), "No contract", ct)
+              )
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 148
+            X: =118
+            Y: =If(varEWUnitMode, 412, 642)
+
+      # ---- detail: warranty dates ----
+      - lblDetWarrLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: ="Warranty"
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =90
+            X: =24
+            Y: =If(varEWUnitMode, 434, 664)
+
+      - lblDetWarrVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =If(
+                  IsBlank(varEWSelectedUnit.'Warranty Start Date') && IsBlank(varEWSelectedUnit.'Warranty End Date'),
+                  "No warranty on file",
+                  Text(varEWSelectedUnit.'Warranty Start Date', "dd/mm/yyyy")
+                  & " → "
+                  & Text(varEWSelectedUnit.'Warranty End Date', "dd/mm/yyyy")
+              )
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 148
+            X: =118
+            Y: =If(varEWUnitMode, 434, 664)
+
+      # ---- detail: warranty status badge ----
+      - lblDetWarrBadge:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: |-
+              =If(
+                  IsBlank(varEWSelectedUnit.'Warranty End Date'),
+                  RGBA(97, 96, 96, 1),
+                  If(
+                      DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) > 0,
+                      RGBA(16, 124, 16, 1),
+                      RGBA(197, 54, 1, 1)
+                  )
+              )
+            Fill: |-
+              =If(
+                  IsBlank(varEWSelectedUnit.'Warranty End Date'),
+                  RGBA(237, 235, 233, 1),
+                  If(
+                      DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) > 0,
+                      RGBA(223, 246, 221, 1),
+                      RGBA(253, 231, 233, 1)
+                  )
+              )
+            FontWeight: =FontWeight.Bold
+            Height: =24
+            Size: =10
+            Text: |-
+              =If(
+                  IsBlank(varEWSelectedUnit.'Warranty End Date'),
+                  "NO WARRANTY",
+                  If(
+                      DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) > 0,
+                      "✓ ACTIVE — "
+                      & Text(
+                          DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days),
+                          "#"
+                      )
+                      & " days remaining",
+                      "✗ EXPIRED"
+                  )
+              )
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 462, 692)
+
+      # ---- detail: installed ----
+      - lblDetInstLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: ="Installed"
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =90
+            X: =24
+            Y: =If(varEWUnitMode, 488, 718)
+
+      - lblDetInstVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =If(
+                  !IsBlank(varEWSelectedUnit.'Warranty Start Date'),
+                  Text(varEWSelectedUnit.'Warranty Start Date', "dd/mm/yyyy"),
+                  "—"
+              )
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 148
+            X: =118
+            Y: =If(varEWUnitMode, 488, 718)
+
+      # ---- detail: last serviced on ----
+      - lblDetLastSvcLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: ="Last Service"
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =90
+            X: =24
+            Y: =If(varEWUnitMode, 510, 740)
+
+      - lblDetLastSvcVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =11
+            Text: |-
+              =If(
+                  IsBlank(varEWSelectedUnit.'Last Serviced On'),
+                  "No service on record",
+                  Text(varEWSelectedUnit.'Last Serviced On', "dd/mm/yyyy")
+                  & " ("
+                  & Text(
+                      DateDiff(varEWSelectedUnit.'Last Serviced On', Today(), TimeUnit.Days),
+                      "#"
+                  )
+                  & " days ago)"
+              )
+            Visible: =!IsBlank(varEWSelectedUnit) && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 148
+            X: =118
+            Y: =If(varEWUnitMode, 510, 740)
+
+      # ──────────────────────────────────────
+      #  ACTION MESSAGE TOAST
+      # ──────────────────────────────────────
+      - rectEWToast:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(16, 124, 16, 1)
+            BorderThickness: =1
+            Fill: =RGBA(223, 246, 221, 1)
+            Height: =30
+            Visible: =varEWActionMsg <> ""
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 546, 776)
+
+      - lblEWToast:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(16, 124, 16, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =26
+            Size: =11
+            Text: =varEWActionMsg
+            Visible: =varEWActionMsg <> ""
+            Width: =Parent.Width - 56
+            X: =24
+            Y: =If(varEWUnitMode, 548, 778)
+
+      # ──────────────────────────────────────
+      #  ACTION BUTTONS — WARRANTY ACTIVE
+      # ──────────────────────────────────────
+      - rectActionDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 580, 810)
+
+      - lblActionHeading:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =12
+            Text: |-
+              =If(
+                  !IsBlank(varEWSelectedUnit.'Warranty End Date')
+                  && DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) > 0,
+                  "Warranty Actions",
+                  "Service Options"
+              )
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 586, 816)
+
+      # -- Active: Dispatch Engineer (covered under contract) --
+      - btnDispatchEngineer:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(255, 255, 255, 1)
+            Fill: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =38
+            HoverFill: =RGBA(0, 58, 120, 1)
+            OnSelect: |-
+              =Set(varEWActionMsg,
+                  "✓ Engineer dispatch requested — "
+                  & varEWSelectedUnit.'Serial Number (msdyn_name)'
+                  & " — ETA "
+                  & Text(DateAdd(Now(), 2, TimeUnit.Hours), "hh:mm")
+              )
+            PressedFill: =RGBA(0, 38, 100, 1)
+            Size: =12
+            Text: ="Dispatch Engineer"
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+              && !IsBlank(varEWSelectedUnit.'Warranty End Date')
+              && DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) > 0
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 612, 842)
+
+      # -- Active: Create Work Order --
+      - btnCreateWO:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Set(varEWActionMsg,
+                  "✓ Work order created — "
+                  & varEWSelectedUnit.'Serial Number (msdyn_name)'
+                  & " (covered under " & Concat(varEWSelectedUnit.'Contract Type', Value, ",") & " contract)"
+              )
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Create Work Order"
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+              && !IsBlank(varEWSelectedUnit.'Warranty End Date')
+              && DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) > 0
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 654, 884)
+
+      # -- Active: Schedule Preventive Maintenance --
+      - btnSchedulePM:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Set(varEWActionMsg,
+                  "✓ Preventive maintenance scheduled — "
+                  & Text(DateAdd(Today(), 14, TimeUnit.Days), "dd/mm/yyyy")
+              )
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Schedule Preventive Maintenance"
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+              && !IsBlank(varEWSelectedUnit.'Warranty End Date')
+              && DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) > 0
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 696, 926)
+
+      # ──────────────────────────────────────
+      #  ACTION BUTTONS — WARRANTY EXPIRED / NO WARRANTY
+      # ──────────────────────────────────────
+
+      # -- Expired: Billable Dispatch --
+      - btnBillableDispatch:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(255, 255, 255, 1)
+            Fill: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =38
+            HoverFill: =RGBA(0, 58, 120, 1)
+            OnSelect: |-
+              =Set(varEWActionMsg,
+                  "✓ Billable dispatch requested — "
+                  & varEWSelectedUnit.'Serial Number (msdyn_name)'
+                  & " — T&M rates apply"
+              )
+            PressedFill: =RGBA(0, 38, 100, 1)
+            Size: =12
+            Text: ="Dispatch Engineer (Billable)"
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+              && (IsBlank(varEWSelectedUnit.'Warranty End Date')
+                  || DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) <= 0)
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 612, 842)
+
+      # -- Expired: Paid Repair Quote --
+      - btnPaidRepair:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Patch(
+                  'Email Activities',
+                  Defaults('Email Activities'),
+                  {
+                      Subject: "Repair Quote — " & varEWSelectedUnit.'Serial Number (msdyn_name)'
+                          & " (" & varEWSelectedUnit.Product.Name & ")",
+                      Description: "<html><body style='font-family:Segoe UI,sans-serif;font-size:14px;color:#333'>"
+                          & "<p>Thank you for contacting Otis. Your equipment warranty has expired, but we can assist with a repair.</p>"
+                          & "<table style='border-collapse:collapse;margin:12px 0'>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Unit:</td><td style='padding:4px 0;font-weight:600'>" & varEWSelectedUnit.'Serial Number (msdyn_name)' & "</td></tr>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Model:</td><td style='padding:4px 0;font-weight:600'>" & varEWSelectedUnit.Product.Name & "</td></tr>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Location:</td><td style='padding:4px 0;font-weight:600'>" & varEWSelectedUnit.'Functional Location'.Name & "</td></tr>"
+                          & "<tr><td style='padding:4px 12px 4px 0;color:#666'>Warranty:</td><td style='padding:4px 0;font-weight:600;color:#c53601'>Expired "
+                          & Text(varEWSelectedUnit.'Warranty End Date', "dd/mm/yyyy") & "</td></tr>"
+                          & "</table>"
+                          & "<p><b>Estimated Repair Cost:</b> Time & Materials — engineer will quote on-site.</p>"
+                          & "<p>Please reply to approve or contact us with questions.</p>"
+                          & "</body></html>"
+                  }
+              );
+              Set(varEWActionMsg, "✓ Paid repair quote email drafted")
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Create Paid Repair Quote"
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+              && (IsBlank(varEWSelectedUnit.'Warranty End Date')
+                  || DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) <= 0)
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 654, 884)
+
+      # -- Expired: Modernization Quote --
+      - btnModernize:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Set(varEWActionMsg,
+                  "✓ Modernization assessment request submitted — "
+                  & varEWSelectedUnit.'Serial Number (msdyn_name)'
+              )
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Request Modernization Quote"
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+              && (IsBlank(varEWSelectedUnit.'Warranty End Date')
+                  || DateDiff(Today(), varEWSelectedUnit.'Warranty End Date', TimeUnit.Days) <= 0)
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 696, 926)
+
+      # ──────────────────────────────────────
+      #  UNIVERSAL ACTIONS (always visible)
+      # ──────────────────────────────────────
+      - rectUnivDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 740, 970)
+
+      - btnViewServiceHist:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =ClearCollect(
+                  colEWClaimHistory,
+                  Filter(
+                      'Work Orders',
+                      'Primary Incident Customer Asset'.'Customer Asset' = varEWSelectedUnit.'Customer Asset'
+                  )
+              );
+              Set(varEWShowHistory, true);
+              Set(varEWActionMsg, "")
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="View Service History"
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 748, 978)
+
+      - btnLogIncident:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =Set(varEWActionMsg,
+                  "✓ Incident logged for "
+                  & varEWSelectedUnit.'Serial Number (msdyn_name)'
+                  & " — case created"
+              )
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Log Incident"
+            Visible: |-
+              =!IsBlank(varEWSelectedUnit) && varEWShowActions
+              && !varEWShowClaimForm && !varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 790, 1020)
+
+      # ──────────────────────────────────────
+      #  SERVICE HISTORY SUB-VIEW
+      # ──────────────────────────────────────
+      - rectHistDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Visible: =varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 172, 402)
+
+      - lblHistHeading:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =12
+            Text: |-
+              ="Service History — " & varEWSelectedUnit.'Serial Number (msdyn_name)'
+            Visible: =varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 180, 410)
+
+      - lblHistBody:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            Height: =200
+            Size: =11
+            Text: |-
+              =If(
+                  CountRows(colEWClaimHistory) = 0,
+                  "No service records found for " & varEWSelectedUnit.'Serial Number (msdyn_name)' & ".",
+                  CountRows(colEWClaimHistory) & " work order(s):"
+                  & Char(10) & Char(10)
+                  & Concat(
+                      colEWClaimHistory,
+                      "• " & If(!IsBlank('Work Order Number'), 'Work Order Number', "—")
+                      & "  |  " & Text('Completed On', "dd/mm/yyyy")
+                      & "  |  " & If(!IsBlank('Work Order Type'), 'Work Order Type'.Name, "—"),
+                      Char(10)
+                  )
+              )
+            Visible: =varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 206, 436)
+
+      - btnBackFromHist:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Set(varEWShowHistory, false)
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="← Back to Actions"
+            Visible: =varEWShowHistory
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =If(varEWUnitMode, 414, 644)
+
+      # ──────────────────────────────────────
+      #  FOOTER — Back to toolkit
+      # ──────────────────────────────────────
+      - btnEWBackHome:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Back to Service Toolkit"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =Parent.Height - 50

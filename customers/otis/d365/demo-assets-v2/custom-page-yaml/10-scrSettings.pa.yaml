@@ -1,0 +1,1467 @@
+# ============================================================
+#  ADMIN SETTINGS (scrSettings)
+#  Format: Power Apps pa.yaml SchemaV3
+# ============================================================
+#
+#  Configuration screen for standalone design & demo use.
+#  Allows every toolkit screen to operate without being
+#  embedded inside Dynamics 365 (no Param/recordId needed).
+#
+#  Sections:
+#    1. Design Mode toggle (varDesignMode)
+#    2. Warranty Workflow Mode (varWarrantyMode)
+#    2b. Equipment View Mode (varEWUnitMode)
+#    3. Default Brand / Price List (varDefaultBrand)
+#    4. Demo Account Override (varEWAccountId)
+#    5. Demo Serial Number (varDemoSerial)
+#    6. Demo Tracking Data toggle (varDemoTracking)
+#    7. Quick Navigation (jump to any screen)
+#
+#  Add to scrHome OnVisible:
+#    Set(varDesignMode, Coalesce(varDesignMode, false));
+#    Set(varWarrantyMode, Coalesce(varWarrantyMode, "equipment"));
+#    Set(varDefaultBrand, Coalesce(varDefaultBrand, "Zurn"));
+#    Set(varDemoSerial, Coalesce(varDemoSerial, ""));
+#    Set(varDemoTracking, Coalesce(varDemoTracking, false))
+# ============================================================
+
+Screens:
+  scrSettings:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+      Height: =1660
+      Width: =380
+      OnVisible: |-
+        =Set(varDesignMode, Coalesce(varDesignMode, false));
+        Set(varWarrantyMode, Coalesce(varWarrantyMode, "equipment"));
+        Set(varDefaultBrand, Coalesce(varDefaultBrand, "Zurn"));
+        Set(varDemoSerial, Coalesce(varDemoSerial, ""));
+        Set(varDemoTracking, Coalesce(varDemoTracking, false));
+        Set(varEWUnitMode, Coalesce(varEWUnitMode, false))
+    Children:
+
+      # ──────────────────────────────────────
+      #  HEADER
+      # ──────────────────────────────────────
+      - rectSetBar:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(96, 94, 92, 1)
+            Height: =6
+            Width: =Parent.Width
+
+      - icoSetIcon:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =32
+            Icon: =Icon.Settings
+            Width: =32
+            X: =16
+            Y: =18
+
+      - lblSetTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =41
+            Size: =20
+            Text: ="Settings"
+            Width: =258
+            X: =58
+            Y: =7
+
+      - lblSetSubtitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =22
+            Size: =11
+            Text: ="Configure toolkit for standalone design"
+            Width: =Parent.Width - 74
+            X: =58
+            Y: =48
+
+      - btnSetHome:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 120, 212, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 120, 212, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =32
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+            Size: =10
+            Text: ="Home"
+            Width: =52
+            X: =Parent.Width - 68
+            Y: =22
+
+      - rectSetDivider1:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =78
+
+      # ──────────────────────────────────────
+      #  SECTION 1: DESIGN MODE
+      #  Master toggle — when ON, screens show
+      #  a design banner and can load demo data
+      #  collections instead of querying Dataverse.
+      # ──────────────────────────────────────
+      - lblSecDM:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =11
+            Text: ="DESIGN MODE"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =86
+
+      - lblSecDMDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="When enabled, screens show a design banner and use demo data instead of Dataverse."
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =108
+
+      # ── ON card ──
+      - rectDMOn:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: |-
+              =If(varDesignMode, RGBA(0, 78, 140, 1), RGBA(237, 235, 233, 1))
+            BorderThickness: |-
+              =If(varDesignMode, 2, 1)
+            Fill: |-
+              =If(varDesignMode, RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            Height: =50
+            Width: =170
+            X: =16
+            Y: =140
+
+      - rectDMOnAccent:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =50
+            Visible: =varDesignMode
+            Width: =4
+            X: =16
+            Y: =140
+
+      - lblDMOnTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="● Design ON"
+            Width: =120
+            X: =30
+            Y: =154
+
+      - lblDMOnCheck:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =14
+            Text: ="✓"
+            Visible: =varDesignMode
+            Width: =24
+            X: =158
+            Y: =154
+
+      - btnDMOn:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            HoverFill: =RGBA(0, 0, 0, 0.02)
+            OnSelect: =Set(varDesignMode, true)
+            PressedFill: =RGBA(0, 0, 0, 0.04)
+            Text: =""
+            Width: =170
+            X: =16
+            Y: =140
+
+      # ── OFF card ──
+      - rectDMOff:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: |-
+              =If(!varDesignMode, RGBA(0, 78, 140, 1), RGBA(237, 235, 233, 1))
+            BorderThickness: |-
+              =If(!varDesignMode, 2, 1)
+            Fill: |-
+              =If(!varDesignMode, RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            Height: =50
+            Width: =170
+            X: =194
+            Y: =140
+
+      - rectDMOffAccent:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =50
+            Visible: =!varDesignMode
+            Width: =4
+            X: =194
+            Y: =140
+
+      - lblDMOffTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="○ Design OFF"
+            Width: =120
+            X: =208
+            Y: =154
+
+      - lblDMOffCheck:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =14
+            Text: ="✓"
+            Visible: =!varDesignMode
+            Width: =24
+            X: =336
+            Y: =154
+
+      - btnDMOff:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            HoverFill: =RGBA(0, 0, 0, 0.02)
+            OnSelect: =Set(varDesignMode, false)
+            PressedFill: =RGBA(0, 0, 0, 0.04)
+            Text: =""
+            Width: =170
+            X: =194
+            Y: =140
+
+      - lblDMStatus:
+          Control: Label@2.5.1
+          Properties:
+            Color: |-
+              =If(varDesignMode, RGBA(0, 78, 140, 1), RGBA(96, 94, 92, 1))
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =10
+            Text: |-
+              =If(varDesignMode,
+                  "Design mode active — screens use demo data",
+                  "Live mode — screens query Dataverse"
+              )
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =196
+
+      - rectDMDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =222
+
+      # ──────────────────────────────────────
+      #  SECTION 2: WARRANTY WORKFLOW MODE
+      # ──────────────────────────────────────
+      - lblSecWarranty:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =11
+            Text: ="WARRANTY WORKFLOW MODE"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =230
+
+      - lblSecWarrantyDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="Choose the warranty workflow that matches your customer's process."
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =252
+
+      # ── Option A: Equipment & Warranty ──
+      - rectOptEquip:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: |-
+              =If(varWarrantyMode = "equipment", RGBA(0, 78, 140, 1), RGBA(237, 235, 233, 1))
+            BorderThickness: |-
+              =If(varWarrantyMode = "equipment", 2, 1)
+            Fill: |-
+              =If(varWarrantyMode = "equipment", RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            Height: =80
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =284
+
+      - rectOptEquipAccent:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =80
+            Visible: =varWarrantyMode = "equipment"
+            Width: =4
+            X: =16
+            Y: =284
+
+      - icoOptEquip:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            Height: =24
+            Icon: =Icon.Lock
+            Width: =24
+            X: =32
+            Y: =298
+
+      - lblOptEquipTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="Equipment & Warranty"
+            Width: =Parent.Width - 100
+            X: =64
+            Y: =290
+
+      - lblOptEquipDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="Fleet view — all units at account with contract type and warranty status."
+            Width: =Parent.Width - 100
+            X: =64
+            Y: =312
+
+      - lblOptEquipSource:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =16
+            Size: =9
+            Text: |-
+              ="Data: Customer Assets table"
+            Width: =Parent.Width - 100
+            X: =64
+            Y: =340
+
+      - lblOptEquipCheck:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =14
+            Text: ="✓"
+            Visible: =varWarrantyMode = "equipment"
+            Width: =24
+            X: =Parent.Width - 48
+            Y: =314
+
+      - btnOptEquip:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =80
+            HoverFill: =RGBA(0, 0, 0, 0.02)
+            OnSelect: =Set(varWarrantyMode, "equipment")
+            PressedFill: =RGBA(0, 0, 0, 0.04)
+            Text: =""
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =284
+
+      # ── Option B: Serial Warranty Lookup ──
+      - rectOptSerial:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: |-
+              =If(varWarrantyMode = "serial", RGBA(0, 78, 140, 1), RGBA(237, 235, 233, 1))
+            BorderThickness: |-
+              =If(varWarrantyMode = "serial", 2, 1)
+            Fill: |-
+              =If(varWarrantyMode = "serial", RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            Height: =80
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =372
+
+      - rectOptSerialAccent:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =80
+            Visible: =varWarrantyMode = "serial"
+            Width: =4
+            X: =16
+            Y: =372
+
+      - icoOptSerial:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            Height: =24
+            Icon: =Icon.Search
+            Width: =24
+            X: =32
+            Y: =386
+
+      - lblOptSerialTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="Serial Warranty Lookup"
+            Width: =Parent.Width - 100
+            X: =64
+            Y: =378
+
+      - lblOptSerialDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="Search by serial — look up warranty, product info, and submit claims."
+            Width: =Parent.Width - 100
+            X: =64
+            Y: =400
+
+      - lblOptSerialSource:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =16
+            Size: =9
+            Text: |-
+              ="Data: Product Serials table"
+            Width: =Parent.Width - 100
+            X: =64
+            Y: =428
+
+      - lblOptSerialCheck:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =14
+            Text: ="✓"
+            Visible: =varWarrantyMode = "serial"
+            Width: =24
+            X: =Parent.Width - 48
+            Y: =402
+
+      - btnOptSerial:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =80
+            HoverFill: =RGBA(0, 0, 0, 0.02)
+            OnSelect: =Set(varWarrantyMode, "serial")
+            PressedFill: =RGBA(0, 0, 0, 0.04)
+            Text: =""
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =372
+
+      # ── Mode indicator ──
+      - lblModeLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: |-
+              ="Active mode:"
+            Width: =80
+            X: =16
+            Y: =458
+
+      - lblModeVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =20
+            Size: =10
+            Text: |-
+              =If(
+                  varWarrantyMode = "equipment",
+                  "Equipment & Warranty (fleet view)",
+                  "Serial Warranty Lookup (search)"
+              )
+            Width: =Parent.Width - 108
+            X: =100
+            Y: =458
+
+      - rectWarrantyDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =486
+
+      # ──────────────────────────────────────
+      #  SECTION 2b: EQUIPMENT VIEW MODE
+      #  Controls whether the Equipment &
+      #  Warranty screen opens in unit-specific
+      #  view (caller's elevator) or facility
+      #  view (all units at account).
+      #  Only relevant when Warranty Mode =
+      #  "equipment".
+      # ──────────────────────────────────────
+      - lblSecUnitMode:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =11
+            Text: ="EQUIPMENT VIEW MODE"
+            Visible: =varWarrantyMode = "equipment"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =494
+
+      - lblSecUnitModeDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="Start in unit-specific view (single elevator) or facility view (all units at account)."
+            Visible: =varWarrantyMode = "equipment"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =516
+
+      # ── Unit view card ──
+      - rectUMUnit:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: |-
+              =If(varEWUnitMode, RGBA(0, 78, 140, 1), RGBA(237, 235, 233, 1))
+            BorderThickness: |-
+              =If(varEWUnitMode, 2, 1)
+            Fill: |-
+              =If(varEWUnitMode, RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            Height: =50
+            Visible: =varWarrantyMode = "equipment"
+            Width: =170
+            X: =16
+            Y: =548
+
+      - rectUMUnitAccent:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =50
+            Visible: =varWarrantyMode = "equipment" && varEWUnitMode
+            Width: =4
+            X: =16
+            Y: =548
+
+      - lblUMUnitTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="● Unit View"
+            Visible: =varWarrantyMode = "equipment"
+            Width: =120
+            X: =30
+            Y: =562
+
+      - lblUMUnitCheck:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =14
+            Text: ="✓"
+            Visible: =varWarrantyMode = "equipment" && varEWUnitMode
+            Width: =24
+            X: =158
+            Y: =562
+
+      - btnUMUnit:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            HoverFill: =RGBA(0, 0, 0, 0.02)
+            OnSelect: =Set(varEWUnitMode, true)
+            PressedFill: =RGBA(0, 0, 0, 0.04)
+            Text: =""
+            Visible: =varWarrantyMode = "equipment"
+            Width: =170
+            X: =16
+            Y: =548
+
+      # ── Facility view card ──
+      - rectUMFacility:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: |-
+              =If(!varEWUnitMode, RGBA(0, 78, 140, 1), RGBA(237, 235, 233, 1))
+            BorderThickness: |-
+              =If(!varEWUnitMode, 2, 1)
+            Fill: |-
+              =If(!varEWUnitMode, RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            Height: =50
+            Visible: =varWarrantyMode = "equipment"
+            Width: =170
+            X: =194
+            Y: =548
+
+      - rectUMFacilityAccent:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =50
+            Visible: =varWarrantyMode = "equipment" && !varEWUnitMode
+            Width: =4
+            X: =194
+            Y: =548
+
+      - lblUMFacilityTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="○ Facility View"
+            Visible: =varWarrantyMode = "equipment"
+            Width: =120
+            X: =208
+            Y: =562
+
+      - lblUMFacilityCheck:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =14
+            Text: ="✓"
+            Visible: =varWarrantyMode = "equipment" && !varEWUnitMode
+            Width: =24
+            X: =336
+            Y: =562
+
+      - btnUMFacility:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            HoverFill: =RGBA(0, 0, 0, 0.02)
+            OnSelect: =Set(varEWUnitMode, false)
+            PressedFill: =RGBA(0, 0, 0, 0.04)
+            Text: =""
+            Visible: =varWarrantyMode = "equipment"
+            Width: =170
+            X: =194
+            Y: =548
+
+      - lblUMStatus:
+          Control: Label@2.5.1
+          Properties:
+            Color: |-
+              =If(varEWUnitMode, RGBA(0, 78, 140, 1), RGBA(96, 94, 92, 1))
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =10
+            Text: |-
+              =If(varEWUnitMode,
+                  "Unit view — opens to caller's specific elevator",
+                  "Facility view — shows all units at account"
+              )
+            Visible: =varWarrantyMode = "equipment"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =604
+
+      - rectUnitModeDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Visible: =varWarrantyMode = "equipment"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =630
+
+      # ──────────────────────────────────────
+      #  SECTION 3: DEFAULT BRAND / PRICE LIST
+      #  Pre-selects the brand dropdown on
+      #  Quick Quote and maps to the correct
+      #  Dataverse price list.
+      # ──────────────────────────────────────
+      - lblSecBrand:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =11
+            Text: ="DEFAULT BRAND / PRICE LIST"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =638
+
+      - lblSecBrandDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="Pre-selects the brand dropdown on Quick Quote. Controls which products and price list are shown."
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =660
+
+      - btnBrandZurn:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: |-
+              =If(varDefaultBrand = "Zurn", RGBA(0, 78, 140, 1), RGBA(200, 198, 196, 1))
+            BorderThickness: |-
+              =If(varDefaultBrand = "Zurn", 2, 1)
+            Color: |-
+              =If(varDefaultBrand = "Zurn", RGBA(255, 255, 255, 1), RGBA(50, 49, 48, 1))
+            Fill: |-
+              =If(varDefaultBrand = "Zurn", RGBA(0, 78, 140, 1), RGBA(255, 255, 255, 1))
+            Height: =36
+            HoverFill: |-
+              =If(varDefaultBrand = "Zurn", RGBA(0, 78, 140, 1), RGBA(0, 78, 140, 0.05))
+            OnSelect: =Set(varDefaultBrand, "Zurn")
+            PressedFill: =RGBA(0, 78, 140, 0.15)
+            Size: =11
+            Text: ="Zurn"
+            Width: =112
+            X: =16
+            Y: =692
+
+      - btnBrandElkay:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: |-
+              =If(varDefaultBrand = "Elkay", RGBA(0, 78, 140, 1), RGBA(200, 198, 196, 1))
+            BorderThickness: |-
+              =If(varDefaultBrand = "Elkay", 2, 1)
+            Color: |-
+              =If(varDefaultBrand = "Elkay", RGBA(255, 255, 255, 1), RGBA(50, 49, 48, 1))
+            Fill: |-
+              =If(varDefaultBrand = "Elkay", RGBA(0, 78, 140, 1), RGBA(255, 255, 255, 1))
+            Height: =36
+            HoverFill: |-
+              =If(varDefaultBrand = "Elkay", RGBA(0, 78, 140, 1), RGBA(0, 78, 140, 0.05))
+            OnSelect: =Set(varDefaultBrand, "Elkay")
+            PressedFill: =RGBA(0, 78, 140, 0.15)
+            Size: =11
+            Text: ="Elkay"
+            Width: =112
+            X: =134
+            Y: =692
+
+      - btnBrandOtis:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: |-
+              =If(varDefaultBrand = "Otis Parts", RGBA(0, 78, 140, 1), RGBA(200, 198, 196, 1))
+            BorderThickness: |-
+              =If(varDefaultBrand = "Otis Parts", 2, 1)
+            Color: |-
+              =If(varDefaultBrand = "Otis Parts", RGBA(255, 255, 255, 1), RGBA(50, 49, 48, 1))
+            Fill: |-
+              =If(varDefaultBrand = "Otis Parts", RGBA(0, 78, 140, 1), RGBA(255, 255, 255, 1))
+            Height: =36
+            HoverFill: |-
+              =If(varDefaultBrand = "Otis Parts", RGBA(0, 78, 140, 1), RGBA(0, 78, 140, 0.05))
+            OnSelect: =Set(varDefaultBrand, "Otis Parts")
+            PressedFill: =RGBA(0, 78, 140, 0.15)
+            Size: =11
+            Text: ="Otis Parts"
+            Width: =112
+            X: =252
+            Y: =692
+
+      - lblBrandActive:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =10
+            Text: |-
+              ="Active: " & varDefaultBrand & " → " &
+              Switch(varDefaultBrand,
+                  "Zurn", "Zurn Standard Price List",
+                  "Elkay", "Elkay Standard Price List",
+                  "Otis Parts", "Otis Aftermarket Parts",
+                  "—"
+              )
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =734
+
+      - rectBrandDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =760
+
+      # ──────────────────────────────────────
+      #  SECTION 4: DEMO ACCOUNT OVERRIDE
+      #  Sets varEWAccountId so Equipment &
+      #  Warranty and Quick Quote load data
+      #  without needing Param("recordId").
+      # ──────────────────────────────────────
+      - lblDemoAcctHeading:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =11
+            Text: ="DEMO ACCOUNT OVERRIDE"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =768
+
+      - lblDemoAcctDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="Pre-load an account for Equipment & Warranty and Quick Quote customer selection."
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =790
+
+      # ── Account selection gallery ──
+      - galDemoAccounts:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            BorderColor: =RGBA(237, 235, 233, 1)
+            BorderThickness: =0
+            Fill: =RGBA(250, 250, 250, 1)
+            Height: =244
+            Items: |-
+              =Table(
+                  { acctName: "Westfield London", acctId: "a41d8f61-241f-f111-8341-6045bda80a72", acctTier: "T1 · SIG PREMIUM", acctNum: "OTIS-UK-001" },
+                  { acctName: "Canary Wharf Tower", acctId: "6414e566-241f-f111-8342-6045bdedc552", acctTier: "T1 · SIG PREMIUM", acctNum: "OTIS-UK-002" },
+                  { acctName: "Riverside Medical", acctId: "f05e7b68-241f-f111-8342-7ced8d18cb3b", acctTier: "T1 · SIG PREMIUM", acctNum: "OTIS-UK-003" },
+                  { acctName: "Birmingham New St", acctId: "47af366a-241f-f111-8341-7c1e5218592b", acctTier: "T1 · SIG PREMIUM", acctNum: "OTIS-UK-004" },
+                  { acctName: "The Shard London", acctId: "7a105f6f-241f-f111-8342-6045bdedc552", acctTier: "T1 · SIG PREMIUM", acctNum: "OTIS-UK-005" },
+                  { acctName: "Marriott Manchester", acctId: "6ba085c6-241f-f111-8341-7c1e5218592b", acctTier: "T2 · SIG PLUS", acctNum: "OTIS-UK-006" },
+                  { acctName: "Parkview Residential", acctId: "1255f4c5-241f-f111-8341-7ced8dd8e369", acctTier: "T2 · SIG PLUS", acctNum: "OTIS-UK-007" },
+                  { acctName: "Crown Shopping Ctr", acctId: "709d0ec5-241f-f111-8342-7ced8d18c8d7", acctTier: "T2 · SIG PLUS", acctNum: "OTIS-UK-008" },
+                  { acctName: "Metro Office Park", acctId: "ec1962c8-241f-f111-8341-7ced8d18ce4d", acctTier: "T3 · SIGNATURE", acctNum: "OTIS-UK-009" },
+                  { acctName: "Greenfield School", acctId: "666559c8-241f-f111-8342-7c1e520a58a1", acctTier: "T3 · SIGNATURE", acctNum: "OTIS-UK-010" }
+              )
+            TemplateFill: |-
+              =If(ThisItem.acctId = varEWAccountId, RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            TemplatePadding: =0
+            TemplateSize: =24
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =822
+          Children:
+            - rectDemoAcctRow:
+                Control: Rectangle@2.3.0
+                Properties:
+                  Fill: |-
+                    =If(ThisItem.acctId = varEWAccountId, RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+                  Height: =22
+                  OnSelect: |-
+                    =Set(varEWAccountId, ThisItem.acctId);
+                    Set(varDemoAcctLabel, ThisItem.acctName & " (" & ThisItem.acctNum & ")")
+                  Width: =Parent.Width
+                  Y: =1
+
+            - lblDemoAcctName:
+                Control: Label@2.5.1
+                Properties:
+                  Color: |-
+                    =If(ThisItem.acctId = varEWAccountId, RGBA(0, 78, 140, 1), RGBA(50, 49, 48, 1))
+                  FontWeight: |-
+                    =If(ThisItem.acctId = varEWAccountId, FontWeight.Bold, FontWeight.Normal)
+                  Height: =22
+                  OnSelect: =Select(rectDemoAcctRow)
+                  Size: =10
+                  Text: =ThisItem.acctNum & "  " & ThisItem.acctName
+                  Width: =Parent.Width - 100
+                  X: =4
+                  Y: =1
+
+            - lblDemoAcctTier:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Right
+                  Color: =RGBA(96, 94, 92, 1)
+                  Height: =22
+                  OnSelect: =Select(rectDemoAcctRow)
+                  Size: =8
+                  Text: =ThisItem.acctTier
+                  Width: =96
+                  X: =Parent.Width - 100
+                  Y: =1
+
+      # ── Active account indicator ──
+      - lblActiveAcctLbl:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =20
+            Size: =10
+            Text: |-
+              ="Active account:"
+            Width: =100
+            X: =16
+            Y: =1070
+
+      - lblActiveAcctVal:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =20
+            Size: =10
+            Text: |-
+              =If(
+                  IsBlank(varEWAccountId) || varEWAccountId = "",
+                  "None — will use Param(""recordId"")",
+                  Coalesce(varDemoAcctLabel, varEWAccountId)
+              )
+            Width: =Parent.Width - 128
+            X: =120
+            Y: =1070
+
+      - btnClearAcctOverride:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(164, 38, 44, 1)
+            BorderThickness: =1
+            Color: =RGBA(164, 38, 44, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =28
+            HoverFill: =RGBA(164, 38, 44, 0.05)
+            OnSelect: |-
+              =Set(varEWAccountId, "");
+              Set(varDemoAcctLabel, "")
+            PressedFill: =RGBA(164, 38, 44, 0.1)
+            Size: =10
+            Text: ="Clear Override"
+            Visible: =!IsBlank(varEWAccountId) && varEWAccountId <> ""
+            Width: =120
+            X: =Parent.Width - 136
+            Y: =1094
+
+      - rectAcctDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1130
+
+      # ──────────────────────────────────────
+      #  SECTION 5: DEMO SERIAL NUMBER
+      #  Pre-fills serial for Warranty Lookup
+      #  and Return/RMA screens when no Param
+      #  is available (standalone design).
+      # ──────────────────────────────────────
+      - lblSecSerial:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =11
+            Text: ="DEMO SERIAL NUMBER"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1138
+
+      - lblSecSerialDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="Pre-fill a serial number for Warranty Lookup and Return/RMA screens."
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1160
+
+      - txtDemoSerial:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            Default: =varDemoSerial
+            Height: =36
+            HintText: ="e.g. SN-2024-00142 or OT-DO-1001"
+            OnChange: =Set(varDemoSerial, txtDemoSerial.Text)
+            Size: =11
+            Width: =Parent.Width - 136
+            X: =16
+            Y: =1192
+
+      - btnClearSerial:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(164, 38, 44, 1)
+            BorderThickness: =1
+            Color: =RGBA(164, 38, 44, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(164, 38, 44, 0.05)
+            OnSelect: |-
+              =Set(varDemoSerial, "");
+              Reset(txtDemoSerial)
+            PressedFill: =RGBA(164, 38, 44, 0.1)
+            Size: =10
+            Text: ="Clear"
+            Visible: =!IsBlank(varDemoSerial) && varDemoSerial <> ""
+            Width: =100
+            X: =Parent.Width - 116
+            Y: =1192
+
+      - lblSerialStatus:
+          Control: Label@2.5.1
+          Properties:
+            Color: |-
+              =If(!IsBlank(varDemoSerial) && varDemoSerial <> "", RGBA(0, 78, 140, 1), RGBA(96, 94, 92, 1))
+            Height: =20
+            Size: =10
+            Text: |-
+              =If(!IsBlank(varDemoSerial) && varDemoSerial <> "",
+                  "Serial: " & varDemoSerial,
+                  "None — will use Param or manual entry"
+              )
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1232
+
+      - rectSerialDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1258
+
+      # ──────────────────────────────────────
+      #  SECTION 6: DEMO TRACKING DATA
+      #  When enabled, Shipment Tracker loads
+      #  sample tracking events into
+      #  colTrackingEvents instead of calling
+      #  the ShipEngine connector.
+      # ──────────────────────────────────────
+      - lblSecTracking:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =11
+            Text: ="DEMO TRACKING DATA"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1266
+
+      - lblSecTrackingDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =28
+            Size: =10
+            Text: ="When enabled, Shipment Tracker loads sample events instead of calling ShipEngine."
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1288
+
+      # ── Tracking ON card ──
+      - rectDTOn:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: |-
+              =If(varDemoTracking, RGBA(0, 78, 140, 1), RGBA(237, 235, 233, 1))
+            BorderThickness: |-
+              =If(varDemoTracking, 2, 1)
+            Fill: |-
+              =If(varDemoTracking, RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            Height: =50
+            Width: =170
+            X: =16
+            Y: =1320
+
+      - rectDTOnAccent:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =50
+            Visible: =varDemoTracking
+            Width: =4
+            X: =16
+            Y: =1320
+
+      - lblDTOnTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="● Demo ON"
+            Width: =120
+            X: =30
+            Y: =1334
+
+      - lblDTOnCheck:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =14
+            Text: ="✓"
+            Visible: =varDemoTracking
+            Width: =24
+            X: =158
+            Y: =1334
+
+      - btnDTOn:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            HoverFill: =RGBA(0, 0, 0, 0.02)
+            OnSelect: =Set(varDemoTracking, true)
+            PressedFill: =RGBA(0, 0, 0, 0.04)
+            Text: =""
+            Width: =170
+            X: =16
+            Y: =1320
+
+      # ── Tracking OFF card ──
+      - rectDTOff:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: |-
+              =If(!varDemoTracking, RGBA(0, 78, 140, 1), RGBA(237, 235, 233, 1))
+            BorderThickness: |-
+              =If(!varDemoTracking, 2, 1)
+            Fill: |-
+              =If(!varDemoTracking, RGBA(222, 236, 249, 1), RGBA(255, 255, 255, 1))
+            Height: =50
+            Width: =170
+            X: =194
+            Y: =1320
+
+      - rectDTOffAccent:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(0, 78, 140, 1)
+            Height: =50
+            Visible: =!varDemoTracking
+            Width: =4
+            X: =194
+            Y: =1320
+
+      - lblDTOffTitle:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(50, 49, 48, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="○ Live API"
+            Width: =120
+            X: =208
+            Y: =1334
+
+      - lblDTOffCheck:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(0, 78, 140, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =14
+            Text: ="✓"
+            Visible: =!varDemoTracking
+            Width: =24
+            X: =336
+            Y: =1334
+
+      - btnDTOff:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            HoverFill: =RGBA(0, 0, 0, 0.02)
+            OnSelect: =Set(varDemoTracking, false)
+            PressedFill: =RGBA(0, 0, 0, 0.04)
+            Text: =""
+            Width: =170
+            X: =194
+            Y: =1320
+
+      - lblDTStatus:
+          Control: Label@2.5.1
+          Properties:
+            Color: |-
+              =If(varDemoTracking, RGBA(0, 78, 140, 1), RGBA(96, 94, 92, 1))
+            FontWeight: =FontWeight.Semibold
+            Height: =20
+            Size: =10
+            Text: |-
+              =If(varDemoTracking,
+                  "Demo tracking active — sample events loaded",
+                  "Live mode — ShipEngine connector used"
+              )
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1376
+
+      - rectTrackingDiv:
+          Control: Rectangle@2.3.0
+          Properties:
+            Fill: =RGBA(237, 235, 233, 1)
+            Height: =1
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1402
+
+      # ──────────────────────────────────────
+      #  SECTION 7: QUICK NAVIGATION
+      #  Jump directly to any screen without
+      #  going through Home. Useful during
+      #  design iteration.
+      # ──────────────────────────────────────
+      - lblSecNav:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            FontWeight: =FontWeight.Semibold
+            Height: =22
+            Size: =11
+            Text: ="QUICK NAVIGATION"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1410
+
+      - lblSecNavDesc:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(96, 94, 92, 1)
+            Height: =22
+            Size: =10
+            Text: ="Jump to any screen during design — bypasses Home."
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1432
+
+      # ── Row 1 ──
+      - btnNavOrder:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            BorderThickness: =1
+            Color: =RGBA(50, 49, 48, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Navigate(scrOrderLookup, ScreenTransition.None)
+            Size: =10
+            Text: ="Order Mgmt"
+            Width: =168
+            X: =16
+            Y: =1458
+
+      - btnNavShipment:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            BorderThickness: =1
+            Color: =RGBA(50, 49, 48, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Navigate(scrShipmentTracker, ScreenTransition.None)
+            Size: =10
+            Text: ="Shipment Tracker"
+            Width: =168
+            X: =196
+            Y: =1458
+
+      # ── Row 2 ──
+      - btnNavQuote:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            BorderThickness: =1
+            Color: =RGBA(50, 49, 48, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Navigate(scrQuickQuote, ScreenTransition.None)
+            Size: =10
+            Text: ="Quick Quote"
+            Width: =168
+            X: =16
+            Y: =1500
+
+      - btnNavRMA:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            BorderThickness: =1
+            Color: =RGBA(50, 49, 48, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Navigate(scrReturnRMA, ScreenTransition.None)
+            Size: =10
+            Text: ="Return/RMA"
+            Width: =168
+            X: =196
+            Y: =1500
+
+      # ── Row 3 ──
+      - btnNavWarranty:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            BorderThickness: =1
+            Color: =RGBA(50, 49, 48, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: |-
+              =If(
+                  varWarrantyMode = "equipment",
+                  Navigate(scrEquipWarranty, ScreenTransition.None),
+                  Navigate(scrWarrantyLookup, ScreenTransition.None)
+              )
+            Size: =10
+            Text: ="Warranty"
+            Width: =168
+            X: =16
+            Y: =1542
+
+      - btnNavHome:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(200, 198, 196, 1)
+            BorderThickness: =1
+            Color: =RGBA(50, 49, 48, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =36
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+            Size: =10
+            Text: ="Home"
+            Width: =168
+            X: =196
+            Y: =1542
+
+      # ──────────────────────────────────────
+      #  FOOTER
+      # ──────────────────────────────────────
+      - btnSetBack:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 78, 140, 1)
+            BorderThickness: =1
+            Color: =RGBA(0, 78, 140, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =38
+            HoverFill: =RGBA(0, 78, 140, 0.05)
+            OnSelect: =Navigate(scrHome, ScreenTransition.None)
+            PressedFill: =RGBA(0, 78, 140, 0.1)
+            Size: =12
+            Text: ="Back to Service Toolkit"
+            Width: =Parent.Width - 32
+            X: =16
+            Y: =1600

@@ -1,0 +1,223 @@
+{
+  "knowledgeArticles": [
+    {
+      "id": "KB-001247",
+      "title": "Entrapment Response Procedure - Gen2 Premier",
+      "articleNumber": "KB-001247",
+      "d365KnowledgeArticleId": "5628358a-b520-f111-8342-7c1e52143136",
+      "status": "Published",
+      "category": "Emergency Procedures",
+      "subcategory": "Entrapment",
+      "keywords": ["entrapment", "trapped", "stuck", "emergency", "gen2", "premier", "rescue", "extraction"],
+      "summary": "Step-by-step procedure for responding to passenger entrapment in Gen2 Premier elevators, including communication protocols, dispatch procedures, and safe extraction methods.",
+      "content": {
+        "sections": [
+          {
+            "title": "Initial Response (0-2 minutes)",
+            "content": "1. Confirm entrapment location and elevator unit number\n2. Establish communication with trapped passenger via intercom\n3. Verify passenger condition - ask about injuries, mobility, and medical conditions\n4. Reassure passenger that help is on the way\n5. Log call start time for SLA tracking"
+          },
+          {
+            "title": "Dispatch Protocol",
+            "content": "**Priority Dispatch Criteria:**\n- Healthcare facilities: 1-hour SLA\n- Commercial Tier 1: 2-hour SLA\n- Residential/Standard: 4-hour SLA\n\n**Dispatch Steps:**\n1. Check technician availability in dispatch system\n2. Identify nearest qualified technician with Gen2 Premier certification\n3. Contact technician via mobile and confirm ETA\n4. Update case with dispatch details and ETA"
+          },
+          {
+            "title": "Communication Cadence",
+            "content": "- Call customer back every 5 minutes until technician arrives\n- Send email confirmation with technician ETA within 5 minutes of dispatch\n- If ETA exceeds SLA, escalate to Field Supervisor immediately\n- Document all communications in case timeline"
+          },
+          {
+            "title": "Safe Extraction Methods",
+            "content": "**Technician procedures (for reference only):**\n1. Attempt remote reset via Otis ONE if equipped\n2. Manual leveling procedure using machine room controls\n3. Emergency manual release sequence\n4. Fire service operation as last resort\n\n**IMPORTANT:** Agents should never instruct customers on extraction procedures. All extraction must be performed by certified technicians."
+          }
+        ]
+      },
+      "relatedArticles": [
+        "KB-000892",
+        "KB-002156"
+      ],
+      "lastModified": "2026-02-15",
+      "author": "Technical Documentation Team",
+      "viewCount": 1247,
+      "rating": 4.8,
+      "demoNotes": "KEY ENTRAPMENT KB - Copilot will surface this when handling HERO-001 entrapment case. Good for showing how KB articles guide agent actions."
+    },
+    {
+      "id": "KB-002156",
+      "title": "Healthcare Facility Emergency Protocols",
+      "articleNumber": "KB-002156",
+      "d365KnowledgeArticleId": "2eaf5097-b520-f111-8342-7ced8d18c8d7",
+      "status": "Published",
+      "category": "Emergency Procedures",
+      "subcategory": "Healthcare",
+      "keywords": ["healthcare", "hospital", "medical", "nhs", "patient", "bed elevator", "emergency", "priority"],
+      "summary": "Special handling procedures for elevator emergencies at healthcare facilities, including enhanced SLA requirements, patient safety considerations, and coordination with hospital security.",
+      "content": {
+        "sections": [
+          {
+            "title": "Healthcare Priority Classification",
+            "content": "Healthcare facilities receive highest priority response:\n\n**Tier H1 - Critical Healthcare:**\n- Hospitals with A&E departments\n- Response time: 1 hour maximum\n- 24/7 on-call technician required\n\n**Tier H2 - Standard Healthcare:**\n- Clinics and outpatient facilities\n- Response time: 2 hours maximum"
+          },
+          {
+            "title": "Patient Impact Assessment",
+            "content": "When taking healthcare facility calls, always assess:\n\n1. **Is patient transport affected?** - Bed elevators require immediate priority\n2. **Are there patients in the elevator?** - Escalate to supervisor immediately\n3. **Is surgical/emergency access blocked?** - Coordinate with hospital incident command\n4. **Are medical supplies affected?** - Pharmacy transport elevators are high priority"
+          },
+          {
+            "title": "Hospital Coordination",
+            "content": "**Key Contacts:**\n- Hospital Security (first point of contact)\n- Facilities Management\n- Incident Command (for major events)\n\n**Communication:**\n- Use medical terminology appropriately\n- Maintain HIPAA awareness - don't discuss patients\n- Coordinate arrival times with security for building access"
+          },
+          {
+            "title": "Documentation Requirements",
+            "content": "Healthcare incidents require enhanced documentation:\n- Exact time of incident\n- Patient impact assessment\n- Response time vs. SLA\n- Resolution details\n- Any safety incidents\n\nAll healthcare cases auto-flagged for quality review."
+          }
+        ]
+      },
+      "relatedArticles": [
+        "KB-001247",
+        "KB-000892"
+      ],
+      "lastModified": "2026-01-20",
+      "author": "Healthcare Vertical Team",
+      "viewCount": 856,
+      "rating": 4.9,
+      "demoNotes": "HEALTHCARE-SPECIFIC KB - Surfaces for Riverside Medical Centre cases. Shows industry-specific handling knowledge."
+    },
+    {
+      "id": "KB-002104",
+      "title": "SkyRise Door Operator Troubleshooting Guide",
+      "articleNumber": "KB-002104",
+      "d365KnowledgeArticleId": "ce4ec58a-b420-f111-8342-7ced8d18c8d7",
+      "status": "Published",
+      "category": "Technical Troubleshooting",
+      "subcategory": "Door Systems",
+      "keywords": ["skyrise", "door", "operator", "troubleshooting", "reversal", "closing", "sensor", "alignment"],
+      "summary": "Comprehensive troubleshooting guide for SkyRise elevator door operator issues, including common symptoms, diagnostic steps, and resolution procedures.",
+      "content": {
+        "sections": [
+          {
+            "title": "Common Door Operator Symptoms",
+            "content": "**Symptom 1: Repeated Door Reversals**\n- Door starts to close, then reverses multiple times\n- Often indicates sensor obstruction or misalignment\n- Check for debris in door track\n\n**Symptom 2: Slow Door Operation**\n- Doors move slower than normal\n- May indicate motor wear or belt tension issues\n\n**Symptom 3: Door Won't Close Completely**\n- Doors stop short of full closure\n- Check for track obstruction or limit sensor issues"
+          },
+          {
+            "title": "Agent Diagnostic Questions",
+            "content": "Ask the customer:\n1. Does the issue happen every time or intermittently?\n2. Is there a specific floor where it's worse?\n3. What time of day does it occur most? (temperature-related expansion)\n4. Has anything been replaced or repaired recently?\n5. Are passengers reporting any sounds when the issue occurs?\n\nDocument answers in case notes for technician."
+          },
+          {
+            "title": "Temporary Mitigation",
+            "content": "**If elevator is safe to operate:**\n- Advise customer to notify users of slower door operation\n- Recommend avoiding heavy traffic floors if possible\n\n**If elevator unsafe:**\n- Guide customer to lock off elevator at landing\n- Place out-of-service signage\n- Escalate for emergency dispatch"
+          },
+          {
+            "title": "Recurring Issue Protocol",
+            "content": "If this is 3rd+ occurrence:\n1. Pull historical maintenance records\n2. Identify pattern in previous technician notes\n3. Escalate to Field Supervisor for comprehensive inspection\n4. Consider sensor replacement or track realignment\n5. Flag for engineering review if pattern persists"
+          }
+        ]
+      },
+      "relatedArticles": [
+        "KB-001876",
+        "KB-002089"
+      ],
+      "lastModified": "2026-03-01",
+      "author": "SkyRise Product Team",
+      "viewCount": 2341,
+      "rating": 4.6,
+      "demoNotes": "DOOR TROUBLESHOOTING KB - Surfaces for HERO-002 Canary Wharf recurring door issue. Shows diagnostic guidance."
+    },
+    {
+      "id": "KB-001050",
+      "title": "Full Maintenance Contract Coverage Guide",
+      "articleNumber": "KB-001050",
+      "d365KnowledgeArticleId": "39986c9a-b520-f111-8341-6045bda80a72",
+      "status": "Published",
+      "category": "Contract Information",
+      "subcategory": "Coverage Details",
+      "keywords": ["contract", "coverage", "full maintenance", "billable", "included", "parts", "labor"],
+      "summary": "Comprehensive guide to what is included and excluded in Full Maintenance service contracts, helping agents accurately answer coverage questions and identify billing errors.",
+      "content": {
+        "sections": [
+          {
+            "title": "Components INCLUDED in Full Maintenance",
+            "content": "**Always Covered:**\n- Door operators and door panels\n- Controllers and drive systems\n- Safety devices and interlocks\n- Cables, sheaves, and guides\n- Machine and motor components\n- Car operating panels\n- Hall stations and indicators\n- Routine PM labor and parts\n\n**Category Summary:** If it's essential for elevator operation, it's covered."
+          },
+          {
+            "title": "Components EXCLUDED",
+            "content": "**Customer Responsibility:**\n- Cab finishes and interiors (cosmetic)\n- Light fixtures and bulbs\n- Telephone equipment\n- Signage and branding\n- Vandalism repairs\n- Water damage repairs\n- Fire damage repairs\n\n**Category Summary:** Cosmetic, communication, and damage from external causes."
+          },
+          {
+            "title": "Common Coverage Questions",
+            "content": "**Q: Is a door motor replacement covered?**\nA: YES - Door operator components are always covered.\n\n**Q: Is cab carpet replacement covered?**\nA: NO - Cab finishes are customer responsibility.\n\n**Q: Is a callback for entrapment covered?**\nA: YES - All emergency responses are covered.\n\n**Q: Is vandalism repair covered?**\nA: NO - External damage is excluded."
+          },
+          {
+            "title": "Billing Error Process",
+            "content": "If a customer believes they were incorrectly billed:\n\n1. Pull the work order and review service codes\n2. Check if the work was coded as T&M vs. Contract\n3. Compare parts replaced against coverage list\n4. If error confirmed:\n   - Submit correction request via billing portal\n   - Reference work order and invoice numbers\n   - Notify customer of credit timeline\n5. If correctly billed:\n   - Explain specific exclusion to customer\n   - Offer to review contract upgrade options"
+          }
+        ]
+      },
+      "relatedArticles": [
+        "KB-000756",
+        "KB-001100"
+      ],
+      "lastModified": "2026-02-28",
+      "author": "Contract Administration",
+      "viewCount": 5847,
+      "rating": 4.7,
+      "demoNotes": "CONTRACT COVERAGE KB - Surfaces for HERO-004 Marriott billing dispute. Key for demonstrating accurate billing resolution."
+    },
+    {
+      "id": "KB-003145",
+      "title": "Otis ONE IoT Monitoring Package",
+      "articleNumber": "KB-003145",
+      "d365KnowledgeArticleId": "3077e791-b420-f111-8341-7ced8dceb26a",
+      "status": "Published",
+      "category": "Products & Services",
+      "subcategory": "Otis ONE",
+      "keywords": ["otis one", "iot", "monitoring", "connected", "smart", "predictive", "analytics", "modernization"],
+      "summary": "Overview of Otis ONE connected elevator monitoring system, including features, benefits, and customer talking points for sales conversations.",
+      "content": {
+        "sections": [
+          {
+            "title": "Otis ONE Overview",
+            "content": "Otis ONE is our cloud-based IoT platform that transforms elevator maintenance:\n\n**Key Capabilities:**\n- Real-time performance monitoring\n- Predictive maintenance alerts\n- Remote diagnostics\n- Usage analytics and reporting\n- Building manager dashboard\n\n**Supported Equipment:**\n- Gen2 systems (all variants)\n- SkyRise high-speed elevators\n- NCE escalators\n- Retrofit available for select legacy systems"
+          },
+          {
+            "title": "Customer Benefits",
+            "content": "**Uptime Improvement:**\n- Average 25% reduction in callbacks\n- Predictive alerts prevent 60% of potential shutdowns\n\n**Cost Savings:**\n- Optimized maintenance scheduling\n- Reduced emergency dispatch\n- Energy usage monitoring\n\n**Building Insights:**\n- Traffic pattern analysis\n- Peak usage reporting\n- Tenant satisfaction metrics"
+          },
+          {
+            "title": "Installation Requirements",
+            "content": "**New Installation:**\n- Included with all Gen2 and SkyRise installations\n- Activated during commissioning\n\n**Retrofit:**\n- Control system compatibility check required\n- Typical installation: 2-4 hours per unit\n- Network connectivity required (cellular or building ethernet)\n- One-time installation fee + monthly subscription"
+          },
+          {
+            "title": "Talking Points for Sales Handoff",
+            "content": "When customers express interest in Otis ONE:\n\n1. Confirm their equipment compatibility\n2. Ask about their current pain points (callbacks, energy costs, visibility)\n3. Describe relevant case studies in their vertical\n4. Offer to schedule a technical consultation\n5. Create sales opportunity in CRM and assign to territory rep\n\n**ROI Talking Point:** Average payback period is 18 months through reduced emergency calls and optimized energy usage."
+          }
+        ]
+      },
+      "relatedArticles": [
+        "KB-003201",
+        "KB-002998"
+      ],
+      "lastModified": "2026-03-10",
+      "author": "Otis ONE Product Marketing",
+      "viewCount": 3156,
+      "rating": 4.8,
+      "demoNotes": "IOT/MODERNIZATION KB - Surfaces for HERO-003 The Shard modernization inquiry. Shows service-to-sales knowledge handoff."
+    }
+  ],
+  "articleQuickReference": {
+    "byCategory": {
+      "Emergency Procedures": ["KB-001247", "KB-002156", "KB-000892"],
+      "Technical Troubleshooting": ["KB-002104", "KB-001876", "KB-002089"],
+      "Contract Information": ["KB-001050", "KB-000756", "KB-001100"],
+      "Products & Services": ["KB-003145", "KB-003201", "KB-002998"]
+    },
+    "byEquipment": {
+      "Gen2 Premier": ["KB-001247", "KB-000892"],
+      "SkyRise": ["KB-002104", "KB-001876"],
+      "NCE Escalators": ["KB-002340", "KB-000445"]
+    },
+    "byCaseType": {
+      "Entrapment": ["KB-001247", "KB-002156", "KB-000892"],
+      "Door Issues": ["KB-002104", "KB-001876"],
+      "Billing": ["KB-001050", "KB-000756"],
+      "Modernization": ["KB-003145", "KB-003201", "KB-002998"]
+    }
+  }
+}

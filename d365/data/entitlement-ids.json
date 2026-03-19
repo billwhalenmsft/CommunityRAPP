@@ -1,0 +1,80 @@
+﻿{
+    "DateRange":  {
+                      "start":  "2025-07-01T00:00:00Z",
+                      "end":  "2026-06-30T23:59:59Z"
+                  },
+    "SlaId":  "f8c8c488-9912-f111-8407-7c1e52143136",
+    "Templates":  {
+                      "Tier2":  "9548917b-e917-f111-8342-7ced8d18c8d7",
+                      "Tier1":  "be492f7a-e917-f111-8341-7ced8dceb26a",
+                      "Tier4":  "8ee2fb7a-e917-f111-8342-7c1e520a58a1",
+                      "Tier3":  "8de2fb7a-e917-f111-8342-7c1e520a58a1"
+                  },
+    "Entitlements":  {
+                         "Winsupply Inc.":  {
+                                                "label":  "Strategic Support",
+                                                "entitlementId":  "8a0b6882-e917-f111-8342-7c1e52143136",
+                                                "tier":  "1"
+                                            },
+                         "Lakeside Plumbing Parts":  {
+                                                         "label":  "Basic Support",
+                                                         "entitlementId":  "c8dd4886-e917-f111-8341-7ced8dceb26a",
+                                                         "tier":  "4"
+                                                     },
+                         "Pacific Plumbing Supply":  {
+                                                         "label":  "Standard Support",
+                                                         "entitlementId":  "fc999787-e917-f111-8342-7ced8d18c8d7",
+                                                         "tier":  "3"
+                                                     },
+                         "HD Supply":  {
+                                           "label":  "Key Account Support",
+                                           "entitlementId":  "6c3d9f81-e917-f111-8342-7ced8d18c8d7",
+                                           "tier":  "2"
+                                       },
+                         "Wolseley Industrial Group":  {
+                                                           "label":  "Key Account Support",
+                                                           "entitlementId":  "960b6882-e917-f111-8342-7c1e52143136",
+                                                           "tier":  "2"
+                                                       },
+                         "Consolidated Supply Co.":  {
+                                                         "label":  "Key Account Support",
+                                                         "entitlementId":  "653d9f81-e917-f111-8342-7ced8d18c8d7",
+                                                         "tier":  "2"
+                                                     },
+                         "Metro Building Supply":  {
+                                                       "label":  "Basic Support",
+                                                       "entitlementId":  "ccdd4886-e917-f111-8341-7ced8dceb26a",
+                                                       "tier":  "4"
+                                                   },
+                         "Hajoca Corporation":  {
+                                                    "label":  "Strategic Support",
+                                                    "entitlementId":  "b524ae81-e917-f111-8342-7c1e520a58a1",
+                                                    "tier":  "1"
+                                                },
+                         "Gateway Supply Company":  {
+                                                        "label":  "Standard Support",
+                                                        "entitlementId":  "753d9f81-e917-f111-8342-7ced8d18c8d7",
+                                                        "tier":  "3"
+                                                    },
+                         "ABC Plumbing Wholesale":  {
+                                                        "label":  "Basic Support",
+                                                        "entitlementId":  "10d6a687-e917-f111-8342-7c1e520a58a1",
+                                                        "tier":  "4"
+                                                    },
+                         "Midwest Pipe \u0026 Supply":  {
+                                                            "label":  "Standard Support",
+                                                            "entitlementId":  "990b6882-e917-f111-8342-7c1e52143136",
+                                                            "tier":  "3"
+                                                        },
+                         "Ferguson Enterprises":  {
+                                                      "label":  "Strategic Support",
+                                                      "entitlementId":  "f7b43380-e917-f111-8341-7ced8dceb26a",
+                                                      "tier":  "1"
+                                                  },
+                         "Southern Pipe \u0026 Supply":  {
+                                                             "label":  "Standard Support",
+                                                             "entitlementId":  "c2dd4886-e917-f111-8341-7ced8dceb26a",
+                                                             "tier":  "3"
+                                                         }
+                     }
+}

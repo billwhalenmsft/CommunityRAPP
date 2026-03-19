@@ -133,14 +133,15 @@ $steps = @(
     @{ num = 20; name = "Order Management"; script = "20-OrderMgmt.ps1" },
     @{ num = 21; name = "Shipment Tracking"; script = "21-ShipmentTracking.ps1" },
     @{ num = 22; name = "Customer Intent Agent"; script = "22-CustomerIntentAgent.ps1" },
-    @{ num = 23; name = "Workforce Management"; script = "23-WFM.ps1" }
+    @{ num = 23; name = "Workforce Management"; script = "23-WFM.ps1" },
+    @{ num = 29; name = "Call Pop Notification"; script = "29-CallPopNotification.ps1" }
 )
 
 # Filter steps
 if ($Only -gt 0) {
     $steps = $steps | Where-Object { $_.num -eq $Only }
     if ($steps.Count -eq 0) {
-        throw "Invalid step number: $Only. Valid: 1-23 (use 3.5 for Parts Products)."
+        throw "Invalid step number: $Only. Valid: 1-23, 29 (use 3.5 for Parts Products)."
     }
 } elseif ($From -gt 1) {
     $steps = $steps | Where-Object { $_.num -ge $From }

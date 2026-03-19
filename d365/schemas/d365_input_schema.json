@@ -1,0 +1,453 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "D365 Demo Input Schema",
+  "description": "Input template for automated D365 Customer Service demo data generation. Provide customer info, use case details, and data sources to auto-generate all demo assets.",
+  "type": "object",
+  "required": ["customer", "demo_requirements"],
+  "properties": {
+    "customer": {
+      "type": "object",
+      "description": "Customer identification and basic info",
+      "required": ["name", "industry"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Customer company name (e.g., 'Otis Elevator', 'Zurn Elkay')",
+          "examples": ["Otis Elevator", "Zurn Elkay", "Contoso Manufacturing"]
+        },
+        "industry": {
+          "type": "string",
+          "description": "Industry vertical for contextual data generation",
+          "enum": [
+            "elevator_service",
+            "plumbing_manufacturing",
+            "hvac",
+            "medical_devices",
+            "telecommunications",
+            "financial_services",
+            "retail",
+            "utilities",
+            "transportation",
+            "hospitality",
+            "other"
+          ]
+        },
+        "brands": {
+          "type": "array",
+          "description": "Product brands to include in demo (creates brand-specific accounts, products, queues)",
+          "items": {"type": "string"},
+          "examples": [["Zurn", "Elkay"], ["Otis", "Schindler"]]
+        },
+        "region": {
+          "type": "string",
+          "description": "Geographic focus for demo data (addresses, phone formats)",
+          "enum": ["NA", "EMEA", "APAC", "LATAM", "Global"],
+          "default": "NA"
+        },
+        "logo_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to customer logo for demo customization"
+        }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "description": "Information from discovery call - drives demo scenario selection",
+      "properties": {
+        "use_case": {
+          "type": "string",
+          "description": "Primary use case being demonstrated",
+          "enum": [
+            "telephony_screen_pop",
+            "omnichannel_routing",
+            "case_management",
+            "knowledge_management",
+            "self_service_portal",
+            "field_service",
+            "copilot_ai",
+            "full_ccaas"
+          ]
+        },
+        "channels": {
+          "type": "array",
+          "description": "Communication channels to configure",
+          "items": {
+            "type": "string",
+            "enum": ["phone", "chat", "email", "sms", "social", "portal", "teams"]
+          },
+          "default": ["phone"]
+        },
+        "agent_count": {
+          "type": "integer",
+          "description": "Number of contact center agents (affects queue/routing complexity)",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "current_system": {
+          "type": "string",
+          "description": "System being replaced (for migration narrative)",
+          "examples": ["Ring Central", "Genesys", "Five9", "Avaya", "Cisco UCCE"]
+        },
+        "pain_points": {
+          "type": "array",
+          "description": "Customer pain points from discovery (generates relevant demo scenarios)",
+          "items": {"type": "string"},
+          "examples": [
+            ["No screen pop", "Manual data entry", "No customer context"],
+            ["Slow routing", "No AI assistance", "Fragmented channels"]
+          ]
+        },
+        "decision_makers": {
+          "type": "array",
+          "description": "Key stakeholders to tailor demo narrative",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "title": {"type": "string"},
+              "focus": {"type": "string", "description": "What they care about most"}
+            }
+          }
+        }
+      }
+    },
+    "data_sources": {
+      "type": "object",
+      "description": "URLs and sources for scraping product/support information",
+      "properties": {
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "Main company website"
+        },
+        "products_page": {
+          "type": "string",
+          "format": "uri",
+          "description": "Products catalog page to scrape for product names/SKUs"
+        },
+        "support_page": {
+          "type": "string",
+          "format": "uri",
+          "description": "Support/FAQ page to scrape for KB article topics"
+        },
+        "documentation_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Technical documentation for detailed KB content"
+        },
+        "existing_data_file": {
+          "type": "string",
+          "description": "Path to existing customer data file (JSON/CSV) if available"
+        }
+      }
+    },
+    "demo_requirements": {
+      "type": "object",
+      "description": "Specific requirements for demo data structure",
+      "required": ["tiers"],
+      "properties": {
+        "tiers": {
+          "type": "array",
+          "description": "Customer tier structure (creates tiered accounts, SLAs, entitlements)",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Tier name",
+                "examples": ["Platinum", "Gold", "Silver", "Bronze", "Premium", "Standard", "Basic"]
+              },
+              "sla_first_response_minutes": {
+                "type": "integer",
+                "description": "SLA first response time in minutes",
+                "default": 240
+              },
+              "sla_resolution_minutes": {
+                "type": "integer",
+                "description": "SLA resolution time in minutes",
+                "default": 1440
+              },
+              "priority": {
+                "type": "integer",
+                "description": "Priority level (1=highest)",
+                "minimum": 1,
+                "maximum": 5
+              }
+            }
+          },
+          "minItems": 1,
+          "examples": [
+            [
+              {"name": "Platinum", "sla_first_response_minutes": 60, "sla_resolution_minutes": 240, "priority": 1},
+              {"name": "Gold", "sla_first_response_minutes": 120, "sla_resolution_minutes": 480, "priority": 2},
+              {"name": "Silver", "sla_first_response_minutes": 240, "sla_resolution_minutes": 1440, "priority": 3}
+            ]
+          ]
+        },
+        "case_types": {
+          "type": "array",
+          "description": "Types of cases to create for demo scenarios",
+          "items": {"type": "string"},
+          "examples": [
+            ["entrapment", "out_of_service", "maintenance", "installation"],
+            ["leak", "clog", "warranty", "technical_support", "order_inquiry"]
+          ]
+        },
+        "hero_scenario": {
+          "type": "object",
+          "description": "The main 'wow moment' demo scenario to build around",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Scenario name",
+              "examples": ["Screen pop with full context", "AI-assisted case resolution"]
+            },
+            "description": {
+              "type": "string",
+              "description": "What happens in this scenario"
+            },
+            "customer_name": {
+              "type": "string",
+              "description": "Name of the customer in hero scenario"
+            },
+            "customer_phone": {
+              "type": "string",
+              "description": "Phone number to call from during demo"
+            },
+            "case_title": {
+              "type": "string",
+              "description": "Title of the hero case"
+            }
+          }
+        },
+        "hot_words": {
+          "type": "array",
+          "description": "Keywords that trigger priority escalation in routing",
+          "items": {"type": "string"},
+          "default": ["urgent", "emergency", "safety", "escalate", "manager"],
+          "examples": [
+            ["entrapment", "stuck", "emergency", "fire", "injury"],
+            ["recall", "contamination", "leak", "flood", "urgent"]
+          ]
+        },
+        "account_count": {
+          "type": "object",
+          "description": "Number of accounts to generate per type",
+          "properties": {
+            "manufacturers": {"type": "integer", "default": 1},
+            "distributors": {"type": "integer", "default": 5},
+            "end_users": {"type": "integer", "default": 10}
+          }
+        },
+        "case_count": {
+          "type": "integer",
+          "description": "Total number of demo cases to generate",
+          "default": 20,
+          "minimum": 5,
+          "maximum": 100
+        },
+        "kb_article_count": {
+          "type": "integer",
+          "description": "Number of KB articles to generate",
+          "default": 10,
+          "minimum": 3,
+          "maximum": 50
+        }
+      }
+    },
+    "demo_story": {
+      "type": "object",
+      "description": "Customization for the demo execution guide narrative and characters",
+      "properties": {
+        "agent_persona": {
+          "type": "object",
+          "description": "The agent role the presenter plays during the demo",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Agent name (you play this role)",
+              "default": "Alex",
+              "examples": ["Alex", "Taylor", "Jordan", "Casey"]
+            },
+            "role": {
+              "type": "string",
+              "description": "Agent role/title",
+              "default": "Customer Service Representative",
+              "examples": ["CSR", "Support Specialist", "Technical Support", "Service Agent"]
+            }
+          }
+        },
+        "characters": {
+          "type": "array",
+          "description": "Characters that appear in the demo story (callers, chatters, supervisors)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Character name"
+              },
+              "role": {
+                "type": "string",
+                "description": "Character role in the story",
+                "examples": ["Phone Caller", "Chat Customer", "Supervisor", "Distributor Contact"]
+              },
+              "account": {
+                "type": "string",
+                "description": "Which account they represent"
+              },
+              "channel": {
+                "type": "string",
+                "description": "Primary channel for this character",
+                "enum": ["phone", "chat", "email", "portal"]
+              },
+              "scenario": {
+                "type": "string",
+                "description": "What scenario this character is involved in"
+              }
+            }
+          },
+          "examples": [
+            [
+              {"name": "Sarah Mitchell", "role": "Building Manager", "account": "Empire State Building", "channel": "phone", "scenario": "elevator stuck"},
+              {"name": "Mike Chen", "role": "Maintenance Lead", "account": "Rockefeller Center", "channel": "chat", "scenario": "routine maintenance inquiry"}
+            ]
+          ]
+        },
+        "story_flow": {
+          "type": "array",
+          "description": "Sequence of events in the demo narrative",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": {"type": "integer", "description": "Step number"},
+              "event": {"type": "string", "description": "What happens"},
+              "channel": {"type": "string", "enum": ["phone", "chat", "email", "internal"]},
+              "talking_points": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Key points to emphasize during this event"
+              }
+            }
+          }
+        },
+        "key_messages": {
+          "type": "array",
+          "description": "Key value messages to reinforce throughout the demo",
+          "items": {"type": "string"},
+          "examples": [
+            ["Instant customer context", "AI-powered assistance", "Unified customer timeline"],
+            ["30-second time savings per call", "No more asking 'can I have your account number?'"]
+          ]
+        },
+        "section_timing": {
+          "type": "object",
+          "description": "Custom timing for demo sections (overrides defaults)",
+          "properties": {
+            "connect": {"type": "integer", "description": "Minutes for Connect & Orient"},
+            "challenges": {"type": "integer", "description": "Minutes for Challenges discussion"},
+            "live_demo": {"type": "integer", "description": "Minutes for live demo portion"},
+            "supervisor": {"type": "integer", "description": "Minutes for supervisor view"},
+            "close": {"type": "integer", "description": "Minutes for close and Q&A"}
+          }
+        }
+      }
+    },
+    "provisioning_options": {
+      "type": "object",
+      "description": "Options for how data is provisioned",
+      "properties": {
+        "steps_to_run": {
+          "type": "array",
+          "description": "Which provisioning steps to execute (1-25, or 'all')",
+          "items": {"type": "integer"},
+          "default": [1, 2, 3, 4, 5, 6, 7, 8]
+        },
+        "skip_if_exists": {
+          "type": "boolean",
+          "description": "Skip creation if record already exists",
+          "default": true
+        },
+        "export_ids": {
+          "type": "boolean",
+          "description": "Export created record IDs to data/ folder",
+          "default": true
+        },
+        "dry_run": {
+          "type": "boolean",
+          "description": "Generate config without actually provisioning",
+          "default": false
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Tracking metadata",
+      "properties": {
+        "created_by": {"type": "string"},
+        "created_date": {"type": "string", "format": "date"},
+        "demo_date": {"type": "string", "format": "date"},
+        "project_id": {"type": "string", "description": "RAPP project ID if applicable"},
+        "notes": {"type": "string"}
+      }
+    }
+  },
+  "examples": [
+    {
+      "customer": {
+        "name": "Otis Elevator",
+        "industry": "elevator_service",
+        "brands": ["Otis"],
+        "region": "EMEA"
+      },
+      "discovery": {
+        "use_case": "telephony_screen_pop",
+        "channels": ["phone"],
+        "agent_count": 35,
+        "current_system": "Ring Central",
+        "pain_points": ["No screen pop", "Manual data lookup", "No customer context"]
+      },
+      "data_sources": {
+        "website": "https://www.otis.com",
+        "products_page": "https://www.otis.com/en/products",
+        "support_page": "https://www.otis.com/en/contact"
+      },
+      "demo_requirements": {
+        "tiers": [
+          {"name": "Premium", "sla_first_response_minutes": 60, "sla_resolution_minutes": 240},
+          {"name": "Standard", "sla_first_response_minutes": 120, "sla_resolution_minutes": 480},
+          {"name": "Basic", "sla_first_response_minutes": 240, "sla_resolution_minutes": 1440}
+        ],
+        "case_types": ["entrapment", "out_of_service", "maintenance", "modernization"],
+        "hero_scenario": {
+          "name": "Screen Pop Demo",
+          "description": "Incoming call shows full customer context, open cases, service history",
+          "customer_name": "Sarah Mitchell",
+          "customer_phone": "+1-555-0147"
+        },
+        "hot_words": ["entrapment", "stuck", "emergency", "injury", "safety"]
+      },
+      "demo_story": {
+        "agent_persona": {
+          "name": "Alex",
+          "role": "Service Representative"
+        },
+        "characters": [
+          {"name": "Sarah Mitchell", "role": "Building Manager", "account": "Empire State Building", "channel": "phone", "scenario": "elevator entrapment"},
+          {"name": "Mike Chen", "role": "Maintenance Lead", "account": "Rockefeller Center", "channel": "chat", "scenario": "maintenance inquiry"}
+        ],
+        "key_messages": [
+          "Instant customer recognition - no asking for account numbers",
+          "Complete context on screen before saying hello",
+          "All channels visible in unified timeline"
+        ]
+      },
+      "metadata": {
+        "demo_date": "2026-03-20",
+        "notes": "EMEA CCaaS replacement demo - focus on telephony"
+      }
+    }
+  ]
+}

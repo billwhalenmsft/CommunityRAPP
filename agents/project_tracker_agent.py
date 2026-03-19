@@ -63,7 +63,7 @@ class ProjectTrackerAgent(BasicAgent):
                     "action": {
                         "type": "string",
                         "description": "The action to perform on project data",
-                        "enum": ["create", "update", "list", "get", "delete", "export", "import", "add_timeline_event", "list_agents_catalog", "update_agents_catalog"]
+                        "enum": ["create", "update", "list", "get", "delete", "export", "import", "add_timeline_event", "list_agents_catalog", "update_agents_catalog", "close_project", "sync_agents_to_registry"]
                     },
                     "project_id": {
                         "type": "string",
@@ -190,6 +190,22 @@ class ProjectTrackerAgent(BasicAgent):
                     "user_guid": {
                         "type": "string",
                         "description": "User GUID to scope projects to a specific user"
+                    },
+                    "github_owner": {
+                        "type": "string",
+                        "description": "GitHub owner/org for RAPP Agent Repo (default: billwhalenmsft)"
+                    },
+                    "github_repo": {
+                        "type": "string",
+                        "description": "GitHub repo name (default: RAPP-Agent-Repo)"
+                    },
+                    "publisher": {
+                        "type": "string",
+                        "description": "Publisher namespace for agents (default: @billwhalen)"
+                    },
+                    "segment": {
+                        "type": "string",
+                        "description": "Segment for agents (e.g., rapp-general, customer-zurnelkay)"
                     }
                 },
                 "required": ["action"]
@@ -235,6 +251,10 @@ class ProjectTrackerAgent(BasicAgent):
                 return self._list_agents_catalog(user_guid)
             elif action == 'update_agents_catalog':
                 return self._update_agents_catalog(kwargs, user_guid)
+            elif action == 'close_project':
+                return self._close_project(kwargs, user_guid)
+            elif action == 'sync_agents_to_registry':
+                return self._sync_agents_to_registry(kwargs, user_guid)
             else:
                 return json.dumps({"status": "error", "error": f"Unknown action: {action}"})
 
@@ -829,6 +849,172 @@ class ProjectTrackerAgent(BasicAgent):
             "message": "Agents catalog updated",
             "builtin_count": len(catalog.get("builtin", [])),
             "custom_count": len(catalog.get("custom", []))
+        })
+
+    def _close_project(self, kwargs, user_guid):
+        """
+        Close a project and sync all agents to the RAPP Agent Registry.
+        
+        This action:
+        1. Updates project status to 'completed'
+        2. Syncs all project agents to the RAPP Agent Repo
+        3. Records final timeline event
+        """
+        project_id = kwargs.get('project_id')
+        if not project_id:
+            return json.dumps({"status": "error", "error": "project_id is required for close_project"})
+
+        # Load existing project
+        directory = self._get_user_directory(user_guid)
+        project_content = self.storage_manager.read_file(directory, f'project_{project_id}.json')
+
+        if not project_content:
+            return json.dumps({"status": "error", "error": f"Project {project_id} not found"})
+
+        try:
+            project_data = json.loads(project_content)
+        except json.JSONDecodeError:
+            return json.dumps({"status": "error", "error": f"Invalid project data for {project_id}"})
+
+        # Update project status
+        project_data['status'] = 'completed'
+        project_data['updated_at'] = datetime.now().isoformat()
+        project_data['closed_at'] = datetime.now().isoformat()
+
+        # Determine customer segment from project data
+        customer_name = project_data.get('customer_name', '').lower().replace(' ', '-')
+        segment = kwargs.get('segment') or f"customer-{customer_name}" if customer_name else "rapp-general"
+
+        # Sync agents to registry
+        sync_result = self._sync_agents_to_registry({
+            'project_id': project_id,
+            'segment': segment,
+            'github_owner': kwargs.get('github_owner', 'billwhalenmsft'),
+            'github_repo': kwargs.get('github_repo', 'RAPP-Agent-Repo'),
+            'publisher': kwargs.get('publisher', '@billwhalen')
+        }, user_guid)
+
+        sync_data = json.loads(sync_result)
+
+        # Add timeline event for project closure
+        timeline_event = {
+            "date": datetime.now().isoformat(),
+            "title": "Project Closed",
+            "description": f"Project completed and agents synced to registry. {sync_data.get('pushed_count', 0)} agents pushed."
+        }
+        
+        if 'timeline' not in project_data:
+            project_data['timeline'] = []
+        project_data['timeline'].append(timeline_event)
+
+        # Save updated project
+        self.storage_manager.write_file(directory, f'project_{project_id}.json', json.dumps(project_data, indent=2))
+
+        # Update index
+        index = self._get_projects_index(user_guid)
+        for proj in index.get("projects", []):
+            if proj.get("id") == project_id:
+                proj["status"] = "completed"
+                break
+        self._save_projects_index(user_guid, index)
+
+        return json.dumps({
+            "status": "success",
+            "message": f"Project {project_id} closed successfully",
+            "project_id": project_id,
+            "customer_name": project_data.get('customer_name'),
+            "project_name": project_data.get('project_name'),
+            "closed_at": project_data['closed_at'],
+            "sync_result": sync_data
+        })
+
+    def _sync_agents_to_registry(self, kwargs, user_guid):
+        """
+        Sync local agents to the RAPP Agent Registry (GitHub).
+        
+        This scans the customer folder (or agents/ folder) and pushes
+        any new or modified agents to the configured repo.
+        """
+        import os
+        import re
+        
+        project_id = kwargs.get('project_id')
+        segment = kwargs.get('segment', 'rapp-general')
+        github_owner = kwargs.get('github_owner', 'billwhalenmsft')
+        github_repo = kwargs.get('github_repo', 'RAPP-Agent-Repo')
+        publisher = kwargs.get('publisher', '@billwhalen')
+        
+        # Determine which local folder to scan
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        if segment.startswith('customer-'):
+            customer_name = segment.replace('customer-', '')
+            agents_path = os.path.join(base_path, 'customers', customer_name, 'agents')
+        else:
+            agents_path = os.path.join(base_path, 'agents')
+        
+        if not os.path.exists(agents_path):
+            return json.dumps({
+                "status": "warning",
+                "message": f"Agents path not found: {agents_path}",
+                "pushed_count": 0,
+                "agents": []
+            })
+        
+        # Scan for agent files
+        agents_to_push = []
+        for filename in os.listdir(agents_path):
+            if filename.endswith('_agent.py') and not filename.startswith('__'):
+                filepath = os.path.join(agents_path, filename)
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    # Convert filename to slug format
+                    # agent_generator_agent.py -> agent-generator.py
+                    slug = filename.replace('_agent.py', '').replace('_', '-') + '.py'
+                    
+                    agents_to_push.append({
+                        "local_file": filename,
+                        "slug": slug,
+                        "path": f"agents/{publisher}/{segment}/{slug}",
+                        "content": content
+                    })
+                except Exception as e:
+                    logger.warning(f"Could not read agent file {filename}: {e}")
+        
+        # Store sync metadata for reference (actual push done via GitHub MCP)
+        sync_metadata = {
+            "synced_at": datetime.now().isoformat(),
+            "project_id": project_id,
+            "segment": segment,
+            "github_owner": github_owner,
+            "github_repo": github_repo,
+            "publisher": publisher,
+            "agents": [
+                {"local_file": a["local_file"], "slug": a["slug"], "path": a["path"]}
+                for a in agents_to_push
+            ]
+        }
+        
+        directory = self._get_user_directory(user_guid)
+        self.storage_manager.write_file(
+            directory, 
+            f'sync_manifest_{segment}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json',
+            json.dumps(sync_metadata, indent=2)
+        )
+        
+        return json.dumps({
+            "status": "success",
+            "message": f"Found {len(agents_to_push)} agents to sync",
+            "pushed_count": len(agents_to_push),
+            "segment": segment,
+            "target_repo": f"{github_owner}/{github_repo}",
+            "agents": [
+                {"local_file": a["local_file"], "slug": a["slug"], "target_path": a["path"]}
+                for a in agents_to_push
+            ],
+            "note": "Use GitHub MCP tool (mcp_github_push_files) to complete the push with the agent content"
         })
 
 

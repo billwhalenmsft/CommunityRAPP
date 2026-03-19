@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Otis Elevator Company — Data Validation Report</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #0078D4; }
+        .score { font-size: 2rem; font-weight: 700; color: #A4262C; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background: #F3F2F1; text-align: left; padding: 12px; font-weight: 600; }
+        td { padding: 10px 12px; border-bottom: 1px solid #EDEBE9; }
+        tr:hover { background: #F9F9F9; }
+    </style>
+</head>
+<body>
+    <h1>📋 Data Validation Report</h1>
+    <p><strong>Customer:</strong> Otis Elevator Company</p>
+    <p><strong>Generated:</strong> 2026-03-15 15:12</p>
+
+    <div class="score">Score: 6/9 checks passed</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Check</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            <tr>
+                <td>Accounts</td>
+                <td>At least 5 accounts exist</td>
+                <td style="text-align:center; font-size:1.2rem;">✅</td>
+                <td>10 accounts found</td>
+            </tr>
+            <tr>
+                <td>Accounts</td>
+                <td>Hero account has tier assigned</td>
+                <td style="text-align:center; font-size:1.2rem;">✅</td>
+                <td>Tier: 1</td>
+            </tr>
+            <tr>
+                <td>Contacts</td>
+                <td>At least 5 contacts exist</td>
+                <td style="text-align:center; font-size:1.2rem;">✅</td>
+                <td>7 contacts found</td>
+            </tr>
+            <tr>
+                <td>Contacts</td>
+                <td>Contacts linked to accounts</td>
+                <td style="text-align:center; font-size:1.2rem;">✅</td>
+                <td>7/7 linked</td>
+            </tr>
+            <tr>
+                <td>Contacts</td>
+                <td>Contacts have phone numbers</td>
+                <td style="text-align:center; font-size:1.2rem;">✅</td>
+                <td>7/7 have phone</td>
+            </tr>
+            <tr>
+                <td>Cases</td>
+                <td>At least 10 demo cases exist</td>
+                <td style="text-align:center; font-size:1.2rem;">❌</td>
+                <td>6 cases found</td>
+            </tr>
+            <tr>
+                <td>Cases</td>
+                <td>Hero case designated</td>
+                <td style="text-align:center; font-size:1.2rem;">⚠️</td>
+                <td>No hero case designated</td>
+            </tr>
+            <tr>
+                <td>Cases</td>
+                <td>Cases linked to accounts</td>
+                <td style="text-align:center; font-size:1.2rem;">✅</td>
+                <td>6/6 linked</td>
+            </tr>
+            <tr>
+                <td>Knowledge</td>
+                <td>At least 5 KB articles exist</td>
+                <td style="text-align:center; font-size:1.2rem;">⚠️</td>
+                <td>0 articles found</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Summary</h2>
+    <ul>
+        <li>Accounts: 10</li>
+        <li>Contacts: 7</li>
+        <li>Cases: 6</li>
+        <li>KB Articles: 0</li>
+    </ul>
+</body>
+</html>

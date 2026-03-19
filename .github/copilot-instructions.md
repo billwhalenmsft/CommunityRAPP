@@ -23,3 +23,11 @@ Use this mapping to know the current vs. former names—so you can correctly int
 - When troubleshooting issues, invoke **troubleshoot** tool if available.
 - Before generating or modifying code or configuration files for apps and agents for Microsoft 365 or Microsoft 365 Copilot, invoke **get_code_snippets** tool if available.
 - Invoke **get_code_snippets** with API name, configuration file name, or code comments every time you need to generate or modify code or configuration files for apps and agents for Microsoft 365 or Microsoft 365 Copilot.
+
+# Copilot Studio Skills Plugin Integration
+- This repo integrates with [Skills for Copilot Studio](https://github.com/microsoft/skills-for-copilot-studio) — a terminal plugin for authoring, testing, and troubleshooting Copilot Studio agents via YAML.
+- When building or modifying Copilot Studio agents, use `/copilot-studio:author` (create/edit YAML), `/copilot-studio:test` (test published agents), `/copilot-studio:troubleshoot` (debug routing/validation).
+- RAPP-transpiled agents in `transpiled/` can be refined with the plugin after cloning via the VS Code Copilot Studio Extension.
+- Cloned agents live in `copilotstudioclones/`. The plugin operates on `agent.mcs.yml` and `topics/*.mcs.yml` files.
+- For programmatic bulk deployment, use `utils/copilot_studio_api.py`. For per-agent authoring and refinement, use the plugin.
+- Full integration guide: `docs/COPILOT_STUDIO_SKILLS_INTEGRATION.md`

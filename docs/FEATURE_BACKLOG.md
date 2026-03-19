@@ -1,6 +1,6 @@
 # RAPP Feature Backlog
 
-**Last Updated:** January 27, 2026  
+**Last Updated:** March 14, 2026  
 **Maintained By:** Bill Whalen
 
 ---
@@ -12,10 +12,12 @@
 | P0 | [RAPP Studio (No-Code Builder)](#1-rapp-studio-no-code-agent-builder) | 🔵 Planning | XL | ⭐⭐⭐⭐⭐ |
 | P1 | [Event-Driven Triggers](#2-event-driven-agent-triggers) | 🔵 Planning | L | ⭐⭐⭐⭐⭐ |
 | P1 | [Agent Memory Enhancement](#3-agent-memory-enhancement) | 🔵 Planning | M | ⭐⭐⭐⭐ |
+| P1 | [D365 Demo Orchestration](#9-d365-demo-orchestration) | 🟢 **Implemented** | M | ⭐⭐⭐⭐⭐ |
 | P2 | [Agent A/B Testing Framework](#4-agent-ab-testing-framework) | 🔵 Planning | L | ⭐⭐⭐⭐ |
 | P2 | [Multi-Modal Agent Support](#5-multi-modal-agent-support) | 🔵 Planning | L | ⭐⭐⭐⭐ |
 | P2 | [Agent Versioning & Rollback](#6-agent-versioning--rollback) | 🔵 Planning | M | ⭐⭐⭐ |
 | P3 | [Self-Improving Agents](#7-self-improving-agents) | 🔵 Planning | XL | ⭐⭐⭐⭐⭐ |
+| P2 | [Programmatic Video Generation](#8-programmatic-video-generation) | 🔵 Planning | M | ⭐⭐⭐⭐ |
 
 **Legend:** 🔵 Planning | 🟡 In Progress | 🟢 Complete | ⚪ On Hold
 
@@ -537,6 +539,323 @@ Agents that learn from feedback and automatically optimize their performance.
 │   Collect    │     │   Analyze    │     │   Optimize   │
 │   Feedback   │────▶│   Patterns   │────▶│   Prompts    │
 └──────────────┘     └──────────────┘     └──────────────┘
+```
+
+---
+
+## 8. Programmatic Video Generation
+
+### Vision
+Automate creation of demo videos, training content, and customer-facing presentations using code-driven video generation tools.
+
+### Use Cases
+| Use Case | Description | Output |
+|----------|-------------|--------|
+| **Demo Videos** | Combine screen recordings with branded overlays | MP4 with intro/outro |
+| **Feature Walkthroughs** | Auto-generate from demo execution guides | Narrated video |
+| **Customer Onboarding** | Personalized videos with customer branding | Shareable link |
+| **Training Content** | Step-by-step tutorials from HTML guides | Video series |
+| **Release Highlights** | Changelog to feature showcase | Social-ready clips |
+
+### Technology Options
+
+#### Option A: FFmpeg (CLI-Based)
+```bash
+# Combine intro + screen recording + outro with text overlays
+ffmpeg -i intro.mp4 -i recording.mp4 -i outro.mp4 \
+  -filter_complex "[0:v][1:v][2:v]concat=n=3:v=1:a=1[v][a]" \
+  -map "[v]" -map "[a]" output.mp4
+```
+
+**Pros:**
+- Free, open source
+- Extremely powerful and flexible
+- No external dependencies
+- Works offline
+
+**Cons:**
+- Steep learning curve
+- Complex command syntax
+- Limited animation capabilities
+
+#### Option B: Remotion (React-Based)
+```typescript
+// components/DemoVideo.tsx
+import { Composition } from 'remotion';
+
+export const DemoVideo: React.FC<{ customerName: string }> = ({ customerName }) => {
+  return (
+    <AbsoluteFill>
+      <Sequence from={0} durationInFrames={90}>
+        <BrandedIntro logo={`/logos/${customerName}.png`} />
+      </Sequence>
+      <Sequence from={90} durationInFrames={300}>
+        <ScreenRecording src="/recordings/demo.webm" />
+        <FeatureCallouts data={demoSteps} />
+      </Sequence>
+      <Sequence from={390} durationInFrames={60}>
+        <CallToAction text="Schedule a Demo" />
+      </Sequence>
+    </AbsoluteFill>
+  );
+};
+```
+
+**Pros:**
+- React component model (familiar to web devs)
+- Type-safe with TypeScript
+- Dynamic data-driven videos
+- Rich animation capabilities
+- Server-side rendering
+
+**Cons:**
+- Requires Node.js runtime
+- Steeper initial setup
+- Video rendering can be slow
+
+### Proposed Architecture
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Video Generation Pipeline                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌───────────────┐     ┌───────────────┐     ┌───────────────┐  │
+│  │ Demo Guide    │────▶│ Video Script  │────▶│ Render Engine │  │
+│  │ (HTML/JSON)   │     │ Generator     │     │ (FFmpeg/      │  │
+│  └───────────────┘     └───────────────┘     │  Remotion)    │  │
+│                                              └───────┬───────┘  │
+│  ┌───────────────┐     ┌───────────────┐             │          │
+│  │ Screen        │────▶│ Asset         │─────────────┤          │
+│  │ Recordings    │     │ Manager       │             │          │
+│  └───────────────┘     └───────────────┘             │          │
+│                                                      ▼          │
+│  ┌───────────────┐     ┌───────────────┐     ┌───────────────┐  │
+│  │ Brand Assets  │────▶│ Template      │────▶│ Final Video   │  │
+│  │ (logos,fonts) │     │ Library       │     │ (MP4)         │  │
+│  └───────────────┘     └───────────────┘     └───────────────┘  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Integration with RAPP
+
+#### Demo Guide → Video Pipeline
+```python
+# Proposed: video_generator_agent.py
+class VideoGeneratorAgent(BasicAgent):
+    def __init__(self):
+        self.name = 'VideoGenerator'
+        self.metadata = {
+            "name": self.name,
+            "description": "Generates demo videos from HTML guides and recordings",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": ["generate_from_guide", "create_intro", "add_overlays"]
+                    },
+                    "guide_path": {"type": "string"},
+                    "customer_name": {"type": "string"},
+                    "brand_colors": {"type": "object"}
+                }
+            }
+        }
+
+    def perform(self, action, guide_path=None, customer_name=None, **kwargs):
+        if action == "generate_from_guide":
+            # Parse HTML guide for steps
+            # Match to screen recordings
+            # Generate video with overlays
+            pass
+```
+
+### Implementation Phases
+
+#### Phase 1: FFmpeg Foundation (2 weeks)
+- [ ] Create FFmpeg wrapper utilities
+- [ ] Implement basic video concatenation
+- [ ] Add text overlay support
+- [ ] Build intro/outro templates
+- [ ] Create CLI tool for manual video generation
+
+#### Phase 2: Remotion Integration (3 weeks)
+- [ ] Set up Remotion project structure
+- [ ] Create reusable video components
+- [ ] Build customer branding system
+- [ ] Implement demo step visualization
+- [ ] Add callout/highlight animations
+
+#### Phase 3: RAPP Integration (2 weeks)
+- [ ] Create VideoGeneratorAgent
+- [ ] Parse demo execution guides (HTML → JSON)
+- [ ] Auto-detect screen recordings
+- [ ] Generate video from guide metadata
+- [ ] Add to RAPP Studio asset generation
+
+### Customer-Specific Templates
+
+| Customer | Brand Colors | Intro Style | Outro CTA |
+|----------|--------------|-------------|------------|
+| Otis | Navy #003366, Gold #C4A000 | Elevator animation | "Elevate Your Service" |
+| Zurn Elkay | Red #A4262C, Blue #0078D4 | Water flow effect | "Flow With Confidence" |
+| Carrier | Blue #003B70, Orange #FF6B35 | HVAC particles | "Cool Innovation" |
+
+### Success Metrics
+- Time to create demo video: < 15 minutes (vs. 2+ hours manual)
+- Video quality score: Professional grade (1080p, consistent branding)
+- Reusability: Templates work across 80%+ of demo scenarios
+
+---
+
+## 9. D365 Demo Orchestration
+
+### Vision
+**Turnkey D365 Customer Service demo setup** — provide customer inputs (name, industry, use case, websites) and automatically generate complete demo environments with accounts, contacts, cases, KB articles, queues, SLAs, and more.
+
+### Status: 🟢 **IMPLEMENTED** (March 14, 2026)
+
+### Problem Statement
+Setting up a complete D365 Customer Service demo currently requires:
+- Manual account/contact creation
+- Hardcoded demo data (copied from Zurn)
+- Knowledge of 25+ provisioning scripts
+- Hours of configuration per customer
+
+**Goal:** Reduce demo prep from hours to minutes with intelligent automation.
+
+### Solution Components
+
+#### 9.1 Input Schema (`d365/schemas/d365_input_schema.json`)
+Standardized input format capturing:
+```json
+{
+  "customer": {
+    "name": "Otis Elevator",
+    "industry": "elevator_service",
+    "brands": ["Otis"],
+    "region": "EMEA"
+  },
+  "discovery": {
+    "use_case": "telephony_screen_pop",
+    "channels": ["phone"],
+    "agent_count": 35,
+    "pain_points": ["No screen pop", "Manual data lookup"]
+  },
+  "demo_requirements": {
+    "tiers": [
+      {"name": "Premium", "sla_first_response_minutes": 60},
+      {"name": "Standard", "sla_first_response_minutes": 120}
+    ],
+    "case_types": ["entrapment", "maintenance"],
+    "hero_scenario": {...}
+  }
+}
+```
+
+#### 9.2 Extended D365DemoPrepAgent
+New actions in `agents/d365_demo_prep_agent.py`:
+
+| Action | Description |
+|--------|-------------|
+| `generate_config_from_inputs` | Creates environment.json + demo-data.json from input schema |
+| `generate_demo_data` | Uses GPT-4o to generate realistic, contextual demo data |
+| `orchestrate_full_setup` | End-to-end: inputs → config → data generation → D365 provisioning |
+
+#### 9.3 GPT-4o Data Generator (`d365/utils/d365_data_generator.py`)
+Intelligent demo data generation with:
+- **Industry templates** — elevator_service, plumbing_manufacturing, hvac, medical_devices, etc.
+- **Regional awareness** — NA/EMEA/APAC phone formats, addresses, naming conventions
+- **Tiered accounts** — Platinum/Gold/Silver customers with appropriate SLAs
+- **Realistic contacts** — Region-appropriate names, titles, email addresses
+- **Contextual cases** — Industry-specific scenarios (entrapment, leaks, outages)
+- **KB articles** — GPT-4o generated content relevant to customer's domain
+
+### Architecture
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    D365 Demo Orchestration                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     │
+│  │   Customer   │────▶│  Input       │────▶│  Config      │     │
+│  │   Inputs     │     │  Schema      │     │  Generator   │     │
+│  │   (JSON)     │     │  Validation  │     │              │     │
+│  └──────────────┘     └──────────────┘     └──────┬───────┘     │
+│                                                   │              │
+│                                                   ▼              │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     │
+│  │  Industry    │────▶│  GPT-4o      │────▶│  demo-data   │     │
+│  │  Templates   │     │  Generator   │     │  .json       │     │
+│  └──────────────┘     └──────────────┘     └──────┬───────┘     │
+│                                                   │              │
+│                                                   ▼              │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     │
+│  │  PowerShell  │────▶│  Dataverse   │────▶│  D365 Org    │     │
+│  │  Scripts     │     │  API         │     │  (Populated) │     │
+│  └──────────────┘     └──────────────┘     └──────────────┘     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Usage Examples
+
+#### Quick Start: Generate Config
+```python
+# Via RAPP agent
+D365DemoPrep action="generate_config_from_inputs" 
+  customer_name="acme" 
+  d365_org_url="https://org123.crm.dynamics.com"
+  inputs={
+    "customer": {"name": "ACME Corp", "industry": "manufacturing"},
+    "demo_requirements": {"tiers": [{"name": "Gold"}, {"name": "Silver"}]}
+  }
+```
+
+#### Full Orchestration
+```python
+# End-to-end setup
+D365DemoPrep action="orchestrate_full_setup"
+  customer_name="acme"
+  d365_org_url="https://org123.crm.dynamics.com"
+  inputs={...full input schema...}
+  steps_to_run=[1, 2, 3, 7, 8]  # Accounts, Contacts, Products, Cases, KB
+```
+
+### Industry Templates
+
+| Industry | Account Types | Case Types | KB Topics |
+|----------|--------------|------------|-----------|
+| `elevator_service` | Building Mgmt, Property Dev, Hospital | Entrapment, Maintenance, Modernization | Safety, Emergency, SLAs |
+| `plumbing_manufacturing` | Distributor, Contractor, Municipal | Order, Warranty, Technical | Installation, Specs, Returns |
+| `hvac` | HVAC Contractor, Property Mgmt | System, Maintenance, Emergency | Energy, Diagnostics, Refrigerant |
+| `medical_devices` | Hospital, Clinic, Research Lab | Device, Calibration, Compliance | Regulatory, Maintenance, Training |
+| `telecommunications` | Enterprise, SMB, Government | Network, Billing, Outage | Configuration, Troubleshooting, Security |
+
+### Files Created
+
+| Path | Purpose |
+|------|---------|
+| `d365/schemas/d365_input_schema.json` | JSON Schema for customer inputs |
+| `d365/utils/d365_data_generator.py` | GPT-4o powered data generator |
+| `agents/d365_demo_prep_agent.py` | Extended with 3 new actions |
+| `customers/{name}/d365/config/inputs.json` | Saved customer inputs |
+| `customers/{name}/d365/config/environment.json` | Generated D365 config |
+| `customers/{name}/d365/config/demo-data.json` | GPT-4o generated demo data |
+
+### Success Metrics
+| Metric | Before | After |
+|--------|--------|-------|
+| Time to demo-ready D365 | 4+ hours | < 30 minutes |
+| Data realism | Copy/paste from Zurn | Industry-specific, GPT-4o generated |
+| Customization effort | Manual edits | Input schema changes |
+| Consistency | Varies by person | Standardized templates |
+
+### Future Enhancements
+- [ ] Website scraping for product data (`fetch_webpage` integration)
+- [ ] Voice-driven input ("Set up a demo for Otis, they're in elevator service...")
+- [ ] Copilot Studio agent for non-technical users
+- [ ] Integration with RAPP Pipeline for full demo workflow
        │                    │                    │
        ▼                    ▼                    ▼
   • Thumbs up/down    • Cluster similar    • Generate prompt

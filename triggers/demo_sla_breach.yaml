@@ -1,0 +1,28 @@
+# Demo Action: Trigger SLA Breach via RAPP
+# Use via: POST /api/trigger/manual/demo_sla_breach
+# Or via: POST /api/trigger/copilot-studio with agent/action
+
+name: demo_sla_breach
+description: Simulate an SLA breach on a D365 case with toast notification
+trigger_type: manual
+enabled: true
+
+target_agent: d365_demo_prep
+target_action: run_powershell
+
+message_template: |
+  Trigger an SLA breach simulation.
+  Case: {{case_number}}
+  Breach type: {{breach_type}}
+
+body_mapping:
+  action: run_powershell
+  case_number: case_number
+  case_id: case_id
+  breach_type: breach_type
+  send_notification: send_notification
+
+filters: []
+
+max_retries: 1
+retry_delay_seconds: 5

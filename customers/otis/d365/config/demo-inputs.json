@@ -1,0 +1,80 @@
+{
+  "$schema": "../../../d365/schemas/demo_input_schema.json",
+  "customer": {
+    "name": "Otis Elevator",
+    "industry": "elevator_service",
+    "brands": ["Otis"],
+    "region": "EMEA",
+    "headquarters_country": "United Kingdom"
+  },
+  "data_sources": {
+    "website": "https://www.otis.com",
+    "products_page": "https://www.otis.com/en/products",
+    "support_page": "https://www.otis.com/en/customer-resources"
+  },
+  "discovery_context": {
+    "use_case": "telephony_screen_pop",
+    "channels": ["phone"],
+    "agent_count": 35,
+    "current_system": "Ring Central",
+    "pain_points": [
+      "No screen pop - agents manually searching for customer info",
+      "No service history visibility during calls",
+      "Multiple systems to check equipment status",
+      "Long handle times due to context gathering"
+    ],
+    "demo_date": "2025-03-20",
+    "stakeholders": [
+      {"name": "Contact Center Director", "title": "Director of Customer Experience", "focus_area": "Agent efficiency"},
+      {"name": "IT Lead", "title": "Senior IT Manager", "focus_area": "Integration with existing systems"},
+      {"name": "Operations Manager", "title": "VP Operations EMEA", "focus_area": "SLA compliance"}
+    ]
+  },
+  "demo_requirements": {
+    "customer_tiers": ["Premium Service", "Standard Service", "Basic Service"],
+    "case_types": [
+      "entrapment",
+      "out_of_service", 
+      "maintenance_request",
+      "modernization_inquiry",
+      "callback_request",
+      "billing_inquiry"
+    ],
+    "hero_scenario": {
+      "title": "Emergency Entrapment - Canary Wharf Tower",
+      "description": "Premium service customer with passengers trapped in elevator. Agent receives call, screen pops with full building context, equipment details, service history, and priority SLA indicator. Demonstrates: instant context, priority routing, case creation with pre-populated data.",
+      "customer_name": "Canary Wharf Group",
+      "contact_name": "Sarah Mitchell",
+      "priority": "Critical"
+    },
+    "hot_words": ["Entrapment", "Trapped", "Emergency", "Safety Hazard", "Fire", "Stuck"],
+    "sla_settings": {
+      "first_response_minutes": 15,
+      "resolution_minutes": 240
+    },
+    "account_count": 12,
+    "contact_count": 15,
+    "case_count": 25,
+    "kb_article_count": 10
+  },
+  "products": [
+    {"name": "Gen3 Elevator System", "sku": "OTIS-GEN3-001", "category": "New Equipment", "price": 150000, "description": "Next-generation high-rise elevator system"},
+    {"name": "SkyRise Escalator", "sku": "OTIS-ESC-001", "category": "New Equipment", "price": 85000, "description": "Commercial escalator for high-traffic areas"},
+    {"name": "Compass Destination System", "sku": "OTIS-COMP-001", "category": "Modernization", "price": 45000, "description": "Intelligent destination dispatch system"},
+    {"name": "Premium Service Contract", "sku": "OTIS-SVC-PREM", "category": "Service Contract", "price": 12000, "description": "24/7 priority response, quarterly inspections"},
+    {"name": "Standard Service Contract", "sku": "OTIS-SVC-STD", "category": "Service Contract", "price": 6000, "description": "Business hours support, annual inspection"},
+    {"name": "Basic Service Contract", "sku": "OTIS-SVC-BASIC", "category": "Service Contract", "price": 3000, "description": "On-demand service, basic coverage"}
+  ],
+  "output_options": {
+    "generate_accounts": true,
+    "generate_contacts": true,
+    "generate_products": true,
+    "generate_cases": true,
+    "generate_queues": true,
+    "generate_slas": true,
+    "generate_kb_articles": true,
+    "generate_entitlements": true,
+    "generate_routing_rules": false,
+    "use_us_phone_numbers": true
+  }
+}

@@ -1,0 +1,523 @@
+{
+  "heroCases": [
+    {
+      "id": "HERO-001",
+      "title": "Entrapment - Riverside Medical Centre Elevator 3",
+      "caseNumber": "CAS-19121-P9C5M0",
+      "d365IncidentId": "bfb12275-b420-f111-8342-7ced8d18c8d7",
+      "priority": "Critical",
+      "status": "Active",
+      "statusReason": "In Progress",
+      "origin": "Phone",
+      "createdOn": "2026-03-15T09:23:00Z",
+      "slaStatus": "On Track",
+      "slaDeadline": "2026-03-15T10:23:00Z",
+      "description": "Patient transport staff member trapped in Elevator 3 between floors 2 and 3. Bed elevator essential for patient movement. Hospital security on scene. Staff member is calm but concerned about patients waiting for transport.",
+      "account": {
+        "name": "Riverside Medical Centre",
+        "accountNumber": "OTIS-UK-003",
+        "tier": "Tier 1 - Premium Service",
+        "contractType": "Premium Service - 24/7",
+        "totalUnits": 18,
+        "address": "Wythenshawe Hospital Campus, Manchester M23 9LT",
+        "annualContractValue": "£185,000",
+        "slaResponseTime": "1 hour"
+      },
+      "contact": {
+        "firstName": "David",
+        "lastName": "Chen",
+        "title": "Facilities Manager",
+        "phone": "+44 161 555 0103",
+        "email": "david.chen@riversidemedical.nhs.uk",
+        "preferredChannel": "Phone"
+      },
+      "equipment": {
+        "unitNumber": "RM-E03",
+        "serialNumber": "G2P-RM-003",
+        "model": "Gen2 Premier (Bed Elevator)",
+        "installDate": "2019-03-15",
+        "lastMaintenanceDate": "2026-03-10",
+        "nextScheduledMaintenance": "2026-04-10",
+        "location": "Building A - Main Hospital",
+        "floors": "G, 1-6",
+        "capacity": "2500 kg / Bed + 2 attendants"
+      },
+      "timeline": [
+        {
+          "type": "Phone Call",
+          "direction": "Inbound",
+          "timestamp": "2026-03-15T09:23:00Z",
+          "duration": "00:02:45",
+          "subject": "Initial entrapment report",
+          "notes": "David Chen (Facilities Manager) reported staff member trapped in Elevator 3. Hospital security on scene. Staff member responsive. This is a bed elevator - patient transport affected."
+        },
+        {
+          "type": "Note",
+          "timestamp": "2026-03-15T09:25:30Z",
+          "subject": "Technician Dispatch - EMERGENCY",
+          "notes": "Healthcare SLA - 1 hour response. Contacted Manchester dispatch. Ian Williams (Tech ID: OT-UK-2847) is 8 minutes away at nearby clinic. Rerouting immediately."
+        },
+        {
+          "type": "Email",
+          "direction": "Outbound",
+          "timestamp": "2026-03-15T09:27:00Z",
+          "to": "david.chen@riversidemedical.nhs.uk",
+          "subject": "Technician ETA - Elevator 3 Entrapment - PRIORITY RESPONSE",
+          "body": "Mr. Chen, Technician Ian Williams is en route. ETA 8 minutes. Please ensure security maintains intercom contact with the trapped person. We'll call back in 5 minutes with update. Given this is a bed elevator, we're treating this as highest priority."
+        },
+        {
+          "type": "Phone Call",
+          "direction": "Outbound",
+          "timestamp": "2026-03-15T09:32:00Z",
+          "duration": "00:01:30",
+          "subject": "5-minute update call",
+          "notes": "Called David to confirm tech is 3 min out. Staff member calm. Hospital has rerouted patient transport to Elevator 4 temporarily."
+        }
+      ],
+      "relatedWorkOrder": {
+        "woNumber": "WO-2026-04521",
+        "status": "In Progress",
+        "priority": "Emergency",
+        "technicianName": "Ian Williams",
+        "technicianPhone": "+44 7700 900123",
+        "eta": "2026-03-15T09:35:00Z",
+        "skills": ["Gen2 Premier", "Emergency Response", "Healthcare"]
+      },
+      "knowledgeArticles": [
+        {
+          "title": "Entrapment Response Procedure - Gen2 Premier",
+          "articleNumber": "KB-001247",
+          "relevance": "High"
+        },
+        {
+          "title": "Healthcare Facility Emergency Protocols",
+          "articleNumber": "KB-002156",
+          "relevance": "High"
+        },
+        {
+          "title": "Manual Elevator Release - Standard Procedure",
+          "articleNumber": "KB-000892",
+          "relevance": "High"
+        }
+      ],
+      "demoNotes": "PRIMARY HERO CASE - Use this for incoming call simulation. Shows healthcare priority handling, screen pop with critical account context, and emergency dispatch. Great for demonstrating SLA urgency."
+    },
+    {
+      "id": "HERO-002",
+      "title": "Recurring Door Issue - Canary Wharf Tower A Elevator 12",
+      "caseNumber": "CAS-19122-M4V0M1",
+      "d365IncidentId": "2f9eec80-b420-f111-8341-6045bda80a72",
+      "priority": "High",
+      "status": "Active",
+      "statusReason": "Researching",
+      "origin": "Email",
+      "createdOn": "2026-03-14T14:15:00Z",
+      "slaStatus": "On Track",
+      "slaDeadline": "2026-03-15T17:15:00Z",
+      "description": "Third report this month of intermittent door closing issues on SkyRise elevator #12. Door reverses multiple times before closing, causing significant delays during morning rush. Tenants in the tower complaining loudly.",
+      "account": {
+        "name": "Canary Wharf Tower",
+        "accountNumber": "OTIS-UK-002",
+        "tier": "Tier 1 - Premium Service",
+        "contractType": "Premium Service - 24/7",
+        "totalUnits": 36,
+        "address": "1 Canada Square, London E14 5AB",
+        "annualContractValue": "£420,000",
+        "slaResponseTime": "2 hours"
+      },
+      "contact": {
+        "firstName": "Sophie",
+        "lastName": "Williams",
+        "title": "Building Operations Director",
+        "phone": "+44 20 7555 0102",
+        "email": "sophie.williams@canarywharf.com",
+        "preferredChannel": "Email"
+      },
+      "equipment": {
+        "unitNumber": "CW-E12",
+        "serialNumber": "SKY-CW-012",
+        "model": "SkyRise",
+        "installDate": "2018-06-22",
+        "lastMaintenanceDate": "2026-03-05",
+        "nextScheduledMaintenance": "2026-04-05",
+        "location": "Tower A - High-Rise Bank",
+        "floors": "L, 25-50",
+        "capacity": "1600 kg / 21 persons"
+      },
+      "timeline": [
+        {
+          "type": "Email",
+          "direction": "Inbound",
+          "timestamp": "2026-03-14T14:15:00Z",
+          "from": "sophie.williams@canarywharf.com",
+          "subject": "RE: Elevator 12 Door Issue - 3rd occurrence this month",
+          "body": "Team, this is now the third time this month we've had door issues on E12. Major tenant JPMorgan on floors 35-40 has complained formally. We need a permanent fix, not just adjustments. Please escalate."
+        },
+        {
+          "type": "Note",
+          "timestamp": "2026-03-14T14:45:00Z",
+          "subject": "Case Review - Historical Analysis",
+          "notes": "Pulled maintenance history. Two prior tickets (CAS-00798, CAS-00815) for same unit. Both times tech adjusted door operator parameters. Recurring issue suggests possible door edge sensor degradation or track alignment problem."
+        },
+        {
+          "type": "Email",
+          "direction": "Outbound",
+          "timestamp": "2026-03-14T15:30:00Z",
+          "to": "sophie.williams@canarywharf.com",
+          "cc": "field.supervisor@otis.com",
+          "subject": "RE: Elevator 12 Door Issue - Escalation & Comprehensive Inspection",
+          "body": "Sophie, I've escalated this to our Field Supervisor. We're scheduling a comprehensive door system inspection including sensor replacement and track realignment. Proposed date: March 17th during low-traffic hours (6-8 AM). Given the tenant concerns, I've also flagged this for senior management review."
+        },
+        {
+          "type": "Phone Call",
+          "direction": "Inbound",
+          "timestamp": "2026-03-15T08:00:00Z",
+          "duration": "00:05:22",
+          "subject": "Scheduling confirmation and scope expansion",
+          "notes": "Sophie confirmed March 17th works. Requested we also check units #10 and #11 in same bank while onsite. Added to work order scope. She mentioned JPMorgan lease renewal coming up - this is sensitive."
+        }
+      ],
+      "relatedCases": [
+        {
+          "caseNumber": "CAS-2026-00798",
+          "title": "Door Issue - Canary Wharf E12",
+          "status": "Resolved",
+          "resolvedDate": "2026-02-28"
+        },
+        {
+          "caseNumber": "CAS-2026-00815",
+          "title": "Door Reversal - Canary Wharf E12",
+          "status": "Resolved",
+          "resolvedDate": "2026-03-08"
+        }
+      ],
+      "relatedWorkOrder": {
+        "woNumber": "WO-2026-04489",
+        "status": "Scheduled",
+        "priority": "High",
+        "scheduledDate": "2026-03-17T06:00:00Z",
+        "technicianName": "Marcus Thompson",
+        "skills": ["SkyRise", "Door Operators", "Sensor Calibration"]
+      },
+      "knowledgeArticles": [
+        {
+          "title": "SkyRise Door Operator Troubleshooting Guide",
+          "articleNumber": "KB-002104",
+          "relevance": "High"
+        },
+        {
+          "title": "Door Edge Sensor Replacement - Step by Step",
+          "articleNumber": "KB-001876",
+          "relevance": "High"
+        }
+      ],
+      "demoNotes": "RECURRING ISSUE CASE - Shows historical case linking, pattern recognition, proactive escalation, and scheduled maintenance coordination. Good for demonstrating agent research capabilities and Similar Cases in Copilot."
+    },
+    {
+      "id": "HERO-003",
+      "title": "Modernization Inquiry - The Shard Freight Elevators",
+      "caseNumber": "CAS-19123-Q8K5Z7",
+      "d365IncidentId": "3b45bf87-b420-f111-8342-7c1e52143136",
+      "priority": "Normal",
+      "status": "Active",
+      "statusReason": "Waiting for Details",
+      "origin": "Portal",
+      "createdOn": "2026-03-15T11:00:00Z",
+      "slaStatus": "On Track",
+      "slaDeadline": "2026-03-16T11:00:00Z",
+      "description": "Customer interested in modernization options for their freight elevators. Looking to improve energy efficiency and add IoT monitoring capabilities. Requesting sales consultation.",
+      "account": {
+        "name": "The Shard London",
+        "accountNumber": "OTIS-UK-005",
+        "tier": "Tier 1 - Premium Service",
+        "contractType": "Premium Service - 24/7",
+        "totalUnits": 44,
+        "address": "32 London Bridge Street, London SE1 9SG",
+        "annualContractValue": "£580,000",
+        "slaResponseTime": "2 hours"
+      },
+      "contact": {
+        "firstName": "Michael",
+        "lastName": "Thompson",
+        "title": "VP of Building Operations",
+        "phone": "+44 20 7555 0105",
+        "email": "michael.thompson@theshard.com",
+        "preferredChannel": "Email"
+      },
+      "equipment": {
+        "unitNumber": "SHARD-FRT-01 to SHARD-FRT-03",
+        "serialNumber": "Multiple",
+        "model": "Gen2 Premier Freight (2013)",
+        "installDate": "2013-07-05",
+        "lastMaintenanceDate": "2026-03-08",
+        "nextScheduledMaintenance": "2026-04-08",
+        "location": "Service Core - Loading Dock Level",
+        "floors": "B2, B1, L, 1-5",
+        "capacity": "5000 kg"
+      },
+      "timeline": [
+        {
+          "type": "Portal Submission",
+          "timestamp": "2026-03-15T11:00:00Z",
+          "subject": "New case from customer portal",
+          "notes": "Customer submitted inquiry via self-service portal. Attached PDF with their modernization requirements document."
+        },
+        {
+          "type": "Note",
+          "timestamp": "2026-03-15T11:15:00Z",
+          "subject": "Initial Review",
+          "notes": "Reviewed requirements doc. Customer wants: 1) Regenerative drives for energy savings, 2) Otis ONE IoT monitoring, 3) Updated cab interiors. 3 freight units at approximately £150K each = £450K project opportunity. The Shard is a flagship account."
+        }
+      ],
+      "attachments": [
+        {
+          "name": "Shard_Freight_Modernization_Requirements.pdf",
+          "size": "2.4 MB",
+          "uploadedDate": "2026-03-15T11:00:00Z"
+        }
+      ],
+      "knowledgeArticles": [
+        {
+          "title": "Freight Elevator Modernization Options",
+          "articleNumber": "KB-003201",
+          "relevance": "High"
+        },
+        {
+          "title": "Otis ONE IoT Monitoring Package",
+          "articleNumber": "KB-003145",
+          "relevance": "High"
+        },
+        {
+          "title": "Regenerative Drive ROI Calculator",
+          "articleNumber": "KB-002998",
+          "relevance": "Medium"
+        }
+      ],
+      "salesOpportunity": {
+        "estimatedValue": "£450,000",
+        "stage": "Qualification",
+        "nextStep": "Schedule technical survey"
+      },
+      "demoNotes": "SALES HANDOFF CASE - Shows service-to-sales flow, attachment handling, opportunity creation, and consultation scheduling. Good for demonstrating cross-department collaboration and case routing."
+    },
+    {
+      "id": "HERO-004",
+      "title": "Billing Dispute - Marriott Hotel Extra Charges",
+      "caseNumber": "CAS-19129-N0B2P3",
+      "d365IncidentId": "156cdb1d-b520-f111-8342-7c1e520a58a1",
+      "priority": "High",
+      "status": "Active",
+      "statusReason": "On Hold",
+      "origin": "Phone",
+      "createdOn": "2026-03-14T16:30:00Z",
+      "escalated": true,
+      "escalatedTo": "Account Manager",
+      "slaStatus": "Warning",
+      "slaDeadline": "2026-03-15T16:30:00Z",
+      "description": "Customer disputing charges on recent invoice. Claims they were billed for repairs that should be covered under their service contract. Contract renewal coming up in 60 days - risk of non-renewal if not handled properly.",
+      "account": {
+        "name": "Marriott Hotel Manchester",
+        "accountNumber": "OTIS-UK-006",
+        "tier": "Tier 2 - Standard Service",
+        "contractType": "Full Maintenance",
+        "totalUnits": 8,
+        "address": "Piccadilly, Manchester M1 4LF",
+        "annualContractValue": "£42,000",
+        "contractExpiry": "2026-05-15",
+        "renewalRisk": "Medium"
+      },
+      "contact": {
+        "firstName": "Sarah",
+        "lastName": "Jenkins",
+        "title": "Director of Finance",
+        "phone": "+44 161 555 0106",
+        "email": "sarah.jenkins@marriott.com",
+        "preferredChannel": "Phone"
+      },
+      "timeline": [
+        {
+          "type": "Phone Call",
+          "direction": "Inbound",
+          "timestamp": "2026-03-14T16:30:00Z",
+          "duration": "00:09:15",
+          "subject": "Billing dispute - Invoice #INV-2026-03-4521",
+          "notes": "Sarah Jenkins called regarding £1,800 charge for door operator motor replacement on Lift 2. Claims this should be covered under Full Maintenance contract. Reviewed contract - she's correct, door operators ARE covered. This appears to be a billing error. Sarah mentioned contract renewal coming up and is considering competitors."
+        },
+        {
+          "type": "Note",
+          "timestamp": "2026-03-14T16:45:00Z",
+          "subject": "Investigation - Billing Review",
+          "notes": "Contacted billing department. Invoice was generated from WO-2026-03982 which was incorrectly coded as Time & Materials instead of Contract work. Submitted correction request CR-78451."
+        },
+        {
+          "type": "Email",
+          "direction": "Outbound",
+          "timestamp": "2026-03-14T17:00:00Z",
+          "to": "sarah.jenkins@marriott.com",
+          "cc": "accountmanager@otis.com",
+          "subject": "RE: Invoice Dispute - Credit Pending",
+          "body": "Ms. Jenkins, Thank you for bringing this to our attention. You are correct that door operator repairs are covered under your Full Maintenance contract. We've identified a coding error and submitted a credit request for the full £1,800. You should see the credit on your next statement. I've also looped in your Account Manager, David Kim, who would like to schedule a contract review call before your May renewal."
+        },
+        {
+          "type": "Note",
+          "timestamp": "2026-03-15T09:00:00Z",
+          "subject": "Escalation - Account Manager Engaged",
+          "notes": "Account Manager David Kim reached out. Scheduling lunch meeting with Sarah to discuss renewal and offer service upgrade as goodwill gesture for the billing error."
+        }
+      ],
+      "financialDetails": {
+        "disputedAmount": "£1,800",
+        "invoiceNumber": "INV-2026-03-4521",
+        "correctionRequestId": "CR-78451",
+        "status": "Credit Pending"
+      },
+      "relatedWorkOrder": {
+        "woNumber": "WO-2026-03982",
+        "status": "Completed",
+        "completedDate": "2026-03-10",
+        "description": "Door operator motor replacement - Lift 2",
+        "laborHours": 4.5,
+        "partsUsed": ["Door Operator Motor Assembly", "Limit Switch Kit"]
+      },
+      "knowledgeArticles": [
+        {
+          "title": "Full Maintenance Contract Coverage Guide",
+          "articleNumber": "KB-001050",
+          "relevance": "High"
+        },
+        {
+          "title": "Billing Dispute Resolution Process",
+          "articleNumber": "KB-000756",
+          "relevance": "High"
+        }
+      ],
+      "demoNotes": "ESCALATED BILLING CASE - Shows financial dispute handling, contract verification, credit processing, and account manager coordination. Good for demonstrating escalation workflows and customer retention scenarios."
+    },
+    {
+      "id": "HERO-005",
+      "title": "Preventive Maintenance Callback - Westfield London",
+      "caseNumber": "CAS-19125-X8P0V5",
+      "d365IncidentId": "5745bf87-b420-f111-8342-7c1e52143136",
+      "priority": "Normal",
+      "status": "Active",
+      "statusReason": "In Progress",
+      "origin": "Chat",
+      "createdOn": "2026-03-15T10:15:00Z",
+      "slaStatus": "On Track",
+      "slaDeadline": "2026-03-16T10:15:00Z",
+      "description": "Tenant coordinator following up on scheduled maintenance for escalators. Wants to confirm scope of work and coordinate building access for technician team ahead of busy weekend shopping period.",
+      "account": {
+        "name": "Westfield London Shopping Centre",
+        "accountNumber": "OTIS-UK-001",
+        "tier": "Tier 1 - Premium Service",
+        "contractType": "Premium Service - 24/7",
+        "totalUnits": 46,
+        "address": "Ariel Way, London W12 7GF",
+        "annualContractValue": "£285,000",
+        "slaResponseTime": "2 hours"
+      },
+      "contact": {
+        "firstName": "James",
+        "lastName": "Morrison",
+        "title": "Centre Operations Manager",
+        "phone": "+44 20 7555 0101",
+        "email": "james.morrison@westfield.com",
+        "preferredChannel": "Chat"
+      },
+      "timeline": [
+        {
+          "type": "Chat",
+          "timestamp": "2026-03-15T10:15:00Z",
+          "duration": "00:14:22",
+          "transcript": [
+            {"role": "customer", "message": "Hi, this is James from Westfield London. We have escalator PM scheduled for Wednesday and I need to confirm the details before the weekend rush."},
+            {"role": "agent", "message": "Hi James! Happy to help. Let me pull up your scheduled maintenance. One moment please."},
+            {"role": "agent", "message": "I see you have preventive maintenance scheduled for Wednesday March 19th. The work will cover all 24 escalators in the main shopping areas. We'll have a team of 4 technicians on site from 6 AM."},
+            {"role": "customer", "message": "Perfect. Will any escalators be offline during shopping hours?"},
+            {"role": "agent", "message": "We'll complete most inspections before the centre opens at 10 AM. For any that need extended attention, we'll work on them in pairs so there's always an adjacent escalator running. Estimated completion by 2 PM."},
+            {"role": "customer", "message": "Excellent. Can you send me the scope of work and lead technician details for our security team?"},
+            {"role": "agent", "message": "Absolutely! I'll email you the PM checklist, technician roster, and their ID photos for security clearance right now. Is james.morrison@westfield.com still the best email?"},
+            {"role": "customer", "message": "Yes that's correct. Also please copy our security desk at security@westfield.com"},
+            {"role": "agent", "message": "Done! Email sent to both addresses. Anything else you need before Wednesday?"},
+            {"role": "customer", "message": "That's everything. Thanks for the quick help!"},
+            {"role": "agent", "message": "You're welcome! Have a great rest of your day, and we'll see you Wednesday."}
+          ]
+        },
+        {
+          "type": "Email",
+          "direction": "Outbound",
+          "timestamp": "2026-03-15T10:32:00Z",
+          "to": "james.morrison@westfield.com",
+          "cc": "security@westfield.com",
+          "subject": "Westfield London - Escalator PM Scope & Technician Details - March 19",
+          "body": "James,\n\nAs discussed, attached is the PM scope of work for your 24 NCE escalators.\n\nScheduled: Wednesday, March 19, 2026 @ 6:00 AM\nEstimated Completion: 2:00 PM\nLead Technician: Rachel Green\nTeam Size: 4 technicians\n\nAttached:\n- PM Checklist\n- Technician roster with ID photos\n- Building access requirements\n\nPlease ensure loading dock access is available for our service vehicle from 5:30 AM.\n\nBest regards"
+        }
+      ],
+      "scheduledMaintenance": {
+        "date": "2026-03-19T06:00:00Z",
+        "type": "Preventive Maintenance - Quarterly",
+        "units": "24 NCE Escalators + 4 Travolators",
+        "leadTechnician": "Rachel Green",
+        "teamSize": 4,
+        "estimatedDuration": "8 hours"
+      },
+      "knowledgeArticles": [
+        {
+          "title": "NCE Escalator Quarterly PM Checklist",
+          "articleNumber": "KB-002340",
+          "relevance": "High"
+        },
+        {
+          "title": "High-Traffic Retail Location Protocols",
+          "articleNumber": "KB-000445",
+          "relevance": "Medium"
+        }
+      ],
+      "demoNotes": "CHAT CHANNEL CASE - Shows chat transcript preservation, omnichannel experience, and proactive customer coordination. Good for demonstrating chat handling, email follow-up workflows, and multi-contact communication."
+    }
+  ],
+  "quickLookupData": {
+    "equipmentSerialLookup": {
+      "G2P-RM-003": "RM-E03 (Riverside Medical Centre)",
+      "SKY-CW-012": "CW-E12 (Canary Wharf Tower)",
+      "G2P-SHARD-FRT-01": "SHARD-FRT-01 (The Shard London)"
+    },
+    "accountQuickFacts": {
+      "Riverside Medical Centre": {
+        "tier": "T1",
+        "units": 18,
+        "contract": "Premium Service - 24/7",
+        "acv": "£185K",
+        "sla": "1 hour"
+      },
+      "Canary Wharf Tower": {
+        "tier": "T1",
+        "units": 36,
+        "contract": "Premium Service - 24/7",
+        "acv": "£420K",
+        "sla": "2 hours"
+      },
+      "The Shard London": {
+        "tier": "T1",
+        "units": 44,
+        "contract": "Premium Service - 24/7",
+        "acv": "£580K",
+        "sla": "2 hours"
+      },
+      "Marriott Hotel Manchester": {
+        "tier": "T2",
+        "units": 8,
+        "contract": "Full Maintenance",
+        "acv": "£42K",
+        "sla": "4 hours"
+      },
+      "Westfield London Shopping Centre": {
+        "tier": "T1",
+        "units": 46,
+        "contract": "Premium Service - 24/7",
+        "acv": "£285K",
+        "sla": "2 hours"
+      }
+    }
+  }
+}

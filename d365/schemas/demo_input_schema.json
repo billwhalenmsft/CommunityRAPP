@@ -1,0 +1,320 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rapp.io/schemas/d365-demo-input.json",
+  "title": "D365 Demo Input Schema",
+  "description": "Input schema for generating D365 Customer Service demo data. Provide customer info, industry context, and demo requirements to auto-generate accounts, contacts, products, cases, KB articles, and more.",
+  "type": "object",
+  "required": ["customer", "demo_requirements"],
+  "properties": {
+    "customer": {
+      "type": "object",
+      "description": "Core customer information",
+      "required": ["name", "industry"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Customer company name (e.g., 'Otis Elevator', 'Zurn Elkay')",
+          "examples": ["Otis Elevator", "Zurn Elkay Water Solutions"]
+        },
+        "industry": {
+          "type": "string",
+          "description": "Industry vertical for context-aware data generation",
+          "enum": [
+            "elevator_service",
+            "plumbing_manufacturing",
+            "hvac",
+            "medical_devices",
+            "financial_services",
+            "telecommunications",
+            "retail",
+            "utilities",
+            "insurance",
+            "automotive",
+            "technology",
+            "manufacturing",
+            "other"
+          ]
+        },
+        "brands": {
+          "type": "array",
+          "description": "Brand names within the company",
+          "items": {"type": "string"},
+          "examples": [["Otis", "Schindler"], ["Zurn", "Elkay"]]
+        },
+        "region": {
+          "type": "string",
+          "description": "Primary geographic region for demo data",
+          "enum": ["NA", "EMEA", "APAC", "LATAM", "Global"],
+          "default": "NA"
+        },
+        "headquarters_country": {
+          "type": "string",
+          "description": "Country for address generation",
+          "default": "United States"
+        }
+      }
+    },
+    "data_sources": {
+      "type": "object",
+      "description": "URLs for scraping product/support information",
+      "properties": {
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "Main company website"
+        },
+        "products_page": {
+          "type": "string",
+          "format": "uri", 
+          "description": "Products/services listing page"
+        },
+        "support_page": {
+          "type": "string",
+          "format": "uri",
+          "description": "Support/help center page for KB article generation"
+        },
+        "documentation_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Technical documentation for detailed KB content"
+        }
+      }
+    },
+    "discovery_context": {
+      "type": "object",
+      "description": "Information from discovery call/notes",
+      "properties": {
+        "use_case": {
+          "type": "string",
+          "description": "Primary demo use case",
+          "enum": [
+            "telephony_screen_pop",
+            "omnichannel_routing",
+            "case_management",
+            "knowledge_management",
+            "chatbot_integration",
+            "email_to_case",
+            "field_service",
+            "customer_portal",
+            "full_contact_center"
+          ]
+        },
+        "channels": {
+          "type": "array",
+          "description": "Communication channels to demonstrate",
+          "items": {
+            "type": "string",
+            "enum": ["phone", "chat", "email", "portal", "social", "sms"]
+          },
+          "default": ["phone"]
+        },
+        "agent_count": {
+          "type": "integer",
+          "description": "Number of contact center agents (affects queue/routing design)",
+          "minimum": 1,
+          "default": 50
+        },
+        "current_system": {
+          "type": "string",
+          "description": "System being replaced (for competitive context)",
+          "examples": ["Ring Central", "Genesys", "Five9", "Avaya", "Cisco"]
+        },
+        "pain_points": {
+          "type": "array",
+          "description": "Key pain points mentioned in discovery",
+          "items": {"type": "string"},
+          "examples": [["no screen pop", "manual data entry", "lack of customer context"]]
+        },
+        "demo_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Scheduled demo date"
+        },
+        "stakeholders": {
+          "type": "array",
+          "description": "Key stakeholders attending demo",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "title": {"type": "string"},
+              "focus_area": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "demo_requirements": {
+      "type": "object",
+      "description": "Specific demo scenario requirements",
+      "required": ["case_types"],
+      "properties": {
+        "customer_tiers": {
+          "type": "array",
+          "description": "Customer tier names for tiered service demos",
+          "items": {"type": "string"},
+          "default": ["Premium", "Standard", "Basic"],
+          "examples": [["Platinum", "Gold", "Silver", "Bronze"]]
+        },
+        "case_types": {
+          "type": "array",
+          "description": "Types of support cases to create",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "examples": [
+            ["entrapment", "out_of_service", "maintenance", "modernization"],
+            ["warranty_claim", "technical_support", "order_inquiry", "returns"]
+          ]
+        },
+        "hero_scenario": {
+          "type": "object",
+          "description": "The main demo scenario to highlight",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Hero case title",
+              "examples": ["Emergency Entrapment - Empire State Building"]
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed scenario description"
+            },
+            "customer_name": {
+              "type": "string",
+              "description": "Customer account for hero scenario"
+            },
+            "contact_name": {
+              "type": "string", 
+              "description": "Contact person for hero scenario"
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["Critical", "High", "Normal", "Low"],
+              "default": "High"
+            }
+          }
+        },
+        "hot_words": {
+          "type": "array",
+          "description": "Keywords that trigger priority routing/alerts",
+          "items": {"type": "string"},
+          "examples": [["Entrapment", "Emergency", "Safety"], ["Recall", "Contamination", "Urgent"]]
+        },
+        "sla_settings": {
+          "type": "object",
+          "description": "SLA timing for demo scenarios",
+          "properties": {
+            "first_response_minutes": {
+              "type": "integer",
+              "default": 240
+            },
+            "resolution_minutes": {
+              "type": "integer", 
+              "default": 480
+            }
+          }
+        },
+        "account_count": {
+          "type": "integer",
+          "description": "Number of accounts to generate",
+          "minimum": 5,
+          "maximum": 50,
+          "default": 15
+        },
+        "contact_count": {
+          "type": "integer",
+          "description": "Number of contacts to generate",
+          "minimum": 5,
+          "maximum": 100,
+          "default": 20
+        },
+        "case_count": {
+          "type": "integer",
+          "description": "Number of cases to generate",
+          "minimum": 10,
+          "maximum": 200,
+          "default": 50
+        },
+        "kb_article_count": {
+          "type": "integer",
+          "description": "Number of knowledge articles to generate",
+          "minimum": 5,
+          "maximum": 50,
+          "default": 15
+        }
+      }
+    },
+    "products": {
+      "type": "array",
+      "description": "Product catalog (auto-generated from website if not provided)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "sku": {"type": "string"},
+          "category": {"type": "string"},
+          "price": {"type": "number"},
+          "description": {"type": "string"}
+        }
+      }
+    },
+    "output_options": {
+      "type": "object",
+      "description": "Control what gets generated",
+      "properties": {
+        "generate_accounts": {"type": "boolean", "default": true},
+        "generate_contacts": {"type": "boolean", "default": true},
+        "generate_products": {"type": "boolean", "default": true},
+        "generate_cases": {"type": "boolean", "default": true},
+        "generate_queues": {"type": "boolean", "default": true},
+        "generate_slas": {"type": "boolean", "default": true},
+        "generate_kb_articles": {"type": "boolean", "default": true},
+        "generate_entitlements": {"type": "boolean", "default": true},
+        "generate_routing_rules": {"type": "boolean", "default": false},
+        "use_us_phone_numbers": {"type": "boolean", "default": true, "description": "Use US phone numbers even for non-US regions (for demo from US)"}
+      }
+    }
+  },
+  "examples": [
+    {
+      "customer": {
+        "name": "Otis Elevator",
+        "industry": "elevator_service",
+        "brands": ["Otis"],
+        "region": "EMEA",
+        "headquarters_country": "United Kingdom"
+      },
+      "data_sources": {
+        "website": "https://www.otis.com",
+        "products_page": "https://www.otis.com/en/products",
+        "support_page": "https://www.otis.com/support"
+      },
+      "discovery_context": {
+        "use_case": "telephony_screen_pop",
+        "channels": ["phone"],
+        "agent_count": 35,
+        "current_system": "Ring Central",
+        "pain_points": ["no screen pop", "manual customer lookup", "no service history visibility"],
+        "demo_date": "2025-03-20"
+      },
+      "demo_requirements": {
+        "customer_tiers": ["Premium", "Standard", "Basic"],
+        "case_types": ["entrapment", "out_of_service", "maintenance", "modernization", "callback_request"],
+        "hero_scenario": {
+          "title": "Emergency Entrapment - Canary Wharf Tower",
+          "description": "VIP building with passengers trapped, requires immediate response with full context",
+          "customer_name": "Canary Wharf Group",
+          "contact_name": "Sarah Mitchell",
+          "priority": "Critical"
+        },
+        "hot_words": ["Entrapment", "Emergency", "Trapped", "Safety Hazard"],
+        "account_count": 10,
+        "contact_count": 10,
+        "case_count": 20
+      },
+      "output_options": {
+        "use_us_phone_numbers": true
+      }
+    }
+  ]
+}

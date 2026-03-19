@@ -1,0 +1,105 @@
+kind: TopicMetadata
+schemaVersion: 2.0
+name: Preventive Maintenance Coordination
+description: Coordinates scheduled maintenance visits and building access
+
+triggers:
+  phrases:
+    - scheduled maintenance
+    - preventive maintenance
+    - pm schedule
+    - quarterly maintenance
+    - maintenance callback
+    - pm visit
+    - routine maintenance
+    - maintenance coordination
+    - technician visit
+    - maintenance appointment
+
+modelDescription: |
+  This topic handles coordination of preventive maintenance visits, including 
+  scheduling details, scope of work confirmation, building access requirements, 
+  and technician team information.
+
+nodes:
+  - kind: Message
+    id: acknowledge
+    message: |
+      📅 **Preventive Maintenance Coordination**
+      
+      Let me pull up the scheduled maintenance details.
+
+  - kind: GenerativeAnswers
+    id: lookup_pm_schedule
+    prompt: |
+      Look up the scheduled preventive maintenance for this account and provide:
+      
+      1. Scheduled date and time
+      2. Number of units covered
+      3. Type of maintenance (quarterly, semi-annual, annual)
+      4. Lead technician and team size
+      5. Estimated duration
+      6. Any special requirements or notes
+
+  - kind: Message
+    id: pm_details
+    message: |
+      **Scheduled Maintenance Details:**
+      
+      📆 **Date:** {scheduledMaintenance.date}
+      ⏰ **Time:** {scheduledMaintenance.startTime} - {scheduledMaintenance.estimatedEnd}
+      👷 **Lead Technician:** {scheduledMaintenance.leadTechnician}
+      👥 **Team Size:** {scheduledMaintenance.teamSize} technicians
+      
+      **Scope of Work:**
+      - Units covered: {scheduledMaintenance.units}
+      - Type: {scheduledMaintenance.type}
+      - Checklist: {scheduledMaintenance.checklist}
+
+  - kind: Question
+    id: customer_needs
+    question: |
+      What does the customer need?
+      
+      - Confirm scheduling details
+      - Request scope of work document
+      - Get technician information for security
+      - Change appointment time
+      - Add units to service scope
+    variable: customerRequest
+
+  - kind: Condition
+    id: high_traffic_check
+    condition: "account.type = 'Retail' OR account.type = 'Healthcare'"
+    trueActions:
+      - kind: Message
+        message: |
+          🏢 **High-Traffic Location Protocol**
+          
+          For retail/healthcare locations:
+          - Complete work before opening hours when possible
+          - Work on equipment pairs to maintain availability
+          - Coordinate with security for access
+          - Minimize disruption during peak hours
+
+  - kind: Message
+    id: confirmation_actions
+    message: |
+      **Confirmation Actions:**
+      
+      📧 **Send confirmation email with:**
+      - PM scope of work checklist
+      - Technician roster with ID photos
+      - Building access requirements
+      - Emergency contact numbers
+      
+      📋 **Include in email:**
+      - CC security desk if requested
+      - Loading dock access times
+      - Elevator service schedule (which units, when)
+      
+      ✅ Document customer confirmation in case notes
+
+settings:
+  priority: Normal
+  escalateToAgent: false

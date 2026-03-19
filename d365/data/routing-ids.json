@@ -1,0 +1,17 @@
+﻿{
+    "DefaultQueue":  "General Support",
+    "EntityRoutingConfigId":  "295636b7-ee17-f111-8342-7c1e520a58a1",
+    "RoutedQueues":  [
+                         "Zurn Phone - Tier 1",
+                         "Zurn Phone - General",
+                         "Elkay Hydration Support",
+                         "Elkay Sinks \u0026 Fixtures",
+                         "Drainage",
+                         "Commercial Email",
+                         "General Support"
+                     ],
+    "WorkstreamName":  "Zurn Elkay Case Routing",
+    "RouteToQueueRules":  0,
+    "DecisionRulesetId":  "5addb3ac-ee17-f111-8342-7ced8d18c8d7",
+    "WorkstreamId":  "375fec57-ee17-f111-8341-7ced8dceb26a"
+}

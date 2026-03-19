@@ -1,0 +1,166 @@
+{
+  "name": "Demo Action - Create D365 Case",
+  "description": "Creates a new case in D365 Customer Service with specified priority, customer, and channel. Triggered from Demo Execution Guide buttons.",
+  "trigger": {
+    "type": "Request",
+    "kind": "Http",
+    "inputs": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Case title/subject",
+            "default": "Product failure - requesting replacement"
+          },
+          "description": {
+            "type": "string",
+            "description": "Case description body"
+          },
+          "priority": {
+            "type": "integer",
+            "description": "1=High, 2=Normal, 3=Low",
+            "default": 1
+          },
+          "customer_name": {
+            "type": "string",
+            "description": "Account name to lookup and link"
+          },
+          "contact_email": {
+            "type": "string",
+            "description": "Contact email to lookup and link"
+          },
+          "origin": {
+            "type": "integer",
+            "description": "1=Phone, 2=Email, 3=Web, 2483=Teams, 192350000=IoT",
+            "default": 2
+          },
+          "case_type": {
+            "type": "integer",
+            "description": "1=Question, 2=Problem, 3=Request",
+            "default": 2
+          },
+          "notify_user": {
+            "type": "string",
+            "description": "Email of user to toast-notify after creation (optional)"
+          }
+        },
+        "required": ["title"]
+      }
+    }
+  },
+  "actions": {
+    "Lookup_Account": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/accounts/items",
+        "queries": {
+          "$filter": "name eq '@{coalesce(triggerBody()?['customer_name'], 'Demo Account')}'",
+          "$select": "accountid,name",
+          "$top": 1
+        }
+      }
+    },
+    "Lookup_Contact": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/contacts/items",
+        "queries": {
+          "$filter": "emailaddress1 eq '@{coalesce(triggerBody()?['contact_email'], 'demo@example.com')}'",
+          "$select": "contactid,fullname",
+          "$top": 1
+        }
+      }
+    },
+    "Create_Case": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['commondataserviceforapps']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('orgecbce8ef.crm.dynamics.com'))}/tables/incidents/items",
+        "body": {
+          "title": "@{triggerBody()?['title']}",
+          "description": "@{coalesce(triggerBody()?['description'], '')}",
+          "prioritycode": "@{coalesce(triggerBody()?['priority'], 1)}",
+          "caseorigincode": "@{coalesce(triggerBody()?['origin'], 2)}",
+          "casetypecode": "@{coalesce(triggerBody()?['case_type'], 2)}",
+          "customerid_account@odata.bind": "/accounts(@{first(body('Lookup_Account')?['value'])?['accountid']})"
+        }
+      },
+      "runAfter": {
+        "Lookup_Account": ["Succeeded"],
+        "Lookup_Contact": ["Succeeded"]
+      }
+    },
+    "Response": {
+      "type": "Response",
+      "kind": "Http",
+      "inputs": {
+        "statusCode": 200,
+        "body": {
+          "status": "success",
+          "message": "Case created",
+          "case_id": "@{body('Create_Case')?['incidentid']}",
+          "case_number": "@{body('Create_Case')?['ticketnumber']}",
+          "title": "@{body('Create_Case')?['title']}",
+          "timestamp": "@{utcNow()}"
+        }
+      },
+      "runAfter": {
+        "Create_Case": ["Succeeded"]
+      }
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "_metadata": {
+    "org_url": "https://orgecbce8ef.crm.dynamics.com",
+    "priority_codes": {
+      "High": 1,
+      "Normal": 2,
+      "Low": 3
+    },
+    "origin_codes": {
+      "Phone": 1,
+      "Email": 2,
+      "Web": 3,
+      "Teams": 2483,
+      "IoT": 192350000
+    },
+    "case_type_codes": {
+      "Question": 1,
+      "Problem": 2,
+      "Request": 3
+    },
+    "setup_steps": [
+      "1. Create new Instant Cloud Flow in Power Automate",
+      "2. Add trigger: 'When an HTTP request is received' — paste the schema above",
+      "3. Add action: 'List rows' from Dataverse — accounts table with name filter",
+      "4. Add action: 'List rows' from Dataverse — contacts table with email filter",
+      "5. Add action: 'Add a new row' from Dataverse — incidents table with mapped fields",
+      "6. Add action: 'Response' — return JSON with case ID and number",
+      "7. Save and copy the HTTP POST URL",
+      "8. Paste URL into Demo Control Panel > Flow Configuration > Create Case URL"
+    ]
+  }
+}

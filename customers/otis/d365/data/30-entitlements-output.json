@@ -1,0 +1,34 @@
+﻿{
+    "step":  30,
+    "script":  "30-Entitlements.ps1",
+    "timestamp":  "2026-03-18 15:13:46",
+    "customer":  "otis",
+    "created":  10,
+    "skipped":  0,
+    "plans":  [
+                  {
+                      "tier":  3,
+                      "code":  "SIG-STD",
+                      "name":  "Signature Service",
+                      "sla":  "8 hours"
+                  },
+                  {
+                      "tier":  1,
+                      "code":  "SIG-PREM",
+                      "name":  "Signature Service Premium",
+                      "sla":  "2 hours"
+                  },
+                  {
+                      "tier":  2,
+                      "code":  "SIG-PLUS",
+                      "name":  "Signature Service Plus",
+                      "sla":  "4 hours"
+                  },
+                  {
+                      "tier":  4,
+                      "code":  "SIG-ONCALL",
+                      "name":  "On-Call Only",
+                      "sla":  "Next business day"
+                  }
+              ]
+}
