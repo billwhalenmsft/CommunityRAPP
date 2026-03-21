@@ -3,38 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Copilot Entra Agent - Demo Showcase</title>
+  <title>RAPP — Demo Showcase</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --error: #ef4444;
-      --gray-10: #f8fafc;
-      --gray-20: #f1f5f9;
-      --gray-40: #cbd5e1;
-      --gray-60: #64748b;
-      --gray-80: #334155;
-      --gray-100: #0f172a;
+      --primary: #6B2FA0;
+      --primary-light: #9168b6;
+      --primary-dark: #4f1a6e;
+      --secondary: #0078D4;
+      --accent: #E3008C;
+      --success: #107C10;
+      --warning: #FFB900;
+      --error: #D13438;
+      --gray-10: #FAF9F8;
+      --gray-20: #F3F2F1;
+      --gray-40: #C8C6C4;
+      --gray-60: #605E5C;
+      --gray-80: #323130;
+      --gray-100: #242424;
       --radius: 12px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1025 0%, #0d1117 50%, #161b22 100%);
       min-height: 100vh;
       color: #e2e8f0;
     }
 
+    /* Header */
     .header {
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      padding: 20px 40px;
+      background: rgba(26, 16, 37, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid transparent;
+      border-image: linear-gradient(90deg, #6B2FA0, #0078D4, #E3008C) 1;
+      padding: 16px 40px;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -55,281 +60,356 @@
     }
 
     .logo-icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
-      border-radius: 12px;
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 20px;
+      color: white;
     }
 
     .logo-text h1 {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 18px;
+      font-weight: 600;
+      background: linear-gradient(90deg, #fff, #c4b5d0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .logo-text span {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--gray-60);
+      letter-spacing: 0.5px;
     }
 
     .nav-links {
       display: flex;
       gap: 20px;
+      align-items: center;
     }
 
     .nav-links a {
       color: #94a3b8;
       text-decoration: none;
-      font-size: 14px;
-      transition: color 0.2s;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .nav-links a:hover {
+    .nav-links a:hover { color: white; background: rgba(255,255,255,0.08); }
+    .nav-links a.active { color: white; background: var(--primary); }
+
+    /* Search bar */
+    .search-bar {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 40px 0;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 500px;
+      padding: 10px 16px 10px 40px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
       color: white;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
     }
 
+    .search-input:focus { border-color: var(--primary); }
+    .search-input::placeholder { color: #64748b; }
+
+    .search-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .search-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    /* Container */
     .container {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 40px;
+      padding: 24px 40px 60px;
     }
 
+    /* Hero */
     .hero {
       text-align: center;
-      padding: 60px 0;
+      padding: 48px 0 24px;
     }
 
     .hero h2 {
-      font-size: 42px;
+      font-size: 38px;
       font-weight: 700;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #fff, #94a3b8);
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #fff 30%, var(--primary-light));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .hero p {
-      font-size: 18px;
+      font-size: 16px;
       color: #94a3b8;
-      max-width: 600px;
-      margin: 0 auto 40px;
+      max-width: 620px;
+      margin: 0 auto;
     }
 
+    /* Stats */
     .stats-row {
       display: flex;
       justify-content: center;
-      gap: 40px;
-      margin-bottom: 60px;
+      gap: 48px;
+      margin: 32px 0 36px;
     }
 
-    .stat-item {
-      text-align: center;
-    }
+    .stat-item { text-align: center; }
 
     .stat-value {
-      font-size: 36px;
+      font-size: 32px;
       font-weight: 700;
-      color: var(--primary);
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .stat-label {
-      font-size: 14px;
-      color: var(--gray-60);
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
+    /* Category Tabs */
     .category-tabs {
       display: flex;
       gap: 8px;
       justify-content: center;
       flex-wrap: wrap;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
 
     .category-tab {
-      padding: 10px 20px;
-      background: rgba(255,255,255,0.05);
+      padding: 8px 18px;
+      background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 20px;
       color: #94a3b8;
       cursor: pointer;
       transition: all 0.2s;
-      font-size: 14px;
+      font-size: 13px;
+      font-family: inherit;
     }
 
-    .category-tab:hover, .category-tab.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
+    .category-tab:hover { background: rgba(107,47,160,0.2); border-color: var(--primary); color: white; }
+    .category-tab.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 80px 0;
+      color: #64748b;
     }
 
+    .loading i { font-size: 32px; margin-bottom: 16px; color: var(--primary-light); }
+    .loading p { font-size: 14px; }
+
+    /* Grid */
     .agents-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
       gap: 24px;
     }
 
+    /* Card */
     .agent-card {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(30, 25, 40, 0.7);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: var(--radius);
       overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
 
     .agent-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(107, 47, 160, 0.15);
+      border-color: rgba(107, 47, 160, 0.3);
     }
 
     .agent-header {
-      padding: 24px;
+      padding: 20px 24px;
       border-bottom: 1px solid rgba(255,255,255,0.05);
       display: flex;
-      align-items: flex-start;
-      gap: 16px;
+      align-items: center;
+      gap: 14px;
     }
 
     .agent-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 12px;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 20px;
       flex-shrink: 0;
+      color: white;
     }
 
-    .agent-icon.finance { background: linear-gradient(135deg, #10b981, #34d399); }
-    .agent-icon.sales { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-    .agent-icon.customer-service { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
-    .agent-icon.healthcare { background: linear-gradient(135deg, #ec4899, #f472b6); }
-    .agent-icon.operations { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
-    .agent-icon.it { background: linear-gradient(135deg, #64748b, #94a3b8); }
-    .agent-icon.core { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+    .agent-icon.finance { background: linear-gradient(135deg, #107C10, #2da82d); }
+    .agent-icon.sales { background: linear-gradient(135deg, #6B2FA0, #9168b6); }
+    .agent-icon.customer-service { background: linear-gradient(135deg, #0078D4, #2899F5); }
+    .agent-icon.healthcare { background: linear-gradient(135deg, #E3008C, #f06ec0); }
+    .agent-icon.operations { background: linear-gradient(135deg, #FFB900, #ffd54f); color: #333; }
+    .agent-icon.it { background: linear-gradient(135deg, #605E5C, #94a3b8); }
+    .agent-icon.core { background: linear-gradient(135deg, #6B2FA0, #9168b6); }
+    .agent-icon.general { background: linear-gradient(135deg, #0078D4, #6B2FA0); }
 
     .agent-info h3 {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .agent-category {
-      font-size: 12px;
-      color: var(--primary);
+      font-size: 11px;
+      color: var(--primary-light);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .agent-description {
-      padding: 0 24px;
-      font-size: 14px;
+      padding: 12px 24px;
+      font-size: 13px;
       color: #94a3b8;
       line-height: 1.6;
     }
 
+    /* Metrics */
     .agent-metrics {
-      padding: 16px 24px;
+      padding: 12px 24px;
       display: flex;
-      gap: 24px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      gap: 20px;
     }
 
-    .metric {
-      text-align: center;
-    }
+    .metric { text-align: center; }
+    .metric-value { font-size: 18px; font-weight: 600; color: white; }
+    .metric-label { font-size: 10px; color: #64748b; text-transform: uppercase; }
 
-    .metric-value {
-      font-size: 20px;
-      font-weight: 600;
-      color: white;
-    }
-
-    .metric-label {
-      font-size: 11px;
-      color: var(--gray-60);
-      text-transform: uppercase;
-    }
-
+    /* Conversation preview */
     .demo-section {
-      padding: 20px 24px;
+      padding: 12px 24px 16px;
     }
 
     .demo-section h4 {
-      font-size: 13px;
-      color: var(--gray-60);
+      font-size: 11px;
+      color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .demo-conversation {
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.25);
       border-radius: 8px;
-      padding: 16px;
-      font-size: 13px;
-      max-height: 200px;
+      padding: 14px;
+      font-size: 12px;
+      max-height: 220px;
       overflow-y: auto;
     }
 
-    .demo-message {
-      margin-bottom: 12px;
-      padding-left: 12px;
-      border-left: 2px solid var(--gray-60);
+    .demo-step {
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
 
-    .demo-message.user {
-      border-left-color: var(--primary);
-    }
+    .demo-step:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
 
-    .demo-message.agent {
-      border-left-color: var(--success);
-    }
-
-    .demo-message-role {
+    .demo-step-label {
       font-size: 10px;
+      font-weight: 600;
       text-transform: uppercase;
-      color: var(--gray-60);
+      letter-spacing: 0.5px;
       margin-bottom: 4px;
+      color: #64748b;
     }
 
-    .demo-message.user .demo-message-role { color: var(--primary); }
-    .demo-message.agent .demo-message-role { color: var(--success); }
+    .demo-step-user {
+      color: var(--primary-light);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
 
-    .demo-message-content {
-      color: #e2e8f0;
+    .demo-step-agent {
+      color: #94a3b8;
       line-height: 1.5;
+      white-space: pre-line;
+      max-height: 80px;
+      overflow: hidden;
+      position: relative;
     }
 
-    .agent-actions {
-      padding: 16px 24px;
+    .demo-step-agent::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 24px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.4));
+    }
+
+    /* Trigger phrases */
+    .trigger-phrases {
+      padding: 8px 24px 12px;
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
-    .action-tag {
-      padding: 4px 10px;
-      background: rgba(99, 102, 241, 0.2);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      border-radius: 12px;
-      font-size: 11px;
-      color: #a5b4fc;
+    .trigger-tag {
+      padding: 3px 8px;
+      background: rgba(107,47,160,0.15);
+      border: 1px solid rgba(107,47,160,0.25);
+      border-radius: 10px;
+      font-size: 10px;
+      color: #c4b5d0;
     }
 
+    /* Footer */
     .agent-footer {
-      padding: 16px 24px;
+      padding: 14px 24px;
       border-top: 1px solid rgba(255,255,255,0.05);
       display: flex;
-      gap: 12px;
+      gap: 10px;
     }
 
     .btn {
       flex: 1;
-      padding: 10px 16px;
+      padding: 9px 14px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 500;
@@ -337,6 +417,11 @@
       transition: all 0.2s;
       text-align: center;
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
     }
 
     .btn-primary {
@@ -345,464 +430,381 @@
       color: white;
     }
 
-    .btn-primary:hover {
-      background: var(--primary-dark);
-    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
 
     .btn-secondary {
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #cbd5e1;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.08); }
+
+    .btn-accent {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
       color: white;
     }
 
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.1);
+    .btn-accent:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* Expand/collapse */
+    .demo-expand-btn {
+      background: none;
+      border: none;
+      color: var(--primary-light);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 4px 0;
+      font-family: inherit;
     }
 
+    .demo-expand-btn:hover { color: white; }
+
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-    ::-webkit-scrollbar-thumb { background: var(--gray-60); border-radius: 3px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); }
+    ::-webkit-scrollbar-thumb { background: #4a4458; border-radius: 3px; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #64748b;
+    }
+
+    .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+    .empty-state p { font-size: 16px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header { padding: 12px 16px; }
+      .container, .search-bar { padding-left: 16px; padding-right: 16px; }
+      .hero h2 { font-size: 28px; }
+      .agents-grid { grid-template-columns: 1fr; }
+      .stats-row { gap: 24px; }
+      .stat-value { font-size: 24px; }
+      .nav-links { gap: 8px; }
+      .nav-links a { font-size: 12px; padding: 4px 8px; }
+    }
   </style>
 </head>
 <body>
   <header class="header">
     <div class="header-content">
       <div class="logo">
-        <div class="logo-icon"><i class="fas fa-robot"></i></div>
+        <div class="logo-icon"><i class="fas fa-play-circle"></i></div>
         <div class="logo-text">
-          <h1>Copilot Entra Agent</h1>
+          <h1>RAPP Demo Showcase</h1>
           <span>Enterprise AI Agent Library</span>
         </div>
       </div>
       <nav class="nav-links">
-        <a href="../index.html"><i class="fas fa-home"></i> Home</a>
-        <a href="../rapp_pipeline_pro.html"><i class="fas fa-stream"></i> RAPP Pipeline</a>
-        <a href="#" class="active"><i class="fas fa-robot"></i> Demos</a>
+        <a href="../index.html"><i class="fas fa-comments"></i> Chat</a>
+        <a href="#" class="active"><i class="fas fa-play-circle"></i> Demos</a>
       </nav>
     </div>
   </header>
 
+  <div class="search-bar">
+    <div class="search-wrapper">
+      <i class="fas fa-search"></i>
+      <input type="text" class="search-input" id="search-input" placeholder="Search demos by name, category, or description...">
+    </div>
+  </div>
+
   <div class="container">
     <section class="hero">
       <h2>Agent Demo Showcase</h2>
-      <p>Explore our library of enterprise AI agents with interactive demos and sample conversations. Each agent is built using the RAPP Pipeline methodology.</p>
+      <p>Explore our library of enterprise AI agents with interactive demos. Click <strong>Play in RAPP</strong> to run any demo step-by-step in the chat UI.</p>
     </section>
 
     <div class="stats-row">
       <div class="stat-item">
-        <div class="stat-value" id="total-agents">19</div>
-        <div class="stat-label">Total Agents</div>
+        <div class="stat-value" id="total-agents">—</div>
+        <div class="stat-label">Agents</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value" id="total-actions">98</div>
-        <div class="stat-label">Total Actions</div>
+        <div class="stat-value" id="total-steps">—</div>
+        <div class="stat-label">Demo Steps</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value" id="industries">7</div>
-        <div class="stat-label">Industries</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value" id="total-demos">19</div>
-        <div class="stat-label">Live Demos</div>
+        <div class="stat-value" id="total-categories">—</div>
+        <div class="stat-label">Categories</div>
       </div>
     </div>
 
-    <div class="category-tabs">
-      <button class="category-tab active" data-category="all">All Agents</button>
-      <button class="category-tab" data-category="core">Core</button>
-      <button class="category-tab" data-category="finance">Finance</button>
-      <button class="category-tab" data-category="sales">Sales</button>
-      <button class="category-tab" data-category="customer-service">Customer Service</button>
-      <button class="category-tab" data-category="healthcare">Healthcare</button>
-      <button class="category-tab" data-category="operations">Operations</button>
-      <button class="category-tab" data-category="it">IT/Support</button>
+    <div class="category-tabs" id="category-tabs">
+      <button class="category-tab active" data-category="all">All</button>
     </div>
 
-    <div class="agents-grid" id="agents-grid">
-      <!-- Agents will be populated by JavaScript -->
+    <div id="agents-grid" class="agents-grid">
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading demos from JSON files...</p>
+      </div>
     </div>
   </div>
 
   <script>
-    // Demo data for all agents
-    const agentDemos = [
-      {
-        id: 'trade_reconciliation_agent',
-        name: 'Trade Reconciliation',
-        category: 'finance',
-        icon: 'fa-chart-line',
-        description: 'Automates trade reconciliation across OMS, clearing, and prime broker systems with intelligent break detection and resolution suggestions.',
-        tokens: 680,
-        actions: ['reconcile_daily', 'analyze_break', 'suggest_resolution', 'get_break_summary', 'generate_audit_report', 'check_sla_status'],
-        demoConversation: [
-          { role: 'user', content: 'Run the daily reconciliation for AAPL trades from yesterday.' },
-          { role: 'agent', content: 'Running daily reconciliation for AAPL...\n\n**Results:**\n- 1,247 trades processed\n- 1,241 matched (99.5%)\n- 6 breaks detected\n\n3 quantity mismatches, 2 price discrepancies, 1 missing counterparty confirmation. Shall I analyze the breaks?' }
-        ],
-        useCases: ['End-of-day settlement', 'Break resolution', 'Regulatory reporting', 'Audit trail generation']
-      },
-      {
-        id: 'call_center_agent',
-        name: 'Call Center',
-        category: 'customer-service',
-        icon: 'fa-headset',
-        description: 'Provides unified customer context and intelligent response suggestions for call center agents in real-time.',
-        tokens: 720,
-        actions: ['get_customer_context', 'suggest_response', 'lookup_policy', 'check_billing', 'create_case', 'get_call_summary', 'escalate_to_supervisor'],
-        demoConversation: [
-          { role: 'user', content: 'Customer John Smith is calling about a billing issue. Pull up his context.' },
-          { role: 'agent', content: '**Customer: John Smith** (VIP - 8 years)\n\n**Recent Activity:**\n- Opened billing dispute 3 days ago\n- Last call: Spoke with Sarah about upgrade\n- Pending: $47.99 credit awaiting approval\n\n**Suggested Response:** "Hi John, I see you\'re following up on your billing dispute. Good news - the $47.99 credit has been approved..."' }
-        ],
-        useCases: ['Customer context retrieval', 'Real-time response suggestions', 'Case management', 'Supervisor escalation']
-      },
-      {
-        id: 'customer_360_agent',
-        name: 'Customer 360',
-        category: 'sales',
-        icon: 'fa-user-circle',
-        description: 'Comprehensive customer intelligence with health scoring, churn prediction, and expansion opportunity identification.',
-        tokens: 650,
-        actions: ['get_customer_profile', 'calculate_health_score', 'predict_churn_risk', 'identify_expansion_opportunities', 'get_stakeholder_map', 'prepare_meeting_brief'],
-        demoConversation: [
-          { role: 'user', content: 'Give me a health score analysis for Acme Corp.' },
-          { role: 'agent', content: '**Acme Corp Health Score: 78/100** (Good)\n\n**Factors:**\n- Product Usage: 92% (+12% MoM)\n- Support Tickets: 3 open (avg resolution: 4.2hrs)\n- NPS Score: 8.5 (from 7.8)\n- Contract Value: $125K ARR\n\n**Risk Alert:** Champion (Sarah Chen) changed roles. Recommend scheduling intro with new POC.' }
-        ],
-        useCases: ['Account health monitoring', 'Churn prevention', 'Expansion planning', 'Executive briefings']
-      },
-      {
-        id: 'account_intelligence_agent',
-        name: 'Account Intelligence',
-        category: 'sales',
-        icon: 'fa-building',
-        description: 'Pipeline analytics, stalled deal detection, competitive intelligence, and organizational chart mapping for B2B sales.',
-        tokens: 780,
-        actions: ['analyze_pipeline', 'identify_stalled_deals', 'get_account_health', 'get_competitive_intel', 'recommend_actions', 'quantify_risk', 'get_org_chart', 'forecast_revenue'],
-        demoConversation: [
-          { role: 'user', content: 'Show me stalled deals in my pipeline over $50K.' },
-          { role: 'agent', content: '**3 Stalled Deals Detected (>14 days no activity):**\n\n1. **TechStart Inc** - $85K - Stage: Negotiation\n   Last contact: 18 days ago. Blocker: Legal review pending.\n\n2. **GlobalRetail** - $62K - Stage: Demo\n   Last contact: 21 days ago. Blocker: Budget approval.\n\n3. **MedHealth** - $54K - Stage: Proposal\n   Last contact: 16 days ago. Blocker: Competitor evaluation.\n\n**Recommended Actions:** I can draft follow-up emails for each.' }
-        ],
-        useCases: ['Pipeline management', 'Deal acceleration', 'Competitive analysis', 'Revenue forecasting']
-      },
-      {
-        id: 'sales_coach_agent',
-        name: 'Sales Coach',
-        category: 'sales',
-        icon: 'fa-graduation-cap',
-        description: 'AI-powered call analysis, skill assessment, and personalized coaching recommendations for sales teams.',
-        tokens: 710,
-        actions: ['analyze_call', 'assess_skills', 'generate_coaching_plan', 'provide_deal_strategy', 'track_progress', 'compare_to_benchmark', 'simulate_objection'],
-        demoConversation: [
-          { role: 'user', content: 'Analyze my last discovery call with Contoso.' },
-          { role: 'agent', content: '**Call Analysis: Contoso Discovery (32 mins)**\n\n**Strengths:**\n- Excellent rapport building (Score: 9/10)\n- Strong pain point identification\n- Good use of open-ended questions\n\n**Areas for Improvement:**\n- Talk ratio 68% (target: <50%)\n- Missed budget qualification\n- No clear next steps defined\n\n**Coaching Tip:** Try the "BANT" framework next time to ensure budget qualification early.' }
-        ],
-        useCases: ['Call coaching', 'Skill development', 'Performance benchmarking', 'Objection handling practice']
-      },
-      {
-        id: 'it_ticket_agent',
-        name: 'IT Ticket Management',
-        category: 'it',
-        icon: 'fa-ticket-alt',
-        description: 'Automated ticket triage, intelligent routing, and L1/L2 resolution with integrated knowledge base.',
-        tokens: 690,
-        actions: ['triage_ticket', 'auto_resolve', 'suggest_solution', 'route_ticket', 'get_queue_status', 'escalate_ticket', 'get_knowledge_article'],
-        demoConversation: [
-          { role: 'user', content: 'New ticket: User can\'t access shared drive after password reset.' },
-          { role: 'agent', content: '**Ticket Triaged: IT-2024-1847**\n\n**Category:** Access Management\n**Priority:** Medium (SLA: 4 hours)\n**Auto-Resolution Available:** Yes\n\n**Suggested Solution:**\nThis is a common Kerberos token issue after password reset.\n\n**Steps:**\n1. Have user lock workstation (Win+L)\n2. Sign out completely\n3. Sign in with new password\n4. Wait 2 mins for token refresh\n\n**Success Rate:** 94% for similar tickets' }
-        ],
-        useCases: ['Ticket auto-triage', 'Self-service resolution', 'Queue management', 'Knowledge base integration']
-      },
-      {
-        id: 'patient_intake_agent',
-        name: 'Patient Intake',
-        category: 'healthcare',
-        icon: 'fa-hospital-user',
-        description: 'Automates patient intake workflows including insurance verification, medical history capture, and appointment scheduling.',
-        tokens: 720,
-        actions: ['initiate_intake', 'verify_insurance', 'capture_history', 'schedule_appointment', 'send_reminders', 'check_in_patient', 'get_pre_visit_summary'],
-        demoConversation: [
-          { role: 'user', content: 'Start intake for new patient Maria Garcia, DOB 03/15/1985.' },
-          { role: 'agent', content: '**New Patient Intake: Maria Garcia**\n\n**Insurance Verification:**\n- Provider: Blue Cross Blue Shield\n- Policy: Active (verified)\n- Copay: $25\n- Deductible: $1,500 ($890 remaining)\n\n**Next Steps:**\n1. Medical history form sent via SMS\n2. Photo ID upload requested\n3. Available slots: Mon 2pm, Tue 10am, Wed 3pm\n\nShall I schedule an appointment?' }
-        ],
-        useCases: ['New patient registration', 'Insurance verification', 'Appointment scheduling', 'Pre-visit preparation']
-      },
-      {
-        id: 'inventory_visibility_agent',
-        name: 'Inventory Visibility',
-        category: 'operations',
-        icon: 'fa-boxes',
-        description: 'Real-time inventory intelligence across all channels with demand forecasting and automated rebalancing recommendations.',
-        tokens: 700,
-        actions: ['get_inventory_status', 'forecast_demand', 'recommend_rebalancing', 'check_stockout_risk', 'calculate_safety_stock', 'get_slow_movers', 'optimize_allocation'],
-        demoConversation: [
-          { role: 'user', content: 'Check stockout risk for our top 10 SKUs this week.' },
-          { role: 'agent', content: '**Stockout Risk Analysis - Top 10 SKUs**\n\n**High Risk (Action Required):**\n- SKU-4521 (Widget Pro): 23 units left, 5-day demand: 45\n- SKU-7832 (Cable Kit): 12 units left, 5-day demand: 28\n\n**Medium Risk:**\n- SKU-1122 (Adapter): 67 units, demand: 52\n\n**Recommended Actions:**\n1. Emergency transfer: 50 units SKU-4521 from Warehouse B\n2. Expedite PO-2847 for SKU-7832\n\nEstimated cost of stockout: $12,400/day' }
-        ],
-        useCases: ['Inventory monitoring', 'Demand forecasting', 'Stock rebalancing', 'Supply chain optimization']
-      },
-      {
-        id: 'fraud_detection_agent',
-        name: 'Fraud Detection',
-        category: 'finance',
-        icon: 'fa-shield-alt',
-        description: 'Real-time transaction fraud scoring, behavioral analytics, and intelligent alert prioritization for financial services.',
-        tokens: 740,
-        actions: ['score_transaction', 'analyze_account', 'detect_anomalies', 'get_alerts', 'investigate_case', 'generate_sar', 'get_fraud_metrics'],
-        demoConversation: [
-          { role: 'user', content: 'Analyze transaction TXN-847291 - $5,400 wire transfer to new beneficiary.' },
-          { role: 'agent', content: '**Transaction Risk Analysis: TXN-847291**\n\n**Risk Score: 78/100 (HIGH)**\n\n**Red Flags Detected:**\n- First-time beneficiary\n- Amount 3x above average\n- Geographic anomaly (beneficiary in high-risk region)\n- Time anomaly (outside normal hours)\n\n**Account History:**\n- No previous international wires\n- Recent password change (2 days ago)\n\n**Recommendation:** HOLD for verification. 2FA callback initiated.' }
-        ],
-        useCases: ['Transaction monitoring', 'Account takeover detection', 'SAR generation', 'Alert investigation']
-      },
-      {
-        id: 'project_tracker_agent',
-        name: 'Project Tracker',
-        category: 'operations',
-        icon: 'fa-tasks',
-        description: 'RAPP pipeline project management with milestone tracking, status reporting, and team coordination.',
-        tokens: 580,
-        actions: ['get_project_status', 'update_milestone', 'generate_report', 'notify_stakeholders', 'calculate_velocity'],
-        demoConversation: [
-          { role: 'user', content: 'Give me status on the CRM Integration project.' },
-          { role: 'agent', content: '**Project: CRM Integration**\n\n**Status:** On Track (78% complete)\n**Sprint:** 4 of 6\n**Due:** March 15, 2025\n\n**Milestones:**\n- [x] Discovery & Planning\n- [x] API Development\n- [x] Data Migration\n- [ ] Testing (In Progress - 60%)\n- [ ] UAT\n- [ ] Go-Live\n\n**Blockers:** None\n**Team Velocity:** 42 pts/sprint (target: 40)' }
-        ],
-        useCases: ['Project status tracking', 'Milestone management', 'Stakeholder reporting', 'Team velocity analysis']
-      },
-      {
-        id: 'context_memory_agent',
-        name: 'Context Memory',
-        category: 'core',
-        icon: 'fa-brain',
-        description: 'Core agent for recalling conversation history, user preferences, and context-specific memories across sessions.',
-        tokens: 320,
-        actions: ['recall_context', 'search_memory'],
-        demoConversation: [
-          { role: 'user', content: 'What do you remember about my preferences?' },
-          { role: 'agent', content: '**Your Stored Preferences:**\n\n- Preferred report format: Executive summary with charts\n- Communication style: Concise, bullet points\n- Timezone: Pacific (PST)\n- Weekly sync: Tuesdays 10am\n- Focus areas: Pipeline velocity, Customer retention\n\n**Recent Context:**\n- Last session: Discussed Q4 forecast\n- Pending action: Review Acme Corp proposal' }
-        ],
-        useCases: ['Preference recall', 'Context continuity', 'Personalization', 'Session memory']
-      },
-      {
-        id: 'manage_memory_agent',
-        name: 'Manage Memory',
-        category: 'core',
-        icon: 'fa-database',
-        description: 'Core agent for storing facts, preferences, insights, and tasks to persistent memory for future recall.',
-        tokens: 380,
-        actions: ['store_fact', 'store_preference', 'store_insight'],
-        demoConversation: [
-          { role: 'user', content: 'Remember that I prefer morning meetings and my assistant is named Alex.' },
-          { role: 'agent', content: '**Stored to Memory:**\n\n1. **Preference:** Morning meetings preferred\n   - Category: Scheduling\n   - Confidence: High\n\n2. **Fact:** Assistant name is Alex\n   - Category: Team/Contacts\n   - Confidence: High\n\nThese will be recalled in future conversations. Would you like me to remember anything else?' }
-        ],
-        useCases: ['Preference storage', 'Fact recording', 'Insight capture', 'Context building']
-      },
-      {
-        id: 'rapp_discovery_agent',
-        name: 'RAPP Discovery',
-        category: 'operations',
-        icon: 'fa-search',
-        description: 'Prepares discovery questions and processes customer conversation transcripts for the RAPP Pipeline.',
-        tokens: 520,
-        actions: ['prepare_questions', 'process_transcript', 'extract_requirements', 'identify_pain_points'],
-        demoConversation: [
-          { role: 'user', content: 'Prepare discovery questions for a retail inventory management use case.' },
-          { role: 'agent', content: '**Discovery Questions: Retail Inventory**\n\n**Current State:**\n1. How do you currently track inventory across locations?\n2. What systems are involved (POS, WMS, ERP)?\n3. How often do you experience stockouts?\n\n**Pain Points:**\n4. What\'s your biggest inventory-related cost?\n5. How much time does manual reconciliation take?\n\n**Success Criteria:**\n6. What would "success" look like in 6 months?\n7. What KPIs matter most to leadership?' }
-        ],
-        useCases: ['Discovery preparation', 'Transcript analysis', 'Requirements extraction', 'Pain point identification']
-      },
-      {
-        id: 'rapp_quality_gate_agent',
-        name: 'RAPP Quality Gate',
-        category: 'operations',
-        icon: 'fa-check-double',
-        description: 'Evaluates quality gates (QG1-QG6) throughout the RAPP pipeline process with pass/fail criteria.',
-        tokens: 680,
-        actions: ['evaluate_qg1', 'evaluate_qg2', 'evaluate_qg3', 'evaluate_qg4', 'evaluate_qg5', 'evaluate_qg6'],
-        demoConversation: [
-          { role: 'user', content: 'Evaluate QG1 for the Healthcare Intake project.' },
-          { role: 'agent', content: '**Quality Gate 1: Discovery Validation**\n\n**Result: PASS** (Score: 87/100)\n\n**Criteria Evaluation:**\n- [x] Pain point clearly articulated (10/10)\n- [x] Current state documented (9/10)\n- [x] Stakeholders identified (8/10)\n- [x] Success metrics defined (9/10)\n- [x] Timeline expectations set (8/10)\n\n**Recommendation:** Proceed to Step 2 (Requirements Mapping)\n\n**Note:** Consider adding quantified ROI expectations before MVP.' }
-        ],
-        useCases: ['Gate evaluation', 'Quality assurance', 'Process validation', 'Risk assessment']
-      },
-      {
-        id: 'rapp_mvp_generator_agent',
-        name: 'RAPP MVP Generator',
-        category: 'operations',
-        icon: 'fa-file-alt',
-        description: 'Generates lightweight MVP proposals with prioritized features, success metrics, and implementation estimates.',
-        tokens: 560,
-        actions: ['generate_mvp', 'prioritize_features', 'estimate_effort', 'define_success_metrics'],
-        demoConversation: [
-          { role: 'user', content: 'Generate MVP proposal for an automated invoice processing agent.' },
-          { role: 'agent', content: '**MVP Proposal: Invoice Processing Agent**\n\n**Core Features (P0):**\n1. PDF invoice ingestion\n2. Key field extraction (vendor, amount, date)\n3. Approval workflow trigger\n\n**Success Metrics:**\n- 80% auto-extraction accuracy\n- 50% reduction in processing time\n- <5% error rate\n\n**Estimated Effort:** 3-4 weeks\n**Dependencies:** OCR service, approval system API\n\n**Out of Scope (v1):** Multi-currency, PO matching' }
-        ],
-        useCases: ['MVP scoping', 'Feature prioritization', 'Effort estimation', 'Success definition']
-      },
-      {
-        id: 'rapp_code_generator_agent',
-        name: 'RAPP Code Generator',
-        category: 'operations',
-        icon: 'fa-code',
-        description: 'Generates AI agent code based on locked MVP scope following the BasicAgent pattern and best practices.',
-        tokens: 620,
-        actions: ['generate_agent', 'create_metadata', 'implement_actions', 'add_tests', 'document_agent'],
-        demoConversation: [
-          { role: 'user', content: 'Generate the skeleton for an Email Triage agent.' },
-          { role: 'agent', content: '```python\nfrom agents.basic_agent import BasicAgent\n\nclass EmailTriageAgent(BasicAgent):\n    def __init__(self):\n        self.name = \'EmailTriage\'\n        self.metadata = {\n            "name": self.name,\n            "description": "Triages incoming emails...",\n            "parameters": {\n                "type": "object",\n                "properties": {\n                    "action": {"type": "string", "enum": ["categorize", "prioritize", "suggest_response"]},\n                    "email_id": {"type": "string"}\n                }\n            }\n        }\n        super().__init__(self.name, self.metadata)\n```\n\nShall I implement the perform() method?' }
-        ],
-        useCases: ['Agent scaffolding', 'Code generation', 'Pattern implementation', 'Documentation']
-      },
-      {
-        id: 'rapp_pipeline_agent',
-        name: 'RAPP Pipeline',
-        category: 'operations',
-        icon: 'fa-stream',
-        description: 'Orchestrates the full RAPP pipeline with step-by-step guidance and quality gate enforcement.',
-        tokens: 480,
-        actions: ['start_pipeline', 'get_current_step', 'advance_step'],
-        demoConversation: [
-          { role: 'user', content: 'Start a new RAPP pipeline for a customer support chatbot.' },
-          { role: 'agent', content: '**RAPP Pipeline Initiated**\n\n**Project:** Customer Support Chatbot\n**Created:** December 6, 2025\n\n**Pipeline Steps:**\n1. **Discovery Call** <- You are here\n2. Requirements Mapping\n3. Solution Design\n4. MVP Proposal\n5. Development\n6. Testing & Validation\n\n**Next Action:** Schedule discovery call or upload existing transcript.\n\n**Quality Gate 1 (QG1):** Will evaluate after discovery completion.' }
-        ],
-        useCases: ['Pipeline orchestration', 'Step tracking', 'Gate enforcement', 'Progress monitoring']
-      },
-      {
-        id: 'scripted_demo_agent',
-        name: 'Scripted Demo',
-        category: 'operations',
-        icon: 'fa-play-circle',
-        description: 'Provides interactive demos and walkthroughs of agent capabilities for training and onboarding.',
-        tokens: 350,
-        actions: ['start_demo', 'next_step'],
-        demoConversation: [
-          { role: 'user', content: 'Show me a demo of the agent capabilities.' },
-          { role: 'agent', content: '**Welcome to Copilot Entra Agent Demo!**\n\n**Available Demo Scenarios:**\n\n1. **Sales Pipeline Review** (5 min)\n   Experience Account Intelligence & Customer 360\n\n2. **IT Support Ticket** (3 min)\n   See automated triage and resolution\n\n3. **Financial Reconciliation** (4 min)\n   Watch trade break detection in action\n\n4. **Full Platform Tour** (10 min)\n   Comprehensive walkthrough\n\nWhich demo would you like to try?' }
-        ],
-        useCases: ['Onboarding', 'Training', 'Capability showcase', 'Interactive learning']
-      },
-      {
-        id: 'github_agent_library_manager',
-        name: 'Agent Library Manager',
-        category: 'core',
-        icon: 'fa-download',
-        description: 'Manages agent library downloads, installations, and updates from the GitHub repository.',
-        tokens: 420,
-        actions: ['list_available', 'install_agent', 'update_agent', 'remove_agent'],
-        demoConversation: [
-          { role: 'user', content: 'Show me available agents I can install.' },
-          { role: 'agent', content: '**Available Agents in Library:**\n\n**Finance (2):**\n- Trade Reconciliation v1.2 [Installed]\n- Fraud Detection v1.0 [Installed]\n\n**Sales (3):**\n- Customer 360 v1.1 [Update Available]\n- Account Intelligence v1.0 [Installed]\n- Sales Coach v1.0 [Not Installed]\n\n**Healthcare (1):**\n- Patient Intake v1.0 [Not Installed]\n\n**Updates Available:** 1\n**New Agents:** 2\n\nWould you like to install or update any agents?' }
-        ],
-        useCases: ['Agent installation', 'Library management', 'Version updates', 'Agent removal']
-      }
-    ];
-
-    // Category display names
-    const categories = {
-      'all': 'All Agents',
-      'core': 'Core',
-      'finance': 'Finance',
-      'sales': 'Sales',
-      'customer-service': 'Customer Service',
-      'healthcare': 'Healthcare',
-      'operations': 'Operations',
-      'it': 'IT/Support'
+    const categoryLabels = {
+      'all': 'All', 'core': 'Core', 'finance': 'Finance', 'sales': 'Sales',
+      'customer-service': 'Customer Service', 'healthcare': 'Healthcare',
+      'operations': 'Operations', 'it': 'IT/Support', 'general': 'General',
+      'migration': 'Migration', 'development': 'Development'
     };
 
-    // Render agents
-    function renderAgents(filter = 'all') {
-      const grid = document.getElementById('agents-grid');
-      const filtered = filter === 'all'
-        ? agentDemos
-        : agentDemos.filter(a => a.category === filter);
+    let allDemos = [];
+    let activeCategory = 'all';
 
-      grid.innerHTML = filtered.map(agent => `
-        <div class="agent-card" data-agent-id="${agent.id}">
-          <div class="agent-header">
-            <div class="agent-icon ${agent.category}">
-              <i class="fas ${agent.icon}"></i>
-            </div>
-            <div class="agent-info">
-              <h3>${agent.name}</h3>
-              <div class="agent-category">${categories[agent.category] || agent.category}</div>
-            </div>
-          </div>
-          <p class="agent-description">${agent.description}</p>
-          <div class="agent-metrics">
-            <div class="metric">
-              <div class="metric-value">${agent.tokens}</div>
-              <div class="metric-label">Tokens</div>
-            </div>
-            <div class="metric">
-              <div class="metric-value">${agent.actions.length}</div>
-              <div class="metric-label">Actions</div>
-            </div>
-            <div class="metric">
-              <div class="metric-value">${agent.useCases.length}</div>
-              <div class="metric-label">Use Cases</div>
-            </div>
-          </div>
-          <div class="demo-section">
-            <h4>Sample Conversation</h4>
-            <div class="demo-conversation">
-              ${agent.demoConversation.map(msg => `
-                <div class="demo-message ${msg.role}">
-                  <div class="demo-message-role">${msg.role === 'user' ? 'You' : 'Agent'}</div>
-                  <div class="demo-message-content">${msg.content.replace(/\n/g, '<br>')}</div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-          <div class="agent-actions">
-            ${agent.actions.slice(0, 5).map(action => `
-              <span class="action-tag">${action}</span>
-            `).join('')}
-            ${agent.actions.length > 5 ? `<span class="action-tag">+${agent.actions.length - 5} more</span>` : ''}
-          </div>
-          <div class="agent-footer">
-            <a href="${agent.id}.json" download class="btn btn-secondary">
-              <i class="fas fa-download"></i> JSON
-            </a>
-            <button class="btn btn-primary" onclick="tryDemo('${agent.id}')">
-              <i class="fas fa-play"></i> Try Demo
-            </button>
-          </div>
-        </div>
-      `).join('');
+    // Hardcoded fallback list (used when fetch fails, e.g. file:// protocol)
+    const KNOWN_DEMO_FILES = [
+      'account_intelligence_agent.json',
+      'agent_generator_agent.json',
+      'agent_transpiler_agent.json',
+      'artist_contract_intelligence_assistant_agent.json',
+      'call_center_agent.json',
+      'context_memory_agent.json',
+      'copilot_studio_transpiler_agent.json',
+      'customer_360_agent.json',
+      'cx_account_intel_agent.json',
+      'cx_customization_converter_agent.json',
+      'cx_end_to_end_migration_demo.json',
+      'cx_migration_engine_agent.json',
+      'cx_sales_pipeline_agent.json',
+      'd365_digital_twin_demo.json',
+      'd365_sync_guardian_demo.json',
+      'fraud_detection_agent.json',
+      'github_agent_library_manager.json',
+      'hacker_news_agent.json',
+      'inventory_visibility_agent.json',
+      'it_ticket_agent.json',
+      'manage_memory_agent.json',
+      'patient_intake_agent.json',
+      'project_tracker_agent.json',
+      'rapp_code_generator_agent.json',
+      'rapp_discovery_agent.json',
+      'rapp_mvp_generator_agent.json',
+      'rapp_pipeline_agent.json',
+      'rapp_quality_gate_agent.json',
+      'sales_coach_agent.json',
+      'scripted_demo_agent.json',
+      'sma4_workbench_orchestrator_agent.json',
+      'social_media_manager_agent.json',
+      'trade_reconciliation_agent.json'
+    ];
+
+    async function getDemoFileList() {
+      try {
+        const resp = await fetch('demo_manifest.json');
+        if (resp.ok) return await resp.json();
+      } catch (e) { /* manifest fetch failed */ }
+      return KNOWN_DEMO_FILES;
     }
 
-    // Category tab handling
-    document.querySelectorAll('.category-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        renderAgents(tab.dataset.category);
+    // fetch wrapper that works on both http:// and file:// protocols
+    function fetchJSON(url) {
+      return new Promise((resolve, reject) => {
+        // Try fetch first (works on http://)
+        if (window.location.protocol !== 'file:') {
+          fetch(url).then(r => { if (r.ok) return r.json(); throw new Error('not ok'); })
+            .then(resolve).catch(reject);
+          return;
+        }
+        // Fallback: XMLHttpRequest (works on file:// in most browsers)
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.onload = function () {
+          if (xhr.status === 0 || xhr.status === 200) {
+            try { resolve(JSON.parse(xhr.responseText)); }
+            catch (e) { reject(e); }
+          } else { reject(new Error(xhr.statusText)); }
+        };
+        xhr.onerror = function () { reject(new Error('XHR error')); };
+        xhr.send();
       });
-    });
+    }
 
-    // Try demo - opens main app with demo context
-    function tryDemo(agentId) {
-      const agent = agentDemos.find(a => a.id === agentId);
-      if (agent) {
-        // Store demo context
-        sessionStorage.setItem('demo_agent', JSON.stringify(agent));
-        // Redirect to main app
-        window.location.href = '../index.html?demo=' + agentId;
+    async function loadAllDemos() {
+      const grid = document.getElementById('agents-grid');
+      const fileList = await getDemoFileList();
+
+      const loaded = [];
+      const results = await Promise.allSettled(fileList.map(async (file) => {
+        try {
+          const data = await fetchJSON(file);
+          if (data.conversation_flow && data.conversation_flow.length > 0) {
+            loaded.push({ _filename: file, ...data });
+          }
+        } catch (e) { /* skip unloadable files */ }
+      }));
+
+      if (loaded.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Could not load demo JSON files.<br><small>Try opening via a local web server instead of file://</small></p></div>';
+        return;
       }
+
+      allDemos = loaded.sort((a, b) => {
+        const nameA = a.demo_name || a.agent?.name || a._filename;
+        const nameB = b.demo_name || b.agent?.name || b._filename;
+        return nameA.localeCompare(nameB);
+      });
+
+      buildCategoryTabs();
+      updateStats();
+      renderGrid();
     }
 
-    // Update stats
+    function buildCategoryTabs() {
+      const cats = new Set();
+      allDemos.forEach(d => cats.add(d.agent?.category || 'general'));
+      const tabsEl = document.getElementById('category-tabs');
+      tabsEl.innerHTML = '<button class="category-tab active" data-category="all">All</button>';
+      [...cats].sort().forEach(cat => {
+        const label = categoryLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
+        tabsEl.innerHTML += `<button class="category-tab" data-category="${esc(cat)}">${esc(label)}</button>`;
+      });
+
+      tabsEl.querySelectorAll('.category-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabsEl.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          activeCategory = tab.dataset.category;
+          renderGrid();
+        });
+      });
+    }
+
     function updateStats() {
-      const totalActions = agentDemos.reduce((sum, a) => sum + a.actions.length, 0);
-      const uniqueCategories = new Set(agentDemos.map(a => a.category)).size;
-
-      document.getElementById('total-agents').textContent = agentDemos.length;
-      document.getElementById('total-actions').textContent = totalActions;
-      document.getElementById('industries').textContent = uniqueCategories;
-      document.getElementById('total-demos').textContent = agentDemos.length;
+      document.getElementById('total-agents').textContent = allDemos.length;
+      const totalSteps = allDemos.reduce((s, d) => s + (d.conversation_flow?.length || 0), 0);
+      document.getElementById('total-steps').textContent = totalSteps;
+      const cats = new Set(allDemos.map(d => d.agent?.category || 'general'));
+      document.getElementById('total-categories').textContent = cats.size;
     }
 
-    // Initialize
-    renderAgents();
-    updateStats();
+    function getFilteredDemos() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      return allDemos.filter(d => {
+        const cat = d.agent?.category || 'general';
+        if (activeCategory !== 'all' && cat !== activeCategory) return false;
+        if (!query) return true;
+        const name = (d.demo_name || d.agent?.name || '').toLowerCase();
+        const desc = (d.description || d.agent?.description || '').toLowerCase();
+        const triggers = (d.trigger_phrases || []).join(' ').toLowerCase();
+        return name.includes(query) || desc.includes(query) || cat.includes(query) || triggers.includes(query);
+      });
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('agents-grid');
+      const demos = getFilteredDemos();
+
+      if (demos.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><i class="fas fa-film"></i><p>No demos match your search</p></div>';
+        return;
+      }
+
+      grid.innerHTML = demos.map(demo => {
+        const name = demo.demo_name || demo.agent?.name || demo._filename.replace('.json', '');
+        const desc = demo.description || demo.agent?.description || '';
+        const cat = demo.agent?.category || 'general';
+        const icon = demo.agent?.icon || 'fa-play-circle';
+        const steps = demo.conversation_flow?.length || 0;
+        const tokens = demo.agent?.tokens || '—';
+        const triggers = demo.trigger_phrases || [];
+        const flow = demo.conversation_flow || [];
+        const previewSteps = flow.slice(0, 3);
+        const fileBase = demo._filename.replace('.json', '');
+
+        return `
+          <div class="agent-card">
+            <div class="agent-header">
+              <div class="agent-icon ${esc(cat)}">
+                <i class="fas ${esc(icon)}"></i>
+              </div>
+              <div class="agent-info">
+                <h3>${esc(name)}</h3>
+                <div class="agent-category">${esc(categoryLabels[cat] || cat)}</div>
+              </div>
+            </div>
+            <p class="agent-description">${esc(desc)}</p>
+            <div class="agent-metrics">
+              <div class="metric">
+                <div class="metric-value">${steps}</div>
+                <div class="metric-label">Steps</div>
+              </div>
+              <div class="metric">
+                <div class="metric-value">${tokens}</div>
+                <div class="metric-label">Tokens</div>
+              </div>
+              ${triggers.length ? `<div class="metric"><div class="metric-value">${triggers.length}</div><div class="metric-label">Triggers</div></div>` : ''}
+            </div>
+            <div class="demo-section">
+              <h4><i class="fas fa-comments"></i> Conversation Preview</h4>
+              <div class="demo-conversation" id="conv-${esc(fileBase)}">
+                ${previewSteps.map((step, i) => `
+                  <div class="demo-step">
+                    <div class="demo-step-label">Step ${i + 1}${step.description ? ' — ' + esc(step.description) : ''}</div>
+                    <div class="demo-step-user"><i class="fas fa-user"></i> ${esc(step.user_message || '')}</div>
+                    <div class="demo-step-agent">${esc(typeof step.agent_response === 'string' ? step.agent_response : JSON.stringify(step.agent_response)).substring(0, 300)}${(typeof step.agent_response === 'string' ? step.agent_response : '').length > 300 ? '...' : ''}</div>
+                  </div>
+                `).join('')}
+                ${flow.length > 3 ? `<div style="text-align:center; padding: 8px;"><button class="demo-expand-btn" onclick="expandConversation(this, '${esc(fileBase)}')">Show all ${flow.length} steps ▾</button></div>` : ''}
+              </div>
+            </div>
+            ${triggers.length ? `
+            <div class="trigger-phrases">
+              ${triggers.slice(0, 4).map(t => `<span class="trigger-tag">${esc(t)}</span>`).join('')}
+              ${triggers.length > 4 ? `<span class="trigger-tag">+${triggers.length - 4} more</span>` : ''}
+            </div>` : ''}
+            <div class="agent-footer">
+              <a href="${esc(demo._filename)}" download class="btn btn-secondary">
+                <i class="fas fa-download"></i> JSON
+              </a>
+              <button class="btn btn-accent" onclick="playInRapp('${esc(demo._filename)}')">
+                <i class="fas fa-play"></i> Play in RAPP
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function expandConversation(btn, fileBase) {
+      const demo = allDemos.find(d => d._filename.replace('.json', '') === fileBase);
+      if (!demo) return;
+      const container = document.getElementById('conv-' + fileBase);
+      container.style.maxHeight = 'none';
+      container.innerHTML = demo.conversation_flow.map((step, i) => `
+        <div class="demo-step">
+          <div class="demo-step-label">Step ${i + 1}${step.description ? ' — ' + esc(step.description) : ''}</div>
+          <div class="demo-step-user"><i class="fas fa-user"></i> ${esc(step.user_message || '')}</div>
+          <div class="demo-step-agent" style="max-height:none">${esc(typeof step.agent_response === 'string' ? step.agent_response : JSON.stringify(step.agent_response))}</div>
+        </div>
+      `).join('') + `<div style="text-align:center; padding: 8px;"><button class="demo-expand-btn" onclick="collapseConversation('${fileBase}')">Show less ▴</button></div>`;
+    }
+
+    function collapseConversation(fileBase) {
+      renderGrid();
+    }
+
+    function playInRapp(filename) {
+      const demoId = filename.replace('.json', '');
+      window.location.href = '../index.html?demo=' + encodeURIComponent(demoId);
+    }
+
+    function esc(str) {
+      if (str == null) return '';
+      const div = document.createElement('div');
+      div.textContent = String(str);
+      return div.innerHTML;
+    }
+
+    // Search binding
+    document.getElementById('search-input').addEventListener('input', () => renderGrid());
+
+    // Init
+    loadAllDemos();
   </script>
 </body>
 </html>

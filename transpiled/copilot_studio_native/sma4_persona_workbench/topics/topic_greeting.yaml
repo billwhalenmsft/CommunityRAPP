@@ -1,0 +1,33 @@
+kind: AdaptiveDialog
+id: topic_greeting
+displayName: Greeting
+triggers:
+- kind: OnRecognizedIntent
+  intent: Greeting
+actions:
+- kind: Question
+  id: askPersona
+  prompt: |
+    Welcome to the **SMA4 Persona Workbench** — your unified sales operations cockpit.
+
+    I provide persona-specific views of your pipeline, tasks, exceptions, approvals, and handoffs.
+
+    **Who are you today?**
+    1. **Sarah Chen** — Sales Rep (Account Executive)
+    2. **Mike Torres** — Coordinator (Sales Operations)
+    3. **Priya Patel** — Marketing Manager
+    4. **James Harrison** — VP Sales (Manager)
+
+    Please select your persona or tell me your name.
+  variable: Topic.SelectedPersona
+- kind: SendMessage
+  message: |
+    Great! I've set your persona. You can ask me things like:
+    - "Show me my cockpit view"
+    - "What's in my pipeline?"
+    - "What tasks do I have?"
+    - "Are there any exceptions?"
+    - "Do I have pending approvals?"
+    - "What handoffs need my attention?"
+
+    What would you like to see?

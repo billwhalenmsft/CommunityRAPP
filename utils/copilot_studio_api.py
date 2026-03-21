@@ -367,11 +367,15 @@ class CopilotStudioClient:
         
         # Build bot configuration with AI settings
         # CRITICAL: useModelKnowledge MUST be True for generative AI to work!
+        # Generate a unique GPT component suffix to avoid schema collisions
+        gpt_suffix = uuid.uuid4().hex[:8]
+        
         bot_configuration = {
             "$kind": "BotConfiguration",
             "gPTSettings": {
                 "$kind": "GPTSettings",
-                "defaultSchemaName": f"{schema_name}.gpt.default"
+                "defaultSchemaName": f"{schema_name}.gpt.{gpt_suffix}",
+                "isGPTGenerated": True
             },
             "aISettings": {
                 "$kind": "AISettings",
@@ -440,7 +444,9 @@ class CopilotStudioClient:
                         bot_id=bot_id,
                         name=f"{name} - Instructions",
                         instructions=agent_instructions,
-                        description=description
+                        description=description,
+                        bot_schema_name=schema_name,
+                        gpt_suffix=gpt_suffix
                     )
                     logger.info(f"Created GPT component with instructions for bot {bot_id}")
                 except Exception as gpt_error:
@@ -463,7 +469,8 @@ class CopilotStudioClient:
         description: str = "",
         web_browsing: bool = False,
         code_interpreter: bool = False,
-        bot_schema_name: str = None
+        bot_schema_name: str = None,
+        gpt_suffix: str = None
     ) -> str:
         """
         Create a Custom GPT component for an agent (componenttype 15).
@@ -487,14 +494,14 @@ class CopilotStudioClient:
         Returns:
             str: The component ID
         """
-        # Schema name must follow pattern: {bot_schemaname}.gpt.default
-        # This is what Copilot Studio expects for the GPT component
+        # Schema name must be unique across the environment.
+        # Using a UUID suffix avoids collisions when recreating agents.
         if not bot_schema_name:
-            # Get the bot's schema name
             bot = self.get_agent(bot_id)
             bot_schema_name = bot.get('schemaname', self._generate_schema_name(name))
         
-        schema_name = f"{bot_schema_name}.gpt.default"
+        suffix = gpt_suffix or uuid.uuid4().hex[:8]
+        schema_name = f"{bot_schema_name}.gpt.{suffix}"
         
         # Build GPT component data as YAML (this is what working agents use)
         # Format based on analysis of working agents like "D365 Sales Agent - Research"
@@ -614,6 +621,10 @@ displayName: {name}
         config['aISettings']['optInUseLatestModels'] = True
         config['aISettings']['generativeAnswersEnabled'] = enable_generative_ai
         config['aISettings']['boostedConversationsEnabled'] = enable_generative_ai
+        
+        # Ensure gPTSettings has isGPTGenerated flag
+        if 'gPTSettings' in config:
+            config['gPTSettings']['isGPTGenerated'] = True
         
         # Set orchestration type
         if 'settings' not in config:
@@ -977,6 +988,481 @@ displayName: {name}
         
         return results
     
+    # =========================================================================
+    # SYSTEM TOPIC CREATION (REQUIRED FOR AGENT TO WORK IN CS UI)
+    # =========================================================================
+
+    def create_system_topics(self, bot_id: str, bot_schema_name: str = None) -> List[str]:
+        """
+        Create all required system topics for an agent.
+        
+        Copilot Studio agents REQUIRE these system topics to function properly.
+        Without them, opening the agent in the CS UI fails with
+        "We ran into a problem creating your agent".
+        
+        Args:
+            bot_id: The bot ID
+            bot_schema_name: Bot schema name (will be retrieved if not provided)
+            
+        Returns:
+            List of created component IDs
+        """
+        if not bot_schema_name:
+            bot = self.get_agent(bot_id)
+            bot_schema_name = bot.get('schemaname', '')
+
+        system_topics = self._get_system_topic_definitions(bot_schema_name)
+        created_ids = []
+
+        for topic_def in system_topics:
+            try:
+                component_data = {
+                    "name": topic_def["name"],
+                    "schemaname": topic_def["schemaname"],
+                    "componenttype": 9,  # topic_v2
+                    "data": topic_def["data"],
+                    "parentbotid@odata.bind": f"/bots({bot_id})",
+                    "statecode": 0,
+                    "statuscode": 1
+                }
+
+                response = requests.post(
+                    f"{self.api_base_url}/botcomponents",
+                    headers=self.headers,
+                    json=component_data
+                )
+
+                if response.status_code in [200, 201, 204]:
+                    comp_id = None
+                    if response.text:
+                        result = response.json()
+                        comp_id = result.get("botcomponentid")
+                    else:
+                        entity_id = response.headers.get("OData-EntityId", "")
+                        import re
+                        match = re.search(r'botcomponents\(([^)]+)\)', entity_id)
+                        comp_id = match.group(1) if match else None
+
+                    if comp_id:
+                        self._associate_component_to_bot(bot_id, comp_id)
+                        created_ids.append(comp_id)
+                        logger.info(f"Created system topic: {topic_def['name']}")
+                else:
+                    logger.warning(f"Failed to create {topic_def['name']}: {response.text[:200]}")
+            except Exception as e:
+                logger.warning(f"Error creating {topic_def['name']}: {e}")
+
+        return created_ids
+
+    def create_instructions_component(self, bot_id: str, name: str, instructions: str,
+                                       description: str = "", bot_schema_name: str = None) -> str:
+        """
+        Create a type 10 (bot_translations_v2) instructions component.
+        
+        This stores the instructions in a JSON 'content' field and is the
+        component type that Copilot Studio reads for the Overview page display.
+        
+        Args:
+            bot_id: Parent bot ID
+            name: Component display name
+            instructions: The agent instructions text
+            description: Agent description
+            bot_schema_name: Bot schema name
+            
+        Returns:
+            str: Component ID
+        """
+        if not bot_schema_name:
+            bot = self.get_agent(bot_id)
+            bot_schema_name = bot.get('schemaname', '')
+
+        schema_name = f"rapp_gpt_{bot_schema_name.replace('rapp_', '')}_Instructions_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
+        content = json.dumps({
+            "kind": "Gpt",
+            "gptParameters": {
+                "content": instructions,
+                "name": f"{name} - Instructions",
+                "description": description
+            }
+        })
+
+        component_data = {
+            "name": f"{name} - Instructions",
+            "schemaname": schema_name[:100],
+            "componenttype": 10,  # bot_translations_v2
+            "content": content,
+            "parentbotid@odata.bind": f"/bots({bot_id})",
+            "statecode": 0,
+            "statuscode": 1
+        }
+
+        response = requests.post(
+            f"{self.api_base_url}/botcomponents",
+            headers=self.headers,
+            json=component_data
+        )
+
+        if response.status_code in [200, 201, 204]:
+            comp_id = None
+            if response.text:
+                comp_id = response.json().get("botcomponentid")
+            else:
+                entity_id = response.headers.get("OData-EntityId", "")
+                import re
+                match = re.search(r'botcomponents\(([^)]+)\)', entity_id)
+                comp_id = match.group(1) if match else None
+
+            if comp_id:
+                self._associate_component_to_bot(bot_id, comp_id)
+                return comp_id
+            raise CopilotStudioAPIError("Instructions component created but could not extract ID")
+        else:
+            raise CopilotStudioAPIError(
+                f"Failed to create instructions component: {response.text}",
+                status_code=response.status_code
+            )
+
+    def _get_system_topic_definitions(self, bot_schema: str) -> List[Dict]:
+        """Return the minimum set of system topic definitions required by Copilot Studio."""
+        return [
+            {
+                "name": "Conversation Start",
+                "schemaname": f"{bot_schema}.topic.ConversationStart",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnConversationStart\n"
+                    "  id: main\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_welcome\n"
+                    "      activity:\n"
+                    "        text:\n"
+                    "          - Hello, I'm {System.Bot.Name}. How can I help?\n"
+                    "        speak:\n"
+                    "          - Hello, I'm {System.Bot.Name}. How can I help you today?\n"
+                )
+            },
+            {
+                "name": "Greeting",
+                "schemaname": f"{bot_schema}.topic.Greeting",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Greeting\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Good afternoon\n"
+                    "      - Good morning\n"
+                    "      - Hello\n"
+                    "      - Hey\n"
+                    "      - Hi\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_greet\n"
+                    "      activity:\n"
+                    "        text:\n"
+                    "          - Hello, how can I help you today?\n"
+                    "        speak:\n"
+                    "          - Hello, how can I help?\n"
+                    "    - kind: CancelAllDialogs\n"
+                    "      id: cancelAllDialogs_01\n"
+                )
+            },
+            {
+                "name": "Goodbye",
+                "schemaname": f"{bot_schema}.topic.Goodbye",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Goodbye\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Bye\n"
+                    "      - Goodbye\n"
+                    "      - See you later\n"
+                    "      - Take care\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_bye\n"
+                    "      activity:\n"
+                    "        text:\n"
+                    "          - Goodbye! Have a great day.\n"
+                    "    - kind: CancelAllDialogs\n"
+                    "      id: cancelAllDialogs_02\n"
+                )
+            },
+            {
+                "name": "Escalate",
+                "schemaname": f"{bot_schema}.topic.Escalate",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "startBehavior: CancelOtherTopics\n"
+                    "beginDialog:\n"
+                    "  kind: OnEscalate\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Escalate\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Talk to a person\n"
+                    "      - Talk to representative\n"
+                    "      - Customer service\n"
+                    "      - I need help from a person\n"
+                    "      - Chat with a human\n"
+                    "      - Connect me to a representative\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_escalate\n"
+                    "      conversationOutcome: Escalated\n"
+                    "      activity: |-\n"
+                    "        Escalating to a representative is not currently configured.\n"
+                )
+            },
+            {
+                "name": "Fallback",
+                "schemaname": f"{bot_schema}.topic.Fallback",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnUnknownIntent\n"
+                    "  id: main\n"
+                    "  actions:\n"
+                    "    - kind: ConditionGroup\n"
+                    "      id: conditionGroup_fallback\n"
+                    "      conditions:\n"
+                    "        - id: conditionItem_retry\n"
+                    "          condition: =System.FallbackCount < 3\n"
+                    "          actions:\n"
+                    "            - kind: SendActivity\n"
+                    "              id: sendMessage_retry\n"
+                    "              activity: I'm sorry, I'm not sure how to help with that. Can you try rephrasing?\n"
+                    "      elseActions:\n"
+                    "        - kind: BeginDialog\n"
+                    "          id: escalate_fallback\n"
+                    "          dialog: " + bot_schema + ".topic.Escalate\n"
+                )
+            },
+            {
+                "name": "On Error",
+                "schemaname": f"{bot_schema}.topic.OnError",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnError\n"
+                    "  id: main\n"
+                    "  actions:\n"
+                    "    - kind: SetVariable\n"
+                    "      id: setVariable_timestamp\n"
+                    "      variable: init:Topic.CurrentTime\n"
+                    "      value: =Text(Now(), DateTimeFormat.UTC)\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_error\n"
+                    "      activity:\n"
+                    "        text:\n"
+                    "          - |-\n"
+                    "            An error has occurred.\n"
+                    "            Error code: {System.Error.Code}\n"
+                    "            Conversation Id: {System.Conversation.Id}\n"
+                    "            Time (UTC): {Topic.CurrentTime}.\n"
+                    "        speak:\n"
+                    "          - An error has occurred, please try again.\n"
+                    "    - kind: CancelAllDialogs\n"
+                    "      id: cancelAll_error\n"
+                )
+            },
+            {
+                "name": "End of Conversation",
+                "schemaname": f"{bot_schema}.topic.EndofConversation",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: End of Conversation\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - That's all\n"
+                    "      - I'm done\n"
+                    "      - No more questions\n"
+                    "      - That's it\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_end\n"
+                    "      activity: Thank you! If you need anything else, just ask.\n"
+                    "    - kind: CancelAllDialogs\n"
+                    "      id: cancelAll_end\n"
+                )
+            },
+            {
+                "name": "Thank you",
+                "schemaname": f"{bot_schema}.topic.ThankYou",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Thank you\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Thank you\n"
+                    "      - Thanks\n"
+                    "      - Appreciate it\n"
+                    "      - Thank you so much\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_thanks\n"
+                    "      activity: You're welcome! Is there anything else?\n"
+                )
+            },
+            {
+                "name": "Start Over",
+                "schemaname": f"{bot_schema}.topic.StartOver",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Start Over\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Start over\n"
+                    "      - Restart\n"
+                    "      - Begin again\n"
+                    "      - New topic\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_restart\n"
+                    "      activity: Sure, let's start over. How can I help you?\n"
+                    "    - kind: CancelAllDialogs\n"
+                    "      id: cancelAll_restart\n"
+                )
+            },
+            {
+                "name": "Reset Conversation",
+                "schemaname": f"{bot_schema}.topic.ResetConversation",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Reset Conversation\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Reset\n"
+                    "      - Clear conversation\n"
+                    "  actions:\n"
+                    "    - kind: CancelAllDialogs\n"
+                    "      id: cancelAll_reset\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_reset\n"
+                    "      activity: Conversation has been reset. How can I help?\n"
+                )
+            },
+            {
+                "name": "Multiple Topics Matched",
+                "schemaname": f"{bot_schema}.topic.MultipleTopicsMatched",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnChooseTopicIntent\n"
+                    "  id: main\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_multi\n"
+                    "      activity: I found a few topics that might help. Which one would you like?\n"
+                )
+            },
+            {
+                "name": "Sign in",
+                "schemaname": f"{bot_schema}.topic.Signin",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Sign in\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Sign in\n"
+                    "      - Log in\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_signin\n"
+                    "      activity: Sign in is not configured for this agent.\n"
+                )
+            },
+            {
+                "name": "Lesson 1 - A simple topic",
+                "schemaname": f"{bot_schema}.topic.Lesson1",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Lesson 1\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Lesson 1\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_l1\n"
+                    "      activity: This is a simple topic.\n"
+                )
+            },
+            {
+                "name": "Lesson 2 - A simple topic with a condition and variable",
+                "schemaname": f"{bot_schema}.topic.Lesson2",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Lesson 2\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Lesson 2\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_l2\n"
+                    "      activity: This is a topic with a condition.\n"
+                )
+            },
+            {
+                "name": "Lesson 3 - A topic with a condition, variables and a pre-built entity",
+                "schemaname": f"{bot_schema}.topic.Lesson3",
+                "data": (
+                    "kind: AdaptiveDialog\n"
+                    "beginDialog:\n"
+                    "  kind: OnRecognizedIntent\n"
+                    "  id: main\n"
+                    "  intent:\n"
+                    "    displayName: Lesson 3\n"
+                    "    includeInOnSelectIntent: false\n"
+                    "    triggerQueries:\n"
+                    "      - Lesson 3\n"
+                    "  actions:\n"
+                    "    - kind: SendActivity\n"
+                    "      id: sendMessage_l3\n"
+                    "      activity: This is a topic with conditions and entities.\n"
+                )
+            }
+        ]
+
     # =========================================================================
     # UTILITY METHODS
     # =========================================================================

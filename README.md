@@ -85,6 +85,32 @@ bash setup.sh
 - 💼 **Microsoft 365 Integration** - Optional deployment to Teams & M365 Copilot (via Power Platform)
 - 🤖 **Multi-Channel Support** - Web, Teams, M365 Copilot, or direct API access
 
+## 🌐 RAPP Web UI & Demo Showcase
+
+Once deployed, your RAPP instance includes a hosted web experience:
+
+| URL | Description |
+|-----|-------------|
+| `/api/ui/` | **Welcome page** — landing page for new users with quick start guide |
+| `/api/ui/index.html` | **Chat UI** — full chat interface with Demo Hub (🎬 button) |
+| `/api/ui/demos/demos.html` | **Demo Showcase** — browse & preview all 30+ agent demos |
+
+**Example:** `https://your-function-app.azurewebsites.net/api/ui/`
+
+### Demo Hub (inside Chat UI)
+Click the 🎬 button in the Chat UI header to open the **Demo Hub** panel:
+- Browse all agent demos with search & category filters
+- **Step-by-step teleprompter** — click ▶️ Next or ⏩ Auto-Play
+- Steps render directly in the chat like a real conversation
+- Deep-link support: `index.html?demo=sma4_workbench_orchestrator_agent`
+
+### Demo Showcase (standalone page)
+The `/api/ui/demos/demos.html` page provides a full-page showcase:
+- Dynamically loads all `demos/*.json` files
+- Conversation preview with expand/collapse
+- **"Play in RAPP"** button opens any demo in the Chat UI
+- Category filtering and full-text search
+
 ## 🎯 Key Features
 
 ### Fully Automated Setup

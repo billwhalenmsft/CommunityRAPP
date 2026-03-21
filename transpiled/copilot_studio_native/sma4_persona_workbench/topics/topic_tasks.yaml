@@ -1,0 +1,23 @@
+kind: AdaptiveDialog
+id: topic_tasks
+displayName: Task Queue
+triggers:
+- kind: OnRecognizedIntent
+  intent: tasks
+  triggerQueries:
+  - show me my tasks
+  - what tasks do I have
+  - task queue
+  - task list
+  - what do I need to do
+  - priority tasks
+  - overdue tasks
+  - what's on my plate
+  - task status
+actions:
+- kind: GenerativeAnswer
+  prompt: |
+    The user is asking about their task queue. Filter tasks by the active persona.
+    Sort by priority score. Show task details including title, type, priority, due date,
+    associated deal, and status. Highlight overdue tasks. Use the priority scoring formula
+    to explain rankings if asked.

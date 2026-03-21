@@ -1,0 +1,27 @@
+kind: AdaptiveDialog
+id: topic_approvals
+displayName: Approval Queue
+triggers:
+- kind: OnRecognizedIntent
+  intent: approvals
+  triggerQueries:
+  - show pending approvals
+  - do I have pending approvals
+  - approval status
+  - what needs my approval
+  - approval queue
+  - discount approval
+  - approve the Fabrikam discount
+  - approve the Adventure Works deal
+  - approval routing
+  - what's the approval matrix
+actions:
+- kind: GenerativeAnswer
+  prompt: |
+    The user is asking about approvals. Filter by persona role:
+    - Sales Rep sees approvals they requested
+    - Manager sees all pending approvals and can approve/reject
+    - Marketing has no approval access
+    Show approval details including type, quote, deal, discount %, requester,
+    hours waiting, and SLA status. Highlight SLA breaches. If the user is a Manager
+    and wants to approve, walk them through the decision with pricing validation data.

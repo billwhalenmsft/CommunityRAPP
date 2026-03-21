@@ -1,0 +1,18 @@
+{
+  "agent_name": "SMA4 Persona Workbench",
+  "bot_id": "e9c8c742-8b24-f111-88b4-000d3a316172",
+  "bot_schema": "rapp_SMA4_Persona_Workbench_20260320133321",
+  "environment_url": "https://org6feab6b5.crm.dynamics.com",
+  "instructions_length": 14405,
+  "components": {
+    "9": 15,
+    "10": 1,
+    "15": 1
+  },
+  "gpt_component_id": "6a6678f7-8b24-f111-88b4-000d3a316172",
+  "gpt_schema": "rapp_SMA4_Persona_Workbench_20260320133321.gpt.075aca5c",
+  "deployed_at": "2026-03-20T13:34:10",
+  "gpt_fixed_at": "2026-03-20T14:02:00",
+  "status": "deployed",
+  "has_gpt": true
+}

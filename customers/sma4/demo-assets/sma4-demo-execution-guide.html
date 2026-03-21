@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMA4 Persona Workbench — Demo Execution Guide</title>
+    <style>
+        :root {
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-warm: #D83B01;
+            --accent-green: #107C10;
+            --accent-purple: #5C2D91;
+            --accent-teal: #008575;
+            --accent-red: #A4262C;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg, #0078D4 0%, #5C2D91 50%, #008575 100%);
+            color: white;
+            padding: 50px 40px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0078D4, #5C2D91, #008575, #D83B01, #FFB900);
+        }
+        .hero h1 { font-size: 2.2rem; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .hero .subtitle { font-size: 1.1rem; opacity: 0.92; font-weight: 300; margin-bottom: 16px; }
+        .hero .meta {
+            display: flex; justify-content: center; gap: 28px;
+            font-size: 0.88rem; opacity: 0.88; flex-wrap: wrap;
+        }
+        .hero .meta span { display: flex; align-items: center; gap: 6px; }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.22);
+            border: 1px solid rgba(255,255,255,0.45);
+            border-radius: 20px;
+            padding: 4px 18px;
+            font-size: 0.76rem; font-weight: 700;
+            margin-top: 14px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* ── Container ── */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── Section labels ── */
+        .section-label {
+            font-size: 0.72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--ms-blue);
+            margin-top: 48px; margin-bottom: 12px;
+        }
+
+        /* ── Preflight checklist ── */
+        .preflight {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F2 100%);
+            border-left: 4px solid var(--accent-green);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px; margin: 24px 0;
+        }
+        .preflight h3 { font-size: 1rem; font-weight: 700; color: var(--accent-green); margin-bottom: 12px; }
+        .preflight ul { font-size: 0.88rem; color: #2E5A30; line-height: 2; padding-left: 20px; }
+        .preflight code {
+            background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 0.82rem;
+        }
+
+        /* ── Collapsible sections ── */
+        .exec-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+            border-left: 5px solid var(--ms-blue);
+            transition: box-shadow 0.2s;
+            overflow: hidden;
+        }
+        .exec-section:hover { box-shadow: var(--shadow-hover); }
+        .exec-header {
+            display: flex; align-items: center; gap: 16px;
+            padding: 22px 24px; cursor: pointer; user-select: none;
+        }
+        .exec-header:hover { background: rgba(0,120,212,0.03); }
+        .exec-number {
+            width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.1rem; color: white; flex-shrink: 0;
+        }
+        .exec-header-text { flex: 1; }
+        .exec-header-text h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 2px; }
+        .exec-header-text .exec-purpose { font-size: 0.85rem; color: var(--text-light); font-style: italic; }
+        .exec-time {
+            font-size: 0.78rem; font-weight: 600; color: var(--text-light);
+            background: var(--bg); padding: 4px 12px; border-radius: 20px;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .exec-expand { font-size: 1.2rem; color: var(--text-light); transition: transform 0.3s; flex-shrink: 0; }
+        .exec-section.open .exec-expand { transform: rotate(180deg); }
+        .exec-body { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
+        .exec-section.open .exec-body { max-height: 50000px; }
+        .exec-content { padding: 0 24px 28px 82px; }
+
+        /* ── Step blocks ── */
+        .step-block {
+            margin: 16px 0; padding: 16px 20px;
+            background: #F8F9FA; border-radius: 8px;
+            border-left: 3px solid var(--ms-blue);
+        }
+        .step-block.chat-step { border-left-color: var(--accent-teal); background: #F0FAF9; }
+        .step-block.copilot-step { border-left-color: var(--accent-purple); background: #F8F5FD; }
+        .step-block.transition-step { border-left-color: #FFB900; background: #FFFCF0; }
+
+        .step-label {
+            font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 8px; display: inline-block;
+            padding: 2px 10px; border-radius: 4px; color: white;
+        }
+        .step-label.prep { background: var(--accent-green); }
+        .step-label.click { background: var(--ms-blue); }
+        .step-label.say { background: var(--accent-warm); }
+        .step-label.show { background: var(--accent-teal); }
+        .step-label.tip { background: #FFB900; color: #5D4510; }
+        .step-label.copilot { background: var(--accent-purple); }
+        .step-label.transition { background: #605E5C; }
+
+        .step-text { font-size: 0.9rem; line-height: 1.6; }
+        .step-text strong { color: var(--text); }
+        .step-text em { color: var(--accent-warm); font-style: normal; font-weight: 600; }
+
+        /* ── Talk track ── */
+        .talk-track {
+            background: white; border: 1px solid #E0E0E0; border-radius: 8px;
+            padding: 16px 20px; margin: 10px 0;
+            font-style: italic; font-size: 0.88rem; line-height: 1.65; color: #444;
+            position: relative;
+        }
+        .talk-track::before {
+            content: '\201C'; font-size: 3rem; color: var(--accent-warm);
+            position: absolute; top: -8px; left: 10px; font-style: normal; opacity: 0.5;
+        }
+        .talk-track p { padding-left: 24px; }
+
+        /* ── Sub-headers ── */
+        .sub-header {
+            margin: 28px 0 10px; font-size: 1.02rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* ── Callouts ── */
+        .callout { border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: 0.85rem; line-height: 1.5; }
+        .callout.warning { background: #FFF4CE; border-left: 3px solid #FFB900; color: #5D4510; }
+        .callout.info { background: var(--ms-blue-light); border-left: 3px solid var(--ms-blue); color: #003A6E; }
+        .callout.success { background: #E8F5E9; border-left: 3px solid var(--accent-green); color: #2E5A30; }
+        .callout.critical { background: #FDE7E9; border-left: 3px solid var(--accent-red); color: #5D1015; }
+        .callout.roi {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            border-left: 4px solid #2E7D32; color: #1B5E20;
+        }
+        .callout.roi::before { content: "\1F4B0 "; }
+        .callout strong { font-weight: 700; }
+
+        /* ── Prompt block (click-to-copy) ── */
+        .prompt-block {
+            background: #1E1E1E; color: #D4D4D4; border-radius: 8px;
+            padding: 14px 50px 14px 20px; margin: 10px 0;
+            font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 0.88rem;
+            line-height: 1.6; cursor: pointer; position: relative;
+            transition: background 0.15s, box-shadow 0.15s;
+            user-select: none;
+        }
+        .prompt-block:hover {
+            background: #252526;
+            box-shadow: 0 0 0 2px var(--ms-blue);
+        }
+        .prompt-block:active { background: #2D2D2D; }
+        .prompt-block .prompt-label {
+            display: block; font-size: 0.66rem; text-transform: uppercase;
+            letter-spacing: 1px; color: #9CDCFE; margin-bottom: 6px;
+            font-family: 'Segoe UI', sans-serif; font-weight: 700;
+        }
+        .prompt-block .prompt-text { color: #CE9178; }
+        .prompt-block .copy-icon {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            font-size: 1.1rem; opacity: 0.5; transition: opacity 0.2s;
+        }
+        .prompt-block:hover .copy-icon { opacity: 1; }
+        .prompt-block .copy-toast {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            background: var(--accent-green); color: white; padding: 3px 10px;
+            border-radius: 4px; font-size: 0.72rem; font-weight: 700;
+            font-family: 'Segoe UI', sans-serif;
+            opacity: 0; transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        .prompt-block.copied .copy-toast { opacity: 1; }
+        .prompt-block.copied .copy-icon { opacity: 0; }
+
+        /* ── Expected response ── */
+        .expected-response {
+            background: #F8F5FD; border: 1px solid #E0D4F0; border-radius: 8px;
+            padding: 16px 20px; margin: 10px 0; font-size: 0.86rem; line-height: 1.65;
+        }
+        .expected-response .resp-label {
+            font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--accent-purple); margin-bottom: 8px;
+        }
+
+        /* ── Agent badge ── */
+        .agent-badge {
+            display: inline-block; padding: 2px 10px; border-radius: 10px;
+            font-size: 0.72rem; font-weight: 600; color: white; white-space: nowrap;
+        }
+        .agent-badge.orchestrator { background: var(--ms-blue); }
+        .agent-badge.workflow { background: var(--accent-teal); }
+        .agent-badge.task { background: var(--accent-warm); }
+        .agent-badge.exception { background: var(--accent-red); }
+        .agent-badge.approval { background: var(--accent-purple); }
+        .agent-badge.handoff { background: #107C10; }
+
+        /* ── Persona pill ── */
+        .persona-pill {
+            display: inline-block; padding: 3px 12px; border-radius: 12px;
+            font-size: 0.74rem; font-weight: 600; margin: 2px 4px;
+        }
+        .persona-pill.sales-rep { background: #E3F2FD; color: #0D47A1; }
+        .persona-pill.coordinator { background: #FFF3E0; color: #E65100; }
+        .persona-pill.marketing { background: #F3E5F5; color: #6A1B9A; }
+        .persona-pill.manager { background: #E8F5E9; color: #1B5E20; }
+
+        /* ── Architecture diagram ── */
+        .arch-block {
+            background: #1E1E1E; color: #D4D4D4; border-radius: 8px;
+            padding: 20px; margin: 16px 0;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.82rem; line-height: 1.8; white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* ── Data table ── */
+        .ref-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.82rem; }
+        .ref-table th {
+            background: #F3F2F1; font-weight: 600; text-align: left;
+            padding: 8px 12px; border-bottom: 2px solid #D2D0CE;
+        }
+        .ref-table td { padding: 7px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .ref-table tr:last-child td { border-bottom: none; }
+        .ref-table tbody tr:hover { background: #F9F9F9; }
+        .ref-table code {
+            font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 0.76rem;
+            background: #F0F0F0; padding: 2px 6px; border-radius: 3px;
+        }
+
+        /* ── Demo gold highlight ── */
+        .demo-gold {
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFFDF5 100%);
+            border-left: 4px solid #FFB900; border-radius: 0 8px 8px 0;
+            padding: 14px 18px; margin: 12px 0; font-size: 0.85rem;
+        }
+        .demo-gold strong { color: #856404; }
+
+        /* ── Story block ── */
+        .story-block {
+            background: linear-gradient(135deg, #F3F0FF 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--accent-purple);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px; margin: 24px 0;
+        }
+        .story-block h3 { font-size: 1rem; font-weight: 700; color: var(--accent-purple); margin-bottom: 12px; }
+        .story-block p { font-size: 0.88rem; margin-bottom: 8px; }
+
+        /* ── Section borders ── */
+        .border-sales { border-left-color: #0078D4; }
+        .border-manager { border-left-color: #107C10; }
+        .border-coord { border-left-color: #D83B01; }
+        .border-mktg { border-left-color: #5C2D91; }
+        .border-arch { border-left-color: #008575; }
+
+        .bg-sales { background: #0078D4; }
+        .bg-manager { background: #107C10; }
+        .bg-coord { background: #D83B01; }
+        .bg-mktg { background: #5C2D91; }
+        .bg-arch { background: #008575; }
+
+        /* ── Timing bar ── */
+        .timing-bar {
+            display: flex; gap: 0; margin: 28px 0 12px;
+            border-radius: 8px; overflow: hidden; height: 8px;
+        }
+        .timing-bar .t-seg { height: 100%; }
+
+        /* ── Side Navigation ── */
+        .nav-toggle {
+            position: fixed; top: 16px; left: 16px; z-index: 10001;
+            width: 40px; height: 40px; border: none; border-radius: 8px;
+            background: var(--ms-blue); color: white; font-size: 1.3rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+            transition: background 0.2s, transform 0.2s; line-height: 1;
+        }
+        .nav-toggle:hover { background: var(--ms-blue-dark); transform: scale(1.05); }
+        .nav-toggle.open { background: var(--accent-red); }
+
+        .side-nav-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 9999; }
+        .side-nav-backdrop.visible { display: block; }
+
+        .side-nav {
+            position: fixed; top: 0; left: 0; width: 320px; height: 100vh;
+            background: white; z-index: 10000;
+            transform: translateX(-100%); transition: transform 0.25s ease;
+            display: flex; flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+        }
+        .side-nav.open { transform: translateX(0); }
+
+        .side-nav-header {
+            padding: 18px 20px 14px;
+            background: linear-gradient(135deg, var(--ms-blue), var(--accent-purple));
+            color: white; font-size: 0.82rem; font-weight: 600;
+            display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+        }
+        .side-nav-pin {
+            background: none; border: 1px solid rgba(255,255,255,0.5); color: white;
+            border-radius: 4px; padding: 3px 10px; font-size: 0.68rem; font-weight: 700;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .side-nav-pin.pinned { background: rgba(255,255,255,0.25); }
+
+        .side-nav-body { flex: 1; overflow-y: auto; padding: 12px 0; }
+
+        .side-nav-item {
+            padding: 10px 20px; font-size: 0.82rem; cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
+            color: var(--text); transition: background 0.15s;
+        }
+        .side-nav-item:hover { background: var(--ms-blue-light); }
+        .side-nav-item.active { background: var(--ms-blue-light); font-weight: 600; color: var(--ms-blue); }
+        .side-nav-item .nav-dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        }
+
+        body.nav-pinned { margin-left: 320px; transition: margin-left 0.25s ease; }
+        body.nav-pinned .nav-toggle { left: 336px; }
+
+        /* ── Print & Mobile ── */
+        @media print {
+            .hero { padding: 20px; }
+            .exec-body { max-height: none !important; }
+            .exec-section { break-inside: avoid; }
+            .prompt-block { background: #f0f0f0 !important; color: #333 !important; }
+        }
+        @media (max-width: 768px) {
+            .hero { padding: 32px 16px; }
+            .hero h1 { font-size: 1.5rem; }
+            .exec-content { padding-left: 24px; }
+        }
+
+        footer {
+            text-align: center; padding: 32px; color: var(--text-light);
+            font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 48px;
+        }
+
+        /* ── Diagnostics Panel ── */
+        .diag-panel {
+            background: var(--card-bg); border-radius: var(--radius);
+            box-shadow: var(--shadow); padding: 24px 28px; margin: 24px 0;
+            border-left: 4px solid var(--ms-blue);
+        }
+        .diag-panel h3 { font-size: 1rem; font-weight: 700; color: var(--ms-blue); margin-bottom: 16px; }
+        .diag-row { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .diag-row label { font-size: 0.82rem; font-weight: 600; min-width: 70px; }
+        .diag-input {
+            flex: 1; min-width: 280px; padding: 8px 12px; border: 1px solid var(--border);
+            border-radius: 8px; font-family: 'Cascadia Code','Consolas',monospace; font-size: 0.82rem;
+        }
+        .diag-input:focus { outline: none; border-color: var(--ms-blue); box-shadow: 0 0 0 2px rgba(0,120,212,0.15); }
+        .diag-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.82rem; font-weight: 600; font-family: 'Segoe UI',sans-serif;
+            transition: all 0.15s; color: white;
+        }
+        .diag-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .diag-btn:active { transform: translateY(0); }
+        .diag-btn.blue { background: var(--ms-blue); }
+        .diag-btn.green { background: var(--accent-green); }
+        .diag-btn.orange { background: var(--accent-warm); }
+        .diag-btn.teal { background: var(--accent-teal); }
+        .diag-btn.purple { background: var(--accent-purple); }
+        .diag-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: none; transform: none; }
+        .diag-status {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+        }
+        .diag-status.ok { background: #E8F5E9; color: #2E7D32; }
+        .diag-status.fail { background: #FFEBEE; color: #C62828; }
+        .diag-status.pending { background: #FFF3E0; color: #E65100; }
+        .diag-status.unknown { background: var(--gray-20); color: var(--gray-80); }
+        .diag-log {
+            background: #1E1E1E; color: #D4D4D4; border-radius: 8px;
+            padding: 14px 16px; margin-top: 12px; max-height: 260px; overflow-y: auto;
+            font-family: 'Cascadia Code','Consolas',monospace; font-size: 0.78rem;
+            line-height: 1.6; display: none;
+        }
+        .diag-log.visible { display: block; }
+        .diag-log .ok { color: #4EC9B0; }
+        .diag-log .err { color: #F44747; }
+        .diag-log .info { color: #569CD6; }
+        .diag-log .warn { color: #CE9178; }
+        .diag-log .dim { color: #6A9955; }
+        .diag-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+        /* ── Send-to-RAPP button on prompts ── */
+        .prompt-send {
+            display: inline-flex; align-items: center; gap: 4px;
+            margin-left: 8px; padding: 3px 10px; border: none; border-radius: 6px;
+            background: var(--ms-blue); color: white; font-size: 0.72rem; font-weight: 600;
+            cursor: pointer; transition: all 0.15s; vertical-align: middle;
+            font-family: 'Segoe UI',sans-serif;
+        }
+        .prompt-send:hover { background: var(--ms-blue-dark); transform: translateY(-1px); }
+        .prompt-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .prompt-send.sending { background: var(--accent-warm); }
+        .prompt-send.done { background: var(--accent-green); }
+
+        /* ── Inline response preview ── */
+        .inline-response {
+            background: #1E1E1E; color: #D4D4D4; border-radius: 8px;
+            padding: 14px 16px; margin-top: 8px; max-height: 300px; overflow-y: auto;
+            font-family: 'Segoe UI',sans-serif; font-size: 0.84rem; line-height: 1.6;
+            display: none; border-left: 3px solid var(--ms-blue);
+        }
+        .inline-response.visible { display: block; }
+        .inline-response .live-label {
+            font-size: 0.7rem; font-weight: 700; color: var(--ms-blue);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Toggle -->
+    <button class="nav-toggle" id="nav-toggle">&#9776;</button>
+    <div class="side-nav-backdrop" id="nav-backdrop"></div>
+    <nav class="side-nav" id="side-nav">
+        <div class="side-nav-header">
+            <span>&#128204; SMA4 Demo Guide</span>
+            <button class="side-nav-pin" id="nav-pin">PIN</button>
+        </div>
+        <div class="side-nav-body" id="nav-body">
+            <div class="side-nav-item" data-target="sec-preflight"><span class="nav-dot" style="background:var(--accent-green)"></span> Pre-Flight Checklist</div>
+            <div class="side-nav-item" data-target="sec-architecture"><span class="nav-dot" style="background:var(--accent-teal)"></span> 0 &mdash; Architecture Overview</div>
+            <div class="side-nav-item" data-target="sec-sales-rep"><span class="nav-dot" style="background:#0078D4"></span> 1 &mdash; Sales Rep Morning Cockpit</div>
+            <div class="side-nav-item" data-target="sec-manager"><span class="nav-dot" style="background:#107C10"></span> 2 &mdash; Sales Manager Approval</div>
+            <div class="side-nav-item" data-target="sec-coordinator"><span class="nav-dot" style="background:#D83B01"></span> 3 &mdash; Coordinator Quote Queue</div>
+            <div class="side-nav-item" data-target="sec-marketing"><span class="nav-dot" style="background:#5C2D91"></span> 4 &mdash; Marketing Pipeline</div>
+            <div class="side-nav-item" data-target="sec-health"><span class="nav-dot" style="background:#008575"></span> 5 &mdash; Health Check &amp; Wrap-Up</div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <h1>SMA4 &mdash; Persona Workbench Demo</h1>
+        <div class="subtitle">D365 Sales &bull; Prospect-to-Quote Pipeline &bull; 4 Personas &bull; 6 Agents</div>
+        <div class="meta">
+            <span>&#128337; ~15 min total</span>
+            <span>&#129302; 1 Orchestrator + 5 Specialists</span>
+            <span>&#127919; Click prompts to auto-copy</span>
+        </div>
+        <div class="hero-badge">Click-to-Copy &mdash; Paste into RAPP Chat UI</div>
+    </header>
+
+    <div class="container">
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- PRE-FLIGHT CHECKLIST                                -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="section-label" id="sec-preflight">Pre-Flight</div>
+        <div class="preflight">
+            <h3>&#9989; Pre-Flight Checklist</h3>
+            <ul>
+                <li>Local function app running: <code>func start</code> on port 7071</li>
+                <li>RAPP web UI open at <code>http://127.0.0.1:5500/index.html</code> (or Live Server)</li>
+                <li>Endpoint set to <strong>Default Bot</strong> &rarr; <code>http://localhost:7071/api/businessinsightbot_function</code></li>
+                <li>SMA4 orchestrator loaded &mdash; <code>sma4_workbench_orchestrator_agent.py</code> in <code>agents/</code> folder</li>
+                <li>Azure CLI logged in: <code>az login</code> (needed for OpenAI + Storage auth)</li>
+                <li>Start a <strong>new chat</strong> for clean conversation context</li>
+            </ul>
+        </div>
+
+        <!-- Diagnostics Panel -->
+        <div class="diag-panel" id="diag-panel">
+            <h3>&#128295; Live Diagnostics &amp; Troubleshooting</h3>
+            <div class="diag-row">
+                <label>Endpoint</label>
+                <input class="diag-input" id="diag-endpoint" value="http://localhost:7071/api/businessinsightbot_function" />
+            </div>
+            <div class="diag-row">
+                <label>API Key</label>
+                <input class="diag-input" id="diag-key" placeholder="(leave blank for local dev)" type="password" />
+            </div>
+            <div class="diag-btn-row">
+                <button class="diag-btn green" onclick="diagHealthCheck()">&#9889; Health Check</button>
+                <button class="diag-btn blue" onclick="diagTestEndpoint()">&#128268; Test Endpoint</button>
+                <button class="diag-btn teal" onclick="diagLoadDemo()">&#128230; Load Demo</button>
+                <button class="diag-btn orange" onclick="diagRunAll()">&#9654; Run All 12 Steps</button>
+                <button class="diag-btn purple" onclick="diagToggleLog()">&#128196; Toggle Log</button>
+            </div>
+            <div class="diag-row" style="margin-top:12px; gap:8px;">
+                <span>Status:</span>
+                <span class="diag-status unknown" id="diag-ep-status">&#9679; Not checked</span>
+                <span class="diag-status unknown" id="diag-demo-status">&#9679; Demo not loaded</span>
+                <span class="diag-status unknown" id="diag-health-status">&#9679; Health unknown</span>
+            </div>
+            <div class="diag-log" id="diag-log"></div>
+        </div>
+
+        <!-- STORY BLOCK -->
+        <div class="story-block">
+            <h3>&#127917; The Story</h3>
+            <p>You&#8217;re showing a <strong>Persona Workbench</strong> &mdash; a unified cockpit that adapts its view based on who&#8217;s looking at the same pipeline data. Each persona (Sales Rep, Manager, Coordinator, Marketing) sees exactly what they need.</p>
+            <p>The demo walks through a <strong>real morning workflow</strong>: Sarah (Sales) checks her pipeline, James (Manager) reviews approvals and exceptions, Mike (Coordinator) manages the quote queue, and Priya (Marketing) tracks campaign attribution.</p>
+            <p><strong>Key message:</strong> One pipeline, one AI system, four tailored experiences &mdash; no context switching, no searching, no &ldquo;let me look that up.&rdquo;</p>
+        </div>
+
+        <!-- ARCHITECTURE -->
+        <div class="section-label">Architecture</div>
+        <div class="exec-section border-arch" id="sec-architecture">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-arch">0</div>
+                <div class="exec-header-text">
+                    <h3>Architecture Overview</h3>
+                    <div class="exec-purpose">Show the agentic structure &mdash; set up the &ldquo;why this matters&rdquo;</div>
+                </div>
+                <span class="exec-time">&#128337; 2 min</span>
+                <span class="exec-expand">&#9660;</span>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Before we dive into the demo, let me show you what&#8217;s under the hood. This isn&#8217;t one monolithic bot &mdash; it&#8217;s a coordinated team of specialized agents, each with a defined role.</p>
+                        </div>
+                    </div>
+
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128203; Paste into RAPP Chat</span>
+                        <span class="prompt-text">Show me the system architecture</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected Agent Response</div>
+                        <strong>Persona Workbench / Cockpit (SMA4)</strong><br>
+                        Module: D365 Sales &mdash; Prospect to Quote<br><br>
+                        <span class="agent-badge orchestrator">L0 Orchestrator</span> routes to:<br>
+                        <span class="agent-badge workflow">L1 Workflow State</span> &mdash; pipeline, quotes, stages<br>
+                        <span class="agent-badge task">L1 Task Queue</span> &mdash; prioritised work lists<br>
+                        <span class="agent-badge exception">L1 Exception Monitor</span> &mdash; 6 anomaly detectors<br>
+                        <span class="agent-badge approval">L1 Approval Router</span> &mdash; matrix routing + delegation<br>
+                        <span class="agent-badge handoff">L1 Handoff Coordinator</span> &mdash; cross-role transitions
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>The Orchestrator figures out who you are and what you need, then assembles the right data from the right specialists. Now let me show you what that looks like for four different people looking at the same pipeline.</p>
+                        </div>
+                    </div>
+
+                    <div class="callout info">
+                        <strong>4 Personas:</strong>
+                        <span class="persona-pill sales-rep">Sales Rep (Sarah)</span>
+                        <span class="persona-pill manager">Manager (James)</span>
+                        <span class="persona-pill coordinator">Coordinator (Mike)</span>
+                        <span class="persona-pill marketing">Marketing (Priya)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SCENE 1: SALES REP                                  -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="section-label">Scene 1 &mdash; Sales Rep</div>
+        <div class="exec-section border-sales open" id="sec-sales-rep">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-sales">1</div>
+                <div class="exec-header-text">
+                    <h3>Sales Rep &mdash; Morning Cockpit</h3>
+                    <div class="exec-purpose">Sarah Chen checks her pipeline, spots risks, and hands off quote prep</div>
+                </div>
+                <span class="exec-time">&#128337; 3 min</span>
+                <span class="exec-expand">&#9660;</span>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Let&#8217;s start with Sarah, who&#8217;s a Sales Rep. She opens her morning workbench and asks for her cockpit view. Watch how the system pulls together pipeline status, tasks, handoffs, and exceptions &mdash; all in one response.</p>
+                        </div>
+                    </div>
+
+                    <!-- Prompt 1 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 1 &mdash; Cockpit View</span>
+                        <span class="prompt-text">Show me my cockpit view</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge orchestrator">Orchestrator</span> calls all L1 agents</div>
+                        <strong>Pipeline:</strong> 3 active deals worth $600K<br>
+                        &#8226; Contoso ERP ($320K) &mdash; Propose, on track<br>
+                        &#8226; Fabrikam CRM ($185K) &mdash; Develop, &#9888;&#65039; AT RISK<br>
+                        &#8226; Northwind Data ($95K) &mdash; Qualify, on track<br><br>
+                        <strong>Tasks:</strong> Prepare Contoso deck, follow up Fabrikam, schedule Northwind call<br>
+                        <strong>Handoffs:</strong> Waiting on Mike for Contoso quote assembly<br>
+                        <strong>Alerts:</strong> Fabrikam 18% discount pending VP approval
+                    </div>
+
+                    <div class="demo-gold">
+                        <strong>&#127919; KEY MOMENT:</strong> Point out that one prompt triggered <strong>5 different agents</strong> and assembled a unified view. The Sales Rep didn&#8217;t have to check 5 different screens.
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Notice the Fabrikam deal is flagged at-risk. Let&#8217;s drill in and see what&#8217;s going on.</p>
+                        </div>
+                    </div>
+
+                    <!-- Prompt 2 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 2 &mdash; Deal Drill-Down</span>
+                        <span class="prompt-text">What's going on with the Fabrikam deal?</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge workflow">Workflow State</span></div>
+                        <strong>Fabrikam &mdash; CRM Rollout</strong> ($185K)<br>
+                        Stage: Develop (18 of 21 SLA days used)<br><br>
+                        &#10060; Decision maker field empty<br>
+                        &#9888;&#65039; 18% discount exceeds 15% threshold &mdash; pending VP approval<br>
+                        &#128203; Recommended: Fill decision maker, follow up VP, pin down tech reqs
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>The system doesn&#8217;t just show data &mdash; it identifies the blockers and recommends next steps. Now Sarah knows exactly what to focus on. Let&#8217;s hand off the Contoso quote work to the coordinator.</p>
+                        </div>
+                    </div>
+
+                    <!-- Prompt 3 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 3 &mdash; Initiate Handoff</span>
+                        <span class="prompt-text">Hand off the Contoso quote prep to the coordinator</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge handoff">Handoff Coordinator</span></div>
+                        &#9989; <strong>Handoff initiated</strong><br>
+                        From: Sarah Chen &rarr; To: Mike Torres (Coordinator)<br>
+                        Deal: Contoso ERP Modernization<br>
+                        SLA: 8 hours for acceptance
+                    </div>
+
+                    <div class="callout success">
+                        <strong>&#128161; Talk track:</strong> &ldquo;Notice the handoff has a checklist and SLA timer. Mike will see this in his queue. No emails, no Slack messages, no &#8216;did you see my note?&#8217;&rdquo;
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SCENE 2: SALES MANAGER                              -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="section-label">Scene 2 &mdash; Sales Manager</div>
+        <div class="exec-section border-manager" id="sec-manager">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-manager">2</div>
+                <div class="exec-header-text">
+                    <h3>Sales Manager &mdash; Approval &amp; Exception Review</h3>
+                    <div class="exec-purpose">James Harrison reviews approvals, handles exceptions, and clears blockers</div>
+                </div>
+                <span class="exec-time">&#128337; 4 min</span>
+                <span class="exec-expand">&#9660;</span>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block transition-step">
+                        <span class="step-label transition">Transition</span>
+                        <div class="step-text">
+                            <strong>Persona switch:</strong> &ldquo;Now let&#8217;s see the same pipeline &mdash; but through James&#8217;s eyes. He&#8217;s the VP of Sales. Same data, completely different view.&rdquo;
+                        </div>
+                    </div>
+
+                    <div class="callout warning">
+                        <strong>&#128161; Tip:</strong> Start a <strong>new chat</strong> in the RAPP UI before this scene to reset conversation context. This reinforces that each persona gets a fresh, tailored view.
+                    </div>
+
+                    <!-- Prompt 4 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 4 &mdash; Manager Cockpit</span>
+                        <span class="prompt-text">What needs my attention today?</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge orchestrator">Orchestrator</span> (manager persona)</div>
+                        <strong>Team Pipeline:</strong> 5 deals worth $1.21M<br><br>
+                        <strong>Pending Approvals (2):</strong><br>
+                        &#128308; Fabrikam 18% discount &mdash; Sarah Chen &mdash; 48+ hrs &#9888;&#65039; SLA BREACHED<br>
+                        &#128993; Adventure Works $540K sign-off &mdash; Lisa Park &mdash; 96+ hrs &#9888;&#65039; SLA BREACHED<br><br>
+                        <strong>Exceptions (6):</strong> 1 CRITICAL (credit hold), 2 HIGH, 3 MEDIUM
+                    </div>
+
+                    <div class="demo-gold">
+                        <strong>&#127919; KEY MOMENT:</strong> Same pipeline &mdash; but James sees <strong>approvals, SLA breaches, and exceptions</strong>. Sarah saw tasks and handoffs. The AI adapts the view to the persona.
+                    </div>
+
+                    <!-- Prompt 5 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 5 &mdash; Approve Discount</span>
+                        <span class="prompt-text">Approve the Fabrikam discount</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge approval">Approval Router</span></div>
+                        &#9989; <strong>Approved:</strong> Fabrikam CRM Rollout &mdash; 18% discount<br>
+                        Quote QT-2026-0039 cleared for delivery.<br>
+                        Sarah Chen has been notified.
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>The approval router knows the rules &mdash; 18% exceeds the 15% auto-approval threshold, so it came to James. If James were out of office, it would have routed to his delegate automatically. Now let&#8217;s scan for pipeline exceptions.</p>
+                        </div>
+                    </div>
+
+                    <!-- Prompt 6 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 6 &mdash; Exception Scan</span>
+                        <span class="prompt-text">Show me the full exception scan</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge exception">Exception Monitor</span></div>
+                        <strong>6 exceptions found:</strong><br><br>
+                        &#128721; <strong>CRITICAL:</strong> Adventure Works &mdash; credit hold ($410K vs $400K limit)<br>
+                        &#128308; <strong>HIGH:</strong> Adventure Works &mdash; stalled 22 days (SLA: 14); Fabrikam discount/approval breaches (&#9989; just resolved)<br>
+                        &#128993; <strong>MEDIUM:</strong> Missing fields, close date slips
+                    </div>
+
+                    <div class="callout critical">
+                        <strong>&#128680; Demo power move:</strong> Point to how the just-approved Fabrikam discount now shows as &#9989; resolved in the scan &mdash; the agents share state in real-time.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SCENE 3: COORDINATOR                                -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="section-label">Scene 3 &mdash; Coordinator</div>
+        <div class="exec-section border-coord" id="sec-coordinator">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-coord">3</div>
+                <div class="exec-header-text">
+                    <h3>Coordinator &mdash; Quote Prep Queue</h3>
+                    <div class="exec-purpose">Mike Torres manages the deal desk &mdash; incoming work, blockers, and handoff status</div>
+                </div>
+                <span class="exec-time">&#128337; 3 min</span>
+                <span class="exec-expand">&#9660;</span>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block transition-step">
+                        <span class="step-label transition">Transition</span>
+                        <div class="step-text">
+                            <strong>Persona switch:</strong> &ldquo;Now Mike, the deal desk coordinator. His job is turning proposals into deliverable quotes. Same pipeline &mdash; operational lens.&rdquo;
+                        </div>
+                    </div>
+
+                    <!-- Prompt 7 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 7 &mdash; Coordinator Queue</span>
+                        <span class="prompt-text">Show me my work queue</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge orchestrator">Orchestrator</span> (coordinator persona)</div>
+                        <strong>Deals in Quote/Close:</strong> 2 requiring attention<br>
+                        &#8226; Contoso ERP ($320K) &mdash; quote assembly in progress<br>
+                        &#8226; Adventure Works FS ($540K) &mdash; &#9940; BLOCKED by credit hold<br><br>
+                        <strong>Tasks:</strong> Generate Contoso quote v2, send revised SOW to Adventure Works<br>
+                        <strong>Handoffs:</strong> Incoming from Sarah (Contoso), Outgoing to Lisa (blocked)
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Mike immediately sees that Adventure Works is blocked by a credit hold. He doesn&#8217;t waste time on a quote that can&#8217;t be delivered. The task queue prioritises by SLA urgency and deal value, so he knows exactly what to work on first.</p>
+                        </div>
+                    </div>
+
+                    <!-- Prompt 8 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 8 &mdash; Handoff Detail</span>
+                        <span class="prompt-text">What's the status of my handoff to Lisa Park?</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge handoff">Handoff Coordinator</span></div>
+                        <strong>Incoming:</strong> Contoso from Sarah &mdash; IN PROGRESS (2/4 checklist done)<br>
+                        <strong>Outgoing:</strong> Adventure Works to Lisa &mdash; &#9940; BLOCKED<br>
+                        Blocker: Credit hold ($410K exceeds $400K limit)
+                    </div>
+
+                    <div class="callout success">
+                        <strong>&#128161; Talk track:</strong> &ldquo;Every handoff has a checklist, an SLA, and blocker detection. No one wonders &#8216;where does this stand?&#8217; &mdash; the system tracks it automatically.&rdquo;
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SCENE 4: MARKETING                                  -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="section-label">Scene 4 &mdash; Marketing</div>
+        <div class="exec-section border-mktg" id="sec-marketing">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-mktg">4</div>
+                <div class="exec-header-text">
+                    <h3>Marketing &mdash; Campaign Pipeline Attribution</h3>
+                    <div class="exec-purpose">Priya Patel tracks which campaigns are driving revenue and monitors MQL handoffs</div>
+                </div>
+                <span class="exec-time">&#128337; 2 min</span>
+                <span class="exec-expand">&#9660;</span>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <div class="step-block transition-step">
+                        <span class="step-label transition">Transition</span>
+                        <div class="step-text">
+                            <strong>Persona switch:</strong> &ldquo;Finally, Priya from Marketing. She cares about <em>campaign attribution</em> &mdash; which campaigns sourced which pipeline. Same CRM data, marketing lens.&rdquo;
+                        </div>
+                    </div>
+
+                    <!-- Prompt 9 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 9 &mdash; Campaign Pipeline</span>
+                        <span class="prompt-text">How are my campaigns performing in the pipeline?</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge workflow">Workflow State</span> (marketing persona)</div>
+                        <strong>Campaign Attribution:</strong><br>
+                        &#128227; Webinar &mdash; Cloud Migration: 2 deals, $392K (top performer)<br>
+                        &#128227; LinkedIn ABM: 1 deal, $185K (at risk)<br>
+                        &#128227; Inbound Website: 1 deal, $95K (new)<br>
+                        &#128227; Partner Referral: 1 deal, $540K (stalled)<br><br>
+                        <strong>Summary:</strong> 5 deals, $1.21M from 4 campaigns
+                    </div>
+
+                    <!-- Prompt 10 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 10 &mdash; MQL Handoff</span>
+                        <span class="prompt-text">Did the Northwind MQL hand off to sales properly?</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge handoff">Handoff Coordinator</span></div>
+                        &#9989; <strong>Northwind MQL handoff completed successfully</strong><br>
+                        Priya &rarr; Sarah Chen &mdash; Initiated &amp; completed March 14&ndash;15<br>
+                        Checklist: 3/3 &#9989; (scoring, discovery call, opportunity created)
+                    </div>
+
+                    <div class="callout roi">
+                        <strong>ROI &mdash; Pipeline Visibility:</strong> Marketing can see exactly how their MQLs convert through the funnel &mdash; attribution, handoff success, and pipeline value. No more &ldquo;we generated leads but don&#8217;t know what happened to them.&rdquo;
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SCENE 5: HEALTH CHECK & CLOSE                       -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="section-label">Wrap-Up</div>
+        <div class="exec-section border-arch" id="sec-health">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-arch">5</div>
+                <div class="exec-header-text">
+                    <h3>Health Check &amp; Wrap-Up</h3>
+                    <div class="exec-purpose">Verify system health and close with key takeaways</div>
+                </div>
+                <span class="exec-time">&#128337; 1 min</span>
+                <span class="exec-expand">&#9660;</span>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- Prompt 11 -->
+                    <div class="prompt-block" onclick="copyPrompt(this)">
+                        <span class="prompt-label">&#128172; Prompt 11 &mdash; System Health</span>
+                        <span class="prompt-text">Run a health check</span>
+                        <span class="copy-icon">&#128203;</span>
+                        <span class="copy-toast">Copied!</span>
+                    </div>
+
+                    <div class="expected-response">
+                        <div class="resp-label">&#129302; Expected &mdash; <span class="agent-badge orchestrator">Orchestrator</span></div>
+                        <table class="ref-table">
+                            <tr><th>Agent</th><th>Status</th></tr>
+                            <tr><td>Workflow State</td><td>&#9989; Healthy</td></tr>
+                            <tr><td>Task Queue</td><td>&#9989; Healthy</td></tr>
+                            <tr><td>Exception Monitor</td><td>&#9989; Healthy</td></tr>
+                            <tr><td>Approval Router</td><td>&#9989; Healthy</td></tr>
+                            <tr><td>Handoff Coordinator</td><td>&#9989; Healthy</td></tr>
+                        </table>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label say">Say</span>
+                        <div class="talk-track">
+                            <p>Let me close with three takeaways:</p>
+                        </div>
+                    </div>
+
+                    <div class="callout info">
+                        <strong>&#127919; Three Takeaways:</strong><br><br>
+                        <strong>1. One Pipeline, Four Lenses</strong> &mdash; Every persona sees exactly what they need. No context switching, no searching.<br><br>
+                        <strong>2. Proactive, Not Reactive</strong> &mdash; SLA breaches, stalled deals, credit holds &mdash; the system surfaces problems before they become emergencies.<br><br>
+                        <strong>3. Structured Handoffs</strong> &mdash; Checklists, SLAs, and blocker detection replace &ldquo;did you see my email?&rdquo; &mdash; nothing falls through the cracks.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- QUICK REFERENCE                                     -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="section-label">Quick Reference</div>
+
+        <div class="story-block" style="border-left-color: var(--accent-teal);">
+            <h3 style="color: var(--accent-teal);">&#128269; All Demo Prompts (Click to Copy)</h3>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">Show me the system architecture</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">Show me my cockpit view</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">What's going on with the Fabrikam deal?</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">Hand off the Contoso quote prep to the coordinator</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">What needs my attention today?</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">Approve the Fabrikam discount</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">Show me the full exception scan</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">Show me my work queue</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">What's the status of my handoff to Lisa Park?</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">How are my campaigns performing in the pipeline?</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">Did the Northwind MQL hand off to sales properly?</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+            <div class="prompt-block" onclick="copyPrompt(this)" style="margin-bottom:6px;">
+                <span class="prompt-text">Run a health check</span>
+                <span class="copy-icon">&#128203;</span><span class="copy-toast">Copied!</span>
+            </div>
+        </div>
+
+        <!-- Agent reference table -->
+        <table class="ref-table" style="margin-top: 24px;">
+            <thead>
+                <tr>
+                    <th>Agent</th>
+                    <th>Level</th>
+                    <th>Purpose</th>
+                    <th>Key Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="agent-badge orchestrator">WorkbenchOrchestrator</span></td>
+                    <td>L0</td>
+                    <td>Routes to L1 agents, assembles cockpit view</td>
+                    <td><code>get_cockpit_view</code>, <code>route_approval</code>, <code>health_check</code></td>
+                </tr>
+                <tr>
+                    <td><span class="agent-badge workflow">WorkflowState</span></td>
+                    <td>L1</td>
+                    <td>Pipeline, quotes, BPF stages, velocity</td>
+                    <td><code>get_my_pipeline</code>, <code>get_opportunity_detail</code>, <code>get_campaign_pipeline</code></td>
+                </tr>
+                <tr>
+                    <td><span class="agent-badge task">TaskQueue</span></td>
+                    <td>L1</td>
+                    <td>Prioritised tasks ranked by SLA + value</td>
+                    <td><code>get_my_tasks</code>, <code>get_overdue_tasks</code>, <code>get_team_workload</code></td>
+                </tr>
+                <tr>
+                    <td><span class="agent-badge exception">ExceptionMonitor</span></td>
+                    <td>L1</td>
+                    <td>6 anomaly detectors (stalls, discounts, credit)</td>
+                    <td><code>scan_all_exceptions</code>, <code>check_stalled_deals</code>, <code>check_credit_holds</code></td>
+                </tr>
+                <tr>
+                    <td><span class="agent-badge approval">ApprovalRouter</span></td>
+                    <td>L1</td>
+                    <td>Rules matrix, delegation, 48h auto-escalation</td>
+                    <td><code>approve</code>, <code>reject</code>, <code>escalate</code>, <code>get_approval_matrix</code></td>
+                </tr>
+                <tr>
+                    <td><span class="agent-badge handoff">HandoffCoordinator</span></td>
+                    <td>L1</td>
+                    <td>Cross-role transitions with checklists + SLAs</td>
+                    <td><code>initiate_handoff</code>, <code>accept_handoff</code>, <code>get_blocked_handoffs</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Timing Bar -->
+        <div style="margin-top:32px;">
+            <div class="section-label">Demo Timing</div>
+            <div class="timing-bar">
+                <div class="t-seg" style="flex:2; background:var(--accent-teal);" title="Architecture (2 min)"></div>
+                <div class="t-seg" style="flex:3; background:#0078D4;" title="Sales Rep (3 min)"></div>
+                <div class="t-seg" style="flex:4; background:#107C10;" title="Manager (4 min)"></div>
+                <div class="t-seg" style="flex:3; background:#D83B01;" title="Coordinator (3 min)"></div>
+                <div class="t-seg" style="flex:2; background:#5C2D91;" title="Marketing (2 min)"></div>
+                <div class="t-seg" style="flex:1; background:#008575;" title="Wrap-up (1 min)"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-light); margin-top:4px;">
+                <span>Arch (2m)</span>
+                <span>Sales Rep (3m)</span>
+                <span>Manager (4m)</span>
+                <span>Coordinator (3m)</span>
+                <span>Mktg (2m)</span>
+                <span>Close (1m)</span>
+            </div>
+        </div>
+
+    </div><!-- /container -->
+
+    <footer>
+        SMA4 Persona Workbench &mdash; Demo Execution Guide &bull; D365 Sales &mdash; Prospect to Quote<br>
+        Built with RAPP &bull; Last updated: March 2026
+    </footer>
+
+    <script>
+        /* ── Toggle collapsible sections ── */
+        function toggleSection(header) {
+            header.closest('.exec-section').classList.toggle('open');
+        }
+
+        /* ── Copy prompt to clipboard ── */
+        function copyPrompt(el) {
+            var textEl = el.querySelector('.prompt-text');
+            if (!textEl) return;
+            var text = textEl.textContent.trim();
+
+            navigator.clipboard.writeText(text).then(function() {
+                el.classList.add('copied');
+                setTimeout(function() { el.classList.remove('copied'); }, 1200);
+            }).catch(function() {
+                // Fallback for older browsers
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                el.classList.add('copied');
+                setTimeout(function() { el.classList.remove('copied'); }, 1200);
+            });
+        }
+
+        /* ── Side navigation ── */
+        (function() {
+            var toggle = document.getElementById('nav-toggle');
+            var nav = document.getElementById('side-nav');
+            var backdrop = document.getElementById('nav-backdrop');
+            var pinBtn = document.getElementById('nav-pin');
+            var navBody = document.getElementById('nav-body');
+            var pinned = false;
+
+            navBody.addEventListener('click', function(e) {
+                var item = e.target.closest('.side-nav-item');
+                if (!item) return;
+                var target = document.getElementById(item.getAttribute('data-target'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (!target.classList.contains('open')) target.classList.add('open');
+                    if (!pinned) closeNav();
+                }
+            });
+
+            function openNav() {
+                nav.classList.add('open');
+                backdrop.classList.add('visible');
+                toggle.classList.add('open');
+                toggle.innerHTML = '\u2715';
+            }
+            function closeNav() {
+                if (pinned) return;
+                nav.classList.remove('open');
+                backdrop.classList.remove('visible');
+                toggle.classList.remove('open');
+                toggle.innerHTML = '\u2630';
+            }
+
+            toggle.addEventListener('click', function() {
+                if (nav.classList.contains('open') && !pinned) closeNav();
+                else openNav();
+            });
+            backdrop.addEventListener('click', closeNav);
+
+            pinBtn.addEventListener('click', function() {
+                pinned = !pinned;
+                pinBtn.classList.toggle('pinned', pinned);
+                document.body.classList.toggle('nav-pinned', pinned);
+                pinBtn.textContent = pinned ? 'UNPIN' : 'PIN';
+                if (pinned) {
+                    backdrop.classList.remove('visible');
+                    nav.classList.add('open');
+                    toggle.classList.add('open');
+                    toggle.innerHTML = '\u2715';
+                }
+            });
+
+            // Active-state tracking
+            var sections = document.querySelectorAll('.exec-section[id]');
+            var currentActive = null;
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        if (currentActive) currentActive.classList.remove('active');
+                        var item = navBody.querySelector('[data-target="' + entry.target.id + '"]');
+                        if (item) {
+                            item.classList.add('active');
+                            currentActive = item;
+                            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    }
+                });
+            }, { rootMargin: '-80px 0px -65% 0px', threshold: 0 });
+            sections.forEach(function(s) { observer.observe(s); });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && nav.classList.contains('open') && !pinned) closeNav();
+            });
+        })();
+
+        /* ── Diagnostics & Send-to-RAPP ── */
+        (function() {
+            var conversationHistory = [];
+            var logEl = document.getElementById('diag-log');
+            var epInput = document.getElementById('diag-endpoint');
+            var keyInput = document.getElementById('diag-key');
+
+            function getUrl() {
+                var url = epInput.value.trim();
+                var key = keyInput.value.trim();
+                if (key) url += (url.indexOf('?') === -1 ? '?' : '&') + 'code=' + encodeURIComponent(key);
+                return url;
+            }
+
+            function diagLog(msg, cls) {
+                var ts = new Date().toLocaleTimeString();
+                var line = document.createElement('div');
+                line.style.marginBottom = '4px';
+                if (cls === 'ok') line.style.color = '#4EC9B0';
+                else if (cls === 'fail') line.style.color = '#F44747';
+                else if (cls === 'info') line.style.color = '#569CD6';
+                else line.style.color = '#D4D4D4';
+                line.textContent = '[' + ts + '] ' + msg;
+                logEl.appendChild(line);
+                logEl.scrollTop = logEl.scrollHeight;
+                logEl.style.display = 'block';
+            }
+
+            function setStatus(id, text, cls) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.className = 'diag-status ' + cls;
+                el.innerHTML = '&#9679; ' + text;
+            }
+
+            function postToRAPP(userInput) {
+                return fetch(getUrl(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_input: userInput,
+                        conversation_history: conversationHistory
+                    })
+                }).then(function(r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                }).then(function(data) {
+                    conversationHistory.push({ role: 'user', content: userInput });
+                    var resp = data.assistant_response || data.response || '';
+                    if (resp.indexOf('|||VOICE|||') !== -1) resp = resp.split('|||VOICE|||')[0];
+                    conversationHistory.push({ role: 'assistant', content: resp });
+                    return { ok: true, response: resp, data: data };
+                });
+            }
+
+            // Diagnostics buttons
+            window.diagTestEndpoint = function() {
+                diagLog('Testing endpoint...', 'info');
+                setStatus('diag-ep-status', 'Testing...', 'pending');
+                postToRAPP('hello').then(function(r) {
+                    setStatus('diag-ep-status', 'Connected', 'ok');
+                    diagLog('Endpoint OK — got response (' + r.response.length + ' chars)', 'ok');
+                }).catch(function(err) {
+                    setStatus('diag-ep-status', 'Failed', 'fail');
+                    diagLog('Endpoint FAILED: ' + err.message, 'fail');
+                });
+            };
+
+            window.diagLoadDemo = function() {
+                diagLog('Loading SMA4 demo...', 'info');
+                setStatus('diag-demo-status', 'Loading...', 'pending');
+                conversationHistory = [];
+                postToRAPP('load the sma4 demo').then(function(r) {
+                    var hasDemo = r.response.toLowerCase().indexOf('sma4') !== -1 ||
+                                  r.response.toLowerCase().indexOf('persona') !== -1 ||
+                                  r.response.toLowerCase().indexOf('workbench') !== -1 ||
+                                  r.response.toLowerCase().indexOf('demo') !== -1;
+                    if (hasDemo) {
+                        setStatus('diag-demo-status', 'Demo loaded', 'ok');
+                        diagLog('Demo loaded successfully', 'ok');
+                    } else {
+                        setStatus('diag-demo-status', 'Unclear', 'pending');
+                        diagLog('Got response but demo activation unclear. Response: ' + r.response.substring(0, 200), 'info');
+                    }
+                }).catch(function(err) {
+                    setStatus('diag-demo-status', 'Failed', 'fail');
+                    diagLog('Demo load FAILED: ' + err.message, 'fail');
+                });
+            };
+
+            window.diagHealthCheck = function() {
+                diagLog('Running health check...', 'info');
+                setStatus('diag-health-status', 'Checking...', 'pending');
+                postToRAPP('Run a full system health check across all agents').then(function(r) {
+                    var hasOk = r.response.toLowerCase().indexOf('operational') !== -1 ||
+                                r.response.toLowerCase().indexOf('healthy') !== -1 ||
+                                r.response.toLowerCase().indexOf('online') !== -1;
+                    setStatus('diag-health-status', hasOk ? 'Healthy' : 'Check log', hasOk ? 'ok' : 'pending');
+                    diagLog('Health check response received', hasOk ? 'ok' : 'info');
+                    diagLog(r.response.substring(0, 500), 'info');
+                }).catch(function(err) {
+                    setStatus('diag-health-status', 'Failed', 'fail');
+                    diagLog('Health check FAILED: ' + err.message, 'fail');
+                });
+            };
+
+            window.diagRunAll = function() {
+                var prompts = [
+                    'Show me the system architecture',
+                    'Show me my cockpit view',
+                    'Give me a deep dive on the Fabrikam CRM deal',
+                    'Start the handoff for Contoso ERP to Mike Chen',
+                    'Show me my cockpit view',
+                    'I approve the Fabrikam 18% discount',
+                    'Run a full exception scan across all deals',
+                    'Show me my cockpit view',
+                    'What is the status of the Lisa Park handoff for Northwind Data?',
+                    'Show me the marketing-qualified leads in the current campaign pipeline',
+                    'Start the MQL-to-SQL handoff for Northwind Data Analytics to Sarah Kim',
+                    'Run a full system health check across all agents'
+                ];
+                diagLog('Running all 12 steps sequentially...', 'info');
+                conversationHistory = [];
+                var i = 0;
+                function runNext() {
+                    if (i >= prompts.length) {
+                        diagLog('All 12 steps complete!', 'ok');
+                        return;
+                    }
+                    var step = i + 1;
+                    var prompt = prompts[i];
+                    i++;
+                    diagLog('Step ' + step + '/12: ' + prompt.substring(0, 60) + '...', 'info');
+                    postToRAPP(prompt).then(function(r) {
+                        diagLog('Step ' + step + ' OK (' + r.response.length + ' chars)', 'ok');
+                        runNext();
+                    }).catch(function(err) {
+                        diagLog('Step ' + step + ' FAILED: ' + err.message, 'fail');
+                        runNext();
+                    });
+                }
+                postToRAPP('load the sma4 demo').then(function() {
+                    diagLog('Demo loaded, starting steps...', 'ok');
+                    runNext();
+                }).catch(function(err) {
+                    diagLog('Could not load demo: ' + err.message, 'fail');
+                });
+            };
+
+            window.diagToggleLog = function() {
+                logEl.style.display = logEl.style.display === 'none' ? 'block' : 'none';
+            };
+
+            /* ── Inject Send-to-RAPP buttons on every prompt-block ── */
+            document.querySelectorAll('.prompt-block').forEach(function(block) {
+                var textEl = block.querySelector('.prompt-text');
+                if (!textEl) return;
+
+                // Send button
+                var btn = document.createElement('button');
+                btn.className = 'prompt-send';
+                btn.textContent = '\u25B6 Send';
+                btn.title = 'Send this prompt to RAPP and see live response';
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // don't trigger copy
+                    var prompt = textEl.textContent.trim();
+                    btn.textContent = '\u23F3 Sending...';
+                    btn.disabled = true;
+                    var respDiv = block.nextElementSibling;
+                    if (!respDiv || !respDiv.classList.contains('inline-response')) {
+                        respDiv = document.createElement('div');
+                        respDiv.className = 'inline-response';
+                        block.parentNode.insertBefore(respDiv, block.nextSibling);
+                    }
+                    respDiv.style.display = 'block';
+                    respDiv.textContent = 'Sending to RAPP...';
+                    postToRAPP(prompt).then(function(r) {
+                        btn.textContent = '\u2705 Sent';
+                        btn.disabled = false;
+                        respDiv.innerHTML = '<strong>Live Response:</strong><br>' + r.response.replace(/\n/g, '<br>');
+                        setTimeout(function() { btn.textContent = '\u25B6 Send'; }, 2000);
+                    }).catch(function(err) {
+                        btn.textContent = '\u274C Failed';
+                        btn.disabled = false;
+                        respDiv.textContent = 'Error: ' + err.message;
+                        respDiv.style.borderColor = '#F44747';
+                        setTimeout(function() { btn.textContent = '\u25B6 Send'; }, 2000);
+                    });
+                });
+                block.appendChild(btn);
+            });
+
+        })();
+    </script>
+
+</body>
+</html>

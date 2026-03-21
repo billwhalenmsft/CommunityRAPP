@@ -1,0 +1,25 @@
+kind: AdaptiveDialog
+id: topic_handoffs
+displayName: Handoff Status
+triggers:
+- kind: OnRecognizedIntent
+  intent: handoffs
+  triggerQueries:
+  - show my handoffs
+  - handoff status
+  - what handoffs need attention
+  - pending handoffs
+  - blocked handoffs
+  - handoff checklist
+  - what's been handed to me
+  - what did I hand off
+  - initiate handoff
+  - accept handoff
+actions:
+- kind: GenerativeAnswer
+  prompt: |
+    The user is asking about handoffs. Filter by persona showing both incoming and
+    outgoing handoffs. Show handoff details including type, deal, from/to, status,
+    SLA status, and checklist progress. For blocked handoffs, explain the blocker
+    and suggest next steps. For pending_acceptance handoffs, prompt the recipient
+    to accept.

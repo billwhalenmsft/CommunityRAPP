@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.2",
+  "name": "sma4_persona_workbench",
+  "displayName": "SMA4 Persona Workbench",
+  "description": "Unified sales operations assistant providing persona-specific cockpit views of pipeline, tasks, exceptions, approvals, and handoffs for Contoso's enterprise sales team.",
+  "icon": "robot",
+  "primaryLanguage": "en-US",
+  "isGenerativeActionsEnabled": true,
+  "isOrchestrationEnabled": true,
+  "knowledgeSources": [],
+  "capabilities": {
+    "generativeAnswers": true,
+    "powerAutomateFlows": false,
+    "customConnectors": false
+  },
+  "topics": [
+    "topic_greeting",
+    "topic_cockpit_view",
+    "topic_pipeline",
+    "topic_tasks",
+    "topic_exceptions",
+    "topic_approvals",
+    "topic_handoffs",
+    "topic_help"
+  ],
+  "metadata": {
+    "source": "RAPP Transpiler",
+    "transpiled_at": "2026-03-19T00:00:00.000000",
+    "original_agent": "SMA4PersonaWorkbench",
+    "original_agents_combined": [
+      "SMA4WorkbenchOrchestratorAgent",
+      "SMA4WorkflowStateAgent",
+      "SMA4TaskQueueAgent",
+      "SMA4ExceptionMonitorAgent",
+      "SMA4ApprovalRouterAgent",
+      "SMA4HandoffCoordinatorAgent"
+    ],
+    "architecture": "self-contained, instructions-only, no backend",
+    "target_environment": "org6feab6b5.crm.dynamics.com"
+  }
+}

@@ -2399,3 +2399,121 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             mimetype="application/json",
             headers=cors_headers
         )
+
+
+# =============================================================================
+# STATIC FILE SERVING
+# =============================================================================
+# Serves the RAPP UI (index.html, demos/, agents/) directly from the Function App
+# so everything lives at one URL. This is safe for demo/internal use.
+# =============================================================================
+
+STATIC_MIME_TYPES = {
+    ".html": "text/html",
+    ".css": "text/css",
+    ".js": "application/javascript",
+    ".json": "application/json",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2",
+    ".ttf": "font/ttf",
+}
+
+# Directories allowed to be served (relative to function app root)
+STATIC_ALLOWED_DIRS = {"demos", "agents", "templates", "localFirstTools"}
+
+# Top-level files allowed to be served
+STATIC_ALLOWED_FILES = {
+    "welcome.html", "index.html", "agent_store.html",
+    "RAPP-Production-Guide.html", "rapp_presentation_slide.html",
+}
+
+def _get_app_root():
+    """Get the function app root directory."""
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def _serve_static_file(file_path):
+    """Serve a static file with proper content type and caching headers."""
+    try:
+        ext = os.path.splitext(file_path)[1].lower()
+        content_type = STATIC_MIME_TYPES.get(ext, "application/octet-stream")
+
+        with open(file_path, "rb") as f:
+            content = f.read()
+
+        return func.HttpResponse(
+            body=content,
+            status_code=200,
+            mimetype=content_type,
+            headers={
+                "Cache-Control": "public, max-age=300",
+                "Access-Control-Allow-Origin": "*",
+            }
+        )
+    except FileNotFoundError:
+        return func.HttpResponse("Not Found", status_code=404)
+    except Exception as e:
+        logging.error(f"Static file error: {e}")
+        return func.HttpResponse("Internal Server Error", status_code=500)
+
+
+@app.route(route="ui/{*filepath}", auth_level=func.AuthLevel.ANONYMOUS, methods=["GET"])
+def serve_static(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Serve static UI files from the function app.
+    
+    Access the RAPP UI at:
+      /api/ui/              → index.html
+      /api/ui/index.html    → index.html
+      /api/ui/demos/demos.html → Demo Showcase
+      /api/ui/demos/sma4_workbench_orchestrator_agent.json → Demo data
+    """
+    filepath = req.route_params.get("filepath", "").strip("/")
+
+    # Default to welcome page
+    if not filepath or filepath == "":
+        filepath = "welcome.html"
+
+    # Security: normalize and block path traversal
+    filepath = filepath.replace("\\", "/")
+    if ".." in filepath or filepath.startswith("/"):
+        return func.HttpResponse("Forbidden", status_code=403)
+
+    # Check if this is an allowed file
+    parts = filepath.split("/")
+    top_level = parts[0]
+
+    allowed = False
+    if filepath in STATIC_ALLOWED_FILES:
+        allowed = True
+    elif top_level in STATIC_ALLOWED_DIRS:
+        allowed = True
+
+    if not allowed:
+        return func.HttpResponse("Not Found", status_code=404)
+
+    # Resolve to actual file path
+    app_root = _get_app_root()
+    full_path = os.path.normpath(os.path.join(app_root, filepath))
+
+    # Safety: ensure resolved path is within app root
+    if not full_path.startswith(app_root):
+        return func.HttpResponse("Forbidden", status_code=403)
+
+    # Serve directory index
+    if os.path.isdir(full_path):
+        index_path = os.path.join(full_path, "index.html")
+        if os.path.isfile(index_path):
+            return _serve_static_file(index_path)
+        return func.HttpResponse("Not Found", status_code=404)
+
+    if not os.path.isfile(full_path):
+        return func.HttpResponse("Not Found", status_code=404)
+
+    return _serve_static_file(full_path)

@@ -1,0 +1,35 @@
+kind: AdaptiveDialog
+id: topic_help
+displayName: Help
+triggers:
+- kind: OnRecognizedIntent
+  intent: help
+  triggerQueries:
+  - help
+  - what can you do
+  - how does this work
+  - capabilities
+  - commands
+  - what should I ask
+actions:
+- kind: SendMessage
+  message: |
+    I'm the **SMA4 Persona Workbench** — your unified sales operations assistant.
+
+    **Available Views:**
+    📊 **Cockpit View** — "Show me my cockpit" — Full dashboard with all sections
+    📈 **Pipeline** — "What's in my pipeline?" — Active opportunities and quotes
+    📋 **Tasks** — "Show me my tasks" — Priority-sorted task queue
+    ⚠️ **Exceptions** — "Are there any issues?" — Alerts and risk items
+    ✅ **Approvals** — "Do I have pending approvals?" — Approval queue and routing
+    🔄 **Handoffs** — "What handoffs need attention?" — Cross-role handoff tracking
+
+    **Personas:** Sarah Chen (Sales Rep), Mike Torres (Coordinator), Priya Patel (Marketing), James Harrison (Manager)
+
+    Each persona sees data filtered to their role. Managers see everything.
+
+    **Try asking:**
+    - "I'm Sarah Chen. Show me my cockpit view."
+    - "What exceptions need attention?"
+    - "Tell me about the Fabrikam deal"
+    - "What's the approval status on the 18% discount?"

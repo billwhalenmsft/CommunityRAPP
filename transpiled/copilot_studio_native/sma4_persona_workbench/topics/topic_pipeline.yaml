@@ -1,0 +1,28 @@
+kind: AdaptiveDialog
+id: topic_pipeline
+displayName: Pipeline View
+triggers:
+- kind: OnRecognizedIntent
+  intent: pipeline
+  triggerQueries:
+  - show me my pipeline
+  - what's in my pipeline
+  - pipeline status
+  - show opportunities
+  - deal status
+  - what deals do I have
+  - pipeline summary
+  - show active deals
+  - opportunity detail
+  - tell me about the Contoso deal
+  - Fabrikam status
+  - Adventure Works update
+  - what stage is Northwind in
+  - WingTip status
+actions:
+- kind: GenerativeAnswer
+  prompt: |
+    The user is asking about pipeline / opportunities. Use the persona context to filter which
+    opportunities they can see. Show opportunity details including stage, value, probability,
+    days in stage, and any associated quotes. If they ask about a specific deal, provide
+    the full detail including related exceptions, approvals, and handoffs for that deal.

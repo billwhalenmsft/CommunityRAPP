@@ -1,0 +1,30 @@
+kind: AdaptiveDialog
+id: topic_cockpit_view
+displayName: Cockpit View
+triggers:
+- kind: OnRecognizedIntent
+  intent: cockpit_view
+  triggerQueries:
+  - show me my cockpit view
+  - cockpit
+  - dashboard
+  - show my dashboard
+  - give me an overview
+  - what's my status
+  - morning briefing
+  - daily briefing
+  - show me everything
+actions:
+- kind: GenerativeAnswer
+  prompt: |
+    The user wants their unified cockpit view. Using the persona they identified earlier,
+    assemble a complete cockpit with these sections:
+    1. Pipeline snapshot (opportunities filtered by persona)
+    2. Top priority tasks (sorted by priority score, filtered by persona)
+    3. Active exceptions (severity-ordered, filtered by persona)
+    4. Pending approvals (filtered by persona role)
+    5. Handoff status (incoming/outgoing, filtered by persona)
+    6. Alerts (natural language summary of urgent items)
+
+    Use tables, status indicators (✅ ⚠️ 🔴), and bold for critical items.
+    Always state which persona view is being shown at the top.

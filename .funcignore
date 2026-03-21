@@ -42,15 +42,26 @@ test_*.py
 # Experimental agents (not production ready)
 experimental/
 
-# Demo files (loaded from Azure storage)
-demos/
+# Demo Python scripts (not needed at runtime - only JSON/HTML served)
+demos/*.py
+demos/demo_captures/
 
-# Static HTML files (serve from storage/CDN instead)
-*.html
+# Static HTML files we DON'T need deployed
+*.copy.html
+rapp_presentation_slide.html
 
 # Build artifacts
 *.zip
 *.svg
 
 # Misc
-*.copy.html
+copilot_check_output.txt
+BACKUPlocal.settings.template.json
+
+# Large non-essential directories
+video_output/
+copilotstudioclones/
+customers/
+d365/
+transpiled/
+MSFTAIBASMultiAgentCopilot_1_0_0_2.zip

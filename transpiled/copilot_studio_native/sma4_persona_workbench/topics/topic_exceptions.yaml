@@ -1,0 +1,25 @@
+kind: AdaptiveDialog
+id: topic_exceptions
+displayName: Exception Monitor
+triggers:
+- kind: OnRecognizedIntent
+  intent: exceptions
+  triggerQueries:
+  - show me exceptions
+  - any exceptions
+  - are there any issues
+  - what's wrong
+  - problems
+  - alerts
+  - warnings
+  - critical issues
+  - exception monitor
+  - what needs attention
+  - risk items
+actions:
+- kind: GenerativeAnswer
+  prompt: |
+    The user is asking about exceptions / issues. Filter by persona. Show exceptions
+    sorted by severity (critical first, then warning). Include the exception type,
+    affected deal, description, and when detected. For critical items, explain the
+    business impact and suggest remediation steps.

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAPP — Rapid AI Agent Production Pipeline</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6B2FA0;
+      --primary-light: #9168b6;
+      --primary-dark: #4f1a6e;
+      --secondary: #0078D4;
+      --accent: #E3008C;
+      --success: #107C10;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+    }
+
+    /* Hero section */
+    .hero {
+      background: linear-gradient(135deg, #1a1025 0%, #0d1117 40%, #0d1929 100%);
+      border-bottom: 2px solid transparent;
+      border-image: linear-gradient(90deg, #6B2FA0, #0078D4, #E3008C) 1;
+      text-align: center;
+      padding: 80px 24px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(107,47,160,0.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 50%, rgba(0,120,212,0.06) 0%, transparent 50%);
+      animation: shimmer 15s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-5%, 3%); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: white;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(107,47,160,0.3);
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 30%, var(--primary-light) 70%, var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero .subtitle {
+      font-size: 18px;
+      color: #8b949e;
+      margin-bottom: 12px;
+      font-weight: 400;
+    }
+
+    .hero .tagline {
+      font-size: 15px;
+      color: #58a6ff;
+      margin-bottom: 36px;
+      font-style: italic;
+    }
+
+    /* CTA buttons */
+    .cta-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .cta-btn {
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      border: none;
+      font-family: inherit;
+    }
+
+    .cta-btn:hover { transform: translateY(-2px); }
+
+    .cta-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 4px 16px rgba(107,47,160,0.3);
+    }
+
+    .cta-primary:hover { box-shadow: 0 6px 24px rgba(107,47,160,0.4); }
+
+    .cta-secondary {
+      background: rgba(255,255,255,0.06);
+      color: #e6edf3;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .cta-secondary:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); }
+
+    /* Cards section */
+    .cards-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 40px;
+      color: #e6edf3;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: rgba(22, 27, 34, 0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(107,47,160,0.4);
+      box-shadow: 0 12px 32px rgba(107,47,160,0.12);
+    }
+
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .card-icon.purple { background: linear-gradient(135deg, var(--primary), #9168b6); }
+    .card-icon.blue { background: linear-gradient(135deg, var(--secondary), #58a6ff); }
+    .card-icon.pink { background: linear-gradient(135deg, var(--accent), #f472b6); }
+    .card-icon.green { background: linear-gradient(135deg, var(--success), #3fb950); }
+    .card-icon.orange { background: linear-gradient(135deg, #d29922, #e3b341); }
+    .card-icon.gray { background: linear-gradient(135deg, #484f58, #8b949e); }
+
+    .card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #8b949e;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .card-link {
+      font-size: 13px;
+      color: var(--primary-light);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card:hover .card-link { color: white; }
+
+    /* Steps section */
+    .steps-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .steps-list {
+      list-style: none;
+      counter-reset: step;
+    }
+
+    .step-item {
+      counter-increment: step;
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .step-item:last-child { border-bottom: none; }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(107,47,160,0.15);
+      border: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--primary-light);
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .step-content p {
+      font-size: 14px;
+      color: #8b949e;
+      line-height: 1.5;
+    }
+
+    .step-content code {
+      background: rgba(110,118,129,0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #58a6ff;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: #484f58;
+      font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer a {
+      color: var(--primary-light);
+      text-decoration: none;
+    }
+
+    .footer a:hover { color: white; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero { padding: 48px 16px 40px; }
+      .hero h1 { font-size: 32px; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .cta-row { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-logo"><i class="fas fa-bolt"></i></div>
+      <h1>RAPP</h1>
+      <p class="subtitle">Rapid AI Agent Production Pipeline</p>
+      <p class="tagline">Build, demo, and deploy enterprise AI agents — from discovery to production</p>
+
+      <div class="cta-row">
+        <a href="index.html" class="cta-btn cta-primary">
+          <i class="fas fa-comments"></i> Open Chat UI
+        </a>
+        <a href="demos/demos.html" class="cta-btn cta-secondary">
+          <i class="fas fa-play-circle"></i> Browse Demos
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cards-section">
+    <h2 class="section-title">What can you do with RAPP?</h2>
+
+    <div class="cards-grid">
+      <a href="index.html" class="card">
+        <div class="card-icon purple"><i class="fas fa-comments"></i></div>
+        <h3>Chat with AI Agents</h3>
+        <p>Talk to your AI assistant powered by Azure OpenAI. It remembers your preferences across sessions, manages tasks, and coordinates with specialized agents.</p>
+        <span class="card-link">Open Chat UI <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+      <a href="demos/demos.html" class="card">
+        <div class="card-icon blue"><i class="fas fa-play-circle"></i></div>
+        <h3>Demo Showcase</h3>
+        <p>Browse 30+ enterprise AI agent demos across Sales, Finance, Healthcare, IT, and more. Play any demo step-by-step with the built-in teleprompter.</p>
+        <span class="card-link">Browse Demos <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+      <a href="index.html" class="card" id="demo-hub-card">
+        <div class="card-icon pink"><i class="fas fa-film"></i></div>
+        <h3>Interactive Demo Hub</h3>
+        <p>Click the 🎬 button inside the Chat UI to open the Demo Hub panel. Select a demo, and it plays directly in the chat — great for live presentations.</p>
+        <span class="card-link">Try Demo Hub <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+      <a href="index.html" class="card">
+        <div class="card-icon green"><i class="fas fa-bolt"></i></div>
+        <h3>Build New Agents</h3>
+        <p>Use the RAPP Pipeline to go from a customer transcript to a deployed agent in minutes. Just type "rapp" in the chat to start the pipeline.</p>
+        <span class="card-link">Start Building <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+      <a href="agent_store.html" class="card">
+        <div class="card-icon orange"><i class="fas fa-store"></i></div>
+        <h3>Agent Marketplace</h3>
+        <p>Browse, install, and manage agents from the library. Each agent follows the BasicAgent pattern and can be customized for your use case.</p>
+        <span class="card-link">Open Marketplace <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+      <div class="card">
+        <div class="card-icon gray"><i class="fas fa-cogs"></i></div>
+        <h3>Getting Started</h3>
+        <p>First time? Follow the quick start steps below to configure your endpoint and start chatting in under 2 minutes.</p>
+        <span class="card-link">See steps below <i class="fas fa-arrow-down"></i></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps-section">
+    <h2 class="section-title">Quick Start</h2>
+
+    <ol class="steps-list">
+      <li class="step-item">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Open the Chat UI</h4>
+          <p>Click <strong>"Open Chat UI"</strong> above or navigate to <code>index.html</code>. You'll see the login screen.</p>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>Log in with any name</h4>
+          <p>Enter your name and click <strong>Start Chatting</strong>. The system creates a user profile and memory context for you automatically.</p>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>Configure your API endpoint</h4>
+          <p>Click the <strong>⚙️ gear icon</strong> in the header, then <strong>Endpoints</strong>. Add your Azure Function URL and optional function key. The default points to <code>localhost:7071</code>.</p>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h4>Start chatting or run a demo</h4>
+          <p>Type a message to chat with your AI agent, or click the <strong>🎬 Demo Hub button</strong> to load and play a scripted demo. Try typing <code>load the sma4 demo</code> to see the SMA4 Workbench Orchestrator in action.</p>
+        </div>
+      </li>
+      <li class="step-item">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <h4>Explore the Demo Showcase</h4>
+          <p>Visit the <a href="demos/demos.html" style="color: #58a6ff;">Demo Showcase</a> to browse all 30+ agent demos with conversation previews. Click <strong>"Play in RAPP"</strong> on any card to run it in the chat.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <footer class="footer">
+    <p>RAPP — Rapid AI Agent Production Pipeline &nbsp;|&nbsp; Built with <a href="https://azure.microsoft.com/en-us/products/functions">Azure Functions</a> + <a href="https://azure.microsoft.com/en-us/products/ai-services/openai-service">Azure OpenAI</a></p>
+  </footer>
+</body>
+</html>
