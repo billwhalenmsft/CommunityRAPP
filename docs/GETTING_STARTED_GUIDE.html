@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RAPP Setup Guide for Solution Engineers</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #242424; line-height: 1.6; }
+  h1 { font-size: 28px; border-bottom: 2px solid #6B2FA0; padding-bottom: 8px; }
+  h2 { font-size: 22px; margin-top: 36px; color: #6B2FA0; }
+  h3 { font-size: 17px; margin-top: 24px; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; font-size: 14px; }
+  th { background: #f3f2f1; font-weight: 600; }
+  code { background: #f3f2f1; padding: 2px 6px; border-radius: 3px; font-size: 13px; font-family: 'Cascadia Code', Consolas, monospace; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 14px; border-radius: 6px; overflow-x: auto; font-size: 13px; }
+  pre code { background: none; color: inherit; padding: 0; }
+  blockquote { border-left: 3px solid #6B2FA0; margin: 12px 0; padding: 8px 16px; background: #f9f7fc; color: #444; }
+  a { color: #0078D4; }
+  ul, ol { margin: 8px 0 8px 24px; }
+  li { margin: 4px 0; }
+  hr { border: none; border-top: 1px solid #e1dfdd; margin: 24px 0; }
+  .callout { background: #FFF8E1; border-left: 4px solid #FFB900; padding: 10px 16px; margin: 12px 0; border-radius: 4px; }
+  .tip { background: #E8F5E9; border-left: 4px solid #107C10; padding: 10px 16px; margin: 12px 0; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<h1>🛠️ Getting Started with RAPP — Setup Guide for Solution Engineers</h1>
+
+<blockquote>
+<strong>Who is this for?</strong> SEs, SSPs, and anyone new to RAPP, VS Code, or coding tools. No prior experience needed.<br>
+<strong>Based on:</strong> Bill Whalen's VS Code Setup Guide for Solution Engineers
+</blockquote>
+
+<hr>
+
+<h2>What is RAPP?</h2>
+
+<p><strong>RAPP</strong> (Rapid AI Agent Production Pipeline) is a platform for building and running AI agents — smart assistants that can help with sales, customer service, finance, healthcare, and more.</p>
+
+<ul>
+<li>💬 <strong>Chat</strong> with AI agents through a web interface</li>
+<li>🎬 <strong>Run demos</strong> to see agents in action</li>
+<li>⚡ <strong>Build new agents</strong> from customer conversations</li>
+<li>🏪 <strong>Browse</strong> a library of 30+ pre-built agents</li>
+</ul>
+
+<hr>
+
+<h2>Part 1: Account Preparation</h2>
+
+<h3>GitHub Account</h3>
+<ol>
+<li>Go to <a href="https://github.com">https://github.com</a> and sign in (or create a free account)</li>
+<li>You'll use this to download RAPP code and collaborate</li>
+</ol>
+
+<h3>Link Your Microsoft + GitHub Accounts</h3>
+<p>This enables Copilot licensing and internal features:</p>
+<ol>
+<li>Go to <a href="https://docs.opensource.microsoft.com/github/opensource/accounts/linking/">https://docs.opensource.microsoft.com/github/opensource/accounts/linking/</a></li>
+<li>Follow the steps to connect your Microsoft identity to GitHub</li>
+</ol>
+
+<h3>Join Microsoft GitHub Orgs (Internal Microsoft)</h3>
+<p>Go to <a href="https://repos.opensource.microsoft.com/">https://repos.opensource.microsoft.com/</a> and join:</p>
+<ul>
+<li><code>Microsoft</code></li>
+<li><code>MicrosoftDocs</code></li>
+<li><code>Azure-Samples</code></li>
+</ul>
+
+<hr>
+
+<h2>Part 2: Install the Tools (One-Time Setup)</h2>
+
+<h3>Tool Checklist</h3>
+
+<table>
+<tr><th>Tool</th><th>Download</th><th>Why You Need It</th></tr>
+<tr><td><strong>VS Code</strong></td><td><a href="https://code.visualstudio.com/">code.visualstudio.com</a></td><td>Your code editor (like Word, but for code)</td></tr>
+<tr><td><strong>Node.js 20+ LTS</strong></td><td><a href="https://nodejs.org/">nodejs.org</a></td><td>JavaScript runtime — needed for MCP servers</td></tr>
+<tr><td><strong>Python 3.11</strong></td><td><a href="https://www.python.org/downloads/">python.org/downloads</a></td><td>RAPP is built with Python (use 3.11 for Azure Functions)</td></tr>
+<tr><td><strong>Git</strong></td><td><a href="https://git-scm.com/downloads">git-scm.com</a></td><td>Downloads and manages code</td></tr>
+<tr><td><strong>Azure CLI</strong></td><td><a href="https://aka.ms/installazurecli">aka.ms/installazurecli</a></td><td>Manages your Azure resources</td></tr>
+<tr><td><strong>Azure Developer CLI</strong></td><td><a href="https://aka.ms/install-azd">aka.ms/install-azd</a></td><td>Template-based deployments</td></tr>
+<tr><td><strong>Azure Functions Core Tools</strong></td><td><a href="https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local">MS Learn link</a></td><td>Runs the RAPP backend locally</td></tr>
+</table>
+
+<h3>Installation Tips</h3>
+<ul>
+<li><strong>Python:</strong> ⚠️ Check <strong>"Add Python to PATH"</strong> during install!</li>
+<li><strong>Node.js:</strong> Use the <strong>LTS</strong> version (not Current)</li>
+<li><strong>VS Code:</strong> ✅ Check <strong>"Add to PATH"</strong> if asked</li>
+</ul>
+
+<h3>Verify Everything Installed</h3>
+<p>Open a terminal and run each command — you should see version numbers:</p>
+<pre><code>node --version       # v20+ expected
+npm --version        # 10+ expected
+python --version     # 3.11.x expected
+git --version        # 2.x expected
+az version           # 2.x expected
+azd version          # 1.x expected
+func --version       # 4.x expected</code></pre>
+
+<hr>
+
+<h2>Part 3: Install VS Code Extensions</h2>
+
+<p>Open VS Code, then paste this in the terminal to install everything at once:</p>
+
+<pre><code>code --install-extension github.copilot-chat
+code --install-extension ms-azuretools.vscode-azure-mcp-server
+code --install-extension ms-azuretools.vscode-azure-github-copilot
+code --install-extension ms-azuretools.vscode-azurefunctions
+code --install-extension ms-azuretools.vscode-azureresourcegroups
+code --install-extension ms-azuretools.vscode-azurestorage
+code --install-extension ms-azuretools.vscode-azurestaticwebapps
+code --install-extension ms-python.python
+code --install-extension ms-python.vscode-pylance
+code --install-extension ms-vscode.powershell
+code --install-extension ritwickdey.liveserver
+code --install-extension redhat.vscode-yaml
+code --install-extension humao.rest-client
+code --install-extension ms-copilotstudio.vscode-copilotstudio
+code --install-extension teamsdevapp.ms-teams-vscode-extension
+code --install-extension teamsdevapp.vscode-ai-foundry</code></pre>
+
+<h3>What These Are For</h3>
+
+<table>
+<tr><th>Category</th><th>Extensions</th><th>Purpose</th></tr>
+<tr><td><strong>AI &amp; Copilot</strong></td><td>GitHub Copilot, AI Toolkit, AI Foundry</td><td>AI pair programming</td></tr>
+<tr><td><strong>Azure</strong></td><td>Azure Tools, Functions, Storage, Static Web Apps</td><td>Cloud resource management</td></tr>
+<tr><td><strong>Python</strong></td><td>Python, Pylance, Debugpy</td><td>Python development</td></tr>
+<tr><td><strong>Teams &amp; Copilot Studio</strong></td><td>Teams Toolkit, Copilot Studio</td><td>Build agents for M365</td></tr>
+<tr><td><strong>Utilities</strong></td><td>Live Server, YAML, REST Client, PowerShell</td><td>Day-to-day productivity</td></tr>
+</table>
+
+<hr>
+
+<h2>Part 4: Configure VS Code Settings</h2>
+
+<p>Press <strong>Ctrl+Shift+P</strong> → type <strong>"Open User Settings (JSON)"</strong> → press Enter.</p>
+
+<p>Add these settings (merge with existing):</p>
+
+<pre><code>{
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  },
+  "chat.useAgentSkills": true,
+  "chat.agent.maxRequests": 500
+}</code></pre>
+
+<hr>
+
+<h2>Part 5: Set Up MCP Servers</h2>
+
+<p>MCP (Model Context Protocol) servers let Copilot use external tools like Azure, GitHub, and Microsoft 365 directly.</p>
+
+<p>The RAPP project already has MCP servers configured in <code>.vscode/mcp.json</code>. After cloning (Part 6), these load automatically:</p>
+
+<table>
+<tr><th>MCP Server</th><th>What It Does</th></tr>
+<tr><td><strong>M365 Agents Toolkit</strong></td><td>Build Teams/Copilot agents</td></tr>
+<tr><td><strong>Azure Diagram MCP</strong></td><td>Generate architecture diagrams</td></tr>
+<tr><td><strong>Work IQ</strong></td><td>Access M365 data (email, calendar, files, Teams)</td></tr>
+<tr><td><strong>Azure MCP</strong> (via extension)</td><td>Manage Azure resources</td></tr>
+</table>
+
+<hr>
+
+<h2>Part 6: Get the RAPP Code</h2>
+
+<h3>Step 1: Open VS Code</h3>
+<p>Launch VS Code from your Start Menu or Applications.</p>
+
+<h3>Step 2: Open the Terminal</h3>
+<p>Click <strong>Terminal</strong> → <strong>New Terminal</strong> (or press <strong>Ctrl+`</strong>).</p>
+
+<div class="tip">💡 <strong>What is a terminal?</strong> It's where you type commands. Think of it like texting instructions to your computer.</div>
+
+<h3>Step 3: Clone the Code</h3>
+<p>Type these commands one at a time, pressing <strong>Enter</strong> after each:</p>
+
+<pre><code>cd Desktop
+git clone https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen.git
+cd CommunityRAPP-BillWhalen
+code .</code></pre>
+
+<p>VS Code will reopen with the RAPP project loaded. You'll see folders like <code>agents/</code>, <code>demos/</code>, <code>utils/</code> in the left panel.</p>
+
+<h3>Step 4: Install Dependencies</h3>
+<pre><code>pip install -r requirements.txt</code></pre>
+
+<h3>Step 5: Authenticate</h3>
+<pre><code>az login
+azd auth login</code></pre>
+<p>Follow the browser prompts to sign in with your Microsoft account.</p>
+
+<hr>
+
+<h2>Part 7: Run RAPP</h2>
+
+<h3>Option A: Just the Web UI (Quickest — No Azure Needed)</h3>
+<p>Browse the interface and play demos without any Azure setup:</p>
+<pre><code>python -m http.server 8080</code></pre>
+<p>Then open in your browser:</p>
+<ul>
+<li><strong>http://localhost:8080/welcome.html</strong> — Welcome page</li>
+<li><strong>http://localhost:8080/index.html</strong> — Chat UI</li>
+<li><strong>http://localhost:8080/demos/demos.html</strong> — Demo Showcase</li>
+</ul>
+
+<h3>Option B: Full RAPP with AI Chat (Needs Azure)</h3>
+<p><strong>Windows:</strong></p>
+<pre><code>.\run.ps1</code></pre>
+<p><strong>Mac/Linux:</strong></p>
+<pre><code>./run.sh</code></pre>
+<p>Then open <strong>http://localhost:8080/index.html</strong> and configure the endpoint:</p>
+<ol>
+<li>Click the ⚙️ gear icon → <strong>Endpoints</strong></li>
+<li>Add URL: <code>http://localhost:7071/api/businessinsightbot_function</code></li>
+<li>Start chatting! 🎉</li>
+</ol>
+
+<h3>Option C: Use the Deployed Version (No Local Setup)</h3>
+<p>If RAPP is already deployed to Azure, just open:</p>
+<ul>
+<li><a href="https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/">https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/</a> — Welcome page</li>
+<li><a href="https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/index.html">…/api/ui/index.html</a> — Chat UI</li>
+<li><a href="https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/demos/demos.html">…/api/ui/demos/demos.html</a> — Demo Showcase</li>
+</ul>
+
+<hr>
+
+<h2>Part 8: Explore the Interface</h2>
+
+<h3>Chat UI Toolbar</h3>
+<table>
+<tr><th>Button</th><th>Icon</th><th>What it does</th></tr>
+<tr><td>☰</td><td>Hamburger</td><td>Sidebar (chat history, settings)</td></tr>
+<tr><td>🏪</td><td>Grid</td><td>App Store</td></tr>
+<tr><td>📖</td><td>Book</td><td>Production guide</td></tr>
+<tr><td>🎬</td><td>Play circle</td><td><strong>Demo Hub</strong> — browse and play demos</td></tr>
+<tr><td>⚙️</td><td>Gear</td><td>Settings (endpoints, theme, voice)</td></tr>
+</table>
+
+<h3>Running a Demo</h3>
+<ol>
+<li>Click the <strong>🎬 Demo Hub</strong> button</li>
+<li>Search for a demo (try "SMA4" or "sales")</li>
+<li>Click a card to load it</li>
+<li>Use the teleprompter bar:
+  <ul>
+  <li><strong>▶️ Next</strong> — play next step</li>
+  <li><strong>⏩ Auto</strong> — auto-play all steps</li>
+  <li><strong>⏹️ Stop</strong> — stop the demo</li>
+  </ul>
+</li>
+</ol>
+
+<hr>
+
+<h2>Part 9: GitHub Copilot Tips</h2>
+
+<h3>Key Shortcuts</h3>
+<table>
+<tr><th>Shortcut</th><th>What It Does</th></tr>
+<tr><td><code>Ctrl+Shift+I</code></td><td>Open Copilot Chat</td></tr>
+<tr><td><code>Tab</code></td><td>Accept code suggestion</td></tr>
+<tr><td><code>Esc</code></td><td>Dismiss suggestion</td></tr>
+<tr><td><code>Ctrl+Enter</code></td><td>Send chat message</td></tr>
+<tr><td><code>Ctrl+`</code></td><td>Toggle terminal</td></tr>
+<tr><td><code>Ctrl+P</code></td><td>Quick open file</td></tr>
+<tr><td><code>Ctrl+Shift+F</code></td><td>Search across files</td></tr>
+</table>
+
+<h3>Copilot Modes</h3>
+<ul>
+<li><strong>Agent Mode</strong> — Give high-level goals, Copilot plans and executes</li>
+<li><strong>Edit Mode</strong> — Copilot suggests inline code changes</li>
+<li><strong>Ask Mode</strong> — Ask questions about code</li>
+</ul>
+
+<h3>Context Commands</h3>
+<p>Use these in Copilot Chat for better answers:</p>
+<ul>
+<li><code>@workspace</code> — Context about your project</li>
+<li><code>@terminal</code> — Context from terminal output</li>
+<li><code>@azure</code> — Azure resource management help</li>
+</ul>
+
+<h3>Instruction Files</h3>
+<p>Create a <code>copilot-instructions.md</code> in your repo root to tell Copilot about your project's tech stack, conventions, and key files. This dramatically improves suggestions.</p>
+
+<hr>
+
+<h2>Part 10: Try These First!</h2>
+
+<h3>🥇 Play a Demo (No Setup Required)</h3>
+<ol>
+<li>Open the Chat UI → click 🎬 Demo Hub</li>
+<li>Search for "SMA4 Workbench" → click it</li>
+<li>Watch a 12-step sales cockpit demo play out</li>
+</ol>
+
+<h3>🥈 Chat with the AI (Needs Azure)</h3>
+<p>Type in the chat:</p>
+<ul>
+<li><em>"What can you do?"</em></li>
+<li><em>"Remember that I prefer morning meetings"</em></li>
+<li><em>"Load the call center demo"</em></li>
+</ul>
+
+<h3>🥉 Build an Agent (Advanced)</h3>
+<p>Type: <em>"Start a RAPP pipeline for an IT helpdesk agent"</em></p>
+
+<hr>
+
+<h2>Troubleshooting</h2>
+
+<table>
+<tr><th>Problem</th><th>Fix</th></tr>
+<tr><td><code>python</code> not found</td><td>Reinstall Python with "Add to PATH" checked, restart VS Code</td></tr>
+<tr><td><code>func</code> not found</td><td>Install Azure Functions Core Tools, restart terminal</td></tr>
+<tr><td>Port 7071 in use</td><td><code>Stop-Process -Name func -Force</code> (Windows)</td></tr>
+<tr><td>Module not found</td><td><code>pip install -r requirements.txt</code></td></tr>
+<tr><td>Chat not responding</td><td>Check endpoint URL in ⚙️ Settings → Endpoints</td></tr>
+<tr><td>Copilot not working</td><td>Sign in to GitHub in VS Code, check Copilot extension is installed</td></tr>
+</table>
+
+<hr>
+
+<h2>Quick Reference: Recommended Tool Versions</h2>
+
+<table>
+<tr><th>Tool</th><th>Version</th></tr>
+<tr><td>VS Code</td><td>Latest stable</td></tr>
+<tr><td>Node.js</td><td>v20+ LTS</td></tr>
+<tr><td>Python</td><td>3.11.x</td></tr>
+<tr><td>Git</td><td>2.x</td></tr>
+<tr><td>Azure CLI</td><td>2.x</td></tr>
+<tr><td>Azure Developer CLI</td><td>1.x</td></tr>
+<tr><td>Azure Functions Core Tools</td><td>4.x</td></tr>
+</table>
+
+<hr>
+
+<p><strong>Questions?</strong> Contact <a href="mailto:billwhalen@microsoft.com">billwhalen@microsoft.com</a> or ask in the RAPP chat! 🤖</p>
+
+</body>
+</html>
