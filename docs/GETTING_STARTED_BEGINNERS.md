@@ -1,6 +1,8 @@
-# 🚀 Getting Started with RAPP — A Complete Beginner's Guide
+# 🛠️ Getting Started with RAPP — Setup Guide for Solution Engineers
 
-> **Who is this for?** Anyone new to RAPP, VS Code, or coding tools. No prior experience needed.
+> **Who is this for?** SEs, SSPs, and anyone new to RAPP, VS Code, or coding tools. No prior experience needed.
+> 
+> **Based on:** Bill Whalen's VS Code Setup Guide for Solution Engineers
 
 ---
 
@@ -16,350 +18,311 @@ You can:
 
 ---
 
-## Part 1: Install the Tools (One-Time Setup)
+## Part 1: Account Preparation
 
-You need three things installed. If you already have them, skip to [Part 2](#part-2-get-the-code).
+Before installing tools, make sure your accounts are ready.
 
-### 1A. Install VS Code
+### GitHub Account
+1. Go to **https://github.com** and sign in (or create a free account)
+2. You'll use this to download RAPP code and collaborate
 
-VS Code is a free code editor from Microsoft. It's where you'll open and work with RAPP.
+### Link Your Microsoft + GitHub Accounts
+This enables Copilot licensing and internal features:
+1. Go to **https://docs.opensource.microsoft.com/github/opensource/accounts/linking/**
+2. Follow the steps to connect your Microsoft identity to GitHub
 
-1. Go to **https://code.visualstudio.com**
-2. Click the big **Download** button
-3. Run the installer — accept all defaults
-4. ✅ Check **"Add to PATH"** if asked (important!)
-
-> 💡 **What is VS Code?** Think of it like Microsoft Word, but for code. It shows files, lets you edit them, and has a built-in terminal (command line).
-
-### 1B. Install Python 3.11
-
-Python is the programming language RAPP is built with.
-
-1. Go to **https://www.python.org/downloads/**
-2. Download **Python 3.11.x** (not 3.12 or 3.13 — Azure Functions needs 3.11)
-3. Run the installer
-4. ⚠️ **IMPORTANT:** Check the box that says **"Add Python to PATH"** on the first screen!
-5. Click **Install Now**
-
-**Verify it worked:** Open a new terminal (see below) and type:
-```
-python --version
-```
-You should see `Python 3.11.x`
-
-### 1C. Install Git
-
-Git is how you download and manage code.
-
-1. Go to **https://git-scm.com/downloads**
-2. Download for your operating system
-3. Run the installer — accept all defaults
-
-### 1D. Install Azure Functions Core Tools
-
-This lets you run the RAPP backend on your computer.
-
-1. Go to **https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local**
-2. Download **v4.x** for your OS
-3. Run the installer
-
-**Or install via command line:**
-```
-npm install -g azure-functions-core-tools@4 --unsafe-perm true
-```
-
-> 💡 **Don't have npm?** Install Node.js first from https://nodejs.org (LTS version).
+### Join Microsoft GitHub Orgs (Internal Microsoft)
+Go to **https://repos.opensource.microsoft.com/** and join:
+- `Microsoft`
+- `MicrosoftDocs`
+- `Azure-Samples`
 
 ---
 
-## Part 2: Get the Code
+## Part 2: Install the Tools (One-Time Setup)
+
+### Tool Checklist
+
+| Tool | Download | Why You Need It |
+|------|----------|-----------------|
+| **VS Code** | https://code.visualstudio.com/ | Your code editor (like Word, but for code) |
+| **Node.js 20+ LTS** | https://nodejs.org/ | JavaScript runtime — needed for MCP servers |
+| **Python 3.11** | https://www.python.org/downloads/ | RAPP is built with Python (use 3.11 for Azure Functions) |
+| **Git** | https://git-scm.com/downloads | Downloads and manages code |
+| **Azure CLI** | https://aka.ms/installazurecli | Manages your Azure resources |
+| **Azure Developer CLI** | https://aka.ms/install-azd | Template-based deployments |
+| **Azure Functions Core Tools** | https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local | Runs the RAPP backend locally |
+
+### Installation Tips
+- **Python:** ⚠️ Check **"Add Python to PATH"** during install!
+- **Node.js:** Use the **LTS** version (not Current)
+- **VS Code:** ✅ Check **"Add to PATH"** if asked
+
+### Verify Everything Installed
+Open a terminal and run each command — you should see version numbers:
+
+```
+node --version       # v20+ expected
+npm --version        # 10+ expected
+python --version     # 3.11.x expected
+git --version        # 2.x expected
+az version           # 2.x expected
+azd version          # 1.x expected
+func --version       # 4.x expected
+```
+
+---
+
+## Part 3: Install VS Code Extensions
+
+Open VS Code, then paste this in the terminal to install everything at once:
+
+```bash
+code --install-extension github.copilot-chat
+code --install-extension ms-azuretools.vscode-azure-mcp-server
+code --install-extension ms-azuretools.vscode-azure-github-copilot
+code --install-extension ms-azuretools.vscode-azurefunctions
+code --install-extension ms-azuretools.vscode-azureresourcegroups
+code --install-extension ms-azuretools.vscode-azurestorage
+code --install-extension ms-azuretools.vscode-azurestaticwebapps
+code --install-extension ms-python.python
+code --install-extension ms-python.vscode-pylance
+code --install-extension ms-vscode.powershell
+code --install-extension ritwickdey.liveserver
+code --install-extension redhat.vscode-yaml
+code --install-extension humao.rest-client
+code --install-extension ms-copilotstudio.vscode-copilotstudio
+code --install-extension teamsdevapp.ms-teams-vscode-extension
+code --install-extension teamsdevapp.vscode-ai-foundry
+```
+
+### What These Are For
+
+| Category | Extensions | Purpose |
+|----------|-----------|---------|
+| **AI & Copilot** | GitHub Copilot, AI Toolkit, AI Foundry | AI pair programming |
+| **Azure** | Azure Tools, Functions, Storage, Static Web Apps | Cloud resource management |
+| **Python** | Python, Pylance, Debugpy | Python development |
+| **Teams & Copilot Studio** | Teams Toolkit, Copilot Studio | Build agents for M365 |
+| **Utilities** | Live Server, YAML, REST Client, PowerShell | Day-to-day productivity |
+
+---
+
+## Part 4: Configure VS Code Settings
+
+Press **Ctrl+Shift+P** → type **"Open User Settings (JSON)"** → press Enter.
+
+Add these settings (merge with existing):
+
+```json
+{
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  },
+  "chat.useAgentSkills": true,
+  "chat.agent.maxRequests": 500
+}
+```
+
+---
+
+## Part 5: Set Up MCP Servers
+
+MCP (Model Context Protocol) servers let Copilot use external tools like Azure, GitHub, and Microsoft 365 directly.
+
+The RAPP project already has MCP servers configured in `.vscode/mcp.json`. After cloning (Part 6), these load automatically:
+
+| MCP Server | What It Does |
+|------------|-------------|
+| **M365 Agents Toolkit** | Build Teams/Copilot agents |
+| **Azure Diagram MCP** | Generate architecture diagrams |
+| **Work IQ** | Access M365 data (email, calendar, files, Teams) |
+| **Azure MCP** (via extension) | Manage Azure resources |
+
+---
+
+## Part 6: Get the RAPP Code
 
 ### Step 1: Open VS Code
 
-- **Windows:** Click the VS Code icon on your desktop or Start Menu
-- **Mac:** Open VS Code from Applications
+Launch VS Code from your Start Menu or Applications.
 
-### Step 2: Open the Terminal in VS Code
+### Step 2: Open the Terminal
 
-The terminal is a text-based command line built into VS Code.
+Click **Terminal** → **New Terminal** (or press **Ctrl+`**).
 
-1. Click **Terminal** in the top menu bar
-2. Click **New Terminal**
-3. A panel appears at the bottom of VS Code — this is your terminal
+> 💡 **What is a terminal?** It's where you type commands. Think of it like texting instructions to your computer.
 
-> 💡 **What is a terminal?** It's where you type commands instead of clicking buttons. Think of it like texting your computer instructions.
+### Step 3: Clone the Code
 
-### Step 3: Clone (Download) the RAPP Code
-
-In the terminal, type these commands one at a time and press **Enter** after each:
+Type these commands one at a time, pressing **Enter** after each:
 
 ```bash
 cd Desktop
-```
-*(This moves to your Desktop folder)*
-
-```bash
 git clone https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen.git
-```
-*(This downloads the RAPP code — it will take a few seconds)*
-
-```bash
 cd CommunityRAPP-BillWhalen
-```
-*(This moves into the RAPP folder)*
-
-### Step 4: Open the Project in VS Code
-
-In the terminal, type:
-```bash
 code .
 ```
-*(The dot means "this folder" — VS Code will reopen with the RAPP project loaded)*
 
-You should now see a file explorer on the left showing folders like `agents/`, `demos/`, `utils/`, etc.
+VS Code will reopen with the RAPP project loaded. You'll see folders like `agents/`, `demos/`, `utils/` in the left panel.
 
----
+### Step 4: Install Dependencies
 
-## Part 3: Install Dependencies
-
-Still in the VS Code terminal:
-
+In the terminal:
 ```bash
 pip install -r requirements.txt
 ```
 
-This installs all the Python libraries RAPP needs. It may take 1-2 minutes.
+### Step 5: Authenticate
 
-> ⚠️ If you get an error about `pip` not found, try `pip3 install -r requirements.txt` or `python -m pip install -r requirements.txt`
+```bash
+az login
+azd auth login
+```
+
+Follow the browser prompts to sign in with your Microsoft account.
 
 ---
 
-## Part 4: Run RAPP Locally
+## Part 7: Run RAPP
 
 ### Option A: Just the Web UI (Quickest — No Azure Needed)
 
-You can browse the RAPP interface and demos without any Azure setup:
+Browse the interface and play demos without any Azure setup:
 
-1. In the VS Code terminal, type:
-   ```bash
-   python -m http.server 8080
-   ```
+```bash
+python -m http.server 8080
+```
 
-2. Open your web browser and go to:
-   - **http://localhost:8080/welcome.html** — Welcome page
-   - **http://localhost:8080/index.html** — Chat UI
-   - **http://localhost:8080/demos/demos.html** — Demo Showcase
-
-3. In the Chat UI, click the **🎬 button** in the top-right to open the Demo Hub and play scripted demos
-
-> 💡 This mode lets you explore the UI and play demos, but the AI chat won't respond (it needs an API backend). See Option B for full functionality.
+Then open in your browser:
+- **http://localhost:8080/welcome.html** — Welcome page
+- **http://localhost:8080/index.html** — Chat UI
+- **http://localhost:8080/demos/demos.html** — Demo Showcase
 
 ### Option B: Full RAPP with AI Chat (Needs Azure)
 
-To get AI responses, you need Azure credentials configured:
+**Windows:**
+```powershell
+.\run.ps1
+```
 
-1. **Windows:**
-   ```powershell
-   .\run.ps1
-   ```
+**Mac/Linux:**
+```bash
+./run.sh
+```
 
-2. **Mac/Linux:**
-   ```bash
-   ./run.sh
-   ```
+Then open **http://localhost:8080/index.html** and configure the endpoint:
+1. Click the ⚙️ gear icon → **Endpoints**
+2. Add URL: `http://localhost:7071/api/businessinsightbot_function`
+3. Start chatting! 🎉
 
-3. If successful, you'll see:
-   ```
-   Azure Functions Core Tools
-   Functions:
-       businessinsightbot_function: http://localhost:7071/api/businessinsightbot_function
-   ```
+### Option C: Use the Deployed Version (No Local Setup)
 
-4. Open **http://localhost:8080/index.html** in your browser
-5. Click the ⚙️ gear icon → **Endpoints** → add your Azure Function URL:
-   - **URL:** `http://localhost:7071/api/businessinsightbot_function`
-   - **Name:** Local Dev
-6. Start chatting! 🎉
-
-> ⚠️ **Need Azure credentials?** See [Setting Up Azure](#setting-up-azure) below.
+If RAPP is already deployed to Azure, just open:
+- **https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/** — Welcome page
+- **https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/index.html** — Chat UI
+- **https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/demos/demos.html** — Demos
 
 ---
 
-## Part 5: Explore the Interface
+## Part 8: Explore the Interface
 
-### The Chat UI (`index.html`)
-
-This is the main RAPP interface. Here's what the toolbar buttons do:
+### Chat UI Toolbar
 
 | Button | Icon | What it does |
 |--------|------|--------------|
-| ☰ | Hamburger menu | Open sidebar (chat history, settings) |
-| 🏪 | Grid | Open App Store |
-| 📖 | Book | Open production guide |
-| 🎬 | Play circle | **Demo Hub** — browse and play agent demos |
+| ☰ | Hamburger | Sidebar (chat history, settings) |
+| 🏪 | Grid | App Store |
+| 📖 | Book | Production guide |
+| 🎬 | Play circle | **Demo Hub** — browse and play demos |
 | ⚙️ | Gear | Settings (endpoints, theme, voice) |
 
 ### Running a Demo
 
 1. Click the **🎬 Demo Hub** button
-2. Browse or search for a demo (try "SMA4" or "sales")
-3. Click a demo card to load it
-4. Use the teleprompter bar at the bottom:
+2. Search for a demo (try "SMA4" or "sales")
+3. Click a card to load it
+4. Use the teleprompter bar:
    - **▶️ Next** — play next step
-   - **⏩ Auto** — auto-play all steps (3-second delay)
+   - **⏩ Auto** — auto-play all steps
    - **⏹️ Stop** — stop the demo
-
-### The Demo Showcase (`demos/demos.html`)
-
-A separate page for browsing all agent demos:
-- Filter by category (Sales, Finance, Healthcare, etc.)
-- Search by name or description
-- Click **"Play in RAPP"** to open any demo in the Chat UI
-- Click **"JSON"** to download the raw demo file
 
 ---
 
-## Part 6: Try These First!
+## Part 9: GitHub Copilot Tips
+
+### Key Shortcuts
+
+| Shortcut | What It Does |
+|----------|-------------|
+| `Ctrl+Shift+I` | Open Copilot Chat |
+| `Tab` | Accept code suggestion |
+| `Esc` | Dismiss suggestion |
+| `Ctrl+Enter` | Send chat message |
+| `Ctrl+`` ` | Toggle terminal |
+| `Ctrl+P` | Quick open file |
+| `Ctrl+Shift+F` | Search across files |
+
+### Copilot Modes
+- **Agent Mode** — Give high-level goals, Copilot plans and executes
+- **Edit Mode** — Copilot suggests inline code changes
+- **Ask Mode** — Ask questions about code
+
+### Context Commands
+Use these in Copilot Chat for better answers:
+- `@workspace` — Context about your project
+- `@terminal` — Context from terminal output
+- `@azure` — Azure resource management help
+
+### Instruction Files
+Create a `copilot-instructions.md` in your repo root to tell Copilot about your project's tech stack, conventions, and key files. This dramatically improves suggestions.
+
+---
+
+## Part 10: Try These First!
 
 ### 🥇 Play a Demo (No Setup Required)
-
-1. Open the Chat UI
-2. Click 🎬 Demo Hub
-3. Search for "SMA4 Workbench"
-4. Click it → watch a 12-step sales cockpit demo play out
+1. Open the Chat UI → click 🎬 Demo Hub
+2. Search for "SMA4 Workbench" → click it
+3. Watch a 12-step sales cockpit demo play out
 
 ### 🥈 Chat with the AI (Needs Azure)
-
-Type any of these in the chat:
+Type in the chat:
 - *"What can you do?"*
 - *"Remember that I prefer morning meetings"*
-- *"Show me the demo list"*
 - *"Load the call center demo"*
 
 ### 🥉 Build an Agent (Advanced)
-
-Type in the chat:
-- *"Start a RAPP pipeline for an IT helpdesk agent"*
-
-This walks you through the full agent creation process.
+Type: *"Start a RAPP pipeline for an IT helpdesk agent"*
 
 ---
 
-## Setting Up Azure
+## Troubleshooting
 
-If you're starting from scratch and need Azure credentials:
-
-### Quick Setup (Recommended)
-
-1. **Deploy to Azure** — Click this button in the [README](../README.md):
-
-   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkody-w%2FEntraCopilotAgent365%2Fmain%2Fazuredeploy.json)
-
-2. Fill in the form (resource group name, region)
-3. Wait for deployment to complete (~5 minutes)
-4. Click **Outputs** → copy the setup script
-5. Run the script — it creates `local.settings.json` automatically
-
-### Manual Setup
-
-If you already have Azure resources, create `local.settings.json` in the project root:
-
-```json
-{
-  "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage__blobServiceUri": "https://YOUR-STORAGE.blob.core.windows.net",
-    "AzureWebJobsStorage__queueServiceUri": "https://YOUR-STORAGE.queue.core.windows.net",
-    "AzureWebJobsStorage__tableServiceUri": "https://YOUR-STORAGE.table.core.windows.net",
-    "FUNCTIONS_WORKER_RUNTIME": "python",
-    "AZURE_OPENAI_ENDPOINT": "https://YOUR-RESOURCE.cognitiveservices.azure.com/",
-    "AZURE_OPENAI_DEPLOYMENT_NAME": "gpt-4o",
-    "AZURE_OPENAI_API_VERSION": "2024-08-01-preview",
-    "AZURE_STORAGE_ACCOUNT_NAME": "YOUR-STORAGE-ACCOUNT"
-  }
-}
-```
-
-Then run `az login` and start the function app.
+| Problem | Fix |
+|---------|-----|
+| `python` not found | Reinstall Python with "Add to PATH" checked, restart VS Code |
+| `func` not found | Install Azure Functions Core Tools, restart terminal |
+| Port 7071 in use | `Stop-Process -Name func -Force` (Windows) |
+| Module not found | `pip install -r requirements.txt` |
+| Chat not responding | Check endpoint URL in ⚙️ Settings → Endpoints |
+| Copilot not working | Sign in to GitHub in VS Code, check Copilot extension is installed |
 
 ---
 
-## Common Issues
+## Quick Reference: Recommended Tool Versions
 
-### "Python not found" or "pip not found"
-
-- Make sure Python 3.11 is installed with **"Add to PATH" checked**
-- Close and reopen VS Code after installing Python
-- Try `python3` instead of `python`
-
-### "func not found"
-
-- Install Azure Functions Core Tools (see [Part 1D](#1d-install-azure-functions-core-tools))
-- Close and reopen your terminal after installing
-
-### "Port 7071 already in use"
-
-Another instance is running. Close it first:
-- **Windows:** `Stop-Process -Name func -Force` (in PowerShell)
-- **Mac/Linux:** `pkill -f "func host start"`
-
-### "Module not found" errors
-
-```bash
-pip install -r requirements.txt
-```
-
-### The chat isn't responding
-
-- Make sure the function app is running (`.\run.ps1` or `./run.sh`)
-- Check that the endpoint URL in ⚙️ Settings → Endpoints matches your running URL
-- Check the terminal for error messages
+| Tool | Version |
+|------|---------|
+| VS Code | Latest stable |
+| Node.js | v20+ LTS |
+| Python | 3.11.x |
+| Git | 2.x |
+| Azure CLI | 2.x |
+| Azure Developer CLI | 1.x |
+| Azure Functions Core Tools | 4.x |
 
 ---
 
-## VS Code Tips for Beginners
-
-### Useful Keyboard Shortcuts
-
-| Shortcut | What it does |
-|----------|-------------|
-| `Ctrl+`` ` (backtick) | Toggle terminal |
-| `Ctrl+Shift+E` | Show file explorer |
-| `Ctrl+P` | Quick open a file by name |
-| `Ctrl+Shift+F` | Search across all files |
-| `Ctrl+S` | Save current file |
-| `Ctrl+Z` | Undo |
-
-### The File Explorer
-
-- Left panel shows all project files and folders
-- Click any file to open it
-- Right-click for options (rename, delete, etc.)
-- Key folders:
-  - `agents/` — AI agent code
-  - `demos/` — Demo scripts (JSON files)
-  - `utils/` — Utility functions
-  - `docs/` — Documentation
-
-### The Terminal
-
-- Bottom panel where you type commands
-- You can have multiple terminals (click the `+` button)
-- Use ↑ arrow to repeat previous commands
-
----
-
-## What's Next?
-
-| Goal | Where to Go |
-|------|-------------|
-| Learn about the architecture | [README.md](../README.md) |
-| Build a custom agent | [QUICK_START.md](../QUICK_START.md) |
-| Run the RAPP pipeline | Type "rapp" in the chat |
-| Deploy to Azure | [docs/DEPLOYMENT.md](DEPLOYMENT.md) |
-| Set up Power Platform | [docs/POWER_PLATFORM_INTEGRATION.md](POWER_PLATFORM_INTEGRATION.md) |
-| Troubleshoot issues | [docs/TROUBLESHOOTING.md](TROUBLESHOOTING.md) |
-
----
-
-**Questions?** Open an issue on GitHub or ask in the RAPP chat — the AI assistant can help you navigate the platform! 🤖
+**Questions?** Contact billwhalen@microsoft.com or ask in the RAPP chat! 🤖
