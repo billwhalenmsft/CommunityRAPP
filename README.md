@@ -1,3 +1,28 @@
+# ⚡ RAPP — Rapid AI Agent Production Pipeline
+
+> Build, demo, and deploy enterprise AI agents — from a customer transcript to a working agent in minutes.
+
+### 🌐 Quick Access
+
+| | URL |
+|---|---|
+| **Welcome Page** | [rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/](https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/) |
+| **Chat UI** | [.../api/ui/index.html](https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/index.html) |
+| **Demo Showcase** | [.../api/ui/demos/demos.html](https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/ui/demos/demos.html) |
+| **Setup Guide** | [docs/GETTING_STARTED_BEGINNERS.md](docs/GETTING_STARTED_BEGINNERS.md) |
+
+### 🏃 Fastest Local Start
+
+```bash
+git clone https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen.git
+cd CommunityRAPP-BillWhalen
+pip install -r requirements.txt
+python -m http.server 8080
+# Open http://localhost:8080/welcome.html
+```
+
+---
+
 # Copilot Entra Agent - Enterprise AI Assistant
 <a href='https://codespaces.new/kody-w/EntraCopilotAgent365?quickstart=1'><img src='https://github.com/codespaces/badge.svg' alt='Open in GitHub Codespaces' style='max-width: 100%;'></a>
 
