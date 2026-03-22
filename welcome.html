@@ -292,19 +292,200 @@
 
     .footer a:hover { color: white; }
 
+    /* Hero stats */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      margin-top: 36px;
+      padding: 20px 32px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-stat { text-align: center; }
+
+    .hero-stat-value {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-stat-label {
+      font-size: 11px;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-stat-divider {
+      width: 1px;
+      height: 32px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Use cases banner */
+    .use-cases-banner {
+      padding: 16px 24px;
+      background: rgba(107,47,160,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      overflow: hidden;
+    }
+
+    .use-cases-scroll {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .use-case-tag {
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      font-size: 12px;
+      color: #8b949e;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .use-case-tag i { color: var(--primary-light); font-size: 11px; }
+
+    /* Card features */
+    .card-features {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 12px 0 16px;
+    }
+
+    .card-features span {
+      font-size: 12px;
+      color: #58a6ff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-features i { font-size: 10px; color: var(--success); }
+
+    /* How it works pipeline */
+    .how-it-works {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    .pipeline-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pipeline-step {
+      text-align: center;
+      padding: 24px 20px;
+      background: rgba(22,27,34,0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      flex: 1;
+      min-width: 160px;
+      max-width: 200px;
+      transition: border-color 0.3s;
+    }
+
+    .pipeline-step:hover { border-color: var(--primary); }
+
+    .pipeline-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      background: linear-gradient(135deg, rgba(107,47,160,0.2), rgba(0,120,212,0.2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--primary-light);
+    }
+
+    .pipeline-label { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .pipeline-desc { font-size: 12px; color: #8b949e; }
+
+    .pipeline-arrow {
+      color: rgba(255,255,255,0.15);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Tech stack */
+    .tech-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    .tech-grid {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tech-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      font-size: 13px;
+      color: #8b949e;
+    }
+
+    .tech-item i { color: var(--primary-light); font-size: 16px; }
+
     /* Responsive */
     @media (max-width: 768px) {
       .hero { padding: 48px 16px 40px; }
       .hero h1 { font-size: 32px; }
       .cards-grid { grid-template-columns: 1fr; }
       .cta-row { flex-direction: column; align-items: center; }
+      .hero-stats { flex-direction: column; gap: 16px; }
+      .hero-stat-divider { width: 40px; height: 1px; }
+      .pipeline-arrow { display: none; }
+      .pipeline-steps { gap: 12px; }
     }
   </style>
 </head>
 <body>
   <section class="hero">
     <div class="hero-content">
-      <div class="hero-logo"><i class="fas fa-bolt"></i></div>
+      <!-- RAPP Logo - inline SVG -->
+      <div class="hero-logo">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 4L8 14v20l16 10 16-10V14L24 4z" fill="url(#logoGrad)" opacity="0.15"/>
+          <path d="M24 4L8 14v20l16 10 16-10V14L24 4z" stroke="url(#logoGrad)" stroke-width="1.5" fill="none"/>
+          <path d="M28 14h-9l-2 8h5l-4 12 12-14h-6l4-6z" fill="white"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="8" y1="4" x2="40" y2="44">
+              <stop stop-color="#9168b6"/><stop offset="1" stop-color="#58a6ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
       <h1>RAPP</h1>
       <p class="subtitle">Rapid AI Agent Production Pipeline</p>
       <p class="tagline">Build, demo, and deploy enterprise AI agents — from discovery to production</p>
@@ -316,7 +497,49 @@
         <a href="demos/demos.html" class="cta-btn cta-secondary">
           <i class="fas fa-play-circle"></i> Browse Demos
         </a>
+        <a href="docs/GETTING_STARTED_BEGINNERS.md" class="cta-btn cta-secondary" target="_blank">
+          <i class="fas fa-book-open"></i> Setup Guide
+        </a>
       </div>
+
+      <!-- Hero stats -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value">30+</span>
+          <span class="hero-stat-label">AI Agents</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">7</span>
+          <span class="hero-stat-label">Industries</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">14</span>
+          <span class="hero-stat-label">Pipeline Steps</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">&lt;5 min</span>
+          <span class="hero-stat-label">Transcript → Agent</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use case banner -->
+  <section class="use-cases-banner">
+    <div class="use-cases-scroll">
+      <span class="use-case-tag"><i class="fas fa-chart-line"></i> Sales Pipeline</span>
+      <span class="use-case-tag"><i class="fas fa-headset"></i> Call Center</span>
+      <span class="use-case-tag"><i class="fas fa-shield-alt"></i> Fraud Detection</span>
+      <span class="use-case-tag"><i class="fas fa-hospital-user"></i> Patient Intake</span>
+      <span class="use-case-tag"><i class="fas fa-boxes"></i> Inventory</span>
+      <span class="use-case-tag"><i class="fas fa-file-contract"></i> Contracts</span>
+      <span class="use-case-tag"><i class="fas fa-ticket-alt"></i> IT Helpdesk</span>
+      <span class="use-case-tag"><i class="fas fa-building"></i> CRM Migration</span>
+      <span class="use-case-tag"><i class="fas fa-user-circle"></i> Customer 360</span>
+      <span class="use-case-tag"><i class="fas fa-graduation-cap"></i> Sales Coaching</span>
     </div>
   </section>
 
@@ -328,6 +551,11 @@
         <div class="card-icon purple"><i class="fas fa-comments"></i></div>
         <h3>Chat with AI Agents</h3>
         <p>Talk to your AI assistant powered by Azure OpenAI. It remembers your preferences across sessions, manages tasks, and coordinates with specialized agents.</p>
+        <div class="card-features">
+          <span><i class="fas fa-check"></i> Persistent memory</span>
+          <span><i class="fas fa-check"></i> Multi-agent routing</span>
+          <span><i class="fas fa-check"></i> Voice synthesis</span>
+        </div>
         <span class="card-link">Open Chat UI <i class="fas fa-arrow-right"></i></span>
       </a>
 
@@ -335,36 +563,91 @@
         <div class="card-icon blue"><i class="fas fa-play-circle"></i></div>
         <h3>Demo Showcase</h3>
         <p>Browse 30+ enterprise AI agent demos across Sales, Finance, Healthcare, IT, and more. Play any demo step-by-step with the built-in teleprompter.</p>
+        <div class="card-features">
+          <span><i class="fas fa-check"></i> 30+ demos</span>
+          <span><i class="fas fa-check"></i> Category filtering</span>
+          <span><i class="fas fa-check"></i> One-click playback</span>
+        </div>
         <span class="card-link">Browse Demos <i class="fas fa-arrow-right"></i></span>
       </a>
 
       <a href="index.html" class="card" id="demo-hub-card">
         <div class="card-icon pink"><i class="fas fa-film"></i></div>
         <h3>Interactive Demo Hub</h3>
-        <p>Click the 🎬 button inside the Chat UI to open the Demo Hub panel. Select a demo, and it plays directly in the chat — great for live presentations.</p>
+        <p>Click the 🎬 button inside the Chat UI to open the Demo Hub panel. Select a demo, and it plays directly in the chat — perfect for live customer presentations.</p>
+        <div class="card-features">
+          <span><i class="fas fa-check"></i> Teleprompter bar</span>
+          <span><i class="fas fa-check"></i> Auto-play mode</span>
+          <span><i class="fas fa-check"></i> Looks like real chat</span>
+        </div>
         <span class="card-link">Try Demo Hub <i class="fas fa-arrow-right"></i></span>
       </a>
 
       <a href="index.html" class="card">
         <div class="card-icon green"><i class="fas fa-bolt"></i></div>
         <h3>Build New Agents</h3>
-        <p>Use the RAPP Pipeline to go from a customer transcript to a deployed agent in minutes. Just type "rapp" in the chat to start the pipeline.</p>
+        <p>Use the RAPP Pipeline to go from a customer transcript to a deployed agent in minutes. Includes quality gates, MVP generation, and auto-deployment.</p>
+        <div class="card-features">
+          <span><i class="fas fa-check"></i> Transcript → Agent</span>
+          <span><i class="fas fa-check"></i> 14-step pipeline</span>
+          <span><i class="fas fa-check"></i> Quality gates</span>
+        </div>
         <span class="card-link">Start Building <i class="fas fa-arrow-right"></i></span>
       </a>
 
       <a href="agent_store.html" class="card">
         <div class="card-icon orange"><i class="fas fa-store"></i></div>
         <h3>Agent Marketplace</h3>
-        <p>Browse, install, and manage agents from the library. Each agent follows the BasicAgent pattern and can be customized for your use case.</p>
+        <p>Browse, install, and manage agents from the library. Each agent follows the BasicAgent pattern and can be customized for your customer's use case.</p>
+        <div class="card-features">
+          <span><i class="fas fa-check"></i> Install agents</span>
+          <span><i class="fas fa-check"></i> Version updates</span>
+          <span><i class="fas fa-check"></i> Custom agents</span>
+        </div>
         <span class="card-link">Open Marketplace <i class="fas fa-arrow-right"></i></span>
       </a>
 
       <a href="docs/GETTING_STARTED_BEGINNERS.md" class="card" target="_blank">
         <div class="card-icon gray"><i class="fas fa-book-open"></i></div>
-        <h3>Beginner's Guide</h3>
-        <p>Never used VS Code before? This step-by-step guide walks you through installing tools, cloning the repo, and running RAPP from scratch.</p>
+        <h3>Setup Guide</h3>
+        <p>Complete walkthrough: install VS Code, Python, Azure CLI, clone the repo, configure extensions, and run RAPP. Covers MCP servers and Copilot tips too.</p>
+        <div class="card-features">
+          <span><i class="fas fa-check"></i> Zero to running</span>
+          <span><i class="fas fa-check"></i> Extension list</span>
+          <span><i class="fas fa-check"></i> Troubleshooting</span>
+        </div>
         <span class="card-link">Read the Guide <i class="fas fa-arrow-right"></i></span>
       </a>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-it-works">
+    <h2 class="section-title">How RAPP Works</h2>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">
+        <div class="pipeline-icon"><i class="fas fa-microphone"></i></div>
+        <div class="pipeline-label">Discovery</div>
+        <div class="pipeline-desc">Customer transcript or call notes</div>
+      </div>
+      <div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon"><i class="fas fa-brain"></i></div>
+        <div class="pipeline-label">AI Processing</div>
+        <div class="pipeline-desc">RAPP extracts requirements & scope</div>
+      </div>
+      <div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon"><i class="fas fa-code"></i></div>
+        <div class="pipeline-label">Agent Generated</div>
+        <div class="pipeline-desc">Code, demo script & test page</div>
+      </div>
+      <div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div>
+      <div class="pipeline-step">
+        <div class="pipeline-icon"><i class="fas fa-rocket"></i></div>
+        <div class="pipeline-label">Deploy & Demo</div>
+        <div class="pipeline-desc">Ready for customer presentation</div>
+      </div>
     </div>
   </section>
 
@@ -410,8 +693,22 @@
     </ol>
   </section>
 
+  <!-- Tech stack -->
+  <section class="tech-section">
+    <h2 class="section-title">Built With</h2>
+    <div class="tech-grid">
+      <div class="tech-item"><i class="fas fa-cloud"></i><span>Azure Functions</span></div>
+      <div class="tech-item"><i class="fas fa-brain"></i><span>Azure OpenAI (GPT-4o)</span></div>
+      <div class="tech-item"><i class="fas fa-database"></i><span>Azure File Storage</span></div>
+      <div class="tech-item"><i class="fab fa-python"></i><span>Python 3.11</span></div>
+      <div class="tech-item"><i class="fab fa-microsoft"></i><span>Power Platform</span></div>
+      <div class="tech-item"><i class="fas fa-users"></i><span>Copilot Studio</span></div>
+    </div>
+  </section>
+
   <footer class="footer">
     <p>RAPP — Rapid AI Agent Production Pipeline &nbsp;|&nbsp; Built with <a href="https://azure.microsoft.com/en-us/products/functions">Azure Functions</a> + <a href="https://azure.microsoft.com/en-us/products/ai-services/openai-service">Azure OpenAI</a></p>
+    <p style="margin-top: 8px; font-size: 12px;">Microsoft Internal &nbsp;|&nbsp; <a href="mailto:billwhalen@microsoft.com">billwhalen@microsoft.com</a></p>
   </footer>
 </body>
 </html>
