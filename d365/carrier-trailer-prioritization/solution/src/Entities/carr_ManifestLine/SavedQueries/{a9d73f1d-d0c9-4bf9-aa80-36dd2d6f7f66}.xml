@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{a9d73f1d-d0c9-4bf9-aa80-36dd2d6f7f66}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="carr_manifestlinename" select="1" icon="1" preview="1">
+        <row name="result" id="carr_manifestlineid">
+          <cell name="carr_manifestlinename" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="carr_manifestline">
+          <attribute name="carr_manifestlineid" />
+          <attribute name="carr_manifestlinename" />
+          <attribute name="createdon" />
+          <order attribute="carr_manifestlinename" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="1" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Inactive Carrier Manifest Lines" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>1</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{2bd83b34-fed8-4b16-94a6-22dc35df1094}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="carr_dockname" select="1" icon="1" preview="1">
+        <row name="result" id="carr_dockid">
+          <cell name="carr_dockname" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>4</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="carr_dock">
+          <attribute name="carr_dockid" />
+          <attribute name="carr_dockname" />
+          <attribute name="createdon" />
+          <order attribute="carr_dockname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <filter type="or" isquickfindfields="1">
+            <condition attribute="carr_dockname" operator="like" value="{0}" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Quick Find Active Carrier Docks" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

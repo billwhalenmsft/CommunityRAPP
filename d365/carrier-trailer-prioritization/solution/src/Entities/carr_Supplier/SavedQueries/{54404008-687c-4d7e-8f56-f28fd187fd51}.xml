@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{54404008-687c-4d7e-8f56-f28fd187fd51}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="carr_suppliername" select="1" icon="1" preview="1">
+        <row name="result" id="carr_supplierid">
+          <cell name="carr_suppliername" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="carr_supplier">
+          <attribute name="carr_supplierid" />
+          <attribute name="carr_suppliername" />
+          <attribute name="createdon" />
+          <order attribute="carr_suppliername" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="1" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Inactive Carrier Suppliers" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>
