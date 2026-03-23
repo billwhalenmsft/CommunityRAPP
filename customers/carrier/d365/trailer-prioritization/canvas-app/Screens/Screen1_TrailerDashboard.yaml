@@ -1,356 +1,356 @@
-- Control: Screen
-  Name: TrailerDashboard
-  Properties:
-    Fill: =RGBA(245, 246, 250, 1)
-  Children:
-  - Control: Rectangle
-    Name: Header
+Screens:
+  TrailerDashboard:
     Properties:
-      X: =0
-      Y: =0
-      Width: =Parent.Width
-      Height: =64
-      Fill: =RGBA(0, 70, 127, 1)
-  - Control: Label
-    Name: HeaderTitle
-    Properties:
-      X: =16
-      Y: =0
-      Width: =600
-      Height: =64
-      Text: ="Inbound Trailer Prioritization"
-      Color: =RGBA(255, 255, 255, 1)
-      FontWeight: =FontWeight.Bold
-      Size: =18
-      VerticalAlign: =VerticalAlign.Middle
-  - Control: Label
-    Name: WeekLabel
-    Properties:
-      X: =Parent.Width - 260
-      Y: =16
-      Width: =240
-      Height: =32
-      Text: ="Week of " & Text(Today(), "mmm dd, yyyy")
-      Color: =RGBA(200, 225, 255, 1)
-      Align: =Align.Right
-      Size: =12
-  - Control: Rectangle
-    Name: CardTotal
-    Properties:
-      X: =16
-      Y: =80
-      Width: =200
-      Height: =80
-      Fill: =RGBA(255, 255, 255, 1)
-      RadiusTopLeft: =8
-      RadiusTopRight: =8
-      RadiusBottomLeft: =8
-      RadiusBottomRight: =8
-      BorderColor: =RGBA(220, 225, 235, 1)
-      BorderThickness: =1
-  - Control: Label
-    Name: CardTotalNum
-    Properties:
-      X: =24
-      Y: =88
-      Width: =184
-      Height: =36
-      Text: =Text(CountRows(colTrailers), "[$-en-US]0")
-      Size: =28
-      FontWeight: =FontWeight.Bold
-      Color: =RGBA(0, 70, 127, 1)
-  - Control: Label
-    Name: CardTotalLabel
-    Properties:
-      X: =24
-      Y: =124
-      Width: =184
-      Height: =28
-      Text: ="Total Trailers"
-      Size: =12
-      Color: =RGBA(100, 110, 130, 1)
-  - Control: Rectangle
-    Name: CardScheduled
-    Properties:
-      X: =228
-      Y: =80
-      Width: =200
-      Height: =80
-      Fill: =RGBA(255, 255, 255, 1)
-      RadiusTopLeft: =8
-      RadiusTopRight: =8
-      RadiusBottomLeft: =8
-      RadiusBottomRight: =8
-      BorderColor: =RGBA(220, 225, 235, 1)
-      BorderThickness: =1
-  - Control: Label
-    Name: CardScheduledNum
-    Properties:
-      X: =236
-      Y: =88
-      Width: =184
-      Height: =36
-      Text: =Text(CountRows(Filter(colTrailers, Or(carr_schedulestatus = "Scheduled", carr_schedulestatus = "Confirmed"))), "[$-en-US]0")
-      Size: =28
-      FontWeight: =FontWeight.Bold
-      Color: =RGBA(16, 124, 16, 1)
-  - Control: Label
-    Name: CardScheduledLabel
-    Properties:
-      X: =236
-      Y: =124
-      Width: =184
-      Height: =28
-      Text: ="Scheduled"
-      Size: =12
-      Color: =RGBA(100, 110, 130, 1)
-  - Control: Rectangle
-    Name: CardUnscheduled
-    Properties:
-      X: =440
-      Y: =80
-      Width: =200
-      Height: =80
-      Fill: =RGBA(255, 255, 255, 1)
-      RadiusTopLeft: =8
-      RadiusTopRight: =8
-      RadiusBottomLeft: =8
-      RadiusBottomRight: =8
-      BorderColor: =RGBA(220, 225, 235, 1)
-      BorderThickness: =1
-  - Control: Label
-    Name: CardUnscheduledNum
-    Properties:
-      X: =448
-      Y: =88
-      Width: =184
-      Height: =36
-      Text: =Text(CountRows(Filter(colTrailers, carr_schedulestatus = "Unscheduled")), "[$-en-US]0")
-      Size: =28
-      FontWeight: =FontWeight.Bold
-      Color: =RGBA(209, 52, 56, 1)
-  - Control: Label
-    Name: CardUnscheduledLabel
-    Properties:
-      X: =448
-      Y: =124
-      Width: =184
-      Height: =28
-      Text: ="Unscheduled"
-      Size: =12
-      Color: =RGBA(100, 110, 130, 1)
-  - Control: Rectangle
-    Name: CardRevenue
-    Properties:
-      X: =652
-      Y: =80
-      Width: =240
-      Height: =80
-      Fill: =RGBA(255, 255, 255, 1)
-      RadiusTopLeft: =8
-      RadiusTopRight: =8
-      RadiusBottomLeft: =8
-      RadiusBottomRight: =8
-      BorderColor: =RGBA(220, 225, 235, 1)
-      BorderThickness: =1
-  - Control: Label
-    Name: CardRevenueNum
-    Properties:
-      X: =660
-      Y: =88
-      Width: =224
-      Height: =36
-      Text: ="$" & Text(Sum(colTrailers, carr_revenueimpact) / 1000, "[$-en-US]0.0") & "K"
-      Size: =28
-      FontWeight: =FontWeight.Bold
-      Color: =RGBA(0, 120, 212, 1)
-  - Control: Label
-    Name: CardRevenueLabel
-    Properties:
-      X: =660
-      Y: =124
-      Width: =224
-      Height: =28
-      Text: ="Potential Revenue Clearance"
-      Size: =12
-      Color: =RGBA(100, 110, 130, 1)
-  - Control: Label
-    Name: FilterLabel
-    Properties:
-      X: =16
-      Y: =180
-      Width: =100
-      Height: =32
-      Text: ="Filter:"
-      FontWeight: =FontWeight.Semibold
-      Size: =13
-  - Control: ComboBox
-    Name: FilterStatus
-    Properties:
-      X: =80
-      Y: =180
-      Width: =180
-      Height: =32
-      Items: =["All", "Unscheduled", "Scheduled", "Confirmed", "Overflow"]
-  - Control: Button
-    Name: BtnRefresh
-    Properties:
-      X: =Parent.Width - 160
-      Y: =180
-      Width: =140
-      Height: =36
-      Text: ="Refresh Data"
-      Fill: =RGBA(0, 120, 212, 1)
-      Color: =RGBA(255, 255, 255, 1)
-      FontWeight: =FontWeight.Semibold
-      OnSelect: =ClearCollect(colTrailers, 'Carrier Trailers')
-  - Control: Button
-    Name: BtnSchedule
-    Properties:
-      X: =Parent.Width - 316
-      Y: =180
-      Width: =148
-      Height: =36
-      Text: ="Open Schedule"
-      Fill: =RGBA(16, 124, 16, 1)
-      Color: =RGBA(255, 255, 255, 1)
-      FontWeight: =FontWeight.Semibold
-      OnSelect: =Navigate(ScheduleBuilder)
-  - Control: Gallery
-    Name: TrailerGallery
-    Properties:
-      X: =16
-      Y: =228
-      Width: =Parent.Width - 32
-      Height: =Parent.Height - 244
-      Items: |
-        =Sort(
-          Filter(
-            colTrailers,
-            Or(FilterStatus.Selected.Value = "All", carr_schedulestatus = FilterStatus.Selected.Value)
-          ),
-          carr_priorityrank,
-          Ascending
-        )
-      TemplateSize: =72
-      ShowScrollbar: =true
+      Fill: =RGBA(245, 246, 250, 1)
     Children:
-    - Control: Rectangle
-      Name: RowBg
-      Properties:
-        X: =0
-        Y: =2
-        Width: =Parent.Width
-        Height: =68
-        Fill: =RGBA(255, 255, 255, 1)
-        RadiusTopLeft: =6
-        RadiusTopRight: =6
-        RadiusBottomLeft: =6
-        RadiusBottomRight: =6
-        BorderColor: =If(ThisItem.IsSelected, RGBA(0, 120, 212, 1), RGBA(225, 230, 240, 1))
-        BorderThickness: =If(ThisItem.IsSelected, 2, 1)
-    - Control: Label
-      Name: RankBadge
-      Properties:
-        X: =8
-        Y: =18
-        Width: =36
-        Height: =36
-        Text: =Text(ThisItem.carr_priorityrank, "[$-en-US]0")
-        Align: =Align.Center
-        VerticalAlign: =VerticalAlign.Middle
-        Size: =16
-        FontWeight: =FontWeight.Bold
-        Color: =RGBA(255, 255, 255, 1)
-        Fill: =RGBA(0, 70, 127, 1)
-        RadiusTopLeft: =18
-        RadiusTopRight: =18
-        RadiusBottomLeft: =18
-        RadiusBottomRight: =18
-    - Control: Label
-      Name: TrailerID
-      Properties:
-        X: =56
-        Y: =10
-        Width: =200
-        Height: =24
-        Text: =ThisItem.carr_trailerid
-        FontWeight: =FontWeight.Bold
-        Size: =14
-        Color: =RGBA(20, 30, 50, 1)
-    - Control: Label
-      Name: SupplierLabel
-      Properties:
-        X: =56
-        Y: =34
-        Width: =200
-        Height: =20
-        Text: =ThisItem.carr_factorysupplier
-        Size: =11
-        Color: =RGBA(100, 110, 130, 1)
-    - Control: Label
-      Name: OTIFBar
-      Properties:
-        X: =268
-        Y: =18
-        Width: =120
-        Height: =36
-        Text: ="OTIF: " & Text(ThisItem.carr_otifscore, "[$-en-US]0") & " parts"
-        Size: =11
-        Color: =RGBA(50, 60, 80, 1)
-    - Control: Label
-      Name: RevenueLabel
-      Properties:
-        X: =400
-        Y: =18
-        Width: =140
-        Height: =36
-        Text: ="$" & Text(ThisItem.carr_revenueimpact / 1000, "[$-en-US]0.0") & "K revenue"
-        Size: =11
-        Color: =RGBA(50, 60, 80, 1)
-    - Control: Label
-      Name: StatusBadge
-      Properties:
-        X: =Parent.Width - 180
-        Y: =20
-        Width: =100
-        Height: =28
-        Text: =ThisItem.carr_schedulestatus
-        Align: =Align.Center
-        Size: =11
-        FontWeight: =FontWeight.Semibold
-        Color: =RGBA(255, 255, 255, 1)
-        Fill: |
-          =Switch(
-            ThisItem.carr_schedulestatus,
-            "Confirmed", RGBA(16, 124, 16, 1),
-            "Scheduled", RGBA(0, 120, 212, 1),
-            "Overflow", RGBA(146, 111, 19, 1),
-            "Rescheduled", RGBA(209, 52, 56, 1),
-            RGBA(150, 155, 165, 1)
-          )
-        RadiusTopLeft: =4
-        RadiusTopRight: =4
-        RadiusBottomLeft: =4
-        RadiusBottomRight: =4
-    - Control: Label
-      Name: DockLabel
-      Properties:
-        X: =Parent.Width - 70
-        Y: =20
-        Width: =60
-        Height: =28
-        Text: =If(ThisItem.carr_assigneddock = "Unassigned", "-", ThisItem.carr_assigneddock)
-        Align: =Align.Center
-        Size: =11
-        Color: =RGBA(80, 90, 110, 1)
-    - Control: Label
-      Name: RowTap
-      Properties:
-        X: =0
-        Y: =0
-        Width: =Parent.Width
-        Height: =72
-        Text: =""
-        Fill: =RGBA(0, 0, 0, 0)
-        OnSelect: =Set(varSelectedTrailer, ThisItem); Navigate(ScheduleBuilder)
+    - Header:
+        Control: Rectangle
+        Properties:
+          X: =0
+          Y: =0
+          Width: =Parent.Width
+          Height: =64
+          Fill: =RGBA(0, 70, 127, 1)
+    - HeaderTitle:
+        Control: Label
+        Properties:
+          X: =16
+          Y: =0
+          Width: =600
+          Height: =64
+          Text: ="Inbound Trailer Prioritization"
+          Color: =RGBA(255, 255, 255, 1)
+          FontWeight: =FontWeight.Bold
+          Size: =18
+          VerticalAlign: =VerticalAlign.Middle
+    - WeekLabel:
+        Control: Label
+        Properties:
+          X: =Parent.Width - 260
+          Y: =16
+          Width: =240
+          Height: =32
+          Text: ="Week of " & Text(Today(), "mmm dd, yyyy")
+          Color: =RGBA(200, 225, 255, 1)
+          Align: =Align.Right
+          Size: =12
+    - CardTotal:
+        Control: Rectangle
+        Properties:
+          X: =16
+          Y: =80
+          Width: =200
+          Height: =80
+          Fill: =RGBA(255, 255, 255, 1)
+          RadiusTopLeft: =8
+          RadiusTopRight: =8
+          RadiusBottomLeft: =8
+          RadiusBottomRight: =8
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+    - CardTotalNum:
+        Control: Label
+        Properties:
+          X: =24
+          Y: =88
+          Width: =184
+          Height: =36
+          Text: =Text(CountRows(colTrailers), "[$-en-US]0")
+          Size: =28
+          FontWeight: =FontWeight.Bold
+          Color: =RGBA(0, 70, 127, 1)
+    - CardTotalLabel:
+        Control: Label
+        Properties:
+          X: =24
+          Y: =124
+          Width: =184
+          Height: =28
+          Text: ="Total Trailers"
+          Size: =12
+          Color: =RGBA(100, 110, 130, 1)
+    - CardScheduled:
+        Control: Rectangle
+        Properties:
+          X: =228
+          Y: =80
+          Width: =200
+          Height: =80
+          Fill: =RGBA(255, 255, 255, 1)
+          RadiusTopLeft: =8
+          RadiusTopRight: =8
+          RadiusBottomLeft: =8
+          RadiusBottomRight: =8
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+    - CardScheduledNum:
+        Control: Label
+        Properties:
+          X: =236
+          Y: =88
+          Width: =184
+          Height: =36
+          Text: =Text(CountRows(Filter(colTrailers, Or(carr_schedulestatus = "Scheduled", carr_schedulestatus = "Confirmed"))), "[$-en-US]0")
+          Size: =28
+          FontWeight: =FontWeight.Bold
+          Color: =RGBA(16, 124, 16, 1)
+    - CardScheduledLabel:
+        Control: Label
+        Properties:
+          X: =236
+          Y: =124
+          Width: =184
+          Height: =28
+          Text: ="Scheduled"
+          Size: =12
+          Color: =RGBA(100, 110, 130, 1)
+    - CardUnscheduled:
+        Control: Rectangle
+        Properties:
+          X: =440
+          Y: =80
+          Width: =200
+          Height: =80
+          Fill: =RGBA(255, 255, 255, 1)
+          RadiusTopLeft: =8
+          RadiusTopRight: =8
+          RadiusBottomLeft: =8
+          RadiusBottomRight: =8
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+    - CardUnscheduledNum:
+        Control: Label
+        Properties:
+          X: =448
+          Y: =88
+          Width: =184
+          Height: =36
+          Text: =Text(CountRows(Filter(colTrailers, carr_schedulestatus = "Unscheduled")), "[$-en-US]0")
+          Size: =28
+          FontWeight: =FontWeight.Bold
+          Color: =RGBA(209, 52, 56, 1)
+    - CardUnscheduledLabel:
+        Control: Label
+        Properties:
+          X: =448
+          Y: =124
+          Width: =184
+          Height: =28
+          Text: ="Unscheduled"
+          Size: =12
+          Color: =RGBA(100, 110, 130, 1)
+    - CardRevenue:
+        Control: Rectangle
+        Properties:
+          X: =652
+          Y: =80
+          Width: =240
+          Height: =80
+          Fill: =RGBA(255, 255, 255, 1)
+          RadiusTopLeft: =8
+          RadiusTopRight: =8
+          RadiusBottomLeft: =8
+          RadiusBottomRight: =8
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+    - CardRevenueNum:
+        Control: Label
+        Properties:
+          X: =660
+          Y: =88
+          Width: =224
+          Height: =36
+          Text: ="$" & Text(Sum(colTrailers, carr_revenueimpact) / 1000, "[$-en-US]0.0") & "K"
+          Size: =28
+          FontWeight: =FontWeight.Bold
+          Color: =RGBA(0, 120, 212, 1)
+    - CardRevenueLabel:
+        Control: Label
+        Properties:
+          X: =660
+          Y: =124
+          Width: =224
+          Height: =28
+          Text: ="Potential Revenue Clearance"
+          Size: =12
+          Color: =RGBA(100, 110, 130, 1)
+    - FilterLabel:
+        Control: Label
+        Properties:
+          X: =16
+          Y: =180
+          Width: =100
+          Height: =32
+          Text: ="Filter:"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+    - FilterStatus:
+        Control: ComboBox
+        Properties:
+          X: =80
+          Y: =180
+          Width: =180
+          Height: =32
+          Items: =["All", "Unscheduled", "Scheduled", "Confirmed", "Overflow"]
+    - BtnRefresh:
+        Control: Button
+        Properties:
+          X: =Parent.Width - 160
+          Y: =180
+          Width: =140
+          Height: =36
+          Text: ="Refresh Data"
+          Fill: =RGBA(0, 120, 212, 1)
+          Color: =RGBA(255, 255, 255, 1)
+          FontWeight: =FontWeight.Semibold
+          OnSelect: =ClearCollect(colTrailers, 'Carrier Trailers')
+    - BtnSchedule:
+        Control: Button
+        Properties:
+          X: =Parent.Width - 316
+          Y: =180
+          Width: =148
+          Height: =36
+          Text: ="Open Schedule"
+          Fill: =RGBA(16, 124, 16, 1)
+          Color: =RGBA(255, 255, 255, 1)
+          FontWeight: =FontWeight.Semibold
+          OnSelect: =Navigate(ScheduleBuilder)
+    - TrailerGallery:
+        Control: Gallery
+        Properties:
+          X: =16
+          Y: =228
+          Width: =Parent.Width - 32
+          Height: =Parent.Height - 244
+          Items: |
+            =Sort(
+              Filter(
+                colTrailers,
+                Or(FilterStatus.Selected.Value = "All", carr_schedulestatus = FilterStatus.Selected.Value)
+              ),
+              carr_priorityrank,
+              Ascending
+            )
+          TemplateSize: =72
+          ShowScrollbar: =true
+        Children:
+        - RowBg:
+            Control: Rectangle
+            Properties:
+              X: =0
+              Y: =2
+              Width: =Parent.Width
+              Height: =68
+              Fill: =RGBA(255, 255, 255, 1)
+              RadiusTopLeft: =6
+              RadiusTopRight: =6
+              RadiusBottomLeft: =6
+              RadiusBottomRight: =6
+              BorderColor: =If(ThisItem.IsSelected, RGBA(0, 120, 212, 1), RGBA(225, 230, 240, 1))
+              BorderThickness: =If(ThisItem.IsSelected, 2, 1)
+        - RankBadge:
+            Control: Label
+            Properties:
+              X: =8
+              Y: =18
+              Width: =36
+              Height: =36
+              Text: =Text(ThisItem.carr_priorityrank, "[$-en-US]0")
+              Align: =Align.Center
+              VerticalAlign: =VerticalAlign.Middle
+              Size: =16
+              FontWeight: =FontWeight.Bold
+              Color: =RGBA(255, 255, 255, 1)
+              Fill: =RGBA(0, 70, 127, 1)
+              RadiusTopLeft: =18
+              RadiusTopRight: =18
+              RadiusBottomLeft: =18
+              RadiusBottomRight: =18
+        - TrailerID:
+            Control: Label
+            Properties:
+              X: =56
+              Y: =10
+              Width: =200
+              Height: =24
+              Text: =ThisItem.carr_trailerid
+              FontWeight: =FontWeight.Bold
+              Size: =14
+              Color: =RGBA(20, 30, 50, 1)
+        - SupplierLabel:
+            Control: Label
+            Properties:
+              X: =56
+              Y: =34
+              Width: =200
+              Height: =20
+              Text: =ThisItem.carr_factorysupplier
+              Size: =11
+              Color: =RGBA(100, 110, 130, 1)
+        - OTIFBar:
+            Control: Label
+            Properties:
+              X: =268
+              Y: =18
+              Width: =120
+              Height: =36
+              Text: ="OTIF: " & Text(ThisItem.carr_otifscore, "[$-en-US]0") & " parts"
+              Size: =11
+              Color: =RGBA(50, 60, 80, 1)
+        - RevenueLabel:
+            Control: Label
+            Properties:
+              X: =400
+              Y: =18
+              Width: =140
+              Height: =36
+              Text: ="$" & Text(ThisItem.carr_revenueimpact / 1000, "[$-en-US]0.0") & "K revenue"
+              Size: =11
+              Color: =RGBA(50, 60, 80, 1)
+        - StatusBadge:
+            Control: Label
+            Properties:
+              X: =Parent.Width - 180
+              Y: =20
+              Width: =100
+              Height: =28
+              Text: =ThisItem.carr_schedulestatus
+              Align: =Align.Center
+              Size: =11
+              FontWeight: =FontWeight.Semibold
+              Color: =RGBA(255, 255, 255, 1)
+              Fill: |
+                =Switch(
+                  ThisItem.carr_schedulestatus,
+                  "Confirmed", RGBA(16, 124, 16, 1),
+                  "Scheduled", RGBA(0, 120, 212, 1),
+                  "Overflow", RGBA(146, 111, 19, 1),
+                  "Rescheduled", RGBA(209, 52, 56, 1),
+                  RGBA(150, 155, 165, 1)
+                )
+              RadiusTopLeft: =4
+              RadiusTopRight: =4
+              RadiusBottomLeft: =4
+              RadiusBottomRight: =4
+        - DockLabel:
+            Control: Label
+            Properties:
+              X: =Parent.Width - 70
+              Y: =20
+              Width: =60
+              Height: =28
+              Text: =If(ThisItem.carr_assigneddock = "Unassigned", "-", ThisItem.carr_assigneddock)
+              Align: =Align.Center
+              Size: =11
+              Color: =RGBA(80, 90, 110, 1)
+        - RowTap:
+            Control: Label
+            Properties:
+              X: =0
+              Y: =0
+              Width: =Parent.Width
+              Height: =72
+              Text: =""
+              Fill: =RGBA(0, 0, 0, 0)
+              OnSelect: =Set(varSelectedTrailer, ThisItem); Navigate(ScheduleBuilder)
