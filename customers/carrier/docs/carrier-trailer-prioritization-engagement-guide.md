@@ -171,7 +171,7 @@ npm install -g @microsoft/powerplatform-cli
 pac auth create --url https://yourorg.crm.dynamics.com
 
 # Import the solution
-pac solution import --path customers/carrier/d365/solution/CarrierTrailerPrioritization.zip
+pac solution import --path customers/carrier/d365/trailer-prioritization/solution/CarrierTrailerPrioritization.zip
 ```
 
 ---
@@ -183,9 +183,9 @@ pac solution import --path customers/carrier/d365/solution/CarrierTrailerPriorit
 | This guide | `customers/carrier/docs/carrier-trailer-prioritization-engagement-guide.html` |
 | Demo script | `customers/carrier/demos/carrier_trailer_prioritization_demo.json` |
 | Agent JSON | `customers/carrier/demos/carrier_trailer_prioritization_agent.json` |
-| Solution zip | `customers/carrier/d365/solution/CarrierTrailerPrioritization.zip` |
-| Canvas App YAML | `customers/carrier/d365/canvas-app/Screens/` |
-| Code App | `customers/carrier/d365/code-app/` |
-| Flow specs | `customers/carrier/d365/flows/flows.yaml` |
-| Dataverse schema | `customers/carrier/d365/dataverse/schema.yaml` |
-| Full README | `customers/carrier/d365/README.md` |
+| Solution zip | `customers/carrier/d365/trailer-prioritization/solution/CarrierTrailerPrioritization.zip` |
+| Canvas App YAML | `customers/carrier/d365/trailer-prioritization/canvas-app/Screens/` |
+| Code App | `customers/carrier/d365/trailer-prioritization/code-app/` |
+| Flow specs | `customers/carrier/d365/trailer-prioritization/flows/flows.yaml` |
+| Dataverse schema | `customers/carrier/d365/trailer-prioritization/dataverse/schema.yaml` |
+| Full README | `customers/carrier/d365/trailer-prioritization/README.md` |
