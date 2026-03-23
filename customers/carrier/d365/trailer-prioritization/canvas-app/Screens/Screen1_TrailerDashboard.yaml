@@ -295,7 +295,8 @@ Screens:
               Y: =18
               Width: =120
               Height: =36
-              Text: ="OTIF: " & Text(ThisItem.carr_otifscore, "[$-en-US]0") & " parts"
+              Text: |
+                ="OTIF: " & Text(ThisItem.carr_otifscore, "[$-en-US]0") & " parts"
               Size: =11
               Color: =RGBA(50, 60, 80, 1)
         - RevenueLabel:

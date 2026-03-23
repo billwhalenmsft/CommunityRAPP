@@ -66,7 +66,8 @@ Screens:
           Y: =116
           Width: =Parent.Width / 2 - 40
           Height: =20
-          Text: ="Subject: Trailer Schedule - Week of " & Text(varScheduleWeekStart, "mmm dd, yyyy")
+          Text: |
+            ="Subject: Trailer Schedule - Week of " & Text(varScheduleWeekStart, "mmm dd, yyyy")
           FontWeight: =FontWeight.Semibold
           Size: =12
     - EmailTo:
@@ -76,7 +77,8 @@ Screens:
           Y: =138
           Width: =Parent.Width / 2 - 40
           Height: =18
-          Text: ="To: Kenco IB Scheduler | CC: Materials Manager"
+          Text: |
+            ="To: Kenco IB Scheduler | CC: Materials Manager"
           Size: =11
           Color: =RGBA(100, 110, 130, 1)
     - Divider:

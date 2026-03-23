@@ -264,7 +264,8 @@ Screens:
               Y: =50
               Width: =220
               Height: =18
-              Text: ="OTIF: " & ThisItem.carr_otifscore & "  |  $" & Text(ThisItem.carr_revenueimpact / 1000, "[$-en-US]0.0") & "K"
+              Text: |
+                ="OTIF: " & ThisItem.carr_otifscore & "  |  $" & Text(ThisItem.carr_revenueimpact / 1000, "[$-en-US]0.0") & "K"
               Size: =11
               Color: =RGBA(0, 120, 212, 1)
         - UDockPicker:
@@ -393,7 +394,8 @@ Screens:
               Y: =48
               Width: =200
               Height: =18
-              Text: ="$" & Text(ThisItem.carr_revenueimpact / 1000, "[$-en-US]0.0") & "K  |  OTIF: " & ThisItem.carr_otifscore
+              Text: |
+                ="$" & Text(ThisItem.carr_revenueimpact / 1000, "[$-en-US]0.0") & "K  |  OTIF: " & ThisItem.carr_otifscore
               Size: =11
               Color: =RGBA(0, 120, 212, 1)
         - SConfirmBtn:
