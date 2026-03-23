@@ -1,0 +1,167 @@
+{
+  "demo_id": "carrier_trailer_prioritization",
+  "demo_name": "Carrier Corporation — Inbound Trailer Prioritization",
+  "duration": "8 min",
+  "version": "1.0",
+  "author": "Bill Whalen - Microsoft",
+  "customer": "Carrier Corporation",
+  "industry": "Manufacturing / HVAC",
+  "platform": "Power Platform (Canvas App + Dataverse + Power Automate)",
+
+  "personas": {
+    "se": "You (Microsoft SE running the demo)",
+    "demo_ee": "Sonali Horan — RC Materials Planning Manager at Carrier",
+    "stakeholders": ["Kevin Gollmer (Materials Dir.)", "Samyak Jain (IT Lead)", "Lucas Skaf (IT Lead)"]
+  },
+
+  "elevator_pitch": "Carrier's aftermarket warehouse gets 190 inbound trucks a week but has dock space for only 20 a day. One person spends her entire Monday manually matching truck manifests against backlog spreadsheets to figure out which trucks to let in first. This app does that automatically — scores every truck by how many customer backorders it clears and how much revenue it unlocks, fills the schedule, and sends it to the warehouse in one click.",
+
+  "business_value": {
+    "time_saved": "~6 hours per week (Monday spreadsheet process eliminated)",
+    "revenue_impact": "Faster backlog clearance — $2.4M/week prioritized intelligently vs. guesswork",
+    "otif_improvement": "Directly improves On-Time-In-Full metric (Carrier's #1 KPI direction)",
+    "sustainability": "One person was doing this alone — not sustainable. Now automated.",
+    "future_phases": "Phase 2 adds AI to read reschedule emails from TSPs + normalize 40 supplier formats"
+  },
+
+  "key_terms": {
+    "OTIF": "On Time In Full — Carrier's primary supply chain metric. Did the right parts arrive before the customer's order promise date?",
+    "Backlog": "Customer sales orders with no inventory to fill them. Trucks carrying backlog parts get priority.",
+    "TSP": "Transportation Service Provider — the trucking companies moving the trailers",
+    "Kenco": "Third-party logistics company operating Carrier's Chattanooga warehouse (the 'Kenco IB Scheduler' receives the dock appointment schedule)",
+    "Detention/Demurrage": "Fees Carrier pays when a trailer sits too long without being unloaded — a cost driver for Phase 2",
+    "E2Open": "External scheduling/logistics platform Carrier uses — future integration target",
+    "TMS ID": "Transport Management System ID — the unique identifier for each trailer"
+  },
+
+  "setup_checklist": [
+    "Open Power Apps: https://make.powerapps.com → Environment: Mfg Gold Template",
+    "Navigate to Solutions → CarrierTrailerPrioritization → Canvas App",
+    "Have the demo JSON loaded in the RAPP demo player (demos.html) as a backup",
+    "Know your talking points: OTIF, revenue impact, 190 trailers, 6-hour manual process"
+  ],
+
+  "steps": [
+    {
+      "step": 1,
+      "title": "Set the Scene",
+      "duration": "1 min",
+      "you_say": "Sonali, I want to show you what we built based on our discovery conversation. You told us your team spends every Monday doing this manually in spreadsheets — matching 190 truck manifests against your backlog report. What I'm about to show you eliminates that entirely.",
+      "what_to_show": "The Canvas App Trailer Dashboard — KPI cards at the top",
+      "talking_points": [
+        "Point to the KPI cards: '190 trailers scored, $2.4M in potential revenue clearance'",
+        "That number — $2.4M — is the revenue impact of all the backlog orders sitting in those trucks waiting to get in",
+        "Previously this was in a spreadsheet. Now it refreshes every Monday automatically from SAP"
+      ],
+      "demo_prompt": "Show me this week's trailer schedule.",
+      "expected_response": "Full ranked table appears with 190 trailers, OTIF scores, revenue, dock assignments"
+    },
+    {
+      "step": 2,
+      "title": "Explain the Scoring Logic",
+      "duration": "2 min",
+      "you_say": "Every truck gets a composite score. Let me show you why trailer TMS-4821 is #1 this week.",
+      "what_to_show": "Click on Trailer #1 or ask the agent to score it",
+      "talking_points": [
+        "OTIF Score: 47 part numbers in this truck are on customer backorder right now",
+        "Revenue Impact: $128,000 of backlog clears the moment this truck unloads",
+        "We weight OTIF at 50%, revenue at 40% — your team can adjust those weights anytime in the Scoring Config",
+        "In Phase 2 we add detention cost — the fee you're paying Carrier for trailers sitting in the yard"
+      ],
+      "demo_prompt": "Why is TMS-4821 ranked number 1?",
+      "expected_response": "Detailed scoring breakdown: 47 OTIF parts, $128K revenue, composite score 88.2/100",
+      "objection_handling": {
+        "How does it know what's on backorder?": "It pulls from your Power BI dataset — the same backlog report you look at manually today. Kevin's team identified the backend source.",
+        "What about detention costs?": "Great question — that's Phase 2. Sonali mentioned that data comes by email from logistics. In Phase 2 we read that automatically and factor it into the score.",
+        "Can we adjust the weights?": "Yes — there's a Scoring Config table. Change OTIF vs revenue weighting anytime without touching code."
+      }
+    },
+    {
+      "step": 3,
+      "title": "Show the Schedule Builder",
+      "duration": "2 min",
+      "you_say": "Now here's where the magic happens — the Schedule Builder. This is what replaces the spreadsheet.",
+      "what_to_show": "Navigate to Screen 2 — Schedule Builder",
+      "talking_points": [
+        "Left side: the unscheduled queue, ranked by priority",
+        "Right side: what's already scheduled this week",
+        "Top cards: dock capacity — Dock 1 (5/day), Dock 2 (15/day), Overflow (3/day)",
+        "The Auto-Schedule button assigns all 190 trailers in priority order in one click",
+        "Manual override is always available — drag any trailer to a different dock or date"
+      ],
+      "demo_prompt": "Go ahead and assign it to Dock 2.",
+      "expected_response": "Trailer TMS-4821 assigned to Dock 2, Monday 08:00-10:00, notification queued",
+      "demo_prompt_2": "Yes, auto-schedule everything.",
+      "expected_response_2": "190 trailers auto-assigned across 3 weeks by priority rank"
+    },
+    {
+      "step": 4,
+      "title": "Send to Kenco",
+      "duration": "1 min",
+      "you_say": "Last step — the app drafts the email to your Kenco inbound scheduler automatically. One button.",
+      "what_to_show": "Navigate to Screen 3 — Communications",
+      "talking_points": [
+        "The email pre-populates with every confirmed trailer, dock, date, and time slot",
+        "Sonali reviews it, hits Send — Kenco gets it instantly",
+        "Previously Sonali would manually type this out and email it herself",
+        "CC list is pre-configured: Sonali, Kevin, any other stakeholders"
+      ],
+      "demo_prompt": "Send it to Kenco.",
+      "expected_response": "Email confirmed sent, 115 trailers, $2.4M revenue, 6 hours saved vs manual"
+    },
+    {
+      "step": 5,
+      "title": "Handle a Reschedule (Bonus)",
+      "duration": "1 min",
+      "you_say": "One more thing Sonali mentioned — TSPs sometimes call or email to reschedule mid-week. Here's how that works.",
+      "what_to_show": "Reschedule log at bottom of Communications screen",
+      "talking_points": [
+        "Currently: TSP emails the inbound scheduler, she manually updates the spreadsheet",
+        "Phase 2 vision: AI reads the email automatically, extracts the trailer ID + new date, updates the schedule",
+        "Today: the log captures it in one place, notifies Sonali, slot gets reassigned to next priority trailer"
+      ],
+      "demo_prompt": "Log a reschedule for TMS-3390 — driver mechanical issue, available Tuesday instead.",
+      "expected_response": "TMS-3390 status changed to Rescheduled, Sonali notified, TMS-5512 offered as replacement for that slot"
+    },
+    {
+      "step": 6,
+      "title": "Wrap Up — Phase Roadmap",
+      "duration": "1 min",
+      "you_say": "So this is Phase 1 — live in your Mfg Gold Template environment today. Here's what Phase 2 and 3 look like.",
+      "what_to_show": "Nothing — this is a verbal close",
+      "talking_points": [
+        "Phase 1 (done): SAP + SharePoint ingestion, OTIF + revenue scoring, Canvas App, schedule → Kenco",
+        "Phase 2: Add detention cost data, E2Open integration, AI reading reschedule emails",
+        "Phase 3: AI Builder normalizes the 40 different external supplier packing list formats automatically",
+        "Portable solution file — can be imported into your production environment when ready"
+      ]
+    }
+  ],
+
+  "common_questions": [
+    {
+      "question": "Is this live today?",
+      "answer": "Yes — the Dataverse tables, solution, and reference data are live in your Mfg Gold Template environment right now. The Canvas App screens are YAML-ready to paste into Power Apps Studio. We can have a working app you can click through in under an hour."
+    },
+    {
+      "question": "Who built this and how long did it take?",
+      "answer": "Microsoft built this as a rapid prototype using the RAPP (Rapid AI Agent Production Pipeline) framework. The Dataverse schema, Canvas App, Power Automate flow specs, and Code App scaffold were built in a single session."
+    },
+    {
+      "question": "What does Samyak / Lucas need to do to maintain this?",
+      "answer": "Very little — Power Automate handles the weekly ingestion automatically. The Canvas App is no-code. They can adjust scoring weights in the Scoring Config table without touching code. The field mapping table handles new supplier formats without code changes."
+    },
+    {
+      "question": "How does it connect to SAP?",
+      "answer": "Power Automate has a native SAP connector. Samyak will need to configure the SAP connection credentials. For the non-SAP factories (Colleyville, Indy), it reads from SharePoint Excel automatically."
+    },
+    {
+      "question": "What about the external suppliers with different formats?",
+      "answer": "Phase 1 handles the structured ones. The Field Mapping table in Dataverse acts as a synonym dictionary — map 'Truck ID' to 'TrailerID' once, and the flow normalizes it forever. Phase 3 adds AI Builder to handle the truly unstructured ones."
+    },
+    {
+      "question": "Can this be exported to production?",
+      "answer": "Yes — we exported a CarrierTrailerPrioritization.zip solution file. Import it to any Power Platform environment with pac solution import. Zero rework."
+    }
+  ]
+}

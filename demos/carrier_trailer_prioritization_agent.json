@@ -1,0 +1,154 @@
+{
+  "agent": {
+    "id": "carrier_trailer_prioritization_agent",
+    "name": "Carrier Trailer Prioritization",
+    "version": "1.0.0",
+    "category": "manufacturing",
+    "icon": "fa-truck",
+    "description": "Automates weekly inbound trailer prioritization for Carrier Corporation's Chattanooga aftermarket warehouse. Scores ~190 trailers by OTIF (on-time-in-full) and revenue impact, auto-assigns dock slots, and notifies the Kenco inbound scheduler.",
+    "tokens": 900,
+    "author": "Bill Whalen - Microsoft",
+    "customer": "Carrier Corporation",
+    "created": "2026-03-23",
+    "updated": "2026-03-23",
+    "industry": "Manufacturing / HVAC",
+    "platform": "Power Platform (Canvas App + Dataverse + Power Automate)"
+  },
+
+  "metadata": {
+    "name": "CarrierTrailerPrioritization",
+    "description": "Scores and schedules inbound trailers at Carrier's Chattanooga warehouse by OTIF and revenue impact.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "get_prioritized_schedule",
+            "score_trailer",
+            "assign_dock",
+            "get_dock_status",
+            "get_unscheduled_trailers",
+            "send_schedule_to_kenco",
+            "log_reschedule"
+          ],
+          "description": "The trailer prioritization action to perform"
+        },
+        "trailer_id": { "type": "string", "description": "Trailer/TMS ID" },
+        "dock": { "type": "string", "enum": ["Dock 1", "Dock 2", "Overflow"], "description": "Dock to assign" },
+        "week_start": { "type": "string", "description": "Week start date (YYYY-MM-DD)" },
+        "reason": { "type": "string", "description": "Reschedule reason from TSP email" }
+      },
+      "required": ["action"]
+    }
+  },
+
+  "actions": [
+    {
+      "name": "get_prioritized_schedule",
+      "description": "Get the full ranked list of trailers for the current week",
+      "parameters": ["week_start"],
+      "example": {
+        "input": { "action": "get_prioritized_schedule", "week_start": "2026-03-23" },
+        "output": "**Week of Mar 23 — Prioritized Trailer Schedule**\n\n🏆 **TOP 5 by Composite Score:**\n\n| Rank | Trailer | Supplier | OTIF Parts | Revenue | Dock |\n|------|---------|----------|------------|---------|------|\n| #1 | TMS-4821 | CMXB Factory | 47 parts | $128K | Dock 2 |\n| #2 | TMS-3390 | Charlotte Factory | 41 parts | $97K | Dock 2 |\n| #3 | TMS-5512 | External Supplier A | 38 parts | $84K | Dock 1 |\n| #4 | TMS-2201 | CDEG Factory | 29 parts | $71K | Dock 2 |\n| #5 | TMS-6670 | Indianapolis Factory | 22 parts | $58K | Dock 1 |\n\n📊 **Summary:** 190 trailers scored | 23 confirmed this week | 12 overflow | 155 pending\n💰 **Total potential revenue clearance: $2.4M**"
+      }
+    },
+    {
+      "name": "score_trailer",
+      "description": "Score a specific trailer by OTIF and revenue impact",
+      "parameters": ["trailer_id"],
+      "example": {
+        "input": { "action": "score_trailer", "trailer_id": "TMS-4821" },
+        "output": "**Trailer TMS-4821 Scoring Analysis**\n\n🚛 **Source:** CMXB Factory (SAP) | Ship date: Mar 20\n\n📦 **Manifest:** 147 line items | 23 unique part numbers\n\n**Prioritization Scores:**\n- ✅ OTIF Score: **47 parts** on backorder (weight 50%) → 94 points\n- 💰 Revenue Impact: **$128,400** clears if received (weight 40%) → 82 points  \n- ⏱️ Detention Cost: $0 (no accrual yet)\n\n**Composite Score: 88.2 / 100**\n**Priority Rank: #1 of 190**\n\n📍 **Recommended:** Dock 2 | Mon Mar 24 | Slot 08:00–10:00"
+      }
+    },
+    {
+      "name": "assign_dock",
+      "description": "Assign a trailer to a specific dock and time slot",
+      "parameters": ["trailer_id", "dock"],
+      "example": {
+        "input": { "action": "assign_dock", "trailer_id": "TMS-4821", "dock": "Dock 2" },
+        "output": "✅ **Dock Assignment Confirmed**\n\nTrailer **TMS-4821** → **Dock 2**\nDate: Monday, March 24\nTime slot: 08:00–10:00\nStatus: Scheduled → pending Kenco confirmation\n\n📧 Notification queued for Kenco IB Scheduler."
+      }
+    },
+    {
+      "name": "get_dock_status",
+      "description": "Get current capacity utilization across all docks",
+      "parameters": ["week_start"],
+      "example": {
+        "input": { "action": "get_dock_status", "week_start": "2026-03-23" },
+        "output": "**Chattanooga Dock Capacity — Week of Mar 23**\n\n| Dock | Capacity | Scheduled | Available | Utilization |\n|------|----------|-----------|-----------|-------------|\n| Dock 1 | 5/day (25/wk) | 18 | 7 | 72% |\n| Dock 2 | 15/day (75/wk) | 52 | 23 | 69% |\n| Overflow | 3/day (15/wk) | 12 | 3 | 80% |\n\n⚠️ **Overflow at 80%** — Only approved low-backlog suppliers eligible.\n✅ **Dock 1 & 2:** Capacity available for high-priority trailers."
+      }
+    },
+    {
+      "name": "get_unscheduled_trailers",
+      "description": "List trailers still awaiting dock assignment",
+      "parameters": [],
+      "example": {
+        "input": { "action": "get_unscheduled_trailers" },
+        "output": "**Unscheduled Trailers — Action Required**\n\n⚡ **167 trailers unscheduled** (190 total - 23 confirmed)\n\n**Top 5 awaiting assignment:**\n1. TMS-4821 | CMXB | Score: 88.2 | $128K revenue | **Assign to Dock 2 →**\n2. TMS-3390 | Charlotte | Score: 81.5 | $97K | **Assign to Dock 2 →**\n3. TMS-5512 | Ext. Supplier A | Score: 74.1 | $84K | **Assign to Dock 1 →**\n\n💡 **Tip:** Click 'Auto-Schedule' to assign all trailers by priority rank automatically."
+      }
+    },
+    {
+      "name": "send_schedule_to_kenco",
+      "description": "Send confirmed weekly schedule to Kenco inbound scheduler",
+      "parameters": ["week_start"],
+      "example": {
+        "input": { "action": "send_schedule_to_kenco", "week_start": "2026-03-23" },
+        "output": "📧 **Schedule Sent to Kenco IB Scheduler**\n\n✅ Email delivered to: kenco-ib-scheduler@carrier.com\nCC: Sonali Horan (Materials Manager)\n\n**Schedule Summary:**\n- 23 trailers confirmed\n- Week of March 23–27\n- Dock 1: 18 trailers | Dock 2: 52 trailers | Overflow: 12 trailers\n- Total potential revenue: $2.4M\n\n⏱️ TSPs will receive appointment confirmations within 2 hours."
+      }
+    },
+    {
+      "name": "log_reschedule",
+      "description": "Log a TSP reschedule request and update trailer status",
+      "parameters": ["trailer_id", "reason"],
+      "example": {
+        "input": { "action": "log_reschedule", "trailer_id": "TMS-3390", "reason": "Driver mechanical issue, earliest available Tuesday March 25" },
+        "output": "⚠️ **Reschedule Logged — TMS-3390**\n\nPrevious slot: Mon Mar 24, Dock 2, 10:00–12:00\nTSP reason: *Driver mechanical issue, earliest available Tue Mar 25*\nNew status: Rescheduled\n\n📋 **Next step:** Trailer moved back to unscheduled queue at Priority Rank #2.\n📧 Sonali Horan notified.\n\nWould you like to reassign this slot to Trailer TMS-5512 (next in queue, Score: 74.1)?"
+      }
+    }
+  ],
+
+  "demoConversation": [
+    {
+      "role": "user",
+      "content": "Show me this week's trailer schedule."
+    },
+    {
+      "role": "agent",
+      "content": "**Week of Mar 23 — Prioritized Trailer Schedule**\n\n🏆 **TOP 5 by Composite Score:**\n\n| Rank | Trailer | Supplier | OTIF Parts | Revenue | Dock |\n|------|---------|----------|------------|---------|------|\n| #1 | TMS-4821 | CMXB Factory | 47 parts | $128K | Dock 2 |\n| #2 | TMS-3390 | Charlotte Factory | 41 parts | $97K | Dock 2 |\n| #3 | TMS-5512 | External Supplier A | 38 parts | $84K | Dock 1 |\n| #4 | TMS-2201 | CDEG Factory | 29 parts | $71K | Dock 2 |\n| #5 | TMS-6670 | Indianapolis Factory | 22 parts | $58K | Dock 1 |\n\n📊 **190 trailers scored** | 23 confirmed | 12 overflow | 155 pending\n💰 **Total potential revenue clearance: $2.4M**\n\nWould you like to score a specific trailer, assign docks, or send the schedule to Kenco?"
+    },
+    {
+      "role": "user",
+      "content": "Why is TMS-4821 ranked number 1?"
+    },
+    {
+      "role": "agent",
+      "content": "**Trailer TMS-4821 Scoring Analysis**\n\n🚛 **Source:** CMXB Factory (SAP) | Ship date: Mar 20\n\n📦 **Manifest:** 147 line items | 23 unique part numbers\n\n**Prioritization Scores:**\n- ✅ OTIF Score: **47 parts** on backorder (weight 50%) → 94 points\n- 💰 Revenue Impact: **$128,400** clears if received (weight 40%) → 82 points\n- ⏱️ Detention Cost: $0 (no accrual yet)\n\n**Composite Score: 88.2 / 100** — Highest of 190 trailers this week\n\n📍 **Recommended:** Dock 2 | Mon Mar 24 | Slot 08:00–10:00\n\nReceiving this trailer first means **47 customer backorders ship today** and **$128K in revenue clears immediately** instead of sitting in limbo."
+    },
+    {
+      "role": "user",
+      "content": "Go ahead and assign it to Dock 2."
+    },
+    {
+      "role": "agent",
+      "content": "✅ **Dock Assignment Confirmed**\n\nTrailer **TMS-4821** → **Dock 2**\nDate: Monday, March 24\nTime slot: 08:00–10:00\nStatus: Scheduled → pending Kenco confirmation\n\n📧 Notification queued for Kenco IB Scheduler.\n\nDock 2 now has 53/75 slots filled this week (71% utilization). Ready to auto-schedule the remaining 167 trailers?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, auto-schedule everything."
+    },
+    {
+      "role": "agent",
+      "content": "⚡ **Auto-Schedule Complete!**\n\n✅ **190 trailers assigned in priority order:**\n- Dock 1 (5/day): 25 trailers — highest OTIF, no overflow eligibility\n- Dock 2 (15/day): 75 trailers — core scheduling capacity\n- Overflow (3/day): 15 trailers — approved suppliers, low/zero backlog\n- 📅 Spill-over: 75 trailers scheduled for weeks 2 & 3\n\n💰 **Revenue confirmed for this week: $2.4M**\n\nReady to send the confirmed schedule to Kenco?"
+    },
+    {
+      "role": "user",
+      "content": "Send it to Kenco."
+    },
+    {
+      "role": "agent",
+      "content": "📧 **Schedule Sent to Kenco IB Scheduler**\n\n✅ Email delivered to: kenco-ib-scheduler@carrier.com\nCC: Sonali Horan (Materials Manager), Kevin Gollmer\n\n**Schedule Summary:**\n- 115 trailers confirmed for this week\n- Dock 1: 25 | Dock 2: 75 | Overflow: 15\n- Total potential revenue: **$2.4M**\n\n⏱️ TSPs will receive appointment confirmations within 2 hours.\n\n**Time saved vs. manual process: ~6 hours** _(previously done by hand every Monday in spreadsheets)_"
+    }
+  ]
+}

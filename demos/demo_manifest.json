@@ -1,5 +1,7 @@
 [
   "account_intelligence_agent.json",
+  "carrier_trailer_prioritization_agent.json",
+  "carrier_trailer_prioritization_demo.json",
   "agent_generator_agent.json",
   "agent_transpiler_agent.json",
   "artist_contract_intelligence_assistant_agent.json",
