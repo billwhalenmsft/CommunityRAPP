@@ -1,0 +1,309 @@
+# Dataverse Schema — Carrier Inbound Trailer Prioritization
+# Import via Power Apps Maker Portal > Dataverse > Tables > Import
+
+tables:
+
+  # ─────────────────────────────────────────────
+  # TRAILER — one record per inbound trailer/truck
+  # ─────────────────────────────────────────────
+  - displayName: "Carrier Trailer"
+    pluralDisplayName: "Carrier Trailers"
+    schemaName: "carr_trailer"
+    description: "Inbound trailer awaiting dock appointment"
+    columns:
+      - displayName: "Trailer ID"
+        schemaName: "carr_trailerid"
+        dataType: Text
+        required: true
+        description: "TMS ID / Trailer Number / Container Number from source system"
+
+      - displayName: "Source System"
+        schemaName: "carr_sourcesystem"
+        dataType: Choice
+        choices: ["SAP", "SharePoint Excel", "EDI", "E2Open", "Email", "WoW", "PDF"]
+        required: true
+
+      - displayName: "Factory / Supplier"
+        schemaName: "carr_factorysupplier"
+        dataType: Text
+        description: "Origin factory or supplier name"
+
+      - displayName: "Carrier Name"
+        schemaName: "carr_carriername"
+        dataType: Text
+
+      - displayName: "Ship Date"
+        schemaName: "carr_shipdate"
+        dataType: DateOnly
+
+      - displayName: "Expected Arrival Date"
+        schemaName: "carr_expectedarrival"
+        dataType: DateOnly
+
+      - displayName: "Trailer Type"
+        schemaName: "carr_trailertype"
+        dataType: Choice
+        choices: ["Internal Factory", "External Supplier", "International"]
+
+      - displayName: "Is Approved Overflow Supplier"
+        schemaName: "carr_approvedoverflow"
+        dataType: Boolean
+        defaultValue: false
+
+      - displayName: "OTIF Score"
+        schemaName: "carr_otifscore"
+        dataType: Decimal
+        description: "Number of part numbers on backorder in this trailer"
+
+      - displayName: "Revenue Impact"
+        schemaName: "carr_revenueimpact"
+        dataType: Currency
+        description: "$ value of backlog cleared if this trailer is received"
+
+      - displayName: "Detention Cost"
+        schemaName: "carr_detentioncost"
+        dataType: Currency
+        description: "Accruing detention/demurrage cost (Phase 2)"
+
+      - displayName: "Composite Score"
+        schemaName: "carr_compositescore"
+        dataType: Decimal
+        description: "Weighted score = (OTIF * w1) + (Revenue * w2) + (Detention * w3)"
+
+      - displayName: "Priority Rank"
+        schemaName: "carr_priorityrank"
+        dataType: WholeNumber
+        description: "1 = highest priority"
+
+      - displayName: "Schedule Status"
+        schemaName: "carr_schedulestatus"
+        dataType: Choice
+        choices: ["Unscheduled", "Scheduled", "Confirmed", "Delivered", "Rescheduled", "Overflow"]
+        defaultValue: "Unscheduled"
+
+      - displayName: "Assigned Dock"
+        schemaName: "carr_assigneddock"
+        dataType: Choice
+        choices: ["Dock 1", "Dock 2", "Overflow", "Unassigned"]
+        defaultValue: "Unassigned"
+
+      - displayName: "Scheduled Date"
+        schemaName: "carr_scheduleddate"
+        dataType: DateOnly
+
+      - displayName: "Scheduled Time Slot"
+        schemaName: "carr_scheduledtimeslot"
+        dataType: Text
+        description: "e.g. 08:00-10:00"
+
+      - displayName: "Notes"
+        schemaName: "carr_notes"
+        dataType: Text
+        multiline: true
+
+      - displayName: "Reschedule Reason"
+        schemaName: "carr_reschedulereason"
+        dataType: Text
+        multiline: true
+        description: "Free-text from TSP reschedule email"
+
+      - displayName: "Last Sync Date"
+        schemaName: "carr_lastsyncdate"
+        dataType: DateTime
+
+
+  # ─────────────────────────────────────────────
+  # MANIFEST LINE — line items on each trailer
+  # ─────────────────────────────────────────────
+  - displayName: "Carrier Manifest Line"
+    pluralDisplayName: "Carrier Manifest Lines"
+    schemaName: "carr_manifestline"
+    description: "Individual part on a trailer"
+    columns:
+      - displayName: "Trailer"
+        schemaName: "carr_trailer"
+        dataType: Lookup
+        relatedTable: "carr_trailer"
+        required: true
+
+      - displayName: "Part Number"
+        schemaName: "carr_partnumber"
+        dataType: Text
+        required: true
+
+      - displayName: "Description"
+        schemaName: "carr_description"
+        dataType: Text
+
+      - displayName: "Quantity"
+        schemaName: "carr_quantity"
+        dataType: Decimal
+        required: true
+
+      - displayName: "Unit of Measure"
+        schemaName: "carr_uom"
+        dataType: Text
+
+      - displayName: "Is On Backorder"
+        schemaName: "carr_isonbackorder"
+        dataType: Boolean
+        defaultValue: false
+
+      - displayName: "Backorder Quantity"
+        schemaName: "carr_backorderqty"
+        dataType: Decimal
+
+      - displayName: "Backorder Revenue"
+        schemaName: "carr_backorderrevenue"
+        dataType: Currency
+
+
+  # ─────────────────────────────────────────────
+  # DOCK — dock capacity configuration
+  # ─────────────────────────────────────────────
+  - displayName: "Carrier Dock"
+    pluralDisplayName: "Carrier Docks"
+    schemaName: "carr_dock"
+    description: "Dock configuration for Chattanooga (or other) warehouse"
+    columns:
+      - displayName: "Dock Name"
+        schemaName: "carr_dockname"
+        dataType: Text
+        required: true
+        description: "e.g. Dock 1, Dock 2, Overflow"
+
+      - displayName: "Location"
+        schemaName: "carr_location"
+        dataType: Text
+        defaultValue: "Chattanooga"
+
+      - displayName: "Daily Capacity"
+        schemaName: "carr_dailycapacity"
+        dataType: WholeNumber
+        description: "Max trailers per day"
+
+      - displayName: "Is Active"
+        schemaName: "carr_isactive"
+        dataType: Boolean
+        defaultValue: true
+
+
+  # ─────────────────────────────────────────────
+  # SUPPLIER — TSP / supplier contact list
+  # ─────────────────────────────────────────────
+  - displayName: "Carrier Supplier"
+    pluralDisplayName: "Carrier Suppliers"
+    schemaName: "carr_supplier"
+    description: "Transportation service providers and suppliers"
+    columns:
+      - displayName: "Supplier Name"
+        schemaName: "carr_suppliername"
+        dataType: Text
+        required: true
+
+      - displayName: "Supplier Type"
+        schemaName: "carr_suppliertype"
+        dataType: Choice
+        choices: ["Internal Factory", "External Supplier", "TSP"]
+
+      - displayName: "Contact Email"
+        schemaName: "carr_contactemail"
+        dataType: Email
+
+      - displayName: "Contact Name"
+        schemaName: "carr_contactname"
+        dataType: Text
+
+      - displayName: "Data Source Format"
+        schemaName: "carr_datasourceformat"
+        dataType: Choice
+        choices: ["SAP", "SharePoint Excel", "EDI", "E2Open", "Email Excel", "WoW", "PDF"]
+
+      - displayName: "Is Approved Overflow"
+        schemaName: "carr_isapprovedoverflow"
+        dataType: Boolean
+        defaultValue: false
+
+      - displayName: "Is Active"
+        schemaName: "carr_isactive"
+        dataType: Boolean
+        defaultValue: true
+
+
+  # ─────────────────────────────────────────────
+  # FIELD MAPPING — synonym table for external suppliers
+  # ─────────────────────────────────────────────
+  - displayName: "Carrier Field Mapping"
+    pluralDisplayName: "Carrier Field Mappings"
+    schemaName: "carr_fieldmapping"
+    description: "Maps supplier-specific column names to canonical field names"
+    columns:
+      - displayName: "Supplier"
+        schemaName: "carr_supplier"
+        dataType: Lookup
+        relatedTable: "carr_supplier"
+
+      - displayName: "Source Field Name"
+        schemaName: "carr_sourcefieldname"
+        dataType: Text
+        required: true
+        description: "e.g. 'Truck ID', 'Container Number', 'TMSID'"
+
+      - displayName: "Canonical Field"
+        schemaName: "carr_canonicalfield"
+        dataType: Choice
+        choices: ["TrailerID", "PartNumber", "Quantity", "ShipDate", "CarrierName", "UOM"]
+        required: true
+
+
+  # ─────────────────────────────────────────────
+  # SCORING CONFIG — tunable weights
+  # ─────────────────────────────────────────────
+  - displayName: "Carrier Scoring Config"
+    pluralDisplayName: "Carrier Scoring Configs"
+    schemaName: "carr_scoringconfig"
+    description: "Weights used to calculate composite trailer score"
+    columns:
+      - displayName: "Config Name"
+        schemaName: "carr_configname"
+        dataType: Text
+        defaultValue: "Default"
+
+      - displayName: "OTIF Weight"
+        schemaName: "carr_otifweight"
+        dataType: Decimal
+        defaultValue: 0.5
+
+      - displayName: "Revenue Weight"
+        schemaName: "carr_revenueweight"
+        dataType: Decimal
+        defaultValue: 0.4
+
+      - displayName: "Detention Weight"
+        schemaName: "carr_detentionweight"
+        dataType: Decimal
+        defaultValue: 0.1
+
+      - displayName: "Is Active"
+        schemaName: "carr_isactive"
+        dataType: Boolean
+        defaultValue: true
+
+
+seedData:
+  docks:
+    - name: "Dock 1"
+      location: "Chattanooga"
+      dailyCapacity: 5
+    - name: "Dock 2"
+      location: "Chattanooga"
+      dailyCapacity: 15
+    - name: "Overflow"
+      location: "Chattanooga"
+      dailyCapacity: 3
+
+  scoringConfig:
+    - configName: "Default"
+      otifWeight: 0.5
+      revenueWeight: 0.4
+      detentionWeight: 0.1

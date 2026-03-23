@@ -1,0 +1,33 @@
+App:
+  Properties:
+    BackEnabled: =true
+    Theme: =RGBA(0, 70, 127, 1)
+
+  OnStart: |
+    =ClearCollect(colTrailers, 'Carrier Trailers');
+    ClearCollect(colDocks, 'Carrier Docks');
+    Set(varScheduleWeekStart, Today() - Weekday(Today(), 2) + 1);
+    Set(varSelectedTrailer, Blank())
+
+  DataSources:
+    - Table: "carr_trailer"
+      DisplayName: "Carrier Trailers"
+      Environment: "ME-D365DemoTSCE30330346-billwhalen-1"
+
+    - Table: "carr_dock"
+      DisplayName: "Carrier Docks"
+      Environment: "ME-D365DemoTSCE30330346-billwhalen-1"
+
+    - Table: "carr_supplier"
+      DisplayName: "Carrier Suppliers"
+      Environment: "ME-D365DemoTSCE30330346-billwhalen-1"
+
+    - Connector: "Office365Outlook"
+      DisplayName: "Office 365 Outlook"
+
+  StartScreen: =TrailerDashboard
+
+  Screens:
+    - Screen1_TrailerDashboard
+    - Screen2_ScheduleBuilder
+    - Screen3_Communications

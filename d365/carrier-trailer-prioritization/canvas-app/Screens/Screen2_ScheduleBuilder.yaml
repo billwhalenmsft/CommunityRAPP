@@ -1,0 +1,508 @@
+Screens:
+  ScheduleBuilder:
+    Properties:
+      Fill: =RGBA(245, 246, 250, 1)
+
+    Children:
+
+      # ── Header ──────────────────────────────────────────────────────────
+      Header:
+        Control: Rectangle
+        Properties:
+          X: =0
+          Y: =0
+          Width: =Parent.Width
+          Height: =64
+          Fill: =RGBA(0, 70, 127, 1)
+
+      BtnBack:
+        Control: Button
+        Properties:
+          X: =8
+          Y: =12
+          Width: =40
+          Height: =40
+          Text: ="←"
+          Fill: =RGBA(0, 0, 0, 0)
+          Color: =RGBA(255, 255, 255, 1)
+          Size: =18
+          OnSelect: =Navigate(TrailerDashboard)
+
+      HeaderTitle:
+        Control: Label
+        Properties:
+          X: =56
+          Y: =0
+          Width: =400
+          Height: =64
+          Text: ="📅  Schedule Builder"
+          Color: =RGBA(255, 255, 255, 1)
+          FontWeight: =FontWeight.Bold
+          Size: =18
+          VerticalAlign: =VerticalAlign.Middle
+
+      WeekPicker:
+        Control: DatePicker
+        Properties:
+          X: =Parent.Width - 260
+          Y: =12
+          Width: =240
+          Height: =40
+          DefaultDate: =Today()
+          Label: ="Schedule Week Starting"
+          OnChange: =Set(varScheduleWeekStart, Self.SelectedDate)
+
+      # ── Dock Capacity Summary ────────────────────────────────────────────
+      DockSummaryLabel:
+        Control: Label
+        Properties:
+          X: =16
+          Y: =76
+          Width: =200
+          Height: =24
+          Text: ="Dock Capacity — This Week"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      # Dock 1 card
+      Dock1Card:
+        Control: Rectangle
+        Properties:
+          X: =16
+          Y: =104
+          Width: =220
+          Height: =64
+          Fill: =RGBA(255, 255, 255, 1)
+          RadiusTopLeft: =8
+          RadiusTopRight: =8
+          RadiusBottomLeft: =8
+          RadiusBottomRight: =8
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+
+      Dock1Title:
+        Control: Label
+        Properties:
+          X: =24
+          Y: =108
+          Width: =100
+          Height: =20
+          Text: ="Dock 1"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      Dock1Capacity:
+        Control: Label
+        Properties:
+          X: =24
+          Y: =128
+          Width: =204
+          Height: =32
+          Text: |
+            =Text(CountRows(Filter(colTrailers, carr_assigneddock = "Dock 1", carr_scheduleddate >= varScheduleWeekStart, carr_scheduleddate < DateAdd(varScheduleWeekStart, 7, TimeUnit.Days))), "[$-en-US]0")
+            & " / " & LookUp(colDocks, carr_dockname = "Dock 1").carr_dailycapacity * 5 & " slots used this week"
+          Size: =11
+          Color: =RGBA(80, 90, 110, 1)
+
+      # Dock 2 card
+      Dock2Card:
+        Control: Rectangle
+        Properties:
+          X: =248
+          Y: =104
+          Width: =220
+          Height: =64
+          Fill: =RGBA(255, 255, 255, 1)
+          RadiusTopLeft: =8
+          RadiusTopRight: =8
+          RadiusBottomLeft: =8
+          RadiusBottomRight: =8
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+
+      Dock2Title:
+        Control: Label
+        Properties:
+          X: =256
+          Y: =108
+          Width: =100
+          Height: =20
+          Text: ="Dock 2"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      Dock2Capacity:
+        Control: Label
+        Properties:
+          X: =256
+          Y: =128
+          Width: =204
+          Height: =32
+          Text: |
+            =Text(CountRows(Filter(colTrailers, carr_assigneddock = "Dock 2", carr_scheduleddate >= varScheduleWeekStart, carr_scheduleddate < DateAdd(varScheduleWeekStart, 7, TimeUnit.Days))), "[$-en-US]0")
+            & " / " & LookUp(colDocks, carr_dockname = "Dock 2").carr_dailycapacity * 5 & " slots used this week"
+          Size: =11
+          Color: =RGBA(80, 90, 110, 1)
+
+      # Overflow card
+      OverflowCard:
+        Control: Rectangle
+        Properties:
+          X: =480
+          Y: =104
+          Width: =220
+          Height: =64
+          Fill: =RGBA(255, 255, 255, 1)
+          RadiusTopLeft: =8
+          RadiusTopRight: =8
+          RadiusBottomLeft: =8
+          RadiusBottomRight: =8
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+
+      OverflowTitle:
+        Control: Label
+        Properties:
+          X: =488
+          Y: =108
+          Width: =100
+          Height: =20
+          Text: ="Overflow"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      OverflowCapacity:
+        Control: Label
+        Properties:
+          X: =488
+          Y: =128
+          Width: =204
+          Height: =32
+          Text: |
+            =Text(CountRows(Filter(colTrailers, carr_assigneddock = "Overflow", carr_scheduleddate >= varScheduleWeekStart, carr_scheduleddate < DateAdd(varScheduleWeekStart, 7, TimeUnit.Days))), "[$-en-US]0")
+            & " / " & LookUp(colDocks, carr_dockname = "Overflow").carr_dailycapacity * 5 & " slots used this week"
+          Size: =11
+          Color: =RGBA(80, 90, 110, 1)
+
+      # ── Auto-Schedule Button ──────────────────────────────────────────────
+      BtnAutoSchedule:
+        Control: Button
+        Properties:
+          X: =Parent.Width - 220
+          Y: =108
+          Width: =196
+          Height: =56
+          Text: ="⚡ Auto-Schedule\nAll Unscheduled"
+          Fill: =RGBA(0, 70, 127, 1)
+          Color: =RGBA(255, 255, 255, 1)
+          FontWeight: =FontWeight.Semibold
+          Size: =12
+          OnSelect: |
+            =/* Auto-assign top trailers to docks by priority rank */
+            ForAll(
+              Filter(colTrailers, carr_schedulestatus = "Unscheduled"),
+              Patch(
+                'Carrier Trailers',
+                LookUp('Carrier Trailers', carr_trailerid = carr_trailerid),
+                {
+                  carr_assigneddock: If(
+                    carr_approvedoverflow = true && carr_otifscore = 0,
+                    "Overflow",
+                    If(carr_priorityrank <= 5, "Dock 1", "Dock 2")
+                  ),
+                  carr_schedulestatus: "Scheduled",
+                  carr_scheduleddate: DateAdd(
+                    varScheduleWeekStart,
+                    RoundDown((carr_priorityrank - 1) / 8, 0),
+                    TimeUnit.Days
+                  )
+                }
+              )
+            );
+            ClearCollect(colTrailers, 'Carrier Trailers')
+
+      # ── Unscheduled Queue (left panel) ───────────────────────────────────
+      UnscheduledLabel:
+        Control: Label
+        Properties:
+          X: =16
+          Y: =184
+          Width: =320
+          Height: =24
+          Text: ="Unscheduled Queue  (" & CountRows(Filter(colTrailers, carr_schedulestatus = "Unscheduled")) & ")"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      UnscheduledGallery:
+        Control: Gallery
+        Properties:
+          X: =16
+          Y: =212
+          Width: =340
+          Height: =Parent.Height - 228
+          Items: =Sort(Filter(colTrailers, carr_schedulestatus = "Unscheduled"), carr_priorityrank, Ascending)
+          TemplateHeight: =88
+
+        Children:
+          URowBg:
+            Control: Rectangle
+            Properties:
+              X: =0
+              Y: =2
+              Width: =Parent.Width - 4
+              Height: =84
+              Fill: =RGBA(255, 255, 255, 1)
+              RadiusTopLeft: =6
+              RadiusTopRight: =6
+              RadiusBottomLeft: =6
+              RadiusBottomRight: =6
+              BorderColor: =If(ThisItem.IsSelected, RGBA(0, 120, 212, 1), RGBA(225, 230, 240, 1))
+              BorderThickness: =If(ThisItem.IsSelected, 2, 1)
+
+          URank:
+            Control: Label
+            Properties:
+              X: =8
+              Y: =16
+              Width: =36
+              Height: =36
+              Text: =Text(ThisItem.carr_priorityrank)
+              Align: =Align.Center
+              FontWeight: =FontWeight.Bold
+              Size: =14
+              Color: =RGBA(255, 255, 255, 1)
+              Fill: =RGBA(0, 70, 127, 1)
+              RadiusTopLeft: =18
+              RadiusTopRight: =18
+              RadiusBottomLeft: =18
+              RadiusBottomRight: =18
+
+          UTrailerID:
+            Control: Label
+            Properties:
+              X: =54
+              Y: =8
+              Width: =220
+              Height: =22
+              Text: =ThisItem.carr_trailerid
+              FontWeight: =FontWeight.Bold
+              Size: =13
+
+          USupplier:
+            Control: Label
+            Properties:
+              X: =54
+              Y: =30
+              Width: =220
+              Height: =18
+              Text: =ThisItem.carr_factorysupplier
+              Size: =11
+              Color: =RGBA(100, 110, 130, 1)
+
+          UScore:
+            Control: Label
+            Properties:
+              X: =54
+              Y: =50
+              Width: =220
+              Height: =18
+              Text: ="OTIF: " & ThisItem.carr_otifscore & "  |  $" & Text(ThisItem.carr_revenueimpact / 1000, "[$-en-US]0.0") & "K"
+              Size: =11
+              Color: =RGBA(0, 120, 212, 1)
+
+          # Quick-assign dock picker
+          UDockPicker:
+            Control: ComboBox
+            Properties:
+              X: =56
+              Y: =62
+              Width: =130
+              Height: =22
+              Items: =["Dock 1", "Dock 2", "Overflow"]
+              Placeholder: ="Assign dock..."
+              Size: =10
+
+          UAssignBtn:
+            Control: Button
+            Properties:
+              X: =194
+              Y: =62
+              Width: =68
+              Height: =22
+              Text: ="Assign"
+              Size: =10
+              Fill: =RGBA(0, 120, 212, 1)
+              Color: =RGBA(255, 255, 255, 1)
+              OnSelect: |
+                =If(
+                  !IsBlank(UDockPicker.Selected.Value),
+                  Patch(
+                    'Carrier Trailers',
+                    ThisItem,
+                    {
+                      carr_assigneddock: UDockPicker.Selected.Value,
+                      carr_schedulestatus: "Scheduled"
+                    }
+                  );
+                  ClearCollect(colTrailers, 'Carrier Trailers')
+                )
+
+      # ── Scheduled List (right panel) ─────────────────────────────────────
+      ScheduledLabel:
+        Control: Label
+        Properties:
+          X: =372
+          Y: =184
+          Width: =Parent.Width - 388
+          Height: =24
+          Text: ="Scheduled This Week  (" & CountRows(Filter(colTrailers, carr_schedulestatus = "Scheduled" || carr_schedulestatus = "Confirmed", carr_scheduleddate >= varScheduleWeekStart, carr_scheduleddate < DateAdd(varScheduleWeekStart, 7, TimeUnit.Days))) & ")"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      ScheduledGallery:
+        Control: Gallery
+        Properties:
+          X: =372
+          Y: =212
+          Width: =Parent.Width - 388
+          Height: =Parent.Height - 228
+          Items: |
+            =Sort(
+              Filter(
+                colTrailers,
+                carr_schedulestatus = "Scheduled" || carr_schedulestatus = "Confirmed",
+                carr_scheduleddate >= varScheduleWeekStart,
+                carr_scheduleddate < DateAdd(varScheduleWeekStart, 7, TimeUnit.Days)
+              ),
+              carr_scheduleddate,
+              Ascending
+            )
+          TemplateHeight: =72
+
+        Children:
+          SRowBg:
+            Control: Rectangle
+            Properties:
+              X: =0
+              Y: =2
+              Width: =Parent.Width - 4
+              Height: =68
+              Fill: =RGBA(255, 255, 255, 1)
+              RadiusTopLeft: =6
+              RadiusTopRight: =6
+              RadiusBottomLeft: =6
+              RadiusBottomRight: =6
+              BorderColor: =RGBA(225, 230, 240, 1)
+              BorderThickness: =1
+
+          SDock:
+            Control: Label
+            Properties:
+              X: =8
+              Y: =10
+              Width: =80
+              Height: =48
+              Text: =ThisItem.carr_assigneddock
+              Align: =Align.Center
+              VerticalAlign: =VerticalAlign.Middle
+              FontWeight: =FontWeight.Semibold
+              Size: =11
+              Color: =RGBA(255, 255, 255, 1)
+              Fill: |
+                =Switch(
+                  ThisItem.carr_assigneddock,
+                  "Dock 1",   RGBA(0, 70, 127, 1),
+                  "Dock 2",   RGBA(0, 120, 212, 1),
+                  "Overflow", RGBA(146, 111, 19, 1),
+                  RGBA(150, 155, 165, 1)
+                )
+              RadiusTopLeft: =4
+              RadiusTopRight: =4
+              RadiusBottomLeft: =4
+              RadiusBottomRight: =4
+
+          STrailerID:
+            Control: Label
+            Properties:
+              X: =100
+              Y: =8
+              Width: =200
+              Height: =22
+              Text: =ThisItem.carr_trailerid
+              FontWeight: =FontWeight.Bold
+              Size: =13
+
+          SDate:
+            Control: Label
+            Properties:
+              X: =100
+              Y: =30
+              Width: =200
+              Height: =18
+              Text: =Text(ThisItem.carr_scheduleddate, "ddd mmm dd")
+              Size: =11
+              Color: =RGBA(100, 110, 130, 1)
+
+          SRevenue:
+            Control: Label
+            Properties:
+              X: =100
+              Y: =48
+              Width: =200
+              Height: =18
+              Text: ="$" & Text(ThisItem.carr_revenueimpact / 1000, "[$-en-US]0.0") & "K  |  OTIF: " & ThisItem.carr_otifscore
+              Size: =11
+              Color: =RGBA(0, 120, 212, 1)
+
+          SConfirmBtn:
+            Control: Button
+            Properties:
+              X: =Parent.Width - 180
+              Y: =18
+              Width: =88
+              Height: =32
+              Text: ="✓ Confirm"
+              Size: =11
+              Fill: =RGBA(16, 124, 16, 1)
+              Color: =RGBA(255, 255, 255, 1)
+              Visible: =ThisItem.carr_schedulestatus = "Scheduled"
+              OnSelect: |
+                =Patch(
+                  'Carrier Trailers',
+                  ThisItem,
+                  { carr_schedulestatus: "Confirmed" }
+                );
+                ClearCollect(colTrailers, 'Carrier Trailers')
+
+          SUnschedBtn:
+            Control: Button
+            Properties:
+              X: =Parent.Width - 84
+              Y: =18
+              Width: =76
+              Height: =32
+              Text: ="✕ Remove"
+              Size: =11
+              Fill: =RGBA(209, 52, 56, 1)
+              Color: =RGBA(255, 255, 255, 1)
+              OnSelect: |
+                =Patch(
+                  'Carrier Trailers',
+                  ThisItem,
+                  { carr_schedulestatus: "Unscheduled", carr_assigneddock: "Unassigned", carr_scheduleddate: Blank() }
+                );
+                ClearCollect(colTrailers, 'Carrier Trailers')
+
+      # ── Action Bar ───────────────────────────────────────────────────────
+      BtnSendSchedule:
+        Control: Button
+        Properties:
+          X: =372
+          Y: =Parent.Height - 56
+          Width: =220
+          Height: =44
+          Text: ="📧 Send Schedule to Kenco"
+          Fill: =RGBA(0, 70, 127, 1)
+          Color: =RGBA(255, 255, 255, 1)
+          FontWeight: =FontWeight.Semibold
+          OnSelect: =Navigate(Communications)

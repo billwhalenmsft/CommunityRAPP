@@ -1,0 +1,343 @@
+Screens:
+  Communications:
+    Properties:
+      Fill: =RGBA(245, 246, 250, 1)
+
+    Children:
+
+      # ── Header ──────────────────────────────────────────────────────────
+      Header:
+        Control: Rectangle
+        Properties:
+          X: =0
+          Y: =0
+          Width: =Parent.Width
+          Height: =64
+          Fill: =RGBA(0, 70, 127, 1)
+
+      BtnBack:
+        Control: Button
+        Properties:
+          X: =8
+          Y: =12
+          Width: =40
+          Height: =40
+          Text: ="←"
+          Fill: =RGBA(0, 0, 0, 0)
+          Color: =RGBA(255, 255, 255, 1)
+          Size: =18
+          OnSelect: =Navigate(ScheduleBuilder)
+
+      HeaderTitle:
+        Control: Label
+        Properties:
+          X: =56
+          Y: =0
+          Width: =400
+          Height: =64
+          Text: ="📧  Communications & Notifications"
+          Color: =RGBA(255, 255, 255, 1)
+          FontWeight: =FontWeight.Bold
+          Size: =18
+          VerticalAlign: =VerticalAlign.Middle
+
+      # ── Email Preview ─────────────────────────────────────────────────────
+      PreviewLabel:
+        Control: Label
+        Properties:
+          X: =16
+          Y: =80
+          Width: =300
+          Height: =24
+          Text: ="Email Preview — Kenco IB Scheduler"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      EmailCard:
+        Control: Rectangle
+        Properties:
+          X: =16
+          Y: =108
+          Width: =Parent.Width / 2 - 24
+          Height: =Parent.Height - 220
+          Fill: =RGBA(255, 255, 255, 1)
+          RadiusTopLeft: =8
+          RadiusTopRight: =8
+          RadiusBottomLeft: =8
+          RadiusBottomRight: =8
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+
+      EmailSubject:
+        Control: Label
+        Properties:
+          X: =24
+          Y: =116
+          Width: =Parent.Width / 2 - 40
+          Height: =20
+          Text: ="Subject: Trailer Schedule — Week of " & Text(varScheduleWeekStart, "mmm dd, yyyy")
+          FontWeight: =FontWeight.Semibold
+          Size: =12
+
+      EmailTo:
+        Control: Label
+        Properties:
+          X: =24
+          Y: =138
+          Width: =Parent.Width / 2 - 40
+          Height: =18
+          Text: ="To: Kenco IB Scheduler | CC: Materials Manager"
+          Size: =11
+          Color: =RGBA(100, 110, 130, 1)
+
+      Divider:
+        Control: Rectangle
+        Properties:
+          X: =24
+          Y: =160
+          Width: =Parent.Width / 2 - 48
+          Height: =1
+          Fill: =RGBA(220, 225, 235, 1)
+
+      EmailBody:
+        Control: TextInput
+        Properties:
+          X: =24
+          Y: =168
+          Width: =Parent.Width / 2 - 48
+          Height: =Parent.Height - 340
+          Mode: =TextMode.MultiLine
+          Default: |
+            ="Good morning,
+
+            Please find the confirmed inbound trailer schedule for the week of " 
+            & Text(varScheduleWeekStart, "mmmm dd, yyyy") & ".
+
+            DOCK 1 (Capacity: 5/day)
+            " & Concat(
+              Filter(colTrailers, carr_assigneddock = "Dock 1", carr_schedulestatus = "Confirmed"),
+              "• " & carr_trailerid & " — " & carr_factorysupplier & " — " & Text(carr_scheduleddate, "ddd mmm dd") & " — OTIF: " & carr_otifscore & " parts" & Char(10)
+            ) & "
+
+            DOCK 2 (Capacity: 15/day)
+            " & Concat(
+              Filter(colTrailers, carr_assigneddock = "Dock 2", carr_schedulestatus = "Confirmed"),
+              "• " & carr_trailerid & " — " & carr_factorysupplier & " — " & Text(carr_scheduleddate, "ddd mmm dd") & " — OTIF: " & carr_otifscore & " parts" & Char(10)
+            ) & "
+
+            OVERFLOW
+            " & Concat(
+              Filter(colTrailers, carr_assigneddock = "Overflow", carr_schedulestatus = "Confirmed"),
+              "• " & carr_trailerid & " — " & carr_factorysupplier & Char(10)
+            ) & "
+
+            Please confirm appointments with respective TSPs.
+
+            Thank you,
+            RC Materials Manager"
+          BorderColor: =RGBA(220, 225, 235, 1)
+          BorderThickness: =1
+          Size: =11
+
+      # ── TSP Contact List ──────────────────────────────────────────────────
+      TSPLabel:
+        Control: Label
+        Properties:
+          X: =Parent.Width / 2 + 8
+          Y: =80
+          Width: =300
+          Height: =24
+          Text: ="TSP Contact List"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      TSPGallery:
+        Control: Gallery
+        Properties:
+          X: =Parent.Width / 2 + 8
+          Y: =108
+          Width: =Parent.Width / 2 - 24
+          Height: =Parent.Height - 280
+          Items: ='Carrier Suppliers'
+          TemplateHeight: =56
+
+        Children:
+          TSPRowBg:
+            Control: Rectangle
+            Properties:
+              X: =0
+              Y: =2
+              Width: =Parent.Width - 4
+              Height: =52
+              Fill: =RGBA(255, 255, 255, 1)
+              RadiusTopLeft: =6
+              RadiusTopRight: =6
+              RadiusBottomLeft: =6
+              RadiusBottomRight: =6
+              BorderColor: =RGBA(225, 230, 240, 1)
+              BorderThickness: =1
+
+          TSPName:
+            Control: Label
+            Properties:
+              X: =8
+              Y: =8
+              Width: =Parent.Width - 140
+              Height: =20
+              Text: =ThisItem.carr_suppliername
+              FontWeight: =FontWeight.Semibold
+              Size: =12
+
+          TSPEmail:
+            Control: Label
+            Properties:
+              X: =8
+              Y: =28
+              Width: =Parent.Width - 140
+              Height: =18
+              Text: =ThisItem.carr_contactemail
+              Size: =11
+              Color: =RGBA(100, 110, 130, 1)
+
+          TSPFormat:
+            Control: Label
+            Properties:
+              X: =Parent.Width - 128
+              Y: =18
+              Width: =120
+              Height: =20
+              Text: =ThisItem.carr_datasourceformat
+              Align: =Align.Right
+              Size: =10
+              Color: =RGBA(150, 155, 165, 1)
+
+      # ── Reschedule Log ────────────────────────────────────────────────────
+      RescheduleLabel:
+        Control: Label
+        Properties:
+          X: =Parent.Width / 2 + 8
+          Y: =Parent.Height - 164
+          Width: =300
+          Height: =24
+          Text: ="Recent Reschedule Requests"
+          FontWeight: =FontWeight.Semibold
+          Size: =13
+
+      RescheduleGallery:
+        Control: Gallery
+        Properties:
+          X: =Parent.Width / 2 + 8
+          Y: =Parent.Height - 140
+          Width: =Parent.Width / 2 - 24
+          Height: =128
+          Items: =Filter(colTrailers, carr_schedulestatus = "Rescheduled")
+          TemplateHeight: =48
+
+        Children:
+          RRowBg:
+            Control: Rectangle
+            Properties:
+              X: =0
+              Y: =2
+              Width: =Parent.Width - 4
+              Height: =44
+              Fill: =RGBA(255, 243, 244, 1)
+              RadiusTopLeft: =6
+              RadiusTopRight: =6
+              RadiusBottomLeft: =6
+              RadiusBottomRight: =6
+              BorderColor: =RGBA(209, 52, 56, 0.3)
+              BorderThickness: =1
+
+          RTrailerID:
+            Control: Label
+            Properties:
+              X: =8
+              Y: =6
+              Width: =160
+              Height: =18
+              Text: =ThisItem.carr_trailerid
+              FontWeight: =FontWeight.Semibold
+              Size: =12
+
+          RReason:
+            Control: Label
+            Properties:
+              X: =8
+              Y: =24
+              Width: =Parent.Width - 100
+              Height: =16
+              Text: =ThisItem.carr_reschedulereason
+              Size: =10
+              Color: =RGBA(120, 60, 60, 1)
+
+          RReassignBtn:
+            Control: Button
+            Properties:
+              X: =Parent.Width - 90
+              Y: =10
+              Width: =82
+              Height: =26
+              Text: ="Reassign"
+              Size: =10
+              Fill: =RGBA(0, 120, 212, 1)
+              Color: =RGBA(255, 255, 255, 1)
+              OnSelect: |
+                =Set(varSelectedTrailer, ThisItem);
+                Navigate(ScheduleBuilder)
+
+      # ── Action Buttons ────────────────────────────────────────────────────
+      BtnSendEmail:
+        Control: Button
+        Properties:
+          X: =16
+          Y: =Parent.Height - 96
+          Width: =Parent.Width / 2 - 24
+          Height: =48
+          Text: ="📧 Send Email to Kenco IB Scheduler"
+          Fill: =RGBA(0, 70, 127, 1)
+          Color: =RGBA(255, 255, 255, 1)
+          FontWeight: =FontWeight.Semibold
+          Size: =14
+          OnSelect: |
+            =/* Trigger Power Automate flow to send notification email */
+            Office365Outlook.SendEmail(
+              "kenco-ib-scheduler@carrier.com",
+              "Trailer Schedule — Week of " & Text(varScheduleWeekStart, "mmm dd, yyyy"),
+              EmailBody.Text
+            )
+
+      BtnExportCSV:
+        Control: Button
+        Properties:
+          X: =16
+          Y: =Parent.Height - 44
+          Width: =220
+          Height: =36
+          Text: ="⬇ Export Schedule CSV"
+          Fill: =RGBA(255, 255, 255, 1)
+          Color: =RGBA(0, 70, 127, 1)
+          BorderColor: =RGBA(0, 70, 127, 1)
+          BorderThickness: =1
+          FontWeight: =FontWeight.Semibold
+          Size: =12
+          OnSelect: |
+            =/* Export to SharePoint or Dataverse export */
+            Download(
+              "https://your-environment.api.crm.dynamics.com/api/data/v9.2/carr_trailers?$select=carr_trailerid,carr_assigneddock,carr_scheduleddate,carr_priorityrank,carr_revenueimpact&$filter=carr_scheduleddate ge " & Text(varScheduleWeekStart, "yyyy-mm-dd") & "&$orderby=carr_priorityrank"
+            )
+
+      BtnSendToE2Open:
+        Control: Button
+        Properties:
+          X: =248
+          Y: =Parent.Height - 44
+          Width: =220
+          Height: =36
+          Text: ="🔗 Sync to E2Open (Phase 2)"
+          Fill: =RGBA(245, 246, 250, 1)
+          Color: =RGBA(150, 155, 165, 1)
+          BorderColor: =RGBA(200, 205, 215, 1)
+          BorderThickness: =1
+          Size: =12
+          DisplayMode: =DisplayMode.Disabled

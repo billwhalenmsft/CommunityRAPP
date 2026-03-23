@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.0.0.0005" SolutionPackageVersion="9.0" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SolutionManifest>
+    <UniqueName>CarrierTrailerPrioritization</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="Carrier Inbound Trailer Prioritization" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Automates weekly prioritization of ~190 inbound trailers at Carrier's Chattanooga warehouse using OTIF and revenue impact scoring." languagecode="1033" />
+    </Descriptions>
+    <Version>1.0.0.0</Version>
+    <Managed>false</Managed>
+    <Publisher>
+      <UniqueName>CarrierDemo</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Carrier Demo" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions />
+      <EMailAddress>billwhalen@microsoft.com</EMailAddress>
+      <CustomizationPrefix>carr</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>10000</CustomizationOptionValuePrefix>
+    </Publisher>
+    <RootComponents>
+      <!-- Dataverse Tables -->
+      <RootComponent type="1" schemaName="carr_trailer" behavior="0" />
+      <RootComponent type="1" schemaName="carr_manifestline" behavior="0" />
+      <RootComponent type="1" schemaName="carr_dock" behavior="0" />
+      <RootComponent type="1" schemaName="carr_supplier" behavior="0" />
+      <RootComponent type="1" schemaName="carr_fieldmapping" behavior="0" />
+      <RootComponent type="1" schemaName="carr_scoringconfig" behavior="0" />
+      <!-- Canvas App -->
+      <RootComponent type="300" schemaName="carr_TrailerPrioritizationApp" behavior="0" />
+      <!-- Power Automate Flows -->
+      <RootComponent type="29" schemaName="carr_TrailerIngestionFlow" behavior="0" />
+      <RootComponent type="29" schemaName="carr_TrailerScoringFlow" behavior="0" />
+      <RootComponent type="29" schemaName="carr_ScheduleNotifyFlow" behavior="0" />
+    </RootComponents>
+    <MissingDependencies />
+  </SolutionManifest>
+</ImportExportXml>

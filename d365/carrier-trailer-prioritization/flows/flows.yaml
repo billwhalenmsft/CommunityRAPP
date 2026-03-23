@@ -1,0 +1,237 @@
+# Power Automate Flows — Carrier Inbound Trailer Prioritization
+# These definitions describe the flows to build in Power Automate
+# Import via Power Platform CLI: pac flow import
+
+flows:
+
+  # ─────────────────────────────────────────────────────────────
+  # FLOW 1: Weekly Data Ingestion
+  # Runs every Monday at 6:00 AM to pull in-transit data
+  # ─────────────────────────────────────────────────────────────
+  - name: "Carrier_TrailerPrioritization_Ingestion"
+    displayName: "Carrier — Weekly Trailer Ingestion"
+    trigger:
+      type: Recurrence
+      schedule:
+        frequency: Week
+        interval: 1
+        startTime: "2026-01-06T06:00:00Z"
+        timeZone: "Eastern Standard Time"
+        daysOfWeek: ["Monday"]
+
+    steps:
+      # Step 1a: Get SAP in-transit data (6 factories)
+      - name: "GetSAPIntransit"
+        type: SAP connector action
+        note: "Requires SAP ERP connector. Table: VTTK (shipment header) + VTTP (shipment items). Filter: TPBEZ = 'INBOUND' and delivery date = current week"
+        output: sapTrailers[]
+
+      # Step 1b: Get SharePoint Excel data (3 non-SAP factories)
+      - name: "GetSharePointExcelData"
+        type: SharePoint > Get Items
+        parameters:
+          siteAddress: "https://carrier.sharepoint.com/sites/Aftermarket"
+          listName: "InTransitReports"
+        output: spTrailers[]
+
+      # Step 2: Merge and normalize all data sources
+      - name: "NormalizeTrailerData"
+        type: Apply to each (sapTrailers + spTrailers)
+        actions:
+          - LookupFieldMapping:
+              description: "Look up carr_fieldmapping table to normalize column names per supplier"
+              dataverse: "carr_fieldmapping"
+          - CreateOrUpdateTrailer:
+              description: "Upsert to carr_trailer Dataverse table"
+              action: Dataverse > Add a new row or Update a row
+              matchOn: carr_trailerid
+              fields:
+                carr_trailerid: "{normalized TrailerID}"
+                carr_factorysupplier: "{Supplier Name}"
+                carr_shipdate: "{Ship Date}"
+                carr_expectedarrival: "{Expected Arrival}"
+                carr_sourcesystem: "{SAP or SharePoint Excel}"
+                carr_trailertype: "Internal Factory"
+                carr_schedulestatus: "Unscheduled"
+                carr_lastsyncdate: "{utcNow()}"
+
+      # Step 3: Get external supplier data (email attachments)
+      - name: "GetExternalSupplierEmails"
+        type: Office365Outlook > Get emails
+        parameters:
+          folderPath: "Inbox/Supplier Packing Lists"
+          hasAttachments: true
+          top: 50
+        output: emails[]
+        note: "Phase 2: Add AI Builder document processing here to normalize varied packing list formats"
+
+      - name: "ProcessExternalEmails"
+        type: Apply to each (emails)
+        actions:
+          - GetAttachment:
+              action: Office365Outlook > Get attachment
+          - ParseExcelAttachment:
+              note: "Phase 2: AI Builder Document Processing model here"
+          - UpsertTrailer:
+              action: Dataverse > Add a new row or Update a row
+              fields:
+                carr_trailertype: "External Supplier"
+                carr_sourcesystem: "Email"
+
+  # ─────────────────────────────────────────────────────────────
+  # FLOW 2: Trailer Scoring Engine
+  # Triggered after ingestion or on-demand. Calculates scores.
+  # ─────────────────────────────────────────────────────────────
+  - name: "Carrier_TrailerPrioritization_Scoring"
+    displayName: "Carrier — Trailer Scoring Engine"
+    trigger:
+      type: Automated
+      triggerOn: "When Carrier_TrailerPrioritization_Ingestion completes"
+      alternativeTrigger:
+        type: Manual / Button
+        displayName: "Run Scoring Now"
+
+    steps:
+      # Step 1: Get scoring config weights
+      - name: "GetScoringConfig"
+        type: Dataverse > List rows
+        table: carr_scoringconfig
+        filter: "carr_isactive eq true"
+        top: 1
+        output:
+          otifWeight: carr_otifweight
+          revenueWeight: carr_revenueweight
+          detentionWeight: carr_detentionweight
+
+      # Step 2: Get backlog/OTIF data from Power BI dataset
+      - name: "GetBacklogData"
+        type: Power BI > Run a query against a dataset
+        parameters:
+          workspaceId: "{Carrier Power BI Workspace ID}"
+          datasetId: "{Backlog Dataset ID}"
+          query: |
+            EVALUATE
+            SUMMARIZECOLUMNS(
+              'Sales Orders'[Material Number],
+              'Sales Orders'[Backlog Quantity],
+              'Sales Orders'[Backlog Revenue],
+              FILTER('Sales Orders',
+                'Sales Orders'[Department] = "Materials" AND
+                'Sales Orders'[Status] IN {"Potentially Shippable", "Non-Shippable"}
+              )
+            )
+        output: backlogData[]
+        note: "Kevin (Gollmer) to provide workspace ID and dataset ID as follow-up action"
+
+      # Step 3: For each trailer, calculate OTIF + revenue scores
+      - name: "ScoreEachTrailer"
+        type: Dataverse > List rows
+        table: carr_trailer
+        filter: "carr_schedulestatus eq 'Unscheduled'"
+        thenApplyToEach:
+          - GetManifestLines:
+              type: Dataverse > List rows
+              table: carr_manifestline
+              filter: "carr_trailer eq {TrailerID}"
+          - CalculateOTIF:
+              formula: |
+                Count of manifest lines where PartNumber is in backlogData
+              output: otifScore
+          - CalculateRevenue:
+              formula: |
+                Sum of Backlog Revenue for matching part numbers
+              output: revenueImpact
+          - CalculateCompositeScore:
+              formula: |
+                (otifScore * otifWeight) + (revenueImpact_normalized * revenueWeight)
+              output: compositeScore
+          - UpdateTrailer:
+              type: Dataverse > Update a row
+              fields:
+                carr_otifscore: "{otifScore}"
+                carr_revenueimpact: "{revenueImpact}"
+                carr_compositescore: "{compositeScore}"
+
+      # Step 4: Rank all trailers by composite score
+      - name: "RankTrailers"
+        type: Dataverse > List rows
+        table: carr_trailer
+        filter: "carr_schedulestatus eq 'Unscheduled'"
+        orderBy: "carr_compositescore desc"
+        thenApplyToEach:
+          - UpdateRank:
+              type: Dataverse > Update a row
+              fields:
+                carr_priorityrank: "{index + 1}"
+
+  # ─────────────────────────────────────────────────────────────
+  # FLOW 3: Schedule Notification
+  # Sends confirmed schedule to Kenco IB Scheduler
+  # ─────────────────────────────────────────────────────────────
+  - name: "Carrier_TrailerPrioritization_Notify"
+    displayName: "Carrier — Send Schedule to Kenco"
+    trigger:
+      type: Manual / Button (from Canvas App)
+      inputs:
+        - weekStartDate: DateOnly
+        - emailBody: Text
+
+    steps:
+      - name: "GetConfirmedSchedule"
+        type: Dataverse > List rows
+        table: carr_trailer
+        filter: |
+          carr_schedulestatus eq 'Confirmed' AND
+          carr_scheduleddate ge {weekStartDate} AND
+          carr_scheduleddate lt {weekStartDate + 7 days}
+        orderBy: "carr_scheduleddate asc, carr_assigneddock asc"
+        output: confirmedTrailers[]
+
+      - name: "SendEmailToKenco"
+        type: Office365Outlook > Send an email (V2)
+        parameters:
+          To: "kenco-ib-scheduler@carrier.com"
+          CC: "sonali.horan@carrier.com; kevin.gollmer@carrier.com"
+          Subject: "Trailer Schedule — Week of {weekStartDate}"
+          Body: "{emailBody from Canvas App}"
+
+      - name: "LogScheduleSent"
+        type: Dataverse > Update rows (all confirmed trailers)
+        fields:
+          carr_schedulestatus: "Confirmed"
+          carr_notes: "Schedule sent to Kenco on {utcNow()}"
+
+  # ─────────────────────────────────────────────────────────────
+  # FLOW 4: Reschedule Email Watcher (Phase 2 - AI Builder)
+  # Monitors inbound scheduler's mailbox for TSP reschedule emails
+  # ─────────────────────────────────────────────────────────────
+  - name: "Carrier_RescheduleWatcher"
+    displayName: "Carrier — TSP Reschedule Email Watcher (Phase 2)"
+    trigger:
+      type: Office365Outlook > When a new email arrives (V3)
+      parameters:
+        folderPath: "Inbox"
+        subjectFilter: "reschedule"
+
+    steps:
+      - name: "ExtractRescheduleInfo"
+        type: AI Builder > Extract information from text
+        note: "Phase 2 — Train AI Builder model to extract: Trailer ID, New Date, Reason from TSP email body"
+        output:
+          trailerID: text
+          newDate: dateOnly
+          reason: text
+
+      - name: "UpdateTrailerStatus"
+        type: Dataverse > Update a row
+        lookupBy: carr_trailerid = {trailerID}
+        fields:
+          carr_schedulestatus: "Rescheduled"
+          carr_reschedulereason: "{reason}"
+
+      - name: "NotifyMaterialsManager"
+        type: Office365Outlook > Send an email
+        parameters:
+          To: "sonali.horan@carrier.com"
+          Subject: "Reschedule Alert — Trailer {trailerID}"
+          Body: "TSP has requested a reschedule for trailer {trailerID}. Reason: {reason}. Please review and reassign in the Trailer Prioritization app."
