@@ -2,7 +2,7 @@
 
 The memory center for your AI agents. Built on Azure Functions — local-first, deploy to Azure when ready.
 
-[Chat UI](https://kody-w.github.io/CommunityRAPP/) | [Docs](https://kody-w.github.io/CommunityRAPP/docs/) | [Hatchery Flow](https://kody-w.github.io/CommunityRAPP/docs/hatchery-flow.html) | [Issues](https://github.com/kody-w/CommunityRAPP/issues)
+[Get Started](https://kody-w.github.io/CommunityRAPP/onboard.html) | [Chat UI](https://kody-w.github.io/CommunityRAPP/) | [Docs](https://kody-w.github.io/CommunityRAPP/docs/) | [Hatchery Flow](https://kody-w.github.io/CommunityRAPP/docs/hatchery-flow.html) | [Issues](https://github.com/kody-w/CommunityRAPP/issues)
 
 ## Create a Project
 

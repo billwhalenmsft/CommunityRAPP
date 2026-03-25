@@ -19,6 +19,7 @@ RAPP Hippocampus — the memory center for your AI agents.
 
 ## Interactive
 
+- [Get Started](../onboard.html) — one-page onboarding guide (share this!)
 - [Chat UI](../index.html) — talk to your running instance
 - [Business Mode](../business.html) — side-by-side multi-instance chat
 - [Hatchery Flow](hatchery-flow.html) — visual diagram of the T1 to T3 journey
