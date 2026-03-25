@@ -28,11 +28,10 @@ logger = logging.getLogger(__name__)
 
 PROJECTS_DIR = os.path.expanduser("~/rapp-projects")
 MANIFEST_PATH = os.path.join(PROJECTS_DIR, ".hatchery.json")
-REPO_URL = "https://github.com/kody-w/m365-agents-for-python.git"
-REPO_SUBDIR = "CommunityRAPP"
+REPO_URL = "https://github.com/kody-w/CommunityRAPP.git"
 BASE_PORT = 7072  # Brainstem uses 7071
 
-BUSINESS_HTML_URL = "https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/business.html"
+BUSINESS_HTML_URL = "https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/business.html"
 
 CONFIGURABLE_KEYS = [
     "AZURE_OPENAI_ENDPOINT",
@@ -165,22 +164,17 @@ class RAPPHatcheryAgent(BasicAgent):
         try:
             logger.info(f"Cloning CommunityRAPP for project '{project_name}'")
             result = subprocess.run(
-                ["git", "clone", "--depth", "1", REPO_URL, tmp_dir],
+                ["git", "clone", "--depth", "1", REPO_URL, project_dir],
                 capture_output=True, text=True, timeout=120,
             )
             if result.returncode != 0:
                 return f"Git clone failed: {result.stderr.strip()}"
 
-            # Move CommunityRAPP subdirectory to project location
-            src = os.path.join(tmp_dir, REPO_SUBDIR)
-            if not os.path.isdir(src):
-                return f"Clone succeeded but {REPO_SUBDIR}/ not found in repo."
-            shutil.move(src, project_dir)
-
-        finally:
-            # Clean up temp clone
-            if os.path.exists(tmp_dir):
-                shutil.rmtree(tmp_dir, ignore_errors=True)
+        except Exception as e:
+            # Clean up on failure
+            if os.path.exists(project_dir):
+                shutil.rmtree(project_dir, ignore_errors=True)
+            raise
 
         # Create venv
         venv_dir = os.path.join(project_dir, ".venv")

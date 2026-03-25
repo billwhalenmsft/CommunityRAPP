@@ -23,12 +23,12 @@ When they're ready, guide them to install the hatchery agent:
 
 **Mac/Linux:**
 ```
-curl -fsSL https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch.sh | bash
 ```
 
 **Windows:**
 ```
-irm https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch.ps1 | iex
+irm https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch.ps1 | iex
 ```
 
 After running this, restart the brainstem. The RAPPHatchery agent will be

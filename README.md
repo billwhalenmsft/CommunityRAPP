@@ -8,12 +8,12 @@ One command creates a ready-to-customize RAPP project on your machine. No global
 
 **Mac / Linux:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch-project.sh | bash -s -- my-project
+curl -fsSL https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch-project.sh | bash -s -- my-project
 ```
 
 **Windows (PowerShell):**
 ```powershell
-irm https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch-project.ps1 | iex
+irm https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch-project.ps1 | iex
 ```
 
 This creates `~/rapp-projects/my-project/` with everything you need:
@@ -60,7 +60,7 @@ Each step is optional. You move forward only when you're ready — not before.
 
 > **IMPORTANT: This is an experimental research project, not an officially supported Microsoft product.**
 >
-> This tool is managed by a v-team within Microsoft and is provided as-is for the community. By using it you might sometimes experience unwanted patterns, errors, or unexpected behavior. By filing a [GitHub issue](https://github.com/kody-w/m365-agents-for-python/issues) you will help us improve this tool.
+> This tool is managed by a v-team within Microsoft and is provided as-is for the community. By using it you might sometimes experience unwanted patterns, errors, or unexpected behavior. By filing a [GitHub issue](https://github.com/kody-w/CommunityRAPP/issues) you will help us improve this tool.
 >
 > **A few things to keep in mind:**
 > - The Copilot Studio YAML schema may change without notice. Always review generated YAML before pushing to your environment.
@@ -78,12 +78,12 @@ The Azure Function is the **hippocampus** — it forms and recalls memories on e
 
 **macOS / Linux:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/install.sh | bash
 ```
 
 **Windows (PowerShell — works on factory Windows 11):**
 ```powershell
-irm https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/install.ps1 | iex
+irm https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/install.ps1 | iex
 ```
 
 Auto-installs Python 3.11, Node.js, Git, and Azure Functions Core Tools if missing. Walks you through Azure OpenAI configuration interactively.
@@ -99,8 +99,8 @@ crapp                # short alias
 ### Manual Install
 
 ```bash
-git clone https://github.com/kody-w/m365-agents-for-python.git
-cd m365-agents-for-python/CommunityRAPP
+git clone https://github.com/kody-w/CommunityRAPP.git
+cd CommunityRAPP
 cp local.settings.template.json local.settings.json
 # Edit local.settings.json → add your Azure OpenAI key/endpoint
 pip install -r requirements.txt
@@ -308,12 +308,12 @@ flowchart TD
 
 **macOS / Linux:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch.sh | bash
 ```
 
 **Windows:**
 ```powershell
-irm https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch.ps1 | iex
+irm https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch.ps1 | iex
 ```
 
 Each project gets its own directory, venv, and port. The brainstem continues running as your local AI.
@@ -406,7 +406,7 @@ All settings go in `local.settings.json` (never committed). Copy from the templa
 
 This project is an experimental research project, not an officially supported Microsoft product. The Copilot Studio YAML schema may change without notice. Always review and validate generated YAML before pushing to your environment — AI-generated output may contain errors or unsupported patterns.
 
-If you've used this tool, opened an issue, or simply have spent some time with it and have feedback, we'd love to hear from you. File a [GitHub issue](https://github.com/kody-w/m365-agents-for-python/issues) or reach out on LinkedIn. We're actively listening and improving based on community feedback.
+If you've used this tool, opened an issue, or simply have spent some time with it and have feedback, we'd love to hear from you. File a [GitHub issue](https://github.com/kody-w/CommunityRAPP/issues) or reach out on LinkedIn. We're actively listening and improving based on community feedback.
 
 ## Contributing
 

@@ -2,7 +2,7 @@
 #  RAPP Hatch Project — Create a CommunityRAPP instance for a customer
 #
 #  Usage:
-#    irm https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch-project.ps1 | iex
+#    irm https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch-project.ps1 | iex
 #
 #  Or with a name:
 #    .\hatch-project.ps1 my-project
@@ -14,7 +14,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ProjectsDir = if ($env:RAPP_PROJECTS_DIR) { $env:RAPP_PROJECTS_DIR } else { "$HOME\rapp-projects" }
-$RepoUrl     = "https://github.com/kody-w/m365-agents-for-python.git"
+$RepoUrl     = "https://github.com/kody-w/CommunityRAPP.git"
 $BasePort    = 7072
 
 # ── Helpers ─────────────────────────────────────────────────
@@ -102,12 +102,9 @@ Write-Host "=== Hatching '$ProjectName' ===" -ForegroundColor Cyan
 Write-Host ""
 
 New-Item -ItemType Directory -Path $ProjectsDir -Force | Out-Null
-$tmpDir = Join-Path $ProjectsDir ".tmp-$ProjectName-$PID"
 
 Write-Host "==> Cloning CommunityRAPP..."
-git clone --depth 1 --quiet $RepoUrl $tmpDir
-Move-Item (Join-Path $tmpDir "CommunityRAPP") $ProjectDir
-Remove-Item $tmpDir -Recurse -Force
+git clone --depth 1 --quiet $RepoUrl $ProjectDir
 
 # ── Venv + deps ─────────────────────────────────────────────
 
@@ -153,7 +150,7 @@ $BizHtml = Join-Path $ProjectsDir "business.html"
 if (-not (Test-Path $BizHtml)) {
     Write-Host "==> Deploying Business Mode UI..."
     try {
-        $BizUrl = "https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/business.html"
+        $BizUrl = "https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/business.html"
         Invoke-WebRequest -Uri $BizUrl -OutFile $BizHtml -UseBasicParsing -ErrorAction SilentlyContinue
     } catch {}
 }

@@ -1,9 +1,9 @@
 # ============================================================
 #  RAPP Hatchery — Install the hatchery agent into your brainstem
-#  Usage: irm https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch.ps1 | iex
+#  Usage: irm https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch.ps1 | iex
 # ============================================================
 
-$AgentUrl  = "https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatchery/rapp_hatchery_agent.py"
+$AgentUrl  = "https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatchery/rapp_hatchery_agent.py"
 $AgentFile = "rapp_hatchery_agent.py"
 
 Write-Host "=== RAPP Hatchery ===" -ForegroundColor Cyan

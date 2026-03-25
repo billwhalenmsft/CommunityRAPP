@@ -1,6 +1,6 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 #  RAPP Hippocampus — Windows Installer (PowerShell)
-#  Usage: irm https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/install.ps1 | iex
+#  Usage: irm https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/install.ps1 | iex
 #  Or:    .\install.ps1
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -10,10 +10,10 @@ $ErrorActionPreference = "Stop"
 $Version        = "1.0.0"
 $InstallDir     = Join-Path $env:USERPROFILE ".communityrapp"
 $RepoDir        = Join-Path $InstallDir "src"
-$SourceDir      = Join-Path $RepoDir "CommunityRAPP"
+$SourceDir      = $RepoDir
 $VenvDir        = Join-Path $InstallDir "venv"
 $BinDir         = Join-Path $env:USERPROFILE ".local\bin"
-$RepoUrl        = "https://github.com/kody-w/m365-agents-for-python.git"
+$RepoUrl        = "https://github.com/kody-w/CommunityRAPP.git"
 $ServerPort     = 7071
 $ServerUrl      = "http://localhost:$ServerPort"
 
@@ -247,7 +247,7 @@ function Install-CommunityRAPP {
         Push-Location $RepoDir
         try {
             git fetch origin main --quiet 2>$null
-            $remoteVersion = git show origin/main:CommunityRAPP/VERSION 2>$null
+            $remoteVersion = git show origin/main:VERSION 2>$null
             if (-not $remoteVersion) { $remoteVersion = $localVersion }
             $remoteVersion = $remoteVersion.Trim()
 
@@ -450,7 +450,7 @@ REM RAPP Hippocampus — CLI Launcher
 setlocal
 
 set INSTALL_DIR=%USERPROFILE%\.communityrapp
-set SOURCE_DIR=%INSTALL_DIR%\src\CommunityRAPP
+set SOURCE_DIR=%INSTALL_DIR%\src
 set VENV_DIR=%INSTALL_DIR%\venv
 
 if not exist "%SOURCE_DIR%" (
@@ -674,7 +674,7 @@ if ($args -contains "--help" -or $args -contains "-h") {
     Write-Host "CommunityRAPP Installer"
     Write-Host ""
     Write-Host "Usage:"
-    Write-Host "  irm https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/install.ps1 | iex"
+    Write-Host "  irm https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/install.ps1 | iex"
     Write-Host "  .\install.ps1"
     Write-Host ""
     Write-Host "This script installs RAPP Hippocampus to ~/.communityrapp/"

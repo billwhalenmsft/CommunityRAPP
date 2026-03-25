@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # ============================================================
 #  RAPP Hatchery — Install the hatchery agent into your brainstem
-#  Usage: curl -fsSL https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch.sh | bash
+#  Usage: curl -fsSL https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch.sh | bash
 # ============================================================
 set -e
 
-AGENT_URL="https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatchery/rapp_hatchery_agent.py"
+AGENT_URL="https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatchery/rapp_hatchery_agent.py"
 AGENT_FILE="rapp_hatchery_agent.py"
 
 echo "=== RAPP Hatchery ==="

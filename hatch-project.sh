@@ -3,7 +3,7 @@
 #  RAPP Hatch Project — Create a CommunityRAPP instance for a customer
 #
 #  Usage:
-#    curl -fsSL https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/hatch-project.sh | bash -s -- my-project
+#    curl -fsSL https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/hatch-project.sh | bash -s -- my-project
 #
 #  Or with a custom directory:
 #    RAPP_PROJECTS_DIR=~/clients ./hatch-project.sh my-project
@@ -12,7 +12,7 @@ set -e
 
 PROJECT_NAME="${1:-}"
 PROJECTS_DIR="${RAPP_PROJECTS_DIR:-$HOME/rapp-projects}"
-REPO_URL="https://github.com/kody-w/m365-agents-for-python.git"
+REPO_URL="https://github.com/kody-w/CommunityRAPP.git"
 BASE_PORT=7072
 
 # ── Helpers ─────────────────────────────────────────────────
@@ -86,12 +86,9 @@ echo "=== Hatching '$PROJECT_NAME' ==="
 echo ""
 
 mkdir -p "$PROJECTS_DIR"
-TMP_DIR="$PROJECTS_DIR/.tmp-$PROJECT_NAME-$$"
 
 info "Cloning CommunityRAPP..."
-git clone --depth 1 --quiet "$REPO_URL" "$TMP_DIR"
-mv "$TMP_DIR/CommunityRAPP" "$PROJECT_DIR"
-rm -rf "$TMP_DIR"
+git clone --depth 1 --quiet "$REPO_URL" "$PROJECT_DIR"
 
 # ── Venv + deps ─────────────────────────────────────────────
 
@@ -134,7 +131,7 @@ EOF
 BIZ_HTML="$PROJECTS_DIR/business.html"
 if [ ! -f "$BIZ_HTML" ]; then
     info "Deploying Business Mode UI..."
-    BIZ_URL="https://raw.githubusercontent.com/kody-w/m365-agents-for-python/main/CommunityRAPP/business.html"
+    BIZ_URL="https://raw.githubusercontent.com/kody-w/CommunityRAPP/main/business.html"
     curl -fsSL "$BIZ_URL" -o "$BIZ_HTML" 2>/dev/null || true
 fi
 
