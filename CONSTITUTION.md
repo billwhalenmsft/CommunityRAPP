@@ -284,11 +284,17 @@ When transpiling Python agents (`.py`) to Copilot Studio native solutions, **all
 
 This article codifies the relationship between the RAPP Brainstem (T1) and CommunityRAPP (T2/T3), and the bridge between them.
 
-### Guiding Principle
+### Guiding Principles
 
 **Start small, layer up when ready.**
 
 Users begin with the brainstem alone. They are never pushed to T2/T3. The hatchery agent is loaded only when the user explicitly asks for the next step.
+
+**The one-liner IS the onboarding.**
+
+Every tier of the RAPP platform is installed with a single command. Everything after it — starting, authenticating, deploying to Azure — either happens automatically or is guided by the running system. Manual steps exist only as advanced documentation, never as the primary path.
+
+When training users, the instruction is: "run the one-liner." That's it. Any change to install scripts must be tested against this path. If the one-liner breaks, nothing else matters.
 
 ### Rules
 
