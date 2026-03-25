@@ -7,19 +7,18 @@ from agents.basic_agent import BasicAgent
 
 logger = logging.getLogger(__name__)
 
-GITHUB_OWNER = "billwhalenmsft"
-GITHUB_REPO = "RAPP-Agent-Repo"
-GITHUB_API_BASE = f"https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}"
-MANIFEST_PATH = os.path.join(".local_storage", "installed_agents.json")
+GITHUB_OWNER = "kody-w"
+GITHUB_REPO = "AI-Agent-Templates"
+MANIFEST_URL = f"https://raw.githubusercontent.com/{GITHUB_OWNER}/{GITHUB_REPO}/main/manifest.json"
+INSTALLED_PATH = os.path.join(".local_storage", "installed_agents.json")
 CACHE_TTL = 300  # 5 minutes
 
 
 def _github_headers():
-    """Build headers with GitHub token if available (for private repos)."""
+    """Build headers with GitHub token if available (raises rate limits)."""
     headers = {"Accept": "application/vnd.github.v3.raw"}
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not token:
-        # Try reading from gh CLI config
         try:
             import subprocess
             result = subprocess.run(
@@ -43,8 +42,8 @@ class AgentLibraryManager(BasicAgent):
         self.metadata = {
             "name": self.name,
             "description": (
-                "Browse, search, and install agents from the RAPP Agent Repo. "
-                "WORKFLOW: First use 'discover' or 'search' to find agents, then 'install' with the exact agent_name from results. "
+                "Browse, search, and install agents from the RAPP AI Agent Templates library. "
+                "WORKFLOW: First use 'discover' or 'search' to find agents, then 'install' with the exact agent id from results. "
                 "Actions: discover (list all), search (find by keyword), install (download agent), "
                 "list_installed (show installed), remove (uninstall), info (agent details)."
             ),
@@ -57,18 +56,18 @@ class AgentLibraryManager(BasicAgent):
                         "description": (
                             "Action to perform. Use 'discover' to browse all available agents, "
                             "'search' to find agents by keyword, 'install' to download an agent "
-                            "(requires exact agent_name from discover/search results), "
+                            "(requires exact agent id from discover/search results), "
                             "'list_installed' to see installed agents, 'remove' to uninstall, "
                             "'info' for detailed agent information."
                         ),
                     },
                     "agent_name": {
                         "type": "string",
-                        "description": "Fully qualified agent name (e.g. '@billwhalen/dynamics-crud'). Required for install, remove, and info.",
+                        "description": "Agent id (e.g. 'calendar_agent'). Required for install, remove, and info.",
                     },
                     "search_query": {
                         "type": "string",
-                        "description": "Keyword to search for agents by name, description, or tags. Required for search action.",
+                        "description": "Keyword to search for agents by name, description, or features. Required for search action.",
                     },
                 },
                 "required": ["action"],
@@ -92,16 +91,16 @@ class AgentLibraryManager(BasicAgent):
 
         handler = actions.get(action)
         if not handler:
-            return f"❌ Unknown action '{action}'. Use: discover, search, install, list_installed, remove, info."
+            return f"Unknown action '{action}'. Use: discover, search, install, list_installed, remove, info."
 
         try:
             return handler()
         except requests.RequestException as e:
             logger.error(f"Network error in AgentLibraryManager: {e}")
-            return f"❌ Network error: Could not reach the RAPP Agent Repo. Check your connection.\nDetails: {e}"
+            return f"Network error: Could not reach the agent library. Check your connection.\nDetails: {e}"
         except Exception as e:
             logger.error(f"AgentLibraryManager error: {e}", exc_info=True)
-            return f"❌ Error: {e}"
+            return f"Error: {e}"
 
     # ── Registry ──────────────────────────────────────────────────────
 
@@ -110,18 +109,17 @@ class AgentLibraryManager(BasicAgent):
         if not force and AgentLibraryManager._registry_cache and (now - AgentLibraryManager._cache_time) < CACHE_TTL:
             return AgentLibraryManager._registry_cache
 
-        url = f"{GITHUB_API_BASE}/contents/registry.json"
-        resp = requests.get(url, headers=_github_headers(), timeout=15)
+        resp = requests.get(MANIFEST_URL, headers=_github_headers(), timeout=15)
         resp.raise_for_status()
         data = resp.json()
         AgentLibraryManager._registry_cache = data
         AgentLibraryManager._cache_time = now
         return data
 
-    def _find_agent(self, name):
+    def _find_agent(self, agent_id):
         registry = self._fetch_registry()
         for agent in registry.get("agents", []):
-            if agent["name"] == name:
+            if agent["id"] == agent_id:
                 return agent
         return None
 
@@ -130,33 +128,38 @@ class AgentLibraryManager(BasicAgent):
     def _discover(self):
         registry = self._fetch_registry(force=True)
         agents = registry.get("agents", [])
-        stats = registry.get("stats", {})
+        stacks = registry.get("stacks", [])
 
-        by_category = {}
-        for a in agents:
-            by_category.setdefault(a.get("category", "other"), []).append(a)
+        lines = [f"**RAPP Agent Library** — {len(agents)} agents, {len(stacks)} stacks available\n"]
 
-        category_icons = {
-            "core": "🧠", "pipeline": "🔧", "integrations": "🔌",
-            "productivity": "📊", "devtools": "🛠️",
-        }
+        lines.append("**Agents:**")
+        for a in sorted(agents, key=lambda x: x["id"]):
+            icon = a.get("icon", "")
+            lines.append(f"  {icon} `{a['id']}` — {a['description'][:80]}")
+        lines.append("")
 
-        lines = [f"📦 **RAPP Agent Library** — {stats.get('total_agents', len(agents))} agents available\n"]
-        for cat in sorted(by_category):
-            icon = category_icons.get(cat, "📁")
-            group = by_category[cat]
-            lines.append(f"{icon} **{cat.title()}** ({len(group)}):")
-            for a in sorted(group, key=lambda x: x["name"]):
-                tier = " ✅" if a.get("quality_tier") == "verified" else ""
-                lines.append(f"  `{a['name']}`{tier} — {a['description'][:80]}")
-            lines.append("")
+        if stacks:
+            # Group stacks by type
+            by_type = {}
+            for s in stacks:
+                by_type.setdefault(s.get("type", "other"), []).append(s)
+            for stype in sorted(by_type):
+                group = by_type[stype]
+                lines.append(f"**Stacks ({stype}):** ({len(group)})")
+                for s in sorted(group, key=lambda x: x.get("id", x.get("name", "")))[:10]:
+                    sid = s.get("id", s.get("name", "?"))
+                    desc = s.get("description", "")[:80]
+                    lines.append(f"  `{sid}` — {desc}")
+                if len(group) > 10:
+                    lines.append(f"  ... and {len(group) - 10} more. Use `search` to find specific stacks.")
+                lines.append("")
 
-        lines.append("💡 Use `search` with a keyword, or `install` with an exact agent name from above.")
+        lines.append("Use `search` with a keyword, or `install` with an agent id from above.")
         return "\n".join(lines)
 
     def _search(self, query):
         if not query:
-            return "❌ Please provide a search_query (e.g. 'crm', 'email', 'pipeline')."
+            return "Please provide a search_query (e.g. 'calendar', 'memory', 'email')."
 
         registry = self._fetch_registry()
         keywords = query.lower().split()
@@ -164,94 +167,86 @@ class AgentLibraryManager(BasicAgent):
 
         for a in registry.get("agents", []):
             searchable = " ".join([
-                a.get("name", ""), a.get("display_name", ""),
-                a.get("description", ""), " ".join(a.get("tags", [])),
-                a.get("category", ""), a.get("author", ""),
+                a.get("id", ""), a.get("name", ""),
+                a.get("description", ""), " ".join(a.get("features", [])),
             ]).lower()
             if any(kw in searchable for kw in keywords):
                 results.append(a)
 
         if not results:
-            return f"🔍 No agents found matching '{query}'. Try `discover` to browse all agents."
+            return f"No agents found matching '{query}'. Try `discover` to browse all agents."
 
-        lines = [f"🔍 **{len(results)} agent(s) matching '{query}':**\n"]
+        lines = [f"**{len(results)} agent(s) matching '{query}':**\n"]
         for a in results:
-            env = f" ⚠️ Requires: {', '.join(a['requires_env'])}" if a.get("requires_env") else ""
-            lines.append(f"  `{a['name']}` — {a['description'][:80]}{env}")
+            icon = a.get("icon", "")
+            lines.append(f"  {icon} `{a['id']}` — {a['description'][:80]}")
 
-        lines.append(f"\n💡 To install: use action `install` with agent_name (e.g. `{results[0]['name']}`).")
+        lines.append(f"\nTo install: use action `install` with agent_name (e.g. `{results[0]['id']}`).")
         return "\n".join(lines)
 
-    def _install(self, agent_name):
-        if not agent_name:
-            return "❌ Please provide agent_name (e.g. '@billwhalen/dynamics-crud'). Use `discover` or `search` first."
+    def _install(self, agent_id):
+        if not agent_id:
+            return "Please provide agent_name (e.g. 'calendar_agent'). Use `discover` or `search` first."
 
-        agent_meta = self._find_agent(agent_name)
+        agent_meta = self._find_agent(agent_id)
         if not agent_meta:
-            return f"❌ Agent '{agent_name}' not found in registry. Use `discover` to see available agents."
+            return f"Agent '{agent_id}' not found in library. Use `discover` to see available agents."
 
-        file_path = agent_meta.get("_file")
-        if not file_path:
-            return f"❌ No file path in registry for '{agent_name}'."
+        download_url = agent_meta.get("url")
+        if not download_url:
+            return f"No download URL for '{agent_id}'."
 
-        # Download agent source via GitHub API
-        url = f"{GITHUB_API_BASE}/contents/{file_path}"
-        resp = requests.get(url, headers=_github_headers(), timeout=30)
+        # Download agent source
+        resp = requests.get(download_url, headers=_github_headers(), timeout=30)
         resp.raise_for_status()
         source = resp.text
 
         # Save to agents/ folder
-        slug = agent_name.split("/")[-1]
-        filename = slug.replace("-", "_") + "_agent.py"
+        filename = agent_meta.get("filename", f"{agent_id}.py")
         dest = os.path.join("agents", filename)
 
         os.makedirs("agents", exist_ok=True)
         with open(dest, "w", encoding="utf-8") as f:
             f.write(source)
-        logger.info(f"Installed agent {agent_name} -> {dest}")
+        logger.info(f"Installed agent {agent_id} -> {dest}")
 
-        # Update manifest
+        # Update local manifest
         manifest = self._read_manifest()
-        manifest[agent_name] = {
+        manifest[agent_id] = {
             "file": filename,
-            "version": agent_meta.get("version", "1.0.0"),
             "installed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "display_name": agent_meta.get("display_name", slug),
+            "display_name": agent_meta.get("name", agent_id),
+            "size": agent_meta.get("size_formatted", "?"),
         }
         self._write_manifest(manifest)
 
-        env_note = ""
-        if agent_meta.get("requires_env"):
-            env_note = f"\n⚠️ **Required env vars:** {', '.join(agent_meta['requires_env'])}"
-
         return (
-            f"✅ **Installed `{agent_name}`** → `{dest}`\n"
-            f"Version: {agent_meta.get('version', '1.0.0')} | "
-            f"Size: {agent_meta.get('_size_kb', '?')} KB{env_note}\n"
-            f"🔄 **Restart the function app** to load the new agent."
+            f"**Installed `{agent_id}`** -> `{dest}`\n"
+            f"Size: {agent_meta.get('size_formatted', '?')}\n"
+            f"**Restart the function app** to load the new agent."
         )
 
     def _list_installed(self):
         manifest = self._read_manifest()
         if not manifest:
-            return "📭 No library agents installed yet. Use `discover` to browse available agents."
+            return "No library agents installed yet. Use `discover` to browse available agents."
 
-        lines = ["📋 **Installed library agents:**\n"]
+        lines = ["**Installed library agents:**\n"]
         for name, info in sorted(manifest.items()):
-            exists = "✅" if os.path.isfile(os.path.join("agents", info["file"])) else "❌ missing"
-            lines.append(f"  `{name}` v{info.get('version', '?')} — {info['file']} {exists}")
+            exists = "installed" if os.path.isfile(os.path.join("agents", info["file"])) else "missing"
+            lines.append(f"  `{name}` — {info['file']} ({exists})")
         lines.append(f"\n{len(manifest)} agent(s) installed.")
         return "\n".join(lines)
 
-    def _remove(self, agent_name):
-        if not agent_name:
-            return "❌ Please provide agent_name to remove. Use `list_installed` to see installed agents."
+    def _remove(self, agent_id):
+        if not agent_id:
+            return "Please provide agent_name to remove. Use `list_installed` to see installed agents."
 
         manifest = self._read_manifest()
-        if agent_name not in manifest:
-            return f"❌ `{agent_name}` is not in the installed manifest. Use `list_installed` to check."
+        if agent_id not in manifest:
+            return f"`{agent_id}` is not in the installed manifest. Use `list_installed` to check."
 
-        info = manifest.pop(agent_name)
+        info = manifest.pop(agent_id)
         filepath = os.path.join("agents", info["file"])
 
         if os.path.isfile(filepath):
@@ -259,49 +254,44 @@ class AgentLibraryManager(BasicAgent):
             logger.info(f"Removed agent file: {filepath}")
 
         self._write_manifest(manifest)
-        return f"🗑️ **Removed `{agent_name}`** (`{info['file']}` deleted).\n🔄 Restart the function app to apply."
+        return f"**Removed `{agent_id}`** (`{info['file']}` deleted).\nRestart the function app to apply."
 
-    def _info(self, agent_name):
-        if not agent_name:
-            return "❌ Please provide agent_name (e.g. '@billwhalen/dynamics-crud')."
+    def _info(self, agent_id):
+        if not agent_id:
+            return "Please provide agent_name (e.g. 'calendar_agent')."
 
-        agent = self._find_agent(agent_name)
+        agent = self._find_agent(agent_id)
         if not agent:
-            return f"❌ Agent '{agent_name}' not found in registry."
+            return f"Agent '{agent_id}' not found in library."
 
-        env = ", ".join(agent.get("requires_env", [])) or "None"
-        deps = ", ".join(agent.get("dependencies", [])) or "None"
-        tags = ", ".join(agent.get("tags", []))
+        features = ", ".join(agent.get("features", [])) or "None listed"
 
         manifest = self._read_manifest()
-        status = "✅ Installed" if agent_name in manifest else "⬜ Not installed"
+        status = "Installed" if agent_id in manifest else "Not installed"
 
         return (
-            f"📄 **{agent.get('display_name', agent_name)}** (`{agent_name}`)\n\n"
+            f"**{agent.get('name', agent_id)}** (`{agent_id}`)\n\n"
             f"**Description:** {agent.get('description', 'N/A')}\n"
-            f"**Author:** {agent.get('author', 'Unknown')}\n"
-            f"**Version:** {agent.get('version', '?')} | **Category:** {agent.get('category', '?')} | **Tier:** {agent.get('quality_tier', '?')}\n"
-            f"**Tags:** {tags}\n"
-            f"**Size:** {agent.get('_size_kb', '?')} KB ({agent.get('_lines', '?')} lines)\n"
-            f"**Required env vars:** {env}\n"
-            f"**Dependencies:** {deps}\n"
+            f"**Type:** {agent.get('type', '?')}\n"
+            f"**Size:** {agent.get('size_formatted', '?')}\n"
+            f"**Features:** {features}\n"
             f"**Status:** {status}\n"
-            f"\n💡 To install: use action `install` with agent_name `{agent_name}`."
+            f"\nTo install: use action `install` with agent_name `{agent_id}`."
         )
 
-    # ── Manifest persistence ──────────────────────────────────────────
+    # ── Local manifest persistence ────────────────────────────────────
 
     def _read_manifest(self):
-        if not os.path.isfile(MANIFEST_PATH):
+        if not os.path.isfile(INSTALLED_PATH):
             return {}
         try:
-            with open(MANIFEST_PATH, "r", encoding="utf-8") as f:
+            with open(INSTALLED_PATH, "r", encoding="utf-8") as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError):
-            logger.warning(f"Could not read manifest at {MANIFEST_PATH}")
+            logger.warning(f"Could not read manifest at {INSTALLED_PATH}")
             return {}
 
     def _write_manifest(self, data):
-        os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
-        with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
+        os.makedirs(os.path.dirname(INSTALLED_PATH), exist_ok=True)
+        with open(INSTALLED_PATH, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
