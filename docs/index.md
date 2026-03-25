@@ -1,123 +1,43 @@
-# CommunityRAPP - Complete Documentation
+# CommunityRAPP Documentation
 
-Welcome to the complete documentation for CommunityRAPP, an enterprise AI assistant platform built on Azure Functions with GPT-4 integration and Microsoft 365 capabilities.
+RAPP Hippocampus — the memory center for your AI agents.
 
-## 📚 Documentation Index
+## Guides
 
-### Getting Started
-- **[Getting Started Guide](GETTING_STARTED.md)** - Quick start guide for new users
-- **[Deployment Guide](DEPLOYMENT.md)** - Step-by-step deployment instructions
-- **[Troubleshooting](TROUBLESHOOTING.md)** - Common issues and solutions
+| Guide | Description |
+|-------|-------------|
+| [Getting Started](GETTING_STARTED.md) | Create your first project and run it locally |
+| [Local Development](LOCAL_DEVELOPMENT.md) | Dev setup, GitHub Copilot auth, local testing |
+| [Agent Development](AGENT_DEVELOPMENT.md) | Build custom agents with the BasicAgent pattern |
+| [API Reference](API_REFERENCE.md) | Endpoints, request/response formats, auth |
+| [Architecture](ARCHITECTURE.md) | System design, memory layers, request flow |
+| [Deployment](DEPLOYMENT.md) | Deploy to Azure Functions |
+| [Power Platform Integration](POWER_PLATFORM_INTEGRATION.md) | Connect to Teams and M365 Copilot |
+| [Security](SECURITY.md) | Entra ID, RBAC, network security |
+| [Troubleshooting](TROUBLESHOOTING.md) | Common issues and fixes |
+| [Brainstem Guidance](BRAINSTEM_GUIDANCE.md) | Bridge from RAPP Brainstem (T1) to Hippocampus (T2) |
 
-### Integration & Configuration
-- **[Power Platform Integration](POWER_PLATFORM_INTEGRATION.md)** - Deploy to Microsoft Teams and M365 Copilot
-- **[Security Best Practices](SECURITY.md)** - Secure your deployment
+## Interactive
 
-### Development
-- **[Architecture Overview](ARCHITECTURE.md)** - System architecture and design
-- **[Agent Development Guide](AGENT_DEVELOPMENT.md)** - Create custom AI agents
-- **[API Reference](API_REFERENCE.md)** - Complete API documentation
+- [Chat UI](../index.html) — talk to your running instance
+- [Business Mode](../business.html) — side-by-side multi-instance chat
+- [Hatchery Flow](hatchery-flow.html) — visual diagram of the T1 to T3 journey
 
-## 🚀 Quick Links
+## Quick Links
 
-### For End Users
-- Want to deploy quickly? → [Getting Started Guide](GETTING_STARTED.md)
-- Having issues? → [Troubleshooting](TROUBLESHOOTING.md)
-- Want to use in Teams? → [Power Platform Integration](POWER_PLATFORM_INTEGRATION.md)
+- [GitHub Repo](https://github.com/kody-w/CommunityRAPP)
+- [Report an Issue](https://github.com/kody-w/CommunityRAPP/issues)
+- [RAPP Brainstem (Tier 1)](https://github.com/kody-w/rapp-installer)
+- [CONSTITUTION.md](../CONSTITUTION.md) — governance rules
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — how to contribute
 
-### For Developers
-- Understanding the system? → [Architecture Overview](ARCHITECTURE.md)
-- Building agents? → [Agent Development Guide](AGENT_DEVELOPMENT.md)
-- Need API details? → [API Reference](API_REFERENCE.md)
-
-### For Administrators
-- Deploying to production? → [Deployment Guide](DEPLOYMENT.md)
-- Security concerns? → [Security Best Practices](SECURITY.md)
-
-## 🌟 What is CommunityRAPP?
-
-CommunityRAPP is an enterprise-grade AI assistant that can be deployed in two modes:
-
-1. **Standalone Mode**: Direct REST API access via Azure Functions
-2. **Power Platform Mode**: Full Microsoft 365 integration with Teams and M365 Copilot
-
-### Key Features
-
-- 🧠 **GPT-4 Powered** - Latest Azure OpenAI models
-- 💾 **Persistent Memory** - Remembers context across sessions
-- 🤖 **Modular Agents** - Extensible agent architecture
-- 💼 **M365 Integration** - Optional Teams and M365 Copilot deployment
-- 🔐 **Enterprise Security** - Function-level authentication
-- ⚡ **Auto-scaling** - Serverless architecture
-
-## 🎯 Common Use Cases
-
-### Business Operations
-- Customer service automation
-- Internal helpdesk assistant
-- Knowledge base queries
-- Document summarization
-
-### Microsoft 365 Integration
-- Email drafting and management
-- Calendar scheduling assistance
-- Team collaboration support
-- Document search across SharePoint
-
-### Development & IT
-- Code review assistance
-- DevOps automation
-- Git conflict resolution
-- Technical documentation
-
-## 📖 Documentation Structure
+## Three-Tier Architecture
 
 ```
-docs/
-├── index.md                          # This file - main documentation hub
-├── GETTING_STARTED.md                # Quick start for new users
-├── DEPLOYMENT.md                     # Complete deployment guide
-├── POWER_PLATFORM_INTEGRATION.md     # Teams & M365 integration
-├── ARCHITECTURE.md                   # System architecture
-├── AGENT_DEVELOPMENT.md              # Custom agent development
-├── API_REFERENCE.md                  # API documentation
-├── TROUBLESHOOTING.md                # Common issues
-├── SECURITY.md                       # Security best practices
-└── images/                           # Screenshots and diagrams
+Brainstem (Tier 1)     ->  Hippocampus (Tier 2)    ->  Nervous System (Tier 3)
+Local Flask server         Azure Functions runtime      Copilot Studio + Teams
+GitHub Copilot LLM         Azure OpenAI                 M365 Copilot
+Stateless agents           Persistent memory            Enterprise channels
 ```
 
-## 🆘 Getting Help
-
-- **GitHub Issues**: [Report bugs or request features](https://github.com/kody-w/CommunityRAPP/issues)
-- **Discussions**: [Community support and Q&A](https://github.com/kody-w/CommunityRAPP/discussions)
-- **Documentation**: You're here! Browse the guides above
-
-## 🤝 Contributing
-
-Interested in contributing? Check out our [Contributing Guide](../CONTRIBUTING.md) to get started.
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
-
----
-
-## Version Information
-
-- **Current Version**: 2.1
-- **Last Updated**: 2025-10-09
-- **Documentation Status**: ✅ Complete
-
-## Next Steps
-
-1. **New to the project?** Start with [Getting Started Guide](GETTING_STARTED.md)
-2. **Ready to deploy?** Follow the [Deployment Guide](DEPLOYMENT.md)
-3. **Want Teams integration?** See [Power Platform Integration](POWER_PLATFORM_INTEGRATION.md)
-4. **Building custom features?** Read [Agent Development Guide](AGENT_DEVELOPMENT.md)
-
----
-
-<p align="center">
-  <strong>Need help? Have questions?</strong><br>
-  Join our <a href="https://github.com/kody-w/CommunityRAPP/discussions">community discussions</a>
-</p>
+Start small, layer up when ready. See [CONSTITUTION.md](../CONSTITUTION.md) Article XIII.

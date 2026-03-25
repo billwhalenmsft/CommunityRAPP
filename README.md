@@ -2,6 +2,8 @@
 
 The memory center for your AI agents. Built on Azure Functions — local-first, deploy to Azure when ready.
 
+[Chat UI](https://kody-w.github.io/CommunityRAPP/) | [Docs](https://kody-w.github.io/CommunityRAPP/docs/) | [Hatchery Flow](https://kody-w.github.io/CommunityRAPP/docs/hatchery-flow.html) | [Issues](https://github.com/kody-w/CommunityRAPP/issues)
+
 ## Create a Project
 
 One command creates a ready-to-customize RAPP project on your machine. No global install — everything stays in its own folder.
@@ -355,12 +357,16 @@ This creates a Copilot Studio bot wired to your Azure Function endpoint.
 ```
 CommunityRAPP/
 ├── function_app.py              # Azure Function entry point (the "hippocampus")
-├── index.html                   # Standalone chat UI (open in browser, no server needed)
+├── index.html                   # Chat UI (also live at GitHub Pages)
+├── business.html                # Business Mode — multi-instance side-by-side chat
 ├── agents/
 │   ├── basic_agent.py           # Base agent class
 │   ├── context_memory_agent.py  # Memory recall agent
 │   └── manage_memory_agent.py   # Memory storage agent
+├── hatchery/
+│   └── rapp_hatchery_agent.py   # Brainstem bridge agent (fetched on demand)
 ├── utils/
+│   ├── copilot_auth.py          # GitHub Copilot LLM auth (local dev)
 │   ├── storage_factory.py       # Storage backend selector
 │   ├── azure_file_storage.py    # Azure File Storage backend
 │   ├── local_file_storage.py    # Local file storage backend
@@ -369,12 +375,14 @@ CommunityRAPP/
 │   └── generate_memory_agent_solution.py  # Copilot Studio solution generator
 ├── tests/
 │   └── test_memory_agents.py    # 34 unit + integration tests
-├── install.sh                   # One-liner installer (macOS/Linux)
-├── install.ps1                  # One-liner installer (Windows)
-├── .github/copilot/skills/
-│   └── deploy-to-azure.md       # Deploy skill for Copilot
+├── hatch-project.sh             # One-liner: create a project (Mac/Linux)
+├── hatch-project.ps1            # One-liner: create a project (Windows)
+├── hatch.sh                     # Load hatchery agent into brainstem (Mac/Linux)
+├── hatch.ps1                    # Load hatchery agent into brainstem (Windows)
+├── install.sh                   # Full installer (macOS/Linux)
+├── install.ps1                  # Full installer (Windows)
 ├── azuredeploy.json             # ARM template
-├── requirements.txt             # Python dependencies (24 packages)
+├── requirements.txt             # Python dependencies
 ├── host.json                    # Azure Functions config
 └── local.settings.template.json # Config template (copy to local.settings.json)
 ```
