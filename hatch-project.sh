@@ -126,6 +126,14 @@ Set-Location \$PSScriptRoot
 func start --port $PORT
 EOF
 
+# ── Patch index.html to use the project's port ────────────────
+
+if [ -f "$PROJECT_DIR/index.html" ]; then
+    # Inject port config before the closing </head> tag
+    sed -i '' "s|</head>|<script>window.__RAPP_PORT__='${PORT}';</script></head>|" "$PROJECT_DIR/index.html" 2>/dev/null || \
+    sed -i "s|</head>|<script>window.__RAPP_PORT__='${PORT}';</script></head>|" "$PROJECT_DIR/index.html" 2>/dev/null || true
+fi
+
 # ── Business Mode UI (first hatch deploys it) ────────────────
 
 BIZ_HTML="$PROJECTS_DIR/business.html"

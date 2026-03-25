@@ -384,7 +384,10 @@
 (function () {
   'use strict';
 
-  const API_BASE = 'http://localhost:7071/api';
+  // Auto-detect API port: use current page origin if served locally,
+  // otherwise fall back to 7071 (brainstem) or check window.__RAPP_PORT__
+  const RAPP_PORT = window.__RAPP_PORT__ || (location.port ? location.port : '7071');
+  const API_BASE = `http://localhost:${RAPP_PORT}/api`;
   const HEALTH_URL = API_BASE + '/health';
   const CHAT_URL  = API_BASE + '/businessinsightbot_function';
 
