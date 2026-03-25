@@ -28,7 +28,10 @@ from azure.identity import (
     AzureCliCredential,
     get_bearer_token_provider
 )
-from utils.copilot_auth import get_copilot_client, is_copilot_available
+from utils.copilot_auth import (
+    get_copilot_client, is_copilot_available,
+    start_device_code_flow, poll_device_code, save_token,
+)
 from datetime import datetime
 import time
 import threading
@@ -62,6 +65,10 @@ OPENAI_CLIENT_TTL_SECONDS = 30 * 60  # 30 minutes
 # LLM backend: "azure" (Azure OpenAI) or "copilot" (GitHub Copilot, local dev)
 _llm_backend = None
 _copilot_model = None
+
+# Device code auth flow state
+_device_code_data = None  # Holds device_code, user_code, verification_uri
+_device_code_polling = False
 
 # Cached agents - loaded once, refreshed periodically
 _cached_agents = None
@@ -166,6 +173,78 @@ def _reset_openai_client():
         _openai_client = None
         _openai_client_created_at = None
         logging.info("OpenAI client cache reset - will refresh on next request")
+
+
+def _start_device_code_auth():
+    """Start the GitHub device code flow and poll in background."""
+    global _device_code_data, _device_code_polling
+
+    if _device_code_polling:
+        return _device_code_data  # Already in progress
+
+    flow = start_device_code_flow()
+    if not flow:
+        return None
+
+    _device_code_data = flow
+    _device_code_polling = True
+
+    def _poll():
+        global _device_code_data, _device_code_polling
+        device_code = flow.get("device_code")
+        interval = flow.get("interval", 5)
+        expires_in = flow.get("expires_in", 900)
+        deadline = time.time() + expires_in
+
+        while time.time() < deadline:
+            time.sleep(interval)
+            result = poll_device_code(device_code)
+            if result and "access_token" in result:
+                save_token(result)
+                _reset_openai_client()
+                _device_code_data = None
+                _device_code_polling = False
+                logging.info("GitHub Copilot authenticated via device code flow")
+                return
+            if result and result.get("status") == "expired":
+                break
+
+        _device_code_data = None
+        _device_code_polling = False
+        logging.warning("Device code flow expired or failed")
+
+    thread = threading.Thread(target=_poll, daemon=True)
+    thread.start()
+    return flow
+
+
+def _get_auth_message():
+    """If no LLM is available, start device code flow and return auth instructions."""
+    if _llm_backend is not None:
+        return None  # LLM is available, no auth needed
+
+    flow = _device_code_data or _start_device_code_auth()
+    if not flow:
+        return (
+            "No AI backend is configured. To enable AI responses:\n\n"
+            "**Option 1 — GitHub Copilot (recommended for local dev):**\n"
+            "Set `GITHUB_TOKEN` in your environment and restart.\n\n"
+            "**Option 2 — Azure OpenAI:**\n"
+            "Edit `local.settings.json` and set your Azure OpenAI endpoint and key."
+        )
+
+    user_code = flow.get("user_code", "")
+    verification_uri = flow.get("verification_uri", "https://github.com/login/device")
+
+    return (
+        f"**Authenticate with GitHub to enable AI responses.**\n\n"
+        f"1. Go to: **{verification_uri}**\n"
+        f"2. Enter code: **{user_code}**\n"
+        f"3. Authorize the app\n\n"
+        f"I'm waiting for authorization — once you complete the steps above, "
+        f"send another message and I'll be ready to chat.\n\n"
+        f"|||VOICE|||Go to {verification_uri} and enter code {user_code} to authenticate."
+    )
 
 
 # =============================================================================
@@ -678,6 +757,19 @@ Revenue's up 12 percent and customers are happier - looking good for Q3.
 
     def run(self, prompt, conversation_history, max_retries=3, retry_delay=2):
         """Main conversation loop: call OpenAI → execute agents → return response."""
+        # If no LLM, try to refresh client (device code may have completed)
+        if self.client is None:
+            self.client = _get_openai_client()
+
+        # Still no LLM? Return auth instructions instead of crashing
+        if self.client is None:
+            auth_msg = _get_auth_message()
+            if auth_msg:
+                parts = auth_msg.split("|||VOICE|||")
+                formatted = parts[0].strip()
+                voice = parts[1].strip() if len(parts) > 1 else "Please authenticate to enable AI responses."
+                return formatted, voice, ""
+
         guid_from_history = self._check_first_message_for_guid(conversation_history)
         guid_from_prompt = self.extract_user_guid(prompt)
         target_guid = guid_from_history or guid_from_prompt
