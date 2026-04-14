@@ -13,12 +13,15 @@ on:
           - health_check
           - process_issue
           - bill_feedback
+          - daily_wrapup
+          - idle_check
+          - community_engage
       issue_number:
         description: 'Issue number (required for process_issue and bill_feedback)'
         required: false
         type: string
       comment:
-        description: 'Comment/direction text (for bill_feedback action)'
+        description: 'Comment/direction text (for bill_feedback or community_engage context)'
         required: false
         type: string
       max_tasks:
@@ -39,6 +42,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: false
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -138,3 +143,54 @@ jobs:
           COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: python customers/mfg_coe/agents/coe_runner.py --action health_check
+
+      - name: Daily wrap-up
+        if: github.event.inputs.action == 'daily_wrapup'
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AZURE_WEB_JOBS_STORAGE }}
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: python customers/mfg_coe/agents/coe_runner.py --action daily_wrapup
+
+      - name: Idle check
+        if: github.event.inputs.action == 'idle_check'
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AZURE_WEB_JOBS_STORAGE }}
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: python customers/mfg_coe/agents/coe_runner.py --action idle_check
+
+      - name: Community engage
+        if: github.event.inputs.action == 'community_engage'
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AZURE_WEB_JOBS_STORAGE }}
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python customers/mfg_coe/agents/coe_runner.py \
+            --action community_engage \
+            --comment "${{ github.event.inputs.comment }}"
