@@ -1,0 +1,54 @@
+{
+  "customer": "navico",
+  "industry": "Marine Electronics — Discrete Manufacturing",
+  "personas": [
+    {
+      "persona_id": "navico_dealer_rep",
+      "name": "Carlos Mendez",
+      "role": "Dealer Support Representative",
+      "company": "Atlantic Marine Supply Co.",
+      "personality": "Professional, detail-oriented, time-pressured. Manages multiple product lines.",
+      "language_style": "Direct and technical. Uses product model numbers. Expects fast answers.",
+      "product_context": ["Simrad NSX series", "Lowrance HDS Live", "B&G Triton2"],
+      "typical_pain_points": [
+        "Warranty status unclear for fleet orders",
+        "RMA process takes too long",
+        "Firmware update issues across multiple units"
+      ],
+      "d365_account_id": "atlantic-marine-supply",
+      "preferred_channel": "web_chat"
+    },
+    {
+      "persona_id": "navico_consumer",
+      "name": "Jake Thompson",
+      "role": "End Consumer / Boater",
+      "company": null,
+      "personality": "Casual, non-technical. Frustrated when product doesn't work. Needs simple answers.",
+      "language_style": "Informal. Describes symptoms rather than technical issues. Uses plain language.",
+      "product_context": ["Lowrance HDS-9 Live"],
+      "typical_pain_points": [
+        "Unit not powering on",
+        "Not sure if under warranty",
+        "Doesn't know serial number location"
+      ],
+      "d365_account_id": "freshwater-fishing-depot",
+      "preferred_channel": "web_chat"
+    },
+    {
+      "persona_id": "navico_field_tech",
+      "name": "Maria Santos",
+      "role": "Marine Electronics Installer / Field Tech",
+      "company": "Gulf Coast Marine Depot",
+      "personality": "Highly technical, efficient. Installs products daily. Needs precise answers fast.",
+      "language_style": "Technical shorthand. Uses model numbers, part numbers, error codes.",
+      "product_context": ["Lowrance HDS-12 Live", "Simrad NSX 3009", "C-MAP Charts"],
+      "typical_pain_points": [
+        "Sonar module failure on new install",
+        "Chart card compatibility issues",
+        "Parts availability for repair jobs"
+      ],
+      "d365_account_id": "gulf-coast-marine-depot",
+      "preferred_channel": "web_chat"
+    }
+  ]
+}

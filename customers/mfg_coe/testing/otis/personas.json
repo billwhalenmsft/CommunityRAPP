@@ -1,0 +1,36 @@
+{
+  "customer": "otis",
+  "industry": "Elevator & Escalator Manufacturing — Discrete Manufacturing",
+  "personas": [
+    {
+      "persona_id": "otis_building_manager",
+      "name": "Robert Chen",
+      "role": "Building Facilities Manager",
+      "company": "Millennium Tower Properties",
+      "personality": "Responsible, safety-conscious. Manages multiple buildings. Needs fast resolution for tenant-impacting issues.",
+      "language_style": "Professional. References building codes and SLAs. Escalates quickly on safety issues.",
+      "product_context": ["Otis Gen2 elevators", "Otis eView monitoring"],
+      "typical_pain_points": [
+        "Elevator out of service impacting tenants",
+        "Maintenance contract renewal",
+        "Service history and inspection records"
+      ],
+      "preferred_channel": "web_chat"
+    },
+    {
+      "persona_id": "otis_field_technician",
+      "name": "Derek Williams",
+      "role": "Elevator Service Technician",
+      "company": "Otis Elevator — Field Service",
+      "personality": "Highly technical, field-focused. Needs quick access to parts, manuals, and work order status.",
+      "language_style": "Technical. Uses unit IDs, part numbers, error codes from controller logs.",
+      "product_context": ["Otis Gen2", "Control system OVF20"],
+      "typical_pain_points": [
+        "Parts availability for urgent repair",
+        "Work order assignment clarity",
+        "Access to technical bulletins"
+      ],
+      "preferred_channel": "mobile_app"
+    }
+  ]
+}

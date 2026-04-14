@@ -1,0 +1,53 @@
+{
+  "customer": "zurnelkay",
+  "scenarios": [
+    {
+      "scenario_id": "zurn_code_compliance",
+      "title": "Plumbing Code Compliance Check",
+      "persona_id": "zurn_spec_engineer",
+      "trigger_utterances": [
+        "is this product NSF certified",
+        "code compliance for Wilkins 975XL",
+        "ASSE 1013 compliance check"
+      ],
+      "conversation_flow": [
+        {"actor": "user", "message": "I need to confirm if the Wilkins 975XL meets ASSE 1013 requirements for a California commercial project"},
+        {"actor": "agent", "expected_contains": ["ASSE", "compliance", "certified"]},
+        {"actor": "user", "message": "Also need the NSF/ANSI 61 certification documentation"},
+        {"actor": "agent", "expected_contains": ["documentation", "certificate", "download"]}
+      ],
+      "success_criteria": [
+        "Agent confirms or denies ASSE 1013 compliance",
+        "Agent provides path to certification documentation",
+        "Agent addresses jurisdiction-specific requirements"
+      ],
+      "expected_resolution": "compliance_confirmed_with_documentation",
+      "max_turns": 6,
+      "escalation_expected": false
+    },
+    {
+      "scenario_id": "zurn_warranty_claim",
+      "title": "Warranty Claim — Installed Product Failure",
+      "persona_id": "zurn_contractor",
+      "trigger_utterances": [
+        "warranty claim on Zurn drain",
+        "floor drain failed need warranty",
+        "product warranty claim"
+      ],
+      "conversation_flow": [
+        {"actor": "user", "message": "I installed a Zurn Z886 6 months ago and it's already failing. Need to file a warranty claim."},
+        {"actor": "agent", "expected_contains": ["warranty", "claim", "serial"]},
+        {"actor": "user", "message": "Install date was October 2024, I have the invoice"},
+        {"actor": "agent", "expected_contains": ["process", "claim", "replace"]}
+      ],
+      "success_criteria": [
+        "Agent collects product and install date",
+        "Agent confirms warranty coverage period",
+        "Agent initiates or explains claim process"
+      ],
+      "expected_resolution": "warranty_claim_initiated",
+      "max_turns": 8,
+      "escalation_expected": false
+    }
+  ]
+}

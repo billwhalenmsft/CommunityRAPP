@@ -1,0 +1,36 @@
+{
+  "customer": "zurnelkay",
+  "industry": "Plumbing Products — Discrete Manufacturing",
+  "personas": [
+    {
+      "persona_id": "zurn_contractor",
+      "name": "Tony Rizzo",
+      "role": "Plumbing Contractor",
+      "company": "Rizzo Mechanical Services",
+      "personality": "No-nonsense, time-is-money attitude. Needs quick answers on product specs and compliance.",
+      "language_style": "Blunt. Uses trade terminology. Impatient with multi-step processes.",
+      "product_context": ["Zurn floor drains", "Wilkins backflow preventers", "Elkay drinking water units"],
+      "typical_pain_points": [
+        "Is this drain code-compliant for this project?",
+        "Warranty on installed product",
+        "Product substitution approval"
+      ],
+      "preferred_channel": "web_chat"
+    },
+    {
+      "persona_id": "zurn_spec_engineer",
+      "name": "Lisa Park",
+      "role": "Mechanical Engineer / Specifier",
+      "company": "HDR Architecture & Engineering",
+      "personality": "Detail-oriented, research-focused. Writes product specifications. Needs technical documentation.",
+      "language_style": "Formal and precise. References ASME, NSF, ASSE standards.",
+      "product_context": ["Wilkins 975XL backflow preventer", "Zurn Z886 floor sink"],
+      "typical_pain_points": [
+        "NSF/ANSI certification compliance",
+        "CAD drawing availability",
+        "Code compliance for specific jurisdiction"
+      ],
+      "preferred_channel": "web_chat"
+    }
+  ]
+}

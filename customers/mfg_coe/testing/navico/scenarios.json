@@ -1,0 +1,91 @@
+{
+  "customer": "navico",
+  "scenarios": [
+    {
+      "scenario_id": "navico_warranty_check",
+      "title": "Warranty Status Check — Serial Number Lookup",
+      "persona_id": "navico_dealer_rep",
+      "trigger_utterances": [
+        "I need to check warranty on a Simrad NSX 3007",
+        "Is this unit still under warranty?",
+        "warranty check for serial NSX30070012345"
+      ],
+      "conversation_flow": [
+        {"actor": "user", "message": "I need to check the warranty status on a Simrad NSX 3007"},
+        {"actor": "agent", "expected_contains": ["warranty", "serial number"]},
+        {"actor": "user", "message": "Serial number is NSX30070012345"},
+        {"actor": "agent", "expected_contains": ["warranty", "2 year", "covered"]}
+      ],
+      "success_criteria": [
+        "Agent asks for serial number",
+        "Agent provides warranty coverage details",
+        "Agent offers escalation or next steps"
+      ],
+      "d365_data": {
+        "case_id": "fa6603ae-9932-f111-88b4-7c1e52143136",
+        "product": "Simrad NSX 3007",
+        "account": "Atlantic Marine Supply Co."
+      },
+      "expected_resolution": "warranty_confirmed_or_not",
+      "max_turns": 6,
+      "escalation_expected": false
+    },
+    {
+      "scenario_id": "navico_rma_request",
+      "title": "RMA Exchange Request — Fleet Order",
+      "persona_id": "navico_dealer_rep",
+      "trigger_utterances": [
+        "I need to start an RMA for 4 units",
+        "return authorization for fleet order",
+        "exchange request NSX 3009 fleet"
+      ],
+      "conversation_flow": [
+        {"actor": "user", "message": "I need to request an RMA exchange for 4 Simrad NSX 3009 units from a fleet order"},
+        {"actor": "agent", "expected_contains": ["RMA", "return", "order"]},
+        {"actor": "user", "message": "Order number is ORD-2024-8847, account Atlantic Marine Supply"},
+        {"actor": "agent", "expected_contains": ["confirm", "process", "specialist"]}
+      ],
+      "success_criteria": [
+        "Agent identifies fleet order context",
+        "Agent collects order number and account",
+        "Agent escalates to specialist or confirms RMA initiation"
+      ],
+      "d365_data": {
+        "case_id": "15230ab9-9932-f111-88b4-7c1e520a58a1",
+        "product": "Simrad NSX 3009",
+        "account": "Atlantic Marine Supply Co."
+      },
+      "expected_resolution": "rma_initiated_or_escalated",
+      "max_turns": 8,
+      "escalation_expected": true
+    },
+    {
+      "scenario_id": "navico_firmware_issue",
+      "title": "Firmware Update Failure — Touchscreen Unresponsive",
+      "persona_id": "navico_field_tech",
+      "trigger_utterances": [
+        "screen is unresponsive after firmware update",
+        "firmware update broke the touchscreen",
+        "NSX touchscreen not working after update"
+      ],
+      "conversation_flow": [
+        {"actor": "user", "message": "Touchscreen is completely unresponsive after running the latest firmware update on NSX 3007"},
+        {"actor": "agent", "expected_contains": ["firmware", "touchscreen", "reset"]},
+        {"actor": "user", "message": "I already tried a soft reset, didn't work"},
+        {"actor": "agent", "expected_contains": ["factory", "recovery", "specialist"]}
+      ],
+      "success_criteria": [
+        "Agent recognizes firmware-related touchscreen issue",
+        "Agent provides troubleshooting steps",
+        "Agent escalates if basic steps fail"
+      ],
+      "d365_data": {
+        "case_id": "fa6603ae-9932-f111-88b4-7c1e52143136",
+        "product": "Simrad NSX 3007"
+      },
+      "expected_resolution": "troubleshooting_provided_or_escalated",
+      "max_turns": 8,
+      "escalation_expected": true
+    }
+  ]
+}

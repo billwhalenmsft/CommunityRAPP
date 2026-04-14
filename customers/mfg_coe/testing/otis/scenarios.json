@@ -1,0 +1,53 @@
+{
+  "customer": "otis",
+  "scenarios": [
+    {
+      "scenario_id": "otis_service_request",
+      "title": "Elevator Out of Service — Service Request",
+      "persona_id": "otis_building_manager",
+      "trigger_utterances": [
+        "elevator is out of service",
+        "need service for elevator not working",
+        "unit down in building"
+      ],
+      "conversation_flow": [
+        {"actor": "user", "message": "Elevator 3 in my building has been out of service since this morning. Tenants are complaining."},
+        {"actor": "agent", "expected_contains": ["service", "technician", "unit"]},
+        {"actor": "user", "message": "Building ID is MTB-2201, unit ID ELV-03"},
+        {"actor": "agent", "expected_contains": ["dispatch", "technician", "ETA"]}
+      ],
+      "success_criteria": [
+        "Agent collects building and unit ID",
+        "Agent confirms service request creation",
+        "Agent provides estimated response time"
+      ],
+      "expected_resolution": "service_request_created",
+      "max_turns": 6,
+      "escalation_expected": false
+    },
+    {
+      "scenario_id": "otis_parts_lookup",
+      "title": "Parts Availability Check — Urgent Repair",
+      "persona_id": "otis_field_technician",
+      "trigger_utterances": [
+        "need to check parts availability",
+        "is part OVF20-4411 in stock",
+        "parts for Gen2 controller"
+      ],
+      "conversation_flow": [
+        {"actor": "user", "message": "Need to check availability on part number OVF20-4411, door controller board for Gen2"},
+        {"actor": "agent", "expected_contains": ["part", "availability", "stock"]},
+        {"actor": "user", "message": "It's an urgent repair, elevator is down"},
+        {"actor": "agent", "expected_contains": ["expedite", "availability", "order"]}
+      ],
+      "success_criteria": [
+        "Agent recognizes part number",
+        "Agent provides availability status",
+        "Agent offers expedited ordering for urgent situation"
+      ],
+      "expected_resolution": "parts_status_provided",
+      "max_turns": 6,
+      "escalation_expected": false
+    }
+  ]
+}
