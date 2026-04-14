@@ -1,0 +1,120 @@
+name: CoE Manual Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to run'
+        required: true
+        type: choice
+        options:
+          - run_backlog
+          - standup
+          - health_check
+          - process_issue
+          - bill_feedback
+      issue_number:
+        description: 'Issue number (required for process_issue and bill_feedback)'
+        required: false
+        type: string
+      comment:
+        description: 'Comment/direction text (for bill_feedback action)'
+        required: false
+        type: string
+      max_tasks:
+        description: 'Max tasks to process (for run_backlog)'
+        required: false
+        default: '5'
+        type: string
+
+jobs:
+  run-coe-action:
+    name: Run CoE Action — ${{ github.event.inputs.action }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run standup
+        if: github.event.inputs.action == 'standup'
+        env:
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: python customers/mfg_coe/agents/coe_runner.py --action standup
+
+      - name: Run backlog
+        if: github.event.inputs.action == 'run_backlog'
+        env:
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python customers/mfg_coe/agents/coe_runner.py \
+            --action run_backlog \
+            --max ${{ github.event.inputs.max_tasks }}
+
+      - name: Process specific issue
+        if: github.event.inputs.action == 'process_issue'
+        env:
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python customers/mfg_coe/agents/coe_runner.py \
+            --action process_issue \
+            --issue ${{ github.event.inputs.issue_number }}
+
+      - name: Submit Bill's feedback
+        if: github.event.inputs.action == 'bill_feedback'
+        env:
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python customers/mfg_coe/agents/coe_runner.py \
+            --action bill_feedback \
+            --issue ${{ github.event.inputs.issue_number }} \
+            --comment "${{ github.event.inputs.comment }}"
+
+      - name: Health check
+        if: github.event.inputs.action == 'health_check'
+        env:
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: python customers/mfg_coe/agents/coe_runner.py --action health_check
