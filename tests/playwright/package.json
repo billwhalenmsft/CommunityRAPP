@@ -1,0 +1,22 @@
+{
+  "name": "mfg-coe-playwright-tests",
+  "version": "1.0.0",
+  "description": "Playwright tests for Discrete Mfg demo scenario validation using Customer Persona Agent",
+  "scripts": {
+    "test": "playwright test",
+    "test:navico": "playwright test navico/ --reporter=html",
+    "test:otis": "playwright test otis/ --reporter=html",
+    "test:zurnelkay": "playwright test zurnelkay/ --reporter=html",
+    "test:all-customers": "playwright test --reporter=html",
+    "test:smoke": "playwright test --grep @smoke",
+    "report": "playwright show-report",
+    "install-browsers": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
