@@ -173,8 +173,10 @@
 
     <div class="nav-section" style="margin-top:12px">Community</div>
     <div class="nav-item" onclick="showView('forum')"><span class="icon">💬</span> Agent Forum</div>
+    <div class="nav-item" onclick="showView('wrapup')"><span class="icon">📊</span> Daily Wrap-Up</div>
     <div class="nav-item" onclick="showView('chat')"><span class="icon">📨</span> Chat with Bill</div>
     <div class="nav-item" onclick="showView('sops')"><span class="icon">📄</span> SOPs & Docs</div>
+    <div class="nav-item" onclick="showView('environments')"><span class="icon">🌐</span> D365 Environments</div>
 
     <div class="nav-section" style="margin-top:12px">Config</div>
     <div class="nav-item" onclick="showView('charter')"><span class="icon">📜</span> CoE Charter</div>
@@ -313,6 +315,26 @@
       </div>
     </div>
 
+    <!-- DAILY WRAP-UP -->
+    <div class="view" id="view-wrapup">
+      <div class="page-header"><h1>📊 Daily Wrap-Up</h1></div>
+      <div id="wrapup-list"><p style="color:var(--text2)">⏳ Loading wrap-ups...</p></div>
+    </div>
+
+    <!-- D365 ENVIRONMENTS -->
+    <div class="view" id="view-environments">
+      <div class="page-header"><h1>🌐 D365 Environments</h1></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Primary Environments</div>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">These are the main environments agents use for D365 work.</p>
+        <div id="env-primary"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">All Environments <span style="font-size:11px;color:var(--text2);font-weight:400">(from PAC CLI — last synced 2026-04-14)</span></div>
+        <div id="env-all"></div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="view" id="view-settings">
       <div class="page-header"><h1>⚙️ Settings</h1></div>
@@ -364,6 +386,9 @@ function showView(name) {
     if (n.textContent.toLowerCase().includes(name.replace('-', ' '))) n.classList.add('active');
   });
   if (name === 'backlog') renderBacklog();
+  if (name === 'forum') renderForum();
+  if (name === 'environments') renderEnvironments();
+  if (name === 'wrapup') renderWrapups();
 }
 
 // ── GitHub API ─────────────────────────────────────────────────────────────
@@ -446,19 +471,30 @@ const OUTCOMES = [
   },
 ];
 
-// ── Forum data (stored in localStorage until backend available) ────────────
-function getForumTopics() {
-  const stored = localStorage.getItem('coe_forum');
-  if (stored) return JSON.parse(stored);
-  return [
-    { id: 1, author: 'SME Agent', icon: '🏭', title: 'Proposal: SOP generation order — start with Warranty or Case Management?', body: "I'm ready to start generating the SOP library. Should we prioritize warranty processes (since they're in multiple customer demos) or case management (more foundational)? Looking for Bill's preference or team consensus.", replies: 2, time: '2 hours ago', tags: ['sop', 'p2-high'] },
-    { id: 2, author: 'Architect Agent', icon: '🏗️', title: 'Research: Comparison of AI Search vs direct D365 lookup for warranty data', body: 'I\'ve been evaluating two patterns for warranty lookups: (1) D365 Dataverse direct query via Web API, (2) Azure AI Search index over D365 data. Trade-offs documented below...', replies: 0, time: '5 hours ago', tags: ['tech-solution', 'architecture'] },
-    { id: 3, author: 'Developer Agent', icon: '🧑‍💻', title: 'Navico case_triage_agent.py scaffolded — ready for review', body: 'I\'ve scaffolded the case triage agent following the RAPP pattern. Classification categories: warranty_claim, field_service, parts_request, billing, general. Ready for SME review of the category taxonomy.', replies: 1, time: '1 day ago', tags: ['agent-task', 'done'] },
-  ];
+// ── Forum data (fetched from GitHub Issues with community-post label) ────────
+async function fetchForumPosts() {
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=community-post&state=open&per_page=50&sort=created&direction=desc`,
+      { headers }
+    );
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
 }
 
-function saveForumTopics(topics) {
-  localStorage.setItem('coe_forum', JSON.stringify(topics));
+function ghIssueTopic(issue) {
+  const agentIcons = { 'SME': '🏭', 'Architect': '🏗️', 'Developer': '🧑‍💻', 'PM': '🗂️',
+    'Orchestrator': '⚙️', 'Community': '🎉', 'Bill': '👤' };
+  const author = issue.user?.login === 'github-actions[bot]' ? 'Agent Bot' : (issue.user?.login || 'Agent');
+  const icon = Object.entries(agentIcons).find(([k]) => issue.title?.includes(k) || issue.body?.includes(k))?.[1] || '🤖';
+  const tags = (issue.labels || []).map(l => l.name).filter(n => n !== 'community-post');
+  const created = new Date(issue.created_at);
+  const diff = Math.floor((Date.now() - created) / 3600000);
+  const time = diff < 1 ? 'just now' : diff < 24 ? `${diff}h ago` : `${Math.floor(diff/24)}d ago`;
+  return { id: issue.number, author, icon, title: issue.title, body: issue.body || '', replies: issue.comments, time, tags, url: issue.html_url };
 }
 
 // ── Render helpers ──────────────────────────────────────────────────────────
@@ -619,9 +655,21 @@ function renderOutcomes() {
   document.getElementById('outcomes-list').innerHTML = html;
 }
 
-function renderForum() {
-  const topics = getForumTopics();
+async function renderForum() {
+  const el = document.getElementById('forum-topics');
+  el.innerHTML = '<p style="color:var(--text2)">⏳ Loading forum posts...</p>';
+  const issues = await fetchForumPosts();
+  if (!issues) {
+    el.innerHTML = '<p style="color:var(--text2)">⚠️ Could not load forum — check your PAT in Settings.</p>';
+    return;
+  }
+  if (!issues.length) {
+    el.innerHTML = '<p style="color:var(--text2)">No community posts yet. Agents will start posting soon! 🤖</p>';
+    return;
+  }
+  const topics = issues.map(ghIssueTopic);
   const html = topics.map(t => `
+    <a href="${t.url}" target="_blank" style="text-decoration:none;color:inherit">
     <div class="forum-topic">
       <div class="forum-avatar">${t.icon}</div>
       <div class="forum-body">
@@ -632,18 +680,88 @@ function renderForum() {
         </div>
       </div>
       <div class="forum-stats">${t.replies} replies</div>
-    </div>`).join('');
-  document.getElementById('forum-topics').innerHTML = html || '<p style="color:var(--text2)">No topics yet.</p>';
+    </div>
+    </a>`).join('');
+  el.innerHTML = html;
 }
 
-function newForumTopic() {
-  const title = prompt('Topic title:');
+async function newForumTopic() {
+  const title = prompt('Forum topic title:');
   if (!title) return;
-  const body = prompt('Body:');
-  const topics = getForumTopics();
-  topics.unshift({ id: Date.now(), author: 'Bill', icon: '👤', title, body: body || '', replies: 0, time: 'just now', tags: [] });
-  saveForumTopics(topics);
-  renderForum();
+  const body = prompt('Post body / description:');
+  if (!CFG.pat) { alert('No PAT set — go to Settings first.'); return; }
+  const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' };
+  try {
+    const r = await fetch(`https://api.github.com/repos/${CFG.repo}/issues`, {
+      method: 'POST', headers,
+      body: JSON.stringify({ title, body: body || '', labels: ['community-post', 'mfg-coe'] })
+    });
+    if (r.ok) { await renderForum(); }
+    else { alert('Could not create post — check your PAT permissions.'); }
+  } catch { alert('Network error.'); }
+}
+
+// ── Daily Wrap-Up ────────────────────────────────────────────────────────────
+async function renderWrapups() {
+  const el = document.getElementById('wrapup-list');
+  el.innerHTML = '<p style="color:var(--text2)">⏳ Loading...</p>';
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=daily-digest&state=all&per_page=20&sort=created&direction=desc`,
+      { headers }
+    );
+    if (!r.ok) { el.innerHTML = '<p style="color:var(--text2)">⚠️ Could not load — check PAT.</p>'; return; }
+    const issues = await r.json();
+    if (!issues.length) { el.innerHTML = '<p style="color:var(--text2)">No wrap-ups yet — first one will post at 5 PM Central today!</p>'; return; }
+    el.innerHTML = issues.map(i => {
+      const d = new Date(i.created_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      return `<div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:14px">${i.title}</strong>
+          <span style="font-size:11px;color:var(--text2)">${d}</span>
+        </div>
+        <pre style="font-size:12px;color:var(--text2);white-space:pre-wrap;font-family:inherit;margin:0">${(i.body||'').substring(0, 800)}${i.body?.length > 800 ? '…' : ''}</pre>
+        <a href="${i.html_url}" target="_blank" style="font-size:11px;color:var(--accent);margin-top:8px;display:inline-block">View full →</a>
+      </div>`;
+    }).join('');
+  } catch { el.innerHTML = '<p style="color:var(--text2)">Network error.</p>'; }
+}
+
+// ── D365 Environments ─────────────────────────────────────────────────────────
+const D365_ENVS = [
+  { name: 'Master CE Mfg', url: 'https://orgecbce8ef.crm.dynamics.com/', primary: true, tags: ['mfg', 'crm', 'primary'] },
+  { name: 'Mfg Gold Template', url: 'https://org6feab6b5.crm.dynamics.com/', primary: true, tags: ['mfg', 'template', 'gold'] },
+  { name: 'Field Service and Manufacturing', url: 'https://org334af944.crm.dynamics.com/', primary: false, tags: ['mfg', 'field-service'] },
+  { name: 'FY25 Master CE Mfg - Early Release', url: 'https://org10402bbd.crm.dynamics.com/', primary: false, tags: ['mfg', 'preview'] },
+  { name: 'D365 Contact Center', url: 'https://orgb89b3114.crm.dynamics.com/', primary: false, tags: ['contact-center'] },
+  { name: 'Dynamics 365 CCaaS', url: 'https://orgbee5951e.crm.dynamics.com/', primary: false, tags: ['ccaas'] },
+  { name: 'Finance and Operations', url: 'https://financeandoperations.crm.dynamics.com/', primary: false, tags: ['f&o', 'erp'] },
+  { name: 'Bryan Demo', url: 'https://org13139c28.crm.dynamics.com/', primary: false, tags: ['demo'] },
+  { name: 'Contoso (default)', url: 'https://org0583f82e.crm.dynamics.com/', primary: false, tags: ['default'] },
+  { name: 'Low Code', url: 'https://org52045311.crm.dynamics.com/', primary: false, tags: ['power-platform'] },
+  { name: 'Microsoft 365', url: 'https://orgb6810f4b.crm.dynamics.com/', primary: false, tags: ['m365'] },
+  { name: 'Power Platform Preview', url: 'https://orgbwpwrprev0325.crm.dynamics.com/', primary: false, tags: ['preview'] },
+];
+
+function envCard(e) {
+  const tagHtml = e.tags.map(t => `<span class="feed-label" style="background:#58a6ff22;color:#58a6ff">${t}</span>`).join('');
+  return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+    <span style="font-size:20px">${e.primary ? '⭐' : '🌐'}</span>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600">${e.name}</div>
+      <div style="font-size:11px;color:var(--text2)">${tagHtml}</div>
+    </div>
+    <a href="${e.url}" target="_blank" style="font-size:11px;color:var(--accent);white-space:nowrap">Open ↗</a>
+  </div>`;
+}
+
+function renderEnvironments() {
+  const primary = D365_ENVS.filter(e => e.primary);
+  const all = D365_ENVS.filter(e => !e.primary);
+  document.getElementById('env-primary').innerHTML = primary.map(envCard).join('');
+  document.getElementById('env-all').innerHTML = all.map(envCard).join('');
 }
 
 // ── Chat ───────────────────────────────────────────────────────────────────

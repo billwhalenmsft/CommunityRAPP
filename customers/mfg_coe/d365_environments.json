@@ -1,0 +1,172 @@
+{
+  "last_updated": "2026-04-14",
+  "updated_by": "pac env list",
+  "primary_environments": ["Master CE Mfg", "Mfg Gold Template"],
+  "environments": [
+    {
+      "display_name": "Master CE Mfg",
+      "environment_id": "a3140474-230b-ee2b-8dd8-605a8fe08913",
+      "url": "https://orgecbce8ef.crm.dynamics.com/",
+      "unique_name": "unqec7cba3a1c59ef11bfdf002248282",
+      "is_active": true,
+      "is_primary": true,
+      "purpose": "Primary Discrete Manufacturing demo environment — Customer Engagement / CRM",
+      "tags": ["mfg", "crm", "primary", "demo", "customer-engagement"],
+      "secret_key": "D365_MASTER_CE_MFG_URL"
+    },
+    {
+      "display_name": "Mfg Gold Template",
+      "environment_id": "2404ccaf-d7e5-e1ff-863a-3ecbe2f0f013",
+      "url": "https://org6feab6b5.crm.dynamics.com/",
+      "unique_name": "unq0cf23b951d45f011be506045bd016",
+      "is_active": false,
+      "is_primary": true,
+      "purpose": "Gold template environment for manufacturing scenarios — reusable demo baseline",
+      "tags": ["mfg", "template", "primary", "gold"],
+      "secret_key": "D365_MFG_GOLD_TEMPLATE_URL"
+    },
+    {
+      "display_name": "Field Service and Manufacturing",
+      "environment_id": "db444340-986b-e8a3-885a-31844e04b113",
+      "url": "https://org334af944.crm.dynamics.com/",
+      "unique_name": "unq7ffeacae18eeef11933d002248282",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Field Service + Manufacturing scenarios",
+      "tags": ["mfg", "field-service"],
+      "secret_key": null
+    },
+    {
+      "display_name": "FY25 Master CE Mfg - Early Release",
+      "environment_id": "945216f5-0a2f-e7cc-9175-07015501e606",
+      "url": "https://org10402bbd.crm.dynamics.com/",
+      "unique_name": "unq1e020084b31ef0119aed6045bd027",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Early release / preview environment for upcoming Mfg CE features",
+      "tags": ["mfg", "early-release", "preview"],
+      "secret_key": null
+    },
+    {
+      "display_name": "D365 Contact Center",
+      "environment_id": "fa07afcb-7d84-e9ab-a7e2-383dc270140f",
+      "url": "https://orgb89b3114.crm.dynamics.com/",
+      "unique_name": "unq54615c8317f5ef11b0156045bd003",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Contact Center / CCaaS demos",
+      "tags": ["contact-center", "cs"],
+      "secret_key": null
+    },
+    {
+      "display_name": "Dynamics 365 CCaaS",
+      "environment_id": "f1a4b300-9ebc-ed41-be35-100d59772008",
+      "url": "https://orgbee5951e.crm.dynamics.com/",
+      "unique_name": "unqa52eeb1d95a4f01187047ced8d3b7",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "CCaaS-specific environment",
+      "tags": ["contact-center", "ccaas"],
+      "secret_key": null
+    },
+    {
+      "display_name": "Finance and Operations",
+      "environment_id": "5f69662c-ccc5-e4af-a995-c11dbc429e17",
+      "url": "https://financeandoperations.crm.dynamics.com/",
+      "unique_name": "unq850f1e28e684f011a700002248282",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Finance and Operations (F&O) demos",
+      "tags": ["finance", "operations", "erp"],
+      "secret_key": null
+    },
+    {
+      "display_name": "Bryan Demo",
+      "environment_id": "e2585a80-3996-e581-a925-fc5e120c130e",
+      "url": "https://org13139c28.crm.dynamics.com/",
+      "unique_name": "unqe279c5884aebf011aa216045bd081",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Bryan's demo environment",
+      "tags": ["demo", "shared"],
+      "secret_key": null
+    },
+    {
+      "display_name": "Contoso (default)",
+      "environment_id": "daa9e2eb-aaf1-46a8-a37e-3fd2e5821cb6",
+      "url": "https://org0583f82e.crm.dynamics.com/",
+      "unique_name": "unqf9795de0c755ef11bfdf000d3a9b7",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Default Contoso environment",
+      "tags": ["default", "contoso"],
+      "secret_key": null
+    },
+    {
+      "display_name": "Low Code",
+      "environment_id": "a9ac32f2-0a4b-ea06-8ed5-337721693e1d",
+      "url": "https://org52045311.crm.dynamics.com/",
+      "unique_name": "unq9c4cccee5177ef11ac1c7c1e52157",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Low-code / Power Platform demos",
+      "tags": ["low-code", "power-platform"],
+      "secret_key": null
+    },
+    {
+      "display_name": "Microsoft 365",
+      "environment_id": "b54c381a-a115-e13d-804a-c5624125c219",
+      "url": "https://orgb6810f4b.crm.dynamics.com/",
+      "unique_name": "unq5d993c9705bcf01195c56045bd03c",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "M365-focused environment",
+      "tags": ["m365"],
+      "secret_key": null
+    },
+    {
+      "display_name": "msdyn_viva",
+      "environment_id": "5f8ec7e0-1234-ec64-ac74-a510ee800915",
+      "url": "https://orgcd92e224.crm.dynamics.com/",
+      "unique_name": "unq91202043857aef11ac1e002248282",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Viva / HR environment",
+      "tags": ["viva", "hr"],
+      "secret_key": null
+    },
+    {
+      "display_name": "Power Platform Preview",
+      "environment_id": "f07182e3-1de7-e416-bdd4-65d70421fe19",
+      "url": "https://orgbwpwrprev0325.crm.dynamics.com/",
+      "unique_name": "unq3b93d21fd946f011be526045bd016",
+      "is_active": false,
+      "is_primary": false,
+      "purpose": "Power Platform preview / early access features",
+      "tags": ["preview", "power-platform"],
+      "secret_key": null
+    }
+  ],
+  "github_secrets_needed": [
+    {
+      "secret": "D365_MASTER_CE_MFG_URL",
+      "value": "https://orgecbce8ef.crm.dynamics.com/",
+      "env": "Master CE Mfg"
+    },
+    {
+      "secret": "D365_MFG_GOLD_TEMPLATE_URL",
+      "value": "https://org6feab6b5.crm.dynamics.com/",
+      "env": "Mfg Gold Template"
+    },
+    {
+      "secret": "D365_CLIENT_ID",
+      "value": "TODO — create App Registration in Entra ID with Dataverse permissions",
+      "env": "both"
+    },
+    {
+      "secret": "D365_CLIENT_SECRET",
+      "value": "TODO — from App Registration",
+      "env": "both"
+    }
+  ]
+}
