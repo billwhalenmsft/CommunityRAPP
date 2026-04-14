@@ -336,12 +336,14 @@ def action_daily_wrapup() -> None:
         from utils.azure_openai_client import get_openai_client
         client, deployment = get_openai_client()
 
+        closed_str = ', '.join(f'#{i["number"]} {i["title"]}' for i in closed_today) or 'None'
+        needs_bill_str = ', '.join(f'#{i["number"]} {i["title"]}' for i in needs_bill_open) or 'None'
         activity_summary = (
             f"Issues touched today: {len(issues_today)}\n"
             f"Issues closed today: {len(closed_today)}\n"
             f"Waiting for Bill's input: {len(needs_bill_open)}\n"
-            f"Closed items: {', '.join(f'#{i[\"number\"]} {i[\"title\"]}' for i in closed_today) or 'None'}\n"
-            f"Needs Bill: {', '.join(f'#{i[\"number\"]} {i[\"title\"]}' for i in needs_bill_open) or 'None'}"
+            f"Closed items: {closed_str}\n"
+            f"Needs Bill: {needs_bill_str}"
         )
 
         prompt = (
