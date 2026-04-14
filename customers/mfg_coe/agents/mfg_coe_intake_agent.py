@@ -31,7 +31,7 @@ from utils.storage_factory import get_storage_manager
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-REPO = "kody-w/CommunityRAPP"
+REPO = os.environ.get("COE_REPO", "billwhalenmsft/CommunityRAPP-BillWhalen")
 COE_LABEL = "mfg-coe"
 NEEDS_BILL_LABEL = "needs-bill"
 COE_STORAGE_DIR = "mfg_coe"

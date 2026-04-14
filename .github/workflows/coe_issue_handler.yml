@@ -44,6 +44,7 @@ jobs:
           AzureWebJobsStorage: ${{ secrets.AZURE_WEB_JOBS_STORAGE }}
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
           python customers/mfg_coe/agents/coe_runner.py \
@@ -88,6 +89,7 @@ jobs:
           AzureWebJobsStorage: ${{ secrets.AZURE_WEB_JOBS_STORAGE }}
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
           GITHUB_RUN_ID: ${{ github.run_id }}
           BILL_COMMENT: ${{ github.event.comment.body }}
         run: |

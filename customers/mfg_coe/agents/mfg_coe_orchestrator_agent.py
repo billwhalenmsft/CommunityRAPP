@@ -1,3 +1,4 @@
+import os
 """
 Agent: MfgCoE Orchestrator Agent
 Purpose: L0 Orchestrator for the Discrete Manufacturing Center of Excellence.
@@ -41,7 +42,7 @@ from customers.mfg_coe.agents.context_card_loader import load_all_context_cards
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-REPO = "kody-w/CommunityRAPP"
+REPO = os.environ.get("COE_REPO", "billwhalenmsft/CommunityRAPP-BillWhalen")
 COE_LABEL = "mfg-coe"
 
 # Routing keywords to persona agents

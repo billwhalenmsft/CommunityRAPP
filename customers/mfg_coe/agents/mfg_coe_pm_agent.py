@@ -1,3 +1,4 @@
+import os
 """
 Agent: MfgCoE PM Agent
 Purpose: Project Manager for the Discrete Manufacturing CoE.
@@ -26,7 +27,7 @@ from customers.mfg_coe.agents.context_card_loader import load_all_context_cards
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-REPO = "kody-w/CommunityRAPP"
+REPO = os.environ.get("COE_REPO", "billwhalenmsft/CommunityRAPP-BillWhalen")
 COE_LABEL = "mfg-coe"
 
 PIPELINE_STAGES = ["raw-idea", "use-case", "tech-solution", "agent-task", "done"]

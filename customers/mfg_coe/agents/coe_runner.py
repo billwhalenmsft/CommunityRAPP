@@ -29,7 +29,7 @@ logging.basicConfig(
 )
 log = logging.getLogger("coe_runner")
 
-REPO = "kody-w/CommunityRAPP"
+REPO = os.environ.get("COE_REPO", "billwhalenmsft/CommunityRAPP-BillWhalen")
 
 
 def _post_issue_comment(issue_number: int, body: str) -> None:
