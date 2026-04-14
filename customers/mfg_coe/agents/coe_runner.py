@@ -438,12 +438,11 @@ def action_run_backlog(max_tasks: int = 3) -> None:
     """Scan open agent-task issues and process up to max_tasks of them."""
     log.info("=== Running Backlog (max %d tasks) ===", max_tasks)
 
-    # List open agent-task issues
+    # List open mfg-coe issues that aren't blocked on Bill or already done
     result = subprocess.run(
         [
             "gh", "issue", "list",
             "--repo", REPO,
-            "--label", "agent-task",
             "--label", "mfg-coe",
             "--state", "open",
             "--json", "number,title,labels",
@@ -458,10 +457,17 @@ def action_run_backlog(max_tasks: int = 3) -> None:
         return
 
     try:
-        issues = json.loads(result.stdout)
+        all_issues = json.loads(result.stdout)
     except json.JSONDecodeError:
         log.error("Could not parse issue list: %s", result.stdout)
         return
+
+    # Skip issues already waiting on Bill or marked done
+    skip_labels = {"needs-bill", "done", "community-post", "daily-digest", "nudge-bill"}
+    issues = [
+        i for i in all_issues
+        if not any(lbl["name"] in skip_labels for lbl in i.get("labels", []))
+    ]
 
     if not issues:
         log.info("No open agent-task issues found.")
@@ -479,7 +485,7 @@ def action_run_backlog(max_tasks: int = 3) -> None:
                 issue_num,
                 f"## ❌ Agent Error\n\nEncountered an error processing this issue:\n\n```\n{exc}\n```\n\nFlagging for Bill.",
             )
-            _set_issue_label(issue_num, ["needs-bill"], ["agent-task"])
+            _set_issue_label(issue_num, ["needs-bill"], [])
 
 
 # ── CLI entry point ───────────────────────────────────────────────────────────
