@@ -1,0 +1,14 @@
+{
+  "share_name": "mfg_coe",
+  "directories": [
+    "backlog",
+    "solutions_log",
+    "sops",
+    "decisions",
+    "knowledge_base",
+    "test_results",
+    "personas"
+  ],
+  "description": "Azure File Storage layout for the Mfg CoE agent team",
+  "version": "1.0.0"
+}
