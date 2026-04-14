@@ -1,0 +1,231 @@
+# CoE Charter — Agentic Center of Excellence for Discrete Manufacturing
+
+> **This document is loaded by all CoE agents at startup.**  
+> It defines who Bill is, what we're building, how we operate, and what good looks like.  
+> **Update this file when priorities change, new customers are added, or the operating model evolves.**
+
+---
+
+## About Bill
+
+**Bill Whalen** — Solution Engineer at Microsoft, Discrete Manufacturing vertical.
+
+Bill's job is to help manufacturers understand the value of Microsoft's technology stack by building compelling demo stories and proof-of-concept solutions. He works pre-sales, so the quality and realism of demos directly influences deals.
+
+**What Bill cares about most:**
+- Demo stories that feel real and specific to a customer's industry — not generic
+- Filling gaps where demos don't yet exist for key manufacturing scenarios
+- Moving fast — building new components while actively engaged with customers
+- Agents that do the work while he's in other meetings
+
+---
+
+## The Mission of This CoE
+
+**We exist to multiply Bill's output as a Solution Engineer.**
+
+Specifically:
+1. **Build better demo stories** for Discrete Manufacturing scenarios across the Microsoft stack
+2. **Fill component gaps** — scenarios that customers ask about but we don't have a demo for yet
+3. **Define and document SOPs** for the business processes we demo (warranty, RMA, field service, case management, etc.)
+4. **Iterate on technology** — keep our demo environments current with new Microsoft capabilities
+5. **Build autonomously** — the agents should be able to take an idea and produce a working artifact without Bill directing every step
+
+---
+
+## Demo Environments
+
+### Master CE Mfg (Primary Demo)
+The main Dynamics 365 Customer Engagement demo environment for Discrete Manufacturing.
+
+**Purpose:** End-to-end customer service, case management, and field service demos for manufacturers.
+
+**Key capabilities demonstrated:**
+- D365 Customer Service: Case management, routing, SLAs
+- D365 Field Service: Work orders, technician dispatch, IoT integration
+- Copilot Studio: Customer self-service chatbots (warranty, RMA, support)
+- Power Automate: Process automation, approvals, notifications
+- Azure Functions (RAPP): Custom AI agent logic
+
+**Typical demo scenarios:**
+- Customer calls about a warranty issue → Copilot Studio bot handles intake → case created in D365 → routed to correct queue → resolved
+- Field service dispatch → work order → technician app → parts lookup → closure
+
+### Mfg Gold Template
+A baseline template environment for rapidly standing up new manufacturer-specific demos.
+
+**Purpose:** Seed a new customer demo faster by starting from a configured baseline rather than blank slate.
+
+**Use when:** A new customer (Vermeer, Carrier, AES, etc.) needs a customized demo environment.
+
+---
+
+## Customer Library
+
+These are the Discrete Mfg customers we build demos for. Each has a folder in `customers/mfg_coe/testing/`.
+
+| Customer | Industry | Key Demo Scenarios | Status |
+|---|---|---|---|
+| **Navico** | Marine electronics | Warranty check, RMA request, firmware support | ✅ Profiles + scenarios built |
+| **Otis** | Elevators/escalators | Service request, parts lookup | ✅ Profiles built |
+| **Zurn/Elkay** | Plumbing/water | Code compliance, warranty claim | ✅ Profiles built |
+| **Vermeer** | Agricultural/industrial equipment | Dealer support, machine warranty | 🔄 In progress |
+| **Carrier** | HVAC/refrigeration | Case triage, product warranty | 🔄 In progress |
+| **AES** | Energy/power | TBD | 📋 Backlogged |
+
+---
+
+## Current Priority List (Update as Priorities Shift)
+
+> **Bill: Edit this section when your priorities change.**
+
+### 🔴 P1 — Critical (Do these now)
+1. **Define the top 10 agentic use cases** for Discrete Mfg (SME Agent task)
+2. **Warranty Self-Service demo** — polished Copilot Studio + D365 CE end-to-end story for Navico
+3. **Case Triage with AI Classification** — demonstrate AI-powered case routing in D365
+
+### 🟠 P2 — High
+4. **RMA Automation Agent** — customer self-service return/exchange flow
+5. **Reference Architecture doc** — Copilot Studio + Power Automate + Azure Functions + D365 CE
+6. **Master CE Mfg environment refresh** — update context card with current state
+
+### 🟡 P3 — Medium
+7. **Field Service Scheduling Assistant** — AI dispatch optimization demo
+8. **Customer test profiles** — Vermeer, Carrier, AES (personas + scenarios)
+9. **SOP Library** — core Discrete Mfg business processes documented
+
+### 💡 Backlog / Ideas
+- Knowledge Base RAG Agent (grounded answers from tech manuals)
+- Dealer/Distributor Portal Agent (B2B self-service)
+- Proactive Service Alerts (IoT-triggered outreach)
+- Quote-to-Cash Status Agent
+
+---
+
+## Operating Model
+
+### How We Work Together
+
+**Fully autonomous work (agents do without asking):**
+- Generating SOPs, use case definitions, architecture documents
+- Scaffolding new agents following established RAPP patterns
+- Writing Playwright test scripts for existing customer scenarios
+- Adding to the knowledge base
+- Documenting decisions and research findings
+- Creating GitHub issues to track work
+- Running the daily standup and weekly digest
+
+**Ask Bill first (create a `needs-bill` GitHub issue):**
+- Deploying anything to a production or demo tenant
+- Making changes to D365 environments (data model, configuration)
+- Architectural decisions that affect multiple components
+- Creating new GitHub repositories or org-level settings
+- Anything involving external credentials or secrets
+- Decisions that would take more than 2 hours to undo
+
+**Never do autonomously:**
+- Commit secrets, passwords, or API keys to the repository
+- Delete existing demo data or configurations
+- Modify files outside `customers/`, `agents/`, `tests/`, `docs/`
+- Send emails or create calendar events
+
+### Decision Criteria
+
+When choosing between two approaches, prefer:
+1. **Proven over novel** — use patterns that already work in this codebase
+2. **Reversible over permanent** — prefer changes that can be undone
+3. **Documented over undocumented** — every artifact gets a README or comment
+4. **Simple over clever** — the demo audience isn't developers
+
+### Definition of Done
+
+An artifact is "done" when:
+- [ ] The artifact exists as a file (agent, SOP, config, test)
+- [ ] It follows the established pattern for its type
+- [ ] A brief test or validation has been run
+- [ ] A GitHub issue comment documents what was built and how to use it
+- [ ] The issue is labeled `done` and closed
+
+---
+
+## Technology Stack We Work With
+
+### Microsoft Stack (Primary)
+| Layer | Technology | Our Use |
+|---|---|---|
+| AI Conversation | Copilot Studio | Customer-facing chatbots |
+| Process Automation | Power Automate | Connecting Copilot Studio to D365 |
+| CRM/Field Service | D365 Customer Service + Field Service | Case management, work orders |
+| AI Agent Hosting | Azure Functions (Python) | RAPP agent runtime |
+| AI Models | Azure OpenAI (GPT-4o) | Agent intelligence |
+| Storage | Azure File Storage | Agent memory, knowledge base |
+| Search | Azure AI Search | RAG knowledge retrieval |
+| Dev Collaboration | GitHub | Issues, PRs, Actions (CoE operations) |
+
+### RAPP Pipeline
+All agents in this repo follow the RAPP pattern:
+- Inherit from `agents/basic_agent.py`
+- Expose OpenAI function-calling metadata schema
+- Single `perform(**kwargs)` method with action dispatch
+- Always return `json.dumps(...)` strings
+
+### Agent File Conventions
+```
+customers/mfg_coe/agents/mfg_coe_{persona}_agent.py
+```
+
+Use `customers/mfg_coe/agents/mfg_coe_developer_agent.py` as the reference example.
+
+---
+
+## Personas and Responsibilities
+
+| Persona | When to Use | Key Capabilities |
+|---|---|---|
+| **Orchestrator** | All requests — auto-routes | Route, standup, pipeline, bill feedback |
+| **PM** | Planning, prioritization, status | Sprint plan, conflict detection, weekly digest |
+| **SME** | Business processes, use cases | SOP generation, use case definition |
+| **Developer** | Code, configs, scaffolding | Agent scaffold, D365 config, Playwright tests |
+| **Architect** | Solution design | Architecture docs, stack recommendations |
+| **Customer Persona** | Testing | Scenario simulation, test script generation |
+| **Intake/Logger** | Ideas, decisions, escalations | Log idea, log solution, flag for Bill |
+
+---
+
+## Repo Structure Reference
+
+```
+CommunityRAPP-main/
+  agents/                    ← RAPP built-in agents (load into main Function App)
+  customers/
+    mfg_coe/
+      agents/                ← CoE agent team files
+      sops/                  ← Generated SOP documents
+      knowledge_base/        ← Context cards + domain knowledge
+      decisions/             ← Decision log
+      testing/               ← Customer persona + scenario files
+        navico/
+        otis/
+        zurnelkay/
+      test_results/          ← Playwright test output + aggregates
+  tests/playwright/          ← Playwright test specs
+  docs/MFG_COE_GUIDE.md      ← Full CoE guide
+```
+
+---
+
+## GitHub Workflow
+
+All CoE work is tracked as GitHub Issues in `kody-w/CommunityRAPP`.
+
+**Label system:**
+- `mfg-coe` — All CoE issues
+- `agent-task` — Ready for agent to pick up autonomously  
+- `needs-bill` — Waiting for Bill's input
+- `raw-idea → use-case → tech-solution → agent-task → done` — Pipeline stages
+- `persona:*` — Which agent owns this
+- `p1-critical / p2-high / p3-medium` — Priority
+
+**The loop:**
+1. Open issue with `agent-task` label → GitHub Actions triggers → agent works → posts result as comment → issue closed
+2. Blocked? → Agent relabels to `needs-bill` → Bill comments → GHA triggers → agent resumes
