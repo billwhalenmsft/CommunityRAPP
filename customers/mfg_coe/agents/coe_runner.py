@@ -198,6 +198,240 @@ def action_health_check() -> None:
         _post_issue_comment(int(issue_num), comment)
 
 
+def action_idle_check() -> None:
+    """Check for team inactivity. If no progress in 3+ days, create a needs-bill nudge issue."""
+    log.info("=== CoE Idle Check ===")
+    import subprocess
+    from datetime import datetime, timezone, timedelta
+
+    # Get all open mfg-coe issues with recent activity
+    result = subprocess.run(
+        ["gh", "issue", "list", "--repo", REPO, "--label", "mfg-coe",
+         "--state", "open", "--json", "number,title,updatedAt,labels", "--limit", "50"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        log.error("Failed to list issues: %s", result.stderr)
+        return
+
+    try:
+        issues = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        log.error("Could not parse issues: %s", result.stdout)
+        return
+
+    if not issues:
+        # No open issues at all — nudge Bill to add new work
+        log.info("No open issues found — creating nudge for Bill.")
+        _create_nudge_issue("empty_backlog")
+        return
+
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(days=3)
+
+    # Find most recently updated issue
+    most_recent = max(issues, key=lambda i: i.get("updatedAt", ""))
+    last_update_str = most_recent.get("updatedAt", "")
+    try:
+        last_update = datetime.fromisoformat(last_update_str.replace("Z", "+00:00"))
+    except Exception:
+        log.warning("Could not parse date: %s", last_update_str)
+        return
+
+    if last_update < cutoff:
+        days_idle = (now - last_update).days
+        log.info("Team idle for %d days — creating nudge issue for Bill.", days_idle)
+        _create_nudge_issue("idle", days_idle=days_idle)
+    else:
+        log.info("Team is active — last update %s. No nudge needed.", last_update_str)
+
+
+def _create_nudge_issue(reason: str, days_idle: int = 0) -> None:
+    """Create a GitHub issue to nudge Bill when the team needs direction."""
+    if reason == "empty_backlog":
+        title = "🔔 CoE Backlog Empty — Team Ready for New Assignments"
+        body = (
+            "## 👋 Hey Bill — the team is ready and waiting!\n\n"
+            "The CoE backlog is empty. Your agents are idle and eager to work.\n\n"
+            "**Suggested next steps:**\n"
+            "- Add new feature requests or use cases to the backlog\n"
+            "- Review completed work and set new priorities\n"
+            "- Kick off a new discovery session or sprint\n\n"
+            "_Automated nudge from CoE Idle Detection_"
+        )
+    else:
+        title = f"🔔 CoE Team Idle for {days_idle} Days — Decisions Needed"
+        body = (
+            f"## 👋 Hey Bill — the team hasn't made progress in {days_idle} days\n\n"
+            "Your agents are waiting for direction. This could mean:\n"
+            "- Issues are blocked waiting for your input (check `needs-bill` label)\n"
+            "- The backlog needs reprioritization\n"
+            "- New work items need to be created\n\n"
+            "**Quick actions:**\n"
+            "- Review open issues at https://bots-in-blazers.fun\n"
+            "- Comment on any `needs-bill` issues to unblock agents\n"
+            "- Trigger a manual backlog run from the Actions tab\n\n"
+            "_Automated nudge from CoE Idle Detection_"
+        )
+
+    # Check if a nudge issue already exists (avoid spamming)
+    existing = subprocess.run(
+        ["gh", "issue", "list", "--repo", REPO, "--label", "nudge-bill",
+         "--state", "open", "--json", "number", "--limit", "1"],
+        capture_output=True, text=True,
+    )
+    try:
+        if json.loads(existing.stdout):
+            log.info("Nudge issue already open — skipping duplicate creation.")
+            return
+    except Exception:
+        pass
+
+    subprocess.run(
+        ["gh", "issue", "create", "--repo", REPO,
+         "--title", title,
+         "--body", body,
+         "--label", "needs-bill,nudge-bill,mfg-coe"],
+        capture_output=True, text=True,
+    )
+    log.info("Created nudge issue for Bill.")
+
+
+def action_daily_wrapup() -> None:
+    """Generate end-of-day wrap-up: summarize day's work, post to GitHub and Azure Storage."""
+    log.info("=== CoE Daily Wrap-Up ===")
+    import subprocess
+    from datetime import datetime, timezone, timedelta
+
+    # Gather issues updated today
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    result = subprocess.run(
+        ["gh", "issue", "list", "--repo", REPO, "--label", "mfg-coe",
+         "--state", "all", "--json", "number,title,state,labels,updatedAt,comments",
+         "--limit", "50"],
+        capture_output=True, text=True,
+    )
+
+    issues_today = []
+    closed_today = []
+    needs_bill_open = []
+
+    if result.returncode == 0:
+        try:
+            all_issues = json.loads(result.stdout)
+            for issue in all_issues:
+                updated = issue.get("updatedAt", "")[:10]
+                if updated == today:
+                    issues_today.append(issue)
+                if issue.get("state") == "CLOSED" and updated == today:
+                    closed_today.append(issue)
+                labels = [l["name"] for l in issue.get("labels", [])]
+                if "needs-bill" in labels and issue.get("state") == "OPEN":
+                    needs_bill_open.append(issue)
+        except Exception as e:
+            log.error("Could not parse issues: %s", e)
+
+    # Build wrap-up using OpenAI
+    try:
+        from utils.azure_openai_client import get_openai_client
+        client, deployment = get_openai_client()
+
+        activity_summary = (
+            f"Issues touched today: {len(issues_today)}\n"
+            f"Issues closed today: {len(closed_today)}\n"
+            f"Waiting for Bill's input: {len(needs_bill_open)}\n"
+            f"Closed items: {', '.join(f'#{i[\"number\"]} {i[\"title\"]}' for i in closed_today) or 'None'}\n"
+            f"Needs Bill: {', '.join(f'#{i[\"number\"]} {i[\"title\"]}' for i in needs_bill_open) or 'None'}"
+        )
+
+        prompt = (
+            "You are the PM Agent for a Discrete Manufacturing AI CoE, writing the daily wrap-up. "
+            "Write a concise, upbeat end-of-day summary (5-8 sentences) covering what the team accomplished, "
+            "what's in progress, and any items needing Bill's attention. Use emojis. Be specific but brief. "
+            "End with a motivational one-liner for tomorrow.\n\n"
+            f"Today's activity:\n{activity_summary}"
+        )
+
+        response = client.chat.completions.create(
+            model=deployment,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=400,
+            temperature=0.7,
+        )
+        wrapup_text = response.choices[0].message.content.strip()
+    except Exception as e:
+        log.error("Could not generate wrap-up with AI: %s", e)
+        wrapup_text = (
+            f"**Daily Wrap-Up — {today}**\n\n"
+            f"- Issues touched: {len(issues_today)}\n"
+            f"- Issues closed: {len(closed_today)}\n"
+            f"- Needs Bill: {len(needs_bill_open)}"
+        )
+
+    # Post as GitHub issue (daily digest)
+    issue_body = (
+        f"## 📋 CoE Daily Wrap-Up — {today}\n\n"
+        f"{wrapup_text}\n\n"
+        f"---\n"
+        f"**Stats:** {len(issues_today)} issues touched · {len(closed_today)} closed · "
+        f"{len(needs_bill_open)} waiting for Bill\n\n"
+        f"_Auto-generated by CoE PM Agent at {datetime.now(timezone.utc).strftime('%H:%M UTC')}_"
+    )
+
+    subprocess.run(
+        ["gh", "issue", "create", "--repo", REPO,
+         "--title", f"📋 Daily Wrap-Up — {today}",
+         "--body", issue_body,
+         "--label", "mfg-coe,daily-digest"],
+        capture_output=True, text=True,
+    )
+    log.info("Posted daily wrap-up issue.")
+
+    # Also save to Azure Storage for web UI
+    try:
+        from utils.azure_file_storage import AzureFileStorageManager
+        storage = AzureFileStorageManager()
+        wrapup_record = {
+            "date": today,
+            "summary": wrapup_text,
+            "stats": {
+                "issues_touched": len(issues_today),
+                "closed": len(closed_today),
+                "needs_bill": len(needs_bill_open),
+            },
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        # Load existing wrapups
+        try:
+            existing = json.loads(storage.read_file("coe-community", "daily_wrapups.json") or "[]")
+        except Exception:
+            existing = []
+        existing.append(wrapup_record)
+        existing = existing[-30:]  # keep 30 days
+        storage.write_file("coe-community", "daily_wrapups.json", json.dumps(existing, indent=2))
+        log.info("Saved wrap-up to Azure Storage.")
+    except Exception as e:
+        log.warning("Could not save wrap-up to storage: %s", e)
+
+
+def action_community_engage(context: str = "") -> None:
+    """Generate a community forum post and save it to Azure Storage."""
+    log.info("=== Community Engagement ===")
+    try:
+        from customers.mfg_coe.agents.mfg_coe_community_agent import MfgCoECommunityAgent
+        agent = MfgCoECommunityAgent()
+        result_raw = agent.perform(action="generate_post", context=context)
+        result = json.loads(result_raw)
+        if "post" in result:
+            log.info("Community post created: %s", result["post"].get("id"))
+            log.info("Category: %s", result["post"].get("category"))
+            log.info("Content preview: %s", result["post"].get("content", "")[:120])
+        else:
+            log.error("Community post failed: %s", result)
+    except Exception as e:
+        log.error("Community engagement failed: %s", e)
+
+
 def action_run_backlog(max_tasks: int = 3) -> None:
     """Scan open agent-task issues and process up to max_tasks of them."""
     log.info("=== Running Backlog (max %d tasks) ===", max_tasks)
@@ -253,7 +487,8 @@ def main() -> None:
     parser.add_argument(
         "--action",
         required=True,
-        choices=["standup", "process_issue", "bill_feedback", "health_check", "run_backlog"],
+        choices=["standup", "process_issue", "bill_feedback", "health_check", "run_backlog",
+                 "daily_wrapup", "idle_check", "community_engage"],
         help="Action to perform",
     )
     parser.add_argument("--issue", type=int, default=None, help="GitHub issue number")
@@ -275,6 +510,12 @@ def main() -> None:
         action_health_check()
     elif args.action == "run_backlog":
         action_run_backlog(args.max)
+    elif args.action == "daily_wrapup":
+        action_daily_wrapup()
+    elif args.action == "idle_check":
+        action_idle_check()
+    elif args.action == "community_engage":
+        action_community_engage(args.comment or "")
 
 
 if __name__ == "__main__":
