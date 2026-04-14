@@ -318,21 +318,16 @@
       <div class="page-header"><h1>⚙️ Settings</h1></div>
       <div class="card">
         <div class="card-title">GitHub Repository</div>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input id="cfg-repo" class="chat-input" style="max-width:320px" value="kody-w/CommunityRAPP" placeholder="owner/repo" />
-          <button class="chat-send" onclick="saveConfig()">Save</button>
-        </div>
-        <p style="font-size:12px;color:var(--text2)">All issue data is loaded from GitHub Issues in this repo.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">GitHub PAT (for API calls)</div>
-        <input id="cfg-pat" class="chat-input" style="max-width:400px" type="password" placeholder="ghp_..." />
-        <p style="font-size:12px;color:var(--text2);margin-top:8px">Stored locally in your browser. Never sent to any server except api.github.com.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">Agent Endpoint</div>
-        <input id="cfg-endpoint" class="chat-input" style="max-width:400px" placeholder="https://rapp-xxx.azurewebsites.net/api/businessinsightbot_function" />
-        <p style="font-size:12px;color:var(--text2);margin-top:8px">The RAPP Function App endpoint for the Chat view.</p>
+        <input id="cfg-repo" class="chat-input" style="max-width:360px;display:block;margin-bottom:8px" placeholder="owner/repo" />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">All issue data is loaded from GitHub Issues in this repo.</p>
+        <div class="card-title" style="margin-top:16px">GitHub PAT (for API calls)</div>
+        <input id="cfg-pat" class="chat-input" style="max-width:400px;display:block;margin-bottom:8px" type="password" placeholder="ghp_..." />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Stored locally in your browser. Never sent anywhere except api.github.com.</p>
+        <div class="card-title" style="margin-top:16px">Agent Endpoint</div>
+        <input id="cfg-endpoint" class="chat-input" style="max-width:500px;display:block;margin-bottom:8px" placeholder="https://rapp-xxx.azurewebsites.net/api/businessinsightbot_function" />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:16px">The RAPP Function App endpoint for the Chat view.</p>
+        <button class="chat-send" style="padding:8px 24px;font-size:14px" onclick="saveConfig()">💾 Save All Settings</button>
+        <span id="save-status" style="margin-left:12px;font-size:12px;color:var(--green);display:none">✓ Saved!</span>
       </div>
     </div>
 
@@ -342,7 +337,7 @@
 <script>
 // ── Config (loaded from localStorage) ──────────────────────────────────────
 let CFG = {
-  repo: localStorage.getItem('coe_repo') || 'kody-w/CommunityRAPP',
+  repo: localStorage.getItem('coe_repo') || 'billwhalenmsft/CommunityRAPP-BillWhalen',
   pat: localStorage.getItem('coe_pat') || '',
   endpoint: localStorage.getItem('coe_endpoint') || '',
 };
@@ -354,7 +349,9 @@ function saveConfig() {
   localStorage.setItem('coe_repo', CFG.repo);
   localStorage.setItem('coe_pat', CFG.pat);
   localStorage.setItem('coe_endpoint', CFG.endpoint);
-  alert('Settings saved. Refreshing data...');
+  const status = document.getElementById('save-status');
+  status.style.display = 'inline';
+  setTimeout(() => status.style.display = 'none', 3000);
   loadAll();
 }
 
