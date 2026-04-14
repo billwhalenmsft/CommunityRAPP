@@ -15,6 +15,7 @@ from azure.identity import (
     ChainedTokenCredential,
     ManagedIdentityCredential,
     AzureCliCredential,
+    EnvironmentCredential,
     get_bearer_token_provider
 )
 from datetime import datetime
@@ -89,10 +90,11 @@ def _get_openai_client():
                     logging.info("Using ManagedIdentityCredential for Azure deployment")
                 else:
                     credential = ChainedTokenCredential(
+                        EnvironmentCredential(),       # GitHub Actions SP (AZURE_CLIENT_ID/SECRET/TENANT_ID)
                         ManagedIdentityCredential(),
                         AzureCliCredential()
                     )
-                    logging.info("Using ChainedTokenCredential for local development")
+                    logging.info("Using ChainedTokenCredential for local/CI development")
                 
                 token_provider = get_bearer_token_provider(
                     credential,
