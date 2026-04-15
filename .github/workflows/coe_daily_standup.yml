@@ -40,7 +40,9 @@ jobs:
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
           AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
-          AzureWebJobsStorage: ${{ secrets.AZURE_WEB_JOBS_STORAGE }}
+          AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+          USE_CLOUD_STORAGE: "true"
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
@@ -56,7 +58,9 @@ jobs:
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
           AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
-          AzureWebJobsStorage: ${{ secrets.AZURE_WEB_JOBS_STORAGE }}
+          AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+          USE_CLOUD_STORAGE: "true"
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen

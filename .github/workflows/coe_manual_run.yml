@@ -39,6 +39,21 @@ jobs:
       contents: write
       pull-requests: write
 
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+      AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+      AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+      AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
+      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+      USE_CLOUD_STORAGE: ${{ secrets.USE_CLOUD_STORAGE }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
+      GITHUB_RUN_ID: ${{ github.run_id }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
