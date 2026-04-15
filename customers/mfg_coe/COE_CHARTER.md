@@ -22,14 +22,32 @@ Bill's job is to help manufacturers understand the value of Microsoft's technolo
 
 ## The Mission of This CoE
 
-**We exist to multiply Bill's output as a Solution Engineer.**
+**We exist to multiply Bill's output as a Solution Engineer — by delivering real business outcomes, not just technical artifacts.**
+
+Technology is a means to an end. Every agent task should trace back to a business problem a manufacturer actually has. Before building anything, ask: *what business outcome does this enable?*
 
 Specifically:
-1. **Build better demo stories** for Discrete Manufacturing scenarios across the Microsoft stack
-2. **Fill component gaps** — scenarios that customers ask about but we don't have a demo for yet
-3. **Define and document SOPs** for the business processes we demo (warranty, RMA, field service, case management, etc.)
-4. **Iterate on technology** — keep our demo environments current with new Microsoft capabilities
-5. **Build autonomously** — the agents should be able to take an idea and produce a working artifact without Bill directing every step
+1. **Solve real manufacturer problems first** — distributor portals, warranty resolution, field service efficiency, lead-to-order velocity. The demo story is secondary to the problem it solves.
+2. **Build better demo stories** — specific, outcome-driven narratives for Discrete Manufacturing scenarios across the Microsoft stack
+3. **Fill component gaps** — scenarios that customers ask about but we don't have a demo for yet
+4. **Define and document SOPs** — the business processes we demo, with real-world KPIs attached (handle time, resolution rate, CSAT, cost per case)
+5. **Iterate on technology** — keep our demo environments current with new Microsoft capabilities
+6. **Build autonomously** — the agents should be able to take an idea and produce a working artifact without Bill directing every step
+
+### The Outcomes We Care About
+
+Every piece of work should map to one or more of these manufacturer business outcomes:
+
+| Outcome | Metric | Typical Demo Scenario |
+|---------|--------|----------------------|
+| **Reduce customer service cost** | Cost per case, agent handle time | AI case triage, self-service warranty |
+| **Increase first-contact resolution** | FCR %, escalation rate | Copilot-assisted case resolution |
+| **Accelerate field service** | MTTR, dispatch time, parts availability | AI work order routing, proactive alerts |
+| **Grow channel/distributor revenue** | Deal reg rate, partner portal adoption | Distributor self-service portal (Impartner-competitive) |
+| **Reduce RMA/return costs** | Return rate, processing time | Agentic RMA automation |
+| **Improve order velocity** | Lead-to-order cycle time | CRM automation, CPQ integration |
+
+**When writing SOPs, use cases, or agent outputs — always include the business outcome and measurable KPI, not just the technical steps.**
 
 ---
 
@@ -132,18 +150,21 @@ These are the Discrete Mfg customers we build demos for. Each has a folder in `c
 ### Decision Criteria
 
 When choosing between two approaches, prefer:
-1. **Proven over novel** — use patterns that already work in this codebase
-2. **Reversible over permanent** — prefer changes that can be undone
-3. **Documented over undocumented** — every artifact gets a README or comment
-4. **Simple over clever** — the demo audience isn't developers
+1. **Business outcome over technical elegance** — if it doesn't solve a real problem a manufacturer has, don't build it
+2. **Proven over novel** — use patterns that already work in this codebase
+3. **Reversible over permanent** — prefer changes that can be undone
+4. **Documented over undocumented** — every artifact gets a README or comment
+5. **Simple over clever** — the demo audience isn't developers; they want to see their problem solved
 
 ### Definition of Done
 
 An artifact is "done" when:
 - [ ] The artifact exists as a file (agent, SOP, config, test)
 - [ ] It follows the established pattern for its type
+- [ ] **The business outcome it enables is clearly stated** (e.g., "reduces warranty handle time by eliminating manual lookup")
+- [ ] **At least one measurable KPI is identified** (cost, time, rate, satisfaction score)
 - [ ] A brief test or validation has been run
-- [ ] A GitHub issue comment documents what was built and how to use it
+- [ ] A GitHub issue comment documents what was built, how to use it, and the business value
 - [ ] The issue is labeled `done` and closed
 
 ---
