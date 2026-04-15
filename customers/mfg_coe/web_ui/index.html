@@ -245,6 +245,10 @@
     .mc-stat .val { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
     .theme-toggle { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 14px; padding: 3px 10px; font-size: 11px; cursor: pointer; transition: all .2s; }
     .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .user-chip { display: flex; align-items: center; gap: 6px; background: var(--bg3); border: 1px solid var(--border); border-radius: 14px; padding: 3px 10px; font-size: 11px; color: var(--text2); }
+    .user-chip img { width: 16px; height: 16px; border-radius: 50%; }
+    .logout-btn { background: transparent; border: 1px solid var(--border); color: var(--text2); border-radius: 14px; padding: 3px 8px; font-size: 10px; cursor: pointer; transition: all .2s; text-decoration: none; }
+    .logout-btn:hover { border-color: #f85149; color: #f85149; }
 
     /* ── Agent ring animation ───────────────────────────────────────────── */
     .agent-ring { position: relative; width: 52px; height: 52px; margin: 0 auto 10px; }
@@ -312,6 +316,11 @@
       <div class="mc-stat">🕐 <span class="val" id="topbar-clock"></span></div>
     </div>
     <div class="ml">
+      <div class="user-chip" id="user-chip" style="display:none">
+        <img id="user-avatar" src="" alt=""/>
+        <span id="user-name"></span>
+        <a class="logout-btn" href="/.auth/logout">sign out</a>
+      </div>
       <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️ Light</button>
       <button class="chat-btn" onclick="showView('chat')">💬 Message Agents</button>
     </div>
@@ -791,7 +800,29 @@ function relativeTime(iso) {
 // ── Load and render all data ───────────────────────────────────────────────
 let ALL_ISSUES = [];
 
+// Load logged-in user from SWA auth endpoint
+async function loadAuthUser() {
+  try {
+    const r = await fetch('/.auth/me');
+    if (!r.ok) return;
+    const data = await r.json();
+    const user = data?.clientPrincipal;
+    if (!user) return;
+    const chip = document.getElementById('user-chip');
+    const nameEl = document.getElementById('user-name');
+    const avatarEl = document.getElementById('user-avatar');
+    nameEl.textContent = user.userDetails || user.userId;
+    // GitHub avatars: https://github.com/{username}.png
+    avatarEl.src = `https://github.com/${user.userDetails}.png?size=32`;
+    avatarEl.onerror = () => { avatarEl.style.display = 'none'; };
+    chip.style.display = 'flex';
+  } catch (e) {
+    // Not authenticated or running locally — silently skip
+  }
+}
+
 async function loadAll() {
+  loadAuthUser();
   ALL_ISSUES = await fetchIssues();
   const needsBill = ALL_ISSUES.filter(i => i.labels?.some(l => l.name === 'needs-bill'));
 
