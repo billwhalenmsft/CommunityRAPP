@@ -175,6 +175,44 @@
     html.neon .nav-item.active { text-shadow: 0 0 8px var(--accent); }
     html.neon .logo { text-shadow: 0 0 12px var(--accent); }
 
+    /* ── Light mode ─────────────────────────────────────────────────────── */
+    html.light {
+      --bg: #f6f8fa;
+      --bg2: #ffffff;
+      --bg3: #f0f2f5;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --text2: #636c76;
+      --accent: #0969da;
+      --accent2: #0550ae;
+      --green: #1a7f37;
+      --yellow: #9a6700;
+      --red: #cf222e;
+      --purple: #8250df;
+      --orange: #bc4c00;
+    }
+    html.light body { background: var(--bg); }
+    html.light .topbar { background: #ffffff; border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    html.light .sidebar { background: #ffffff; border-right: 1px solid var(--border); }
+    html.light .card { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+    html.light .card-glass { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.08); }
+    html.light .nav-item:hover { background: #f6f8fa; }
+    html.light .nav-item.active { background: rgba(9,105,218,0.08); }
+    html.light .ticker-wrap { background: #f0f2f5; }
+    html.light .ticker-item { color: var(--text2); }
+    html.light .kpi-value { background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; }
+    html.light .kanban-col { background: #f0f2f5; }
+    html.light .kanban-card { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    html.light .hero-banner { background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%); border: 1px solid #bfdbfe; }
+    html.light .hero-banner h1 { color: #1e3a5f; }
+    html.light .hero-banner p { color: #374151; }
+    html.light #particles-bg { opacity: 0.08; }
+    html.light .chat-btn { background: var(--accent2); }
+    html.light .chat-btn:hover { background: var(--accent); }
+    html.light input, html.light textarea, html.light select {
+      background: #ffffff; color: var(--text); border-color: var(--border);
+    }
+
     /* ── Glassmorphism cards ────────────────────────────────────────────── */
     .card-glass {
       background: rgba(255,255,255,0.04);
@@ -274,7 +312,7 @@
       <div class="mc-stat">🕐 <span class="val" id="topbar-clock"></span></div>
     </div>
     <div class="ml">
-      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">⚡ Neon</button>
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️ Light</button>
       <button class="chat-btn" onclick="showView('chat')">💬 Message Agents</button>
     </div>
   </header>
@@ -1153,17 +1191,24 @@ setInterval(updateUptime, 1000);
 updateUptime();
 
 // ── Theme toggle ───────────────────────────────────────────────────────────
-let isNeon = localStorage.getItem('coe_theme') === 'neon';
+// Theme: cycles dark → light → neon → dark
+const THEMES = ['dark', 'light', 'neon'];
+let currentTheme = localStorage.getItem('coe_theme') || 'dark';
+if (!THEMES.includes(currentTheme)) currentTheme = 'dark';
+const THEME_NEXT_LABEL = { dark: '☀️ Light', light: '⚡ Neon', neon: '🌙 Dark' };
 function applyTheme() {
-  document.documentElement.classList.toggle('neon', isNeon);
   const btn = document.getElementById('theme-btn');
-  if (btn) btn.textContent = isNeon ? '🌙 Dark' : '⚡ Neon';
+  document.documentElement.classList.remove('neon', 'light');
+  if (currentTheme === 'neon') document.documentElement.classList.add('neon');
+  if (currentTheme === 'light') document.documentElement.classList.add('light');
+  if (btn) btn.textContent = THEME_NEXT_LABEL[currentTheme];
 }
 function toggleTheme() {
-  isNeon = !isNeon;
-  localStorage.setItem('coe_theme', isNeon ? 'neon' : 'dark');
+  const idx = THEMES.indexOf(currentTheme);
+  currentTheme = THEMES[(idx + 1) % THEMES.length];
+  localStorage.setItem('coe_theme', currentTheme);
   applyTheme();
-  if (isNeon) launchBootSequence();
+  if (currentTheme === 'neon') launchBootSequence();
 }
 applyTheme();
 
