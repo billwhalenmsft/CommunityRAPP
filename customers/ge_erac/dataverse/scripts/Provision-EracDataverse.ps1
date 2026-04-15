@@ -67,20 +67,39 @@ function Invoke-Dv {
     $headers = Get-Headers
     $uri = "$ApiUrl/$Path"
     if ($WhatIf) { Write-Host "[WhatIf] $Method $uri"; return $null }
-    try {
-        if ($Body) {
-            return Invoke-RestMethod -Method $Method -Uri $uri -Headers $headers -Body ($Body | ConvertTo-Json -Depth 10) -TimeoutSec 30
-        } else {
-            return Invoke-RestMethod -Method $Method -Uri $uri -Headers $headers -TimeoutSec 30
-        }
-    } catch {
-        $msg = $_.Exception.Message
-        if ($msg -match "already exists|duplicate") {
-            Write-Host "  ↳ Already exists, skipping" -ForegroundColor DarkGray
+    $timeoutSec = if ($Path -match "EntityDefinitions|PublishAllXml") { 90 } else { 30 }
+    $maxRetries = 4
+    for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+        try {
+            $params = @{ Method=$Method; Uri=$uri; Headers=$headers; TimeoutSec=$timeoutSec; UseBasicParsing=$true }
+            if ($Body) { $params.Body = ($Body | ConvertTo-Json -Depth 10) }
+            $resp = Invoke-WebRequest @params
+            if ($resp.Content) { return $resp.Content | ConvertFrom-Json } else { return $null }
+        } catch {
+            $msg = $_.Exception.Message
+            $status = $null
+            try { $status = $_.Exception.Response.StatusCode.value__ } catch {}
+            if ($msg -match "already exists|duplicate|0x80040220") {
+                Write-Host "  ↳ Already exists, skipping" -ForegroundColor DarkGray
+                return $null
+            }
+            if ($status -eq 429 -or $msg -match "429") {
+                $retryAfter = 10
+                try { $retryAfter = [int]$_.Exception.Response.Headers["Retry-After"] } catch {}
+                if ($retryAfter -lt 5)  { $retryAfter = 10 }
+                if ($retryAfter -gt 120) { $retryAfter = 120 }
+                Write-Host "  ↳ Rate limited (429), waiting ${retryAfter}s before retry $attempt/$maxRetries..." -ForegroundColor Yellow
+                Start-Sleep -Seconds $retryAfter
+                continue
+            }
+            if ($attempt -lt $maxRetries -and $msg -match "timeout|canceled") {
+                Write-Host "  ↳ Timeout, retry $attempt/$maxRetries..." -ForegroundColor Yellow
+                Start-Sleep -Seconds 5
+                continue
+            }
+            Write-Warning "  ↳ API error ($status): $msg"
             return $null
         }
-        Write-Warning "  ↳ API error: $msg"
-        return $null
     }
 }
 
@@ -109,6 +128,7 @@ function Add-ChoiceColumn {
         }
     }
     Invoke-Dv -Method POST -Path "EntityDefinitions(LogicalName='$Table')/Attributes" -Body $body | Out-Null
+    Start-Sleep -Seconds 2
 }
 
 function Add-DecimalColumn {
@@ -124,6 +144,7 @@ function Add-DecimalColumn {
         Precision     = $Precision
     }
     Invoke-Dv -Method POST -Path "EntityDefinitions(LogicalName='$Table')/Attributes" -Body $body | Out-Null
+    Start-Sleep -Seconds 2
 }
 
 function Add-BooleanColumn {
@@ -141,6 +162,7 @@ function Add-BooleanColumn {
         }
     }
     Invoke-Dv -Method POST -Path "EntityDefinitions(LogicalName='$Table')/Attributes" -Body $body | Out-Null
+    Start-Sleep -Seconds 2
 }
 
 function Add-DateColumn {
@@ -154,6 +176,7 @@ function Add-DateColumn {
         Format         = "DateOnly"
     }
     Invoke-Dv -Method POST -Path "EntityDefinitions(LogicalName='$Table')/Attributes" -Body $body | Out-Null
+    Start-Sleep -Seconds 2
 }
 
 function Add-TextColumn {
@@ -167,6 +190,7 @@ function Add-TextColumn {
         MaxLength     = $MaxLength
     }
     Invoke-Dv -Method POST -Path "EntityDefinitions(LogicalName='$Table')/Attributes" -Body $body | Out-Null
+    Start-Sleep -Seconds 2
 }
 
 function Publish-Changes {
