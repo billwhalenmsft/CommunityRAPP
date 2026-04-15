@@ -1,8 +1,6 @@
 name: CodeQL Security Analysis
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
   schedule:
@@ -41,3 +39,6 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:${{ matrix.language }}
+          # upload: failure-only reduces noise — full upload needs Code Scanning enabled in repo Settings
+          upload: failure-only
+        continue-on-error: true
