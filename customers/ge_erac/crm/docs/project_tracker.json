@@ -1,0 +1,19 @@
+{
+  "project": {
+    "name": "GE ERAC – Lite CRM",
+    "github_project_id": "PVT_kwHOBWgVVM4BUvej",
+    "project_number": 13,
+    "url": "https://github.com/users/billwhalenmsft/projects/13",
+    "repo": "billwhalenmsft/CommunityRAPP-BillWhalen",
+    "label": "area:erac",
+    "created": "2026-04-14"
+  },
+  "issues": [
+    { "number": 26, "title": "[ERAC] Phase 1: Cedents & Contacts tab", "url": "https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/issues/26", "status": "Done" },
+    { "number": 27, "title": "[ERAC] Phase 1: Engagement Log", "url": "https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/issues/27", "status": "Done" },
+    { "number": 28, "title": "[ERAC] Phase 1: Partnership Dashboard", "url": "https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/issues/28", "status": "Done" },
+    { "number": 29, "title": "[ERAC] Phase 1: Risk Assessment", "url": "https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/issues/29", "status": "Done" },
+    { "number": 30, "title": "[ERAC] Phase 1: Engagement Kanban", "url": "https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/issues/30", "status": "Done" },
+    { "number": 31, "title": "[ERAC] Phase 1: Power BI Reports Panel", "url": "https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/issues/31", "status": "Done" }
+  ]
+}
