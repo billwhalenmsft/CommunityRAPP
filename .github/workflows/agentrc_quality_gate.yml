@@ -1,0 +1,56 @@
+name: AgentRC Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run weekly on Monday 9 AM CT to catch context drift
+    - cron: '0 14 * * 1'
+  workflow_dispatch:
+
+jobs:
+  readiness:
+    name: AI Readiness Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run agentrc readiness
+        id: readiness
+        run: |
+          npx --yes github:microsoft/agentrc readiness --json > agentrc-report.json 2>&1 || true
+          cat agentrc-report.json
+
+      - name: Parse and post summary
+        run: |
+          echo "## 🤖 AgentRC Readiness Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f agentrc-report.json ]; then
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat agentrc-report.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Report not generated — check logs above." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload readiness report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: agentrc-report
+          path: agentrc-report.json
+          retention-days: 30
+
+      - name: Fail if below level 2
+        # Don't block PRs hard yet — warn only. Change --fail-level to 2 when ready.
+        run: |
+          npx --yes github:microsoft/agentrc readiness --fail-level 1 2>/dev/null || \
+            echo "::warning::AgentRC readiness is below Level 1. See report artifact."

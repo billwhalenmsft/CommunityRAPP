@@ -1,0 +1,23 @@
+# CODEOWNERS — automatic review requests for key areas
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @billwhalenmsft
+
+# CoE core — Bill reviews all changes
+/customers/mfg_coe/          @billwhalenmsft
+/customers/mfg_coe/agents/   @billwhalenmsft
+/customers/mfg_coe/web_ui/   @billwhalenmsft
+/customers/mfg_coe/COE_CHARTER.md @billwhalenmsft
+
+# Agent framework core
+/function_app.py             @billwhalenmsft
+/agents/                     @billwhalenmsft
+/utils/                      @billwhalenmsft
+
+# CI/CD workflows
+/.github/workflows/          @billwhalenmsft
+
+# Security-sensitive files
+/local.settings.template.json @billwhalenmsft
+/.env.example                @billwhalenmsft

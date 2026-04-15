@@ -1,0 +1,36 @@
+# APM Package Manifest — Agent Package Manager
+# See: https://github.com/microsoft/apm
+# This publishes the CoE agent instructions as a reusable APM package.
+
+name: mfg-coe-agent-standards
+version: 1.0.0
+description: >
+  Discrete Manufacturing Agentic CoE — agent instructions, conventions, and
+  context patterns for building D365 + Azure AI agents in the manufacturing vertical.
+author: billwhalenmsft
+license: MIT
+
+# Files included in this APM package
+files:
+  - AGENTS.md
+  - CLAUDE.md
+  - customers/mfg_coe/COE_CHARTER.md
+  - customers/mfg_coe/knowledge_base/master_ce_mfg.md
+  - customers/mfg_coe/knowledge_base/mfg_gold_template.md
+
+# Instruction files — these teach agents the conventions
+instructions:
+  - source: AGENTS.md
+    target: AGENTS.md
+  - source: customers/mfg_coe/COE_CHARTER.md
+    target: .github/coe-charter.md
+
+# Tags for discoverability
+tags:
+  - manufacturing
+  - discrete-mfg
+  - dynamics-365
+  - azure-functions
+  - copilot-studio
+  - agentic-coe
+  - rapp-pipeline
