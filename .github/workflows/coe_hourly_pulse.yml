@@ -1,0 +1,75 @@
+name: CoE Hourly Pulse
+
+# Runs every hour during business hours (CDT: 8am–6pm = 12:00–22:00 UTC, Mon–Fri)
+# Outside hours: agents are "off-duty" and community_engage runs instead
+on:
+  schedule:
+    # Business hours — every hour 8am–6pm CDT Mon–Fri (12:00–22:00 UTC)
+    - cron: '0 12-22 * * 1-5'
+    # After-hours community pulse — 8pm CDT (00:00 UTC Tue–Sat covers Mon–Fri evenings)
+    - cron: '0 0 * * 2-6'
+  workflow_dispatch:
+    inputs:
+      force_action:
+        description: 'Force a specific action (leave blank for auto)'
+        required: false
+        type: choice
+        default: ''
+        options:
+          - ''
+          - run_backlog
+          - idle_check
+          - community_engage
+
+jobs:
+  hourly_pulse:
+    name: Hourly Pulse — ${{ github.event.schedule || 'manual' }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+      AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+      AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+      AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
+      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+      USE_CLOUD_STORAGE: "true"
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
+      GITHUB_RUN_ID: ${{ github.run_id }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ── Business-hours backlog run (forced or auto) ──────────────────────────
+      - name: Process backlog (business hours)
+        if: |
+          github.event_name == 'workflow_dispatch' && github.event.inputs.force_action == 'run_backlog' ||
+          (github.event_name == 'schedule' && contains(github.event.schedule, '0 12-22'))
+        run: |
+          python customers/mfg_coe/agents/coe_runner.py --action run_backlog --max 2
+
+      # ── After-hours: community engagement / idle nudge ───────────────────────
+      - name: After-hours community + idle check
+        if: |
+          github.event_name == 'workflow_dispatch' && (github.event.inputs.force_action == 'community_engage' || github.event.inputs.force_action == 'idle_check') ||
+          (github.event_name == 'schedule' && contains(github.event.schedule, '0 0'))
+        run: |
+          python customers/mfg_coe/agents/coe_runner.py --action idle_check
+          python customers/mfg_coe/agents/coe_runner.py --action community_engage

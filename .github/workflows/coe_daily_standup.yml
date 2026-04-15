@@ -2,8 +2,9 @@ name: CoE Daily Standup
 
 on:
   schedule:
-    # 8:00 AM Central (13:00 UTC, adjusted for DST)
-    - cron: '0 13 * * 1-5'
+    # 8:00 AM Central (12:00 UTC CDT Apr-Oct, 14:00 UTC CST Nov-Mar)
+    # Using 12:00 UTC — correct for CDT (UTC-4). Update to 14:00 UTC in winter.
+    - cron: '0 12 * * 1-5'
   workflow_dispatch:
     inputs:
       max_tasks:
