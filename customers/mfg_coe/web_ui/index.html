@@ -339,16 +339,16 @@
     <div class="view" id="view-settings">
       <div class="page-header"><h1>⚙️ Settings</h1></div>
       <div class="card">
-        <div class="card-title">GitHub Repository</div>
-        <input id="cfg-repo" class="chat-input" style="max-width:360px;display:block;margin-bottom:8px" placeholder="owner/repo" />
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">All issue data is loaded from GitHub Issues in this repo.</p>
-        <div class="card-title" style="margin-top:16px">GitHub PAT (for API calls)</div>
+        <div class="card-title">GitHub Repository <span style="font-size:11px;background:#238636;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">locked</span></div>
+        <input id="cfg-repo" class="chat-input" style="max-width:360px;display:block;margin-bottom:4px;opacity:0.6;cursor:not-allowed" readonly />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Hardcoded to Bill's fork. All issue data loads from here.</p>
+        <div class="card-title" style="margin-top:16px">GitHub PAT (for API calls) <span style="font-size:11px;background:#d29922;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">required</span></div>
         <input id="cfg-pat" class="chat-input" style="max-width:400px;display:block;margin-bottom:8px" type="password" placeholder="ghp_..." />
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Stored locally in your browser. Never sent anywhere except api.github.com.</p>
-        <div class="card-title" style="margin-top:16px">Agent Endpoint</div>
-        <input id="cfg-endpoint" class="chat-input" style="max-width:500px;display:block;margin-bottom:8px" placeholder="https://rapp-xxx.azurewebsites.net/api/businessinsightbot_function" />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Stored only in your browser. Never sent anywhere except api.github.com.</p>
+        <div class="card-title" style="margin-top:16px">Agent Endpoint <span style="font-size:11px;background:#238636;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">locked</span></div>
+        <input id="cfg-endpoint" class="chat-input" style="max-width:500px;display:block;margin-bottom:8px;opacity:0.6;cursor:not-allowed" readonly />
         <p style="font-size:12px;color:var(--text2);margin-bottom:16px">The RAPP Function App endpoint for the Chat view.</p>
-        <button class="chat-send" style="padding:8px 24px;font-size:14px" onclick="saveConfig()">💾 Save All Settings</button>
+        <button class="chat-send" style="padding:8px 24px;font-size:14px" onclick="saveConfig()">💾 Save PAT</button>
         <span id="save-status" style="margin-left:12px;font-size:12px;color:var(--green);display:none">✓ Saved!</span>
       </div>
     </div>
@@ -357,20 +357,28 @@
 </div>
 
 <script>
-// ── Config (loaded from localStorage) ──────────────────────────────────────
+// ── Config — repo and endpoint are hardcoded; only PAT is user-supplied ───────
+const HARDCODED_REPO = 'billwhalenmsft/CommunityRAPP-BillWhalen';
+const HARDCODED_ENDPOINT = 'https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/businessinsightbot_function';
+
+// Migrate: clear any stale localStorage repo/endpoint from old sessions
+if (localStorage.getItem('coe_repo') && localStorage.getItem('coe_repo') !== HARDCODED_REPO) {
+  localStorage.removeItem('coe_repo');
+}
+if (localStorage.getItem('coe_endpoint') && localStorage.getItem('coe_endpoint') !== HARDCODED_ENDPOINT) {
+  localStorage.removeItem('coe_endpoint');
+}
+
 let CFG = {
-  repo: localStorage.getItem('coe_repo') || 'billwhalenmsft/CommunityRAPP-BillWhalen',
+  repo: HARDCODED_REPO,
   pat: localStorage.getItem('coe_pat') || '',
-  endpoint: localStorage.getItem('coe_endpoint') || '',
+  endpoint: HARDCODED_ENDPOINT,
 };
 
 function saveConfig() {
-  CFG.repo = document.getElementById('cfg-repo').value.trim();
+  // Repo and endpoint are hardcoded — only PAT is saved
   CFG.pat = document.getElementById('cfg-pat').value.trim();
-  CFG.endpoint = document.getElementById('cfg-endpoint').value.trim();
-  localStorage.setItem('coe_repo', CFG.repo);
   localStorage.setItem('coe_pat', CFG.pat);
-  localStorage.setItem('coe_endpoint', CFG.endpoint);
   const status = document.getElementById('save-status');
   status.style.display = 'inline';
   setTimeout(() => status.style.display = 'none', 3000);
