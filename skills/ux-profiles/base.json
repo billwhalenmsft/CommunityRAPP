@@ -1,0 +1,41 @@
+{
+  "profile": "base",
+  "description": "Shared defaults inherited by all profiles",
+  "tokens": {
+    "source": "fluent2-css-vars",
+    "font_family": "'Segoe UI', system-ui, sans-serif",
+    "font_size_base": "13px",
+    "font_size_label": "11px",
+    "font_size_h1": "18px",
+    "font_size_h2": "15px",
+    "radius_sm": "4px",
+    "radius_md": "6px",
+    "radius_lg": "8px",
+    "spacing_xs": "4px",
+    "spacing_sm": "8px",
+    "spacing_md": "12px",
+    "spacing_lg": "16px",
+    "spacing_xl": "24px"
+  },
+  "colors": {
+    "brand_primary": "#c8a84b",
+    "brand_secondary": "#1a2744",
+    "ms_blue": "#0078d4",
+    "ms_green": "#107c10",
+    "ms_red": "#d13438",
+    "ms_yellow": "#ffb900"
+  },
+  "accessibility": {
+    "min_contrast_ratio": 4.5,
+    "focus_visible_required": true,
+    "aria_labels_required": true,
+    "keyboard_nav_required": true
+  },
+  "rules": {
+    "no_external_cdn": true,
+    "no_hardcoded_colors": true,
+    "no_hardcoded_endpoints": true,
+    "semantic_html_required": true,
+    "theme_tokens_required": true
+  }
+}

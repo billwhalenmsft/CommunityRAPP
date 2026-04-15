@@ -1,0 +1,62 @@
+{
+  "profile": "d365-embedded",
+  "extends": "base",
+  "description": "Custom Page or PCF control embedded inside Dynamics 365 / Power Apps",
+  "context": "Runs inside D365 iframe — D365 provides the shell, nav, and header chrome",
+  "layout": {
+    "shell": "no-chrome",
+    "header_height": "0 (D365 provides)",
+    "nav_pattern": "none or in-page only",
+    "sidebar_allowed": false,
+    "note": "Do not render your own top header — D365 already has one"
+  },
+  "tokens": {
+    "theme_toggle": false,
+    "dark_default": "inherit from D365",
+    "theme_attribute": "read from parent frame CSS vars if possible",
+    "token_scope": "Use D365 Fluent tokens: --msdyn-color-primary, etc.",
+    "fluent_web_components": true
+  },
+  "components": {
+    "tabs": {
+      "element": "fluent-tabs or button[role=tab]",
+      "style": "match D365 pivot control style",
+      "focus_visible": true
+    },
+    "table": {
+      "style": "match D365 grid — flat, no card borders",
+      "row_hover": "#f3f2f1"
+    },
+    "buttons": {
+      "style": "match D365 command bar buttons",
+      "height": "32px",
+      "primary": "#0078d4"
+    },
+    "forms": {
+      "label_position": "above",
+      "field_height": "32px"
+    }
+  },
+  "rules_override": {
+    "no_window_alerts": true,
+    "no_body_scroll_lock": true,
+    "no_fixed_position": true,
+    "use_xrm_api": "prefer Xrm.WebApi over direct fetch",
+    "no_top_header": true,
+    "no_theme_toggle": true,
+    "charts_allowed": true,
+    "chart_library": "Chart.js (self-hosted, no CDN)"
+  },
+  "checklist": [
+    "No top header or nav chrome (D365 provides it)",
+    "No theme toggle (inherits from D365)",
+    "Colors use D365 Fluent token names where possible",
+    "No fixed/absolute positioned overlays that break in iframe",
+    "No window.alert() — use in-line notifications",
+    "Xrm.WebApi used for Dataverse calls (not raw fetch)",
+    "Component height/padding matches D365 standard controls",
+    "Font: Segoe UI (same as D365)",
+    "Focus-visible outline matches D365 blue (#0078d4)",
+    "Works at 100% zoom in 1024px wide iframe"
+  ]
+}

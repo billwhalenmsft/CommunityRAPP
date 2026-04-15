@@ -1,0 +1,56 @@
+{
+  "profile": "teams-tab",
+  "extends": "base",
+  "description": "Microsoft Teams personal tab or channel tab app",
+  "context": "Runs in Teams tab — Teams provides app bar, user identity, and theme",
+  "layout": {
+    "shell": "teams-chrome",
+    "header_height": "0 (Teams provides)",
+    "nav_pattern": "top-tabs max 5 items",
+    "sidebar_allowed": false,
+    "max_width": "100%",
+    "padding": "16px"
+  },
+  "tokens": {
+    "theme_toggle": false,
+    "dark_default": "inherit from Teams",
+    "theme_attribute": "use @microsoft/teams-js theme detection",
+    "sdk_required": "@microsoft/teams-js v2+",
+    "token_scope": "Use Teams Design System tokens: --colorBrandBackground, etc."
+  },
+  "components": {
+    "tabs": {
+      "element": "button[role=tab]",
+      "height": "44px",
+      "style": "Teams pivot style"
+    },
+    "touch_targets": {
+      "min_size": "44x44px",
+      "applies_to": ["buttons", "tabs", "links", "checkboxes"]
+    },
+    "buttons": {
+      "height": "32px",
+      "primary_color": "#6264a7"
+    }
+  },
+  "rules_override": {
+    "sdk_init_required": true,
+    "use_teams_context": true,
+    "no_window_open": "use microsoftTeams.executeDeepLink instead",
+    "no_prompt_for_auth": "use Teams SSO (getAuthToken)",
+    "charts_allowed": true,
+    "responsive_required": true
+  },
+  "checklist": [
+    "@microsoft/teams-js initialized before any Teams API calls",
+    "Theme read from Teams context (default/dark/contrast)",
+    "No top header or nav shell",
+    "Touch targets minimum 44x44px",
+    "Teams SSO used for authentication (not popup)",
+    "Works in Teams desktop, web, and mobile",
+    "Responsive at 320px minimum width",
+    "No hover-only interactions (mobile Teams)",
+    "Font: Segoe UI or inherit Teams",
+    "Focus-visible outline: Teams blue (#6264a7)"
+  ]
+}

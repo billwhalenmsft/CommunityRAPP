@@ -1,0 +1,72 @@
+{
+  "profile": "web-app",
+  "extends": "base",
+  "description": "Standalone browser Code App — Fluent 2 design system, full Power Platform aesthetic",
+  "context": "Runs in browser directly or as a Power Pages / Azure Static Web App",
+  "layout": {
+    "shell": "full-chrome",
+    "header_height": "52px",
+    "nav_pattern": "top-tabs",
+    "sidebar_allowed": true,
+    "breakpoints": {
+      "mobile": "640px",
+      "tablet": "1024px",
+      "desktop": "1280px"
+    }
+  },
+  "tokens": {
+    "theme_toggle": true,
+    "dark_default": false,
+    "theme_attribute": "data-theme on <html>",
+    "token_scope": ":root and html[data-theme]"
+  },
+  "components": {
+    "tabs": {
+      "element": "button[role=tab]",
+      "container_role": "tablist",
+      "active_indicator": "border-bottom 2px brand_primary",
+      "focus_visible": true
+    },
+    "table": {
+      "row_hover": "var(--row-hover)",
+      "stripe": false,
+      "sticky_header": true
+    },
+    "cards": {
+      "border_radius": "var(--radius-lg, 8px)",
+      "shadow": "var(--shadow)",
+      "padding": "16px"
+    },
+    "buttons": {
+      "primary": "background: brand_primary; color: white",
+      "secondary": "background: transparent; border: 1px solid brand_primary",
+      "height": "32px"
+    },
+    "badges": {
+      "use_semantic_colors": true,
+      "no_hardcoded_hex": true
+    }
+  },
+  "copilot_panel": {
+    "position": "right-sidebar",
+    "width": "340px",
+    "header_tokens": ["--panel-header-bg", "--panel-header-text", "--panel-header-border"]
+  },
+  "rules_override": {
+    "power_platform_chrome": true,
+    "charts_allowed": true,
+    "chart_library": "Chart.js"
+  },
+  "checklist": [
+    "Fluent 2 CSS token system in place (dark + light)",
+    "Theme toggle persists via localStorage",
+    "No hardcoded hex colors in CSS or JS",
+    "Tabs use <button role=tab> with aria-selected",
+    "Focus-visible outline on all interactive elements",
+    "Copilot panel header readable in both themes",
+    "No unused CDN libraries",
+    "Endpoint configurable via window constant",
+    "aria-label on all icon-only controls",
+    "WCAG AA contrast (4.5:1 minimum)"
+  ]
+}
