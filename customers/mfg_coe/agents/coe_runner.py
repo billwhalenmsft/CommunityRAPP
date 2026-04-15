@@ -102,9 +102,55 @@ def action_standup() -> None:
         log.info("No open agent-task issues found.")
 
 
+def _run_library_search_if_tech(issue_number: int) -> bool:
+    """
+    If the issue has the tech-solution label, run the library search agent first.
+    Posts results as a comment. Returns True if a strong match was found.
+    """
+    result = subprocess.run(
+        ["gh", "issue", "view", str(issue_number), "--repo", REPO,
+         "--json", "title,body,labels"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        return False
+
+    try:
+        data = json.loads(result.stdout)
+    except Exception:
+        return False
+
+    labels = [l["name"] for l in data.get("labels", [])]
+    if "tech-solution" not in labels:
+        return False
+
+    log.info("Issue #%d has tech-solution label — running library search first.", issue_number)
+    try:
+        from customers.mfg_coe.agents.library_search_agent import run_library_search
+        search_result = run_library_search(
+            issue_number=issue_number,
+            issue_title=data.get("title", ""),
+            issue_body=data.get("body", ""),
+        )
+        _post_issue_comment(issue_number, search_result["comment_body"])
+
+        if search_result.get("strong_match"):
+            _set_issue_label(issue_number, ["check-existing"], [])
+            log.info("Strong match found — tagged check-existing on #%d.", issue_number)
+            return True
+    except Exception as exc:
+        log.warning("Library search failed for #%d: %s", issue_number, exc)
+
+    return False
+
+
 def action_process_issue(issue_number: int) -> None:
     """Route and execute a single GitHub issue as a CoE task."""
     log.info("=== Processing Issue #%d ===", issue_number)
+
+    # Run library search before architect on tech-solution issues
+    _run_library_search_if_tech(issue_number)
+
     coe = _load_orchestrator()
     result_raw = coe.perform(action="run_pipeline_item", issue_number=issue_number)
     result = json.loads(result_raw)
@@ -462,8 +508,8 @@ def action_run_backlog(max_tasks: int = 3) -> None:
         log.error("Could not parse issue list: %s", result.stdout)
         return
 
-    # Skip issues already waiting on Bill or marked done
-    skip_labels = {"needs-bill", "done", "community-post", "daily-digest", "nudge-bill", "coffee-break"}
+    # Skip issues already waiting on Bill, done, or flagged for manual review
+    skip_labels = {"needs-bill", "done", "community-post", "daily-digest", "nudge-bill", "coffee-break", "check-existing"}
     issues = [
         i for i in all_issues
         if not any(lbl["name"] in skip_labels for lbl in i.get("labels", []))
@@ -496,7 +542,7 @@ def main() -> None:
         "--action",
         required=True,
         choices=["standup", "process_issue", "bill_feedback", "health_check", "run_backlog",
-                 "daily_wrapup", "idle_check", "community_engage"],
+                 "daily_wrapup", "idle_check", "community_engage", "library_search"],
         help="Action to perform",
     )
     parser.add_argument("--issue", type=int, default=None, help="GitHub issue number")
@@ -524,6 +570,20 @@ def main() -> None:
         action_idle_check()
     elif args.action == "community_engage":
         action_community_engage(args.comment or "")
+    elif args.action == "library_search":
+        if not args.issue:
+            parser.error("--issue required for library_search")
+        from customers.mfg_coe.agents.library_search_agent import run_library_search
+        import subprocess as sp
+        data_r = sp.run(
+            ["gh", "issue", "view", str(args.issue), "--repo", REPO, "--json", "title,body"],
+            capture_output=True, text=True,
+        )
+        if data_r.returncode == 0:
+            d = json.loads(data_r.stdout)
+            result = run_library_search(args.issue, d.get("title", ""), d.get("body", ""))
+            _post_issue_comment(args.issue, result["comment_body"])
+            log.info("Library search complete. Strong match: %s", result["strong_match"])
 
 
 if __name__ == "__main__":

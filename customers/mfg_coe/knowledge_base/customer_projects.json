@@ -1,0 +1,122 @@
+{
+  "version": "1.0",
+  "description": "Customer project configurations — mirrors customers/ folder structure with GitHub Projects metadata",
+  "customers": [
+    {
+      "id": "navico",
+      "name": "Navico",
+      "industry": "Marine Electronics",
+      "emoji": "🧭",
+      "folder": "customers/navico",
+      "github_project_title": "🧭 Navico",
+      "description": "Marine electronics manufacturer — multi-brand (Lowrance, Simrad, B&G, C-MAP). Focus areas: warranty portal, service routing, dealer onboarding.",
+      "d365_environments": [],
+      "sub_processes": [
+        "Warranty Registration",
+        "Warranty Claims",
+        "Dealer Onboarding",
+        "Service Dispatch",
+        "Product Returns / RMA",
+        "Case Triage"
+      ],
+      "active": true,
+      "notes": "Navico copilot topics already built in customers/navico/d365/copilot-studio/"
+    },
+    {
+      "id": "otis",
+      "name": "Otis",
+      "industry": "Elevators & Escalators",
+      "emoji": "🛗",
+      "folder": "customers/otis",
+      "github_project_title": "🛗 Otis",
+      "description": "World's largest elevator company. Focus areas: maintenance scheduling, field dispatch, parts ordering, inspection compliance.",
+      "d365_environments": [],
+      "sub_processes": [
+        "Preventive Maintenance",
+        "Field Dispatch",
+        "Inspection Compliance",
+        "Parts Procurement",
+        "Case Management",
+        "Customer Portal"
+      ],
+      "active": true,
+      "notes": ""
+    },
+    {
+      "id": "zurn",
+      "name": "Zurn Elkay",
+      "industry": "Water Solutions",
+      "emoji": "💧",
+      "folder": "customers/zurn",
+      "github_project_title": "💧 Zurn Elkay",
+      "description": "Water management products — commercial plumbing, drinking water. Focus areas: case management, RMA, field service.",
+      "d365_environments": [],
+      "sub_processes": [
+        "Case Management",
+        "RMA / Returns",
+        "Field Service",
+        "Product Registration",
+        "Dealer Support"
+      ],
+      "active": true,
+      "notes": ""
+    },
+    {
+      "id": "vermeer",
+      "name": "Vermeer",
+      "industry": "Heavy Equipment",
+      "emoji": "🚜",
+      "folder": "customers/vermeer",
+      "github_project_title": "🚜 Vermeer",
+      "description": "Industrial and agricultural equipment manufacturer. Focus areas: dealer portal, parts catalog, warranty, telematics integration.",
+      "d365_environments": [],
+      "sub_processes": [
+        "Dealer Portal",
+        "Parts Catalog & Ordering",
+        "Warranty Processing",
+        "Telematics / IoT",
+        "Service Scheduling"
+      ],
+      "active": true,
+      "notes": ""
+    },
+    {
+      "id": "carrier",
+      "name": "Carrier",
+      "industry": "HVAC & Refrigeration",
+      "emoji": "❄️",
+      "folder": "customers/carrier",
+      "github_project_title": "❄️ Carrier",
+      "description": "Global HVAC and refrigeration manufacturer. Focus areas: service contracts, IoT predictive maintenance, warranty.",
+      "d365_environments": [],
+      "sub_processes": [
+        "Service Contracts",
+        "IoT / Predictive Maintenance",
+        "Warranty Processing",
+        "Field Service",
+        "Channel Partner Management"
+      ],
+      "active": true,
+      "notes": ""
+    },
+    {
+      "id": "aes",
+      "name": "AES",
+      "industry": "Energy",
+      "emoji": "⚡",
+      "folder": "customers/aes",
+      "github_project_title": "⚡ AES",
+      "description": "Global power company. Focus areas: asset management, field operations, compliance reporting.",
+      "d365_environments": [],
+      "sub_processes": [
+        "Asset Management",
+        "Field Operations",
+        "Compliance Reporting",
+        "Work Order Management",
+        "Vendor Management"
+      ],
+      "active": true,
+      "notes": ""
+    }
+  ]
+}

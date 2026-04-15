@@ -1,0 +1,116 @@
+{
+  "version": "1.0",
+  "description": "Registered agent library sources. Agents search these before building new solutions.",
+  "search_strategy": "keyword_extract_from_issue",
+  "sources": [
+    {
+      "id": "local-agents",
+      "name": "Local RAPP Agents",
+      "type": "local_directory",
+      "path": "agents/",
+      "priority": 1,
+      "description": "Agents already built in this repo",
+      "search_files": ["*.py"],
+      "enabled": true
+    },
+    {
+      "id": "local-demos",
+      "name": "Local RAPP Demos",
+      "type": "local_directory",
+      "path": "demos/",
+      "priority": 2,
+      "description": "Demo configurations already built",
+      "search_files": ["*.json", "*.py"],
+      "enabled": true
+    },
+    {
+      "id": "community-rapp",
+      "name": "kody-w/CommunityRAPP",
+      "type": "github_repo",
+      "repo": "kody-w/CommunityRAPP",
+      "priority": 3,
+      "description": "Upstream RAPP — canonical agent patterns and demos",
+      "search_paths": ["agents/", "demos/"],
+      "enabled": true
+    },
+    {
+      "id": "copilot-studio-samples",
+      "name": "microsoft/CopilotStudioSamples",
+      "type": "github_repo",
+      "repo": "microsoft/CopilotStudioSamples",
+      "priority": 4,
+      "description": "Official Microsoft Copilot Studio samples — warranty, case routing, escalation patterns",
+      "search_paths": [],
+      "stars": 728,
+      "enabled": true
+    },
+    {
+      "id": "azure-agent-demos",
+      "name": "Azure-Samples/python-ai-agent-frameworks-demos",
+      "type": "github_repo",
+      "repo": "Azure-Samples/python-ai-agent-frameworks-demos",
+      "priority": 5,
+      "description": "Python agent examples using Azure OpenAI — closest architecture match",
+      "search_paths": [],
+      "stars": 324,
+      "enabled": true
+    },
+    {
+      "id": "pp-mcp",
+      "name": "microsoft/pp-mcp",
+      "type": "github_repo",
+      "repo": "microsoft/pp-mcp",
+      "priority": 6,
+      "description": "Power Platform MCP Labs — Copilot Studio + MCP integration patterns",
+      "search_paths": [],
+      "stars": 52,
+      "enabled": true
+    },
+    {
+      "id": "d365-industry-accelerators",
+      "name": "microsoft/Dynamics-365-Industry-Accelerators",
+      "type": "github_repo",
+      "repo": "microsoft/Dynamics-365-Industry-Accelerators",
+      "priority": 7,
+      "description": "Pre-built D365 data models for manufacturing, field service, case management",
+      "search_paths": [],
+      "stars": 94,
+      "enabled": true
+    },
+    {
+      "id": "spec-to-agents",
+      "name": "microsoft/spec-to-agents",
+      "type": "github_repo",
+      "repo": "microsoft/spec-to-agents",
+      "priority": 8,
+      "description": "Multi-agent workflow with Semantic Kernel + AutoGen — good architectural reference",
+      "search_paths": [],
+      "stars": 97,
+      "enabled": true
+    },
+    {
+      "id": "ai-agents-beginners",
+      "name": "microsoft/ai-agents-for-beginners",
+      "type": "github_repo",
+      "repo": "microsoft/ai-agents-for-beginners",
+      "priority": 9,
+      "description": "56k★ Best reference for agent design patterns: RAG, tool-calling, multi-agent",
+      "search_paths": [],
+      "stars": 56737,
+      "enabled": true
+    },
+    {
+      "id": "azure-snippy",
+      "name": "Azure-Samples/snippy",
+      "type": "github_repo",
+      "repo": "Azure-Samples/snippy",
+      "priority": 10,
+      "description": "Azure Functions + Durable Agents + MCP + Cosmos — similar stack patterns",
+      "search_paths": [],
+      "stars": 108,
+      "enabled": true
+    }
+  ],
+  "keywords_to_ignore": ["the", "a", "an", "and", "or", "for", "to", "of", "in", "with", "on", "at"],
+  "min_match_score": 0.3
+}
