@@ -144,6 +144,61 @@ def _run_library_search_if_tech(issue_number: int) -> bool:
     return False
 
 
+def _format_result_as_markdown(result: dict) -> str:
+    """Convert a structured agent result dict into readable markdown."""
+    lines = []
+    skip_keys = {"status", "persona", "summary", "artifact"}
+
+    # Pull out pipeline_steps specially
+    pipeline_steps = result.get("pipeline_steps", [])
+    if pipeline_steps:
+        last_step = pipeline_steps[-1] if pipeline_steps else {}
+        step_name = last_step.get("step", "")
+        step_result = last_step.get("result", {})
+        if step_name:
+            lines.append(f"**Step completed:** `{step_name}`\n")
+        if isinstance(step_result, dict):
+            # Pull key readable fields
+            for key in ("use_case", "description", "deliverable", "pattern", "title"):
+                val = step_result.get(key)
+                if val and isinstance(val, str):
+                    label = key.replace("_", " ").title()
+                    lines.append(f"**{label}:** {val}\n")
+            use_cases = step_result.get("use_cases", [])
+            if use_cases:
+                lines.append("**Use Cases:**")
+                for uc in use_cases[:5]:
+                    lines.append(f"- {uc}")
+                lines.append("")
+            patterns = step_result.get("recommended_patterns", [])
+            if patterns:
+                lines.append("**Recommended Patterns:**")
+                for p in patterns[:3]:
+                    if isinstance(p, dict):
+                        lines.append(f"- **{p.get('pattern_id', '')}**: {p.get('description', '')}")
+                    else:
+                        lines.append(f"- {p}")
+                lines.append("")
+
+    # Next steps
+    next_steps = result.get("next_steps", [])
+    if next_steps:
+        lines.append("**Next Steps:**")
+        for s in next_steps:
+            lines.append(f"- {s}")
+        lines.append("")
+
+    # Stage / assigned_to
+    stage = result.get("current_stage")
+    assigned = result.get("assigned_to")
+    if stage:
+        lines.append(f"**Stage:** `{stage}`")
+    if assigned:
+        lines.append(f"**Assigned to:** {assigned}")
+
+    return "\n".join(lines) if lines else "_No summary available._"
+
+
 def action_process_issue(issue_number: int) -> None:
     """Route and execute a single GitHub issue as a CoE task."""
     log.info("=== Processing Issue #%d ===", issue_number)
@@ -156,7 +211,14 @@ def action_process_issue(issue_number: int) -> None:
     result = json.loads(result_raw)
 
     status = result.get("status", "unknown")
-    summary = result.get("summary", str(result))
+    summary = result.get("summary", "")
+    persona = result.get("persona", "orchestrator")
+    run_id = os.environ.get("GITHUB_RUN_ID", "local")
+    footer = f"\n\n---\n_Agent: {persona} | Run ID: GHA_{run_id}_"
+
+    # If no clean summary, build one from structured result fields
+    if not summary:
+        summary = _format_result_as_markdown(result)
 
     log.info("Issue #%d result: %s", issue_number, status)
 
@@ -165,8 +227,8 @@ def action_process_issue(issue_number: int) -> None:
         comment_body = (
             "## 🤔 Agent needs your input\n\n"
             f"{result.get('question', 'The agent has a question before proceeding.')}\n\n"
-            "**Please comment with your direction.** I'll pick it up and continue.\n\n"
-            f"_Agent: {result.get('persona', 'orchestrator')} | Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
+            "**Please comment with your direction.** I'll pick it up and continue."
+            + footer
         )
         _post_issue_comment(issue_number, comment_body)
         _set_issue_label(issue_number, ["needs-bill"], ["agent-task"])
@@ -178,18 +240,32 @@ def action_process_issue(issue_number: int) -> None:
             "## ✅ Agent Task Complete\n\n"
             f"{summary}\n\n"
             + (f"**Artifact:** `{artifact_info}`\n\n" if artifact_info else "")
-            + f"_Agent: {result.get('persona', 'orchestrator')} | Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
+            + footer.lstrip("\n\n")
         )
         _post_issue_comment(issue_number, comment_body)
         _set_issue_label(issue_number, ["done"], ["agent-task"])
         _close_issue(issue_number)
 
+    elif status == "pipeline_advanced":
+        stage = result.get("current_stage", "unknown")
+        assigned_to = result.get("assigned_to", "")
+        next_steps = result.get("next_steps", [])
+        steps_md = "\n".join(f"- {s}" for s in next_steps) if next_steps else ""
+        comment_body = (
+            f"## 🔄 Pipeline Stage Advanced\n\n"
+            f"This item has been moved to: **`{stage}`**\n\n"
+            + (f"**Assigned to:** {assigned_to}\n\n" if assigned_to else "")
+            + (f"{summary}\n\n" if summary else "")
+            + (f"**Next steps:**\n{steps_md}\n\n" if steps_md else "")
+            + footer.lstrip("\n\n")
+        )
+        _post_issue_comment(issue_number, comment_body)
+
     else:
         comment_body = (
-            "## ⚠️ Agent Update\n\n"
-            f"Status: `{status}`\n\n"
-            f"{summary}\n\n"
-            f"_Agent: {result.get('persona', 'orchestrator')} | Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
+            f"## ⚠️ Agent Update — `{status}`\n\n"
+            f"{summary}"
+            + footer
         )
         _post_issue_comment(issue_number, comment_body)
 
