@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,25 +7,68 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  :root {
-    --bg:       #0f1623;
-    --bg2:      #1a2438;
-    --bg3:      #212f47;
-    --navy:     #1a2744;
-    --gold:     #c8a84b;
-    --gold2:    #e4c96e;
-    --text:     #e8ecf4;
-    --muted:    #8e9bbf;
-    --border:   #2a3a5c;
-    --low:      #22c55e;
-    --medium:   #f59e0b;
-    --high:     #ef4444;
-    --pill-h:   220px;
+  /* ── Fluent 2 Design Tokens — Dark (default) ── */
+  :root, html[data-theme="dark"] {
+    --bg:        #0f1623;
+    --bg2:       #1a2438;
+    --bg3:       #212f47;
+    --navy:      #1a2744;
+    --gold:      #c8a84b;
+    --gold2:     #e4c96e;
+    --text:      #e8ecf4;
+    --muted:     #8e9bbf;
+    --border:    #2a3a5c;
+    --low:       #22c55e;
+    --medium:    #f59e0b;
+    --high:      #ef4444;
+    --pill-h:    220px;
+    --row-hover: #1d2b40;
+    --row-border:#1e2d44;
+    --input-bg:  #1a2438;
+    --shadow:    0 2px 8px rgba(0,0,0,0.4);
+    --badge-gold-bg:  #3b2d0a;
+    --badge-blue-bg:  #0d2040;
+    --badge-green-bg: #0d2b1a;
+    --badge-red-bg:   #2b0d0d;
+    --badge-gray-bg:  #1e2538;
+    --badge-blue-fg:  #7eb4ff;
+    --badge-green-fg: #4ade80;
+    --badge-red-fg:   #f87171;
+    --header-gradient: linear-gradient(135deg,#1a2744 0%,#0f1d36 100%);
+  }
+  /* ── Fluent 2 Design Tokens — Light ── */
+  html[data-theme="light"] {
+    --bg:        #f5f5f5;
+    --bg2:       #ffffff;
+    --bg3:       #ebebeb;
+    --navy:      #1a2744;
+    --gold:      #a07830;
+    --gold2:     #7a5c18;
+    --text:      #242424;
+    --muted:     #616161;
+    --border:    #d1d1d1;
+    --low:       #107c10;
+    --medium:    #986f0b;
+    --high:      #d13438;
+    --pill-h:    220px;
+    --row-hover: #f0f0f0;
+    --row-border:#e8e8e8;
+    --input-bg:  #f5f5f5;
+    --shadow:    0 2px 8px rgba(0,0,0,0.10);
+    --badge-gold-bg:  #fdf3dc;
+    --badge-blue-bg:  #e3efff;
+    --badge-green-bg: #dff6dd;
+    --badge-red-bg:   #fde7e9;
+    --badge-gray-bg:  #f0f0f0;
+    --badge-blue-fg:  #0078d4;
+    --badge-green-fg: #107c10;
+    --badge-red-fg:   #d13438;
+    --header-gradient: linear-gradient(135deg,#1a2744 0%,#0f1d36 100%);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
   /* Header */
-  #header { background: linear-gradient(135deg, #1a2744 0%, #0f1d36 100%); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; align-items: center; gap: 16px; height: 52px; flex-shrink: 0; }
+  #header { background: var(--header-gradient); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; align-items: center; gap: 16px; height: 52px; flex-shrink: 0; }
   #header .brand { display: flex; align-items: center; gap: 10px; }
   #header .brand .logo { width: 28px; height: 28px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--navy); font-size: 13px; }
   #header .brand h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.03em; }
@@ -34,7 +77,10 @@
   #header .spacer { flex: 1; }
   #header .user-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px 4px 6px; display: flex; align-items: center; gap: 7px; font-size: 12px; cursor: pointer; }
   #header .user-chip .av { width: 22px; height: 22px; border-radius: 50%; background: var(--gold); color: var(--navy); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 10px; }
-  #copilot-toggle { background: var(--gold); color: var(--navy); border: none; border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  #copilot-toggle { background: var(--gold); color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  /* Theme toggle — Fluent 2 style */
+  #theme-toggle { background: transparent; border: 1px solid rgba(255,255,255,0.25); color: #e8ecf4; border-radius: 6px; padding: 5px 9px; font-size: 16px; cursor: pointer; transition: all .15s; line-height: 1; }
+  #theme-toggle:hover { background: rgba(255,255,255,0.12); }
   /* Main layout */
   #main { display: flex; flex: 1; overflow: hidden; }
   #content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -53,11 +99,11 @@
   .section-title { font-size: 14px; font-weight: 700; color: var(--gold2); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   /* Badges */
   .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-  .badge-gold { background: #3b2d0a; color: var(--gold2); }
-  .badge-blue { background: #0d2040; color: #7eb4ff; }
-  .badge-green { background: #0d2b1a; color: #4ade80; }
-  .badge-red { background: #2b0d0d; color: #f87171; }
-  .badge-gray { background: #1e2538; color: var(--muted); }
+  .badge-gold  { background: var(--badge-gold-bg);  color: var(--gold2); }
+  .badge-blue  { background: var(--badge-blue-bg);  color: var(--badge-blue-fg); }
+  .badge-green { background: var(--badge-green-bg); color: var(--badge-green-fg); }
+  .badge-red   { background: var(--badge-red-bg);   color: var(--badge-red-fg); }
+  .badge-gray  { background: var(--badge-gray-bg);  color: var(--muted); }
   /* Risk pills */
   .risk-low { background: #0d2b1a; color: #4ade80; border: 1px solid #166534; border-radius: 4px; padding: 1px 7px; font-size: 11px; font-weight: 600; }
   .risk-med { background: #2b1a0d; color: #fbbf24; border: 1px solid #92400e; border-radius: 4px; padding: 1px 7px; font-size: 11px; font-weight: 600; }
@@ -65,12 +111,12 @@
   /* Tables */
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { text-align: left; padding: 8px 10px; color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border); }
-  td { padding: 9px 10px; border-bottom: 1px solid #1e2d44; vertical-align: top; }
-  tr:hover td { background: #1d2b40; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--row-border); vertical-align: top; }
+  tr:hover td { background: var(--row-hover); }
   tr:last-child td { border-bottom: none; }
   /* Search/Filter bar */
   .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
-  .filter-bar input, .filter-bar select { background: var(--bg2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; }
+  .filter-bar input, .filter-bar select { background: var(--input-bg); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; }
   .filter-bar input:focus, .filter-bar select:focus { border-color: var(--gold); }
   .filter-bar input { width: 240px; }
   /* Star rating */
@@ -84,7 +130,7 @@
   .kanban-card h4 { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 5px; line-height: 1.35; }
   .kanban-card .meta { font-size: 11px; color: var(--muted); display: flex; align-items: center; justify-content: space-between; }
   .kanban-card .owner-av { width: 20px; height: 20px; border-radius: 50%; background: var(--gold); color: var(--navy); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; }
-  .kanban-label { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 10px; background: #1e2d44; color: #7eb4ff; margin: 2px 2px 0 0; }
+  .kanban-label { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 10px; background: var(--badge-blue-bg); color: var(--badge-blue-fg); margin: 2px 2px 0 0; }
   /* Copilot sidebar */
   #copilot-sidebar { width: 340px; min-width: 340px; background: var(--bg2); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; transition: width .2s, min-width .2s; }
   #copilot-sidebar.hidden { width: 0; min-width: 0; border-left: none; }
@@ -128,9 +174,29 @@
   /* Meeting summary card */
   .ms-section { margin-bottom: 10px; }
   .ms-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--gold); margin-bottom: 5px; }
-  .ms-item { font-size: 12px; color: var(--text); padding: 4px 0; border-bottom: 1px solid #1e2d44; line-height: 1.4; }
+  .ms-item { font-size: 12px; color: var(--text); padding: 4px 0; border-bottom: 1px solid var(--row-border); line-height: 1.4; }
   .ms-item:last-child { border-bottom: none; }
   .ms-item::before { content: "•  "; color: var(--gold); }
+  /* Phase 2 — Accordion (LDF triangles) */
+  .accordion-item { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+  .accordion-header { background: var(--bg3); padding: 10px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; user-select: none; }
+  .accordion-header:hover { background: var(--bg2); }
+  .accordion-chevron { font-size: 10px; transition: transform .2s; }
+  .accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+  .accordion-body { display: none; padding: 14px; background: var(--bg2); }
+  .accordion-body.open { display: block; }
+  /* Phase 2 — Adequacy gauge */
+  .gauge-bar  { height: 8px; border-radius: 4px; background: var(--bg3); overflow: hidden; margin-top: 5px; }
+  .gauge-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+  /* Phase 2 — Treaty status */
+  .treaty-active   { background: var(--badge-green-bg); color: var(--badge-green-fg); }
+  .treaty-expiring { background: var(--badge-gold-bg);  color: var(--gold2); }
+  .treaty-disputed { background: var(--badge-red-bg);   color: var(--badge-red-fg); }
+  .treaty-expired  { background: var(--badge-gray-bg);  color: var(--muted); }
+  /* Phase 2 — A/E ratio colors */
+  .ae-above { color: var(--badge-green-fg); font-weight: 700; }
+  .ae-below { color: var(--badge-red-fg);   font-weight: 700; }
+  .ae-on    { color: var(--badge-blue-fg);  font-weight: 700; }
 </style>
 </head>
 <body>
@@ -147,6 +213,7 @@
     <div class="av">SC</div>
     <span>Sarah Chen</span>
   </div>
+  <button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
   <button id="copilot-toggle" onclick="toggleCopilot()">✦ Copilot</button>
 </div>
 
@@ -161,6 +228,8 @@
       <div class="tab" onclick="switchTab('partnerships')">📊 Partnership Dashboard</div>
       <div class="tab" onclick="switchTab('risk')">⚠️ Risk Assessment</div>
       <div class="tab" onclick="switchTab('kanban')">📌 Engagement Kanban</div>
+      <div class="tab" onclick="switchTab('actuarial')">📐 Actuarial</div>
+      <div class="tab" onclick="switchTab('legal')">⚖️ Legal</div>
       <div class="tab" onclick="switchTab('pbi')">📈 Power BI Reports</div>
     </div>
 
@@ -283,6 +352,94 @@
         </div>
       </div>
 
+      <!-- ACTUARIAL -->
+      <div id="panel-actuarial" class="panel">
+        <div class="metric-grid">
+          <div class="metric-card"><div class="val" id="act-adequacy-val">—</div><div class="lbl">Avg Reserve Adequacy</div><div class="delta">per CDM standard</div></div>
+          <div class="metric-card"><div class="val" id="act-lob-count">—</div><div class="lbl">Lines of Business</div><div class="delta">across all cedents</div></div>
+          <div class="metric-card"><div class="val" id="act-studies-val">—</div><div class="lbl">Experience Studies YTD</div><div class="delta">A/E in scope</div></div>
+          <div class="metric-card"><div class="val" id="act-flagged-val">—</div><div class="lbl">Flagged Assumptions</div><div class="delta" style="color:var(--medium);">need review</div></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <!-- Reserve adequacy table -->
+          <div>
+            <div class="section-title">Reserve Adequacy by Cedent / LOB</div>
+            <div class="card" style="padding:0;overflow:hidden;">
+              <table>
+                <thead><tr><th>Cedent</th><th>LOB</th><th>Current Resv</th><th>Rec'd Resv</th><th>Adequacy</th><th>Status</th></tr></thead>
+                <tbody id="adequacy-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Experience study results -->
+          <div>
+            <div class="section-title">Experience Studies — A/E Ratios</div>
+            <div class="card" style="padding:0;overflow:hidden;">
+              <table>
+                <thead><tr><th>Cedent</th><th>Study Type</th><th>A/E Ratio</th><th>Period</th><th>Status</th></tr></thead>
+                <tbody id="ae-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- LDF Triangle accordion -->
+        <div style="margin-top:20px;">
+          <div class="section-title">Loss Development Factor (LDF) Triangles</div>
+          <div id="ldf-accordion"></div>
+        </div>
+        <!-- Assumption log -->
+        <div style="margin-top:20px;">
+          <div class="section-title">Assumption Log</div>
+          <div class="card" style="padding:0;overflow:hidden;">
+            <table>
+              <thead><tr><th>Cedent</th><th>Assumption</th><th>Category</th><th>Value</th><th>Prior Value</th><th>Changed By</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody id="assumption-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEGAL -->
+      <div id="panel-legal" class="panel">
+        <div class="metric-grid">
+          <div class="metric-card"><div class="val" id="leg-treaties-val">—</div><div class="lbl">Active Treaties</div><div class="delta">under management</div></div>
+          <div class="metric-card"><div class="val" id="leg-disputes-val">—</div><div class="lbl">Open Disputes</div><div class="delta" style="color:var(--medium);">requires attention</div></div>
+          <div class="metric-card"><div class="val" id="leg-amend-val">—</div><div class="lbl">Pending Amendments</div><div class="delta">in review</div></div>
+          <div class="metric-card"><div class="val" id="leg-arb-val">—</div><div class="lbl">Arbitrations</div><div class="delta" style="color:var(--high);">active proceedings</div></div>
+        </div>
+        <!-- Treaty table -->
+        <div>
+          <div class="section-title">Treaty Register</div>
+          <div class="card" style="padding:0;overflow:hidden;">
+            <table>
+              <thead><tr><th>Treaty Name</th><th>Cedent</th><th>Type</th><th>Effective</th><th>Expiry</th><th>Exposure ($M)</th><th>Governing Law</th><th>Status</th></tr></thead>
+              <tbody id="treaty-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Disputes -->
+        <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div>
+            <div class="section-title">Dispute & Arbitration Tracker</div>
+            <div class="card" style="padding:0;overflow:hidden;">
+              <table>
+                <thead><tr><th>Cedent</th><th>Matter</th><th>Exposure</th><th>Stage</th><th>Last Action</th></tr></thead>
+                <tbody id="dispute-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="section-title">Amendment Log</div>
+            <div class="card" style="padding:0;overflow:hidden;">
+              <table>
+                <thead><tr><th>Treaty</th><th>Date</th><th>Description</th><th>Requestor</th><th>Status</th></tr></thead>
+                <tbody id="amendment-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /panels -->
   </div><!-- /content -->
 
@@ -326,8 +483,105 @@ let D = MOCK_DATA;
 let chatHistory = [];
 let prrBarChart = null, prrDonutChart = null;
 
+// ====================== PHASE 2 DATA ======================
+const PHASE2_DATA = {
+  actuarial: {
+    reserveAdequacy: [
+      { id:"a1", cedentId:"c1", lob:"General Liability", currentReserve:142.5, recReserve:138.2, adequacyPct:103.1, status:"Adequate" },
+      { id:"a2", cedentId:"c1", lob:"Property Catastrophe", currentReserve:87.3, recReserve:91.0, adequacyPct:95.9, status:"Deficient" },
+      { id:"a3", cedentId:"c2", lob:"Workers Compensation", currentReserve:210.0, recReserve:208.5, adequacyPct:100.7, status:"Adequate" },
+      { id:"a4", cedentId:"c2", lob:"Professional Liability", currentReserve:55.2, recReserve:58.7, adequacyPct:94.0, status:"Deficient" },
+      { id:"a5", cedentId:"c3", lob:"Commercial Auto", currentReserve:33.8, recReserve:33.1, adequacyPct:102.1, status:"Adequate" },
+      { id:"a6", cedentId:"c5", lob:"General Liability", currentReserve:320.4, recReserve:315.0, adequacyPct:101.7, status:"Adequate" },
+      { id:"a7", cedentId:"c5", lob:"Medical Malpractice", currentReserve:178.9, recReserve:174.5, adequacyPct:102.5, status:"Adequate" },
+      { id:"a8", cedentId:"c4", lob:"Property Catastrophe", currentReserve:44.1, recReserve:46.8, adequacyPct:94.2, status:"Deficient" }
+    ],
+    experienceStudies: [
+      { id:"e1", cedentId:"c1", studyType:"Mortality", aePct:98.2, period:"2023–2025", analyst:"J. Phillips", status:"Finalized" },
+      { id:"e2", cedentId:"c1", studyType:"Loss Development", aePct:104.1, period:"2022–2025", analyst:"J. Phillips", status:"Finalized" },
+      { id:"e3", cedentId:"c2", studyType:"Claim Frequency", aePct:112.3, period:"2024–2025", analyst:"Yuki Tanaka", status:"Under Review" },
+      { id:"e4", cedentId:"c5", studyType:"Loss Development", aePct:97.5, period:"2023–2025", analyst:"Yuki Tanaka", status:"Finalized" },
+      { id:"e5", cedentId:"c5", studyType:"Severity Trend", aePct:101.2, period:"2023–2025", analyst:"J. Phillips", status:"Finalized" },
+      { id:"e6", cedentId:"c3", studyType:"Claim Frequency", aePct:95.8, period:"2024–2025", analyst:"D. Marsh (Acme)", status:"Draft" },
+      { id:"e7", cedentId:"c4", studyType:"Loss Development", aePct:108.7, period:"2023–2025", analyst:"J. Phillips", status:"Under Review" }
+    ],
+    ldfTriangles: [
+      { cedentId:"c1", lob:"General Liability",
+        header:["12","24","36","48","60","72"],
+        triangleRows:[
+          { year:2020, factors:[2.42,1.58,1.22,1.09,1.04,"—"] },
+          { year:2021, factors:[2.38,1.61,1.19,1.07,"—","—"] },
+          { year:2022, factors:[2.51,1.55,1.24,"—","—","—"] },
+          { year:2023, factors:[2.44,1.62,"—","—","—","—"] },
+          { year:2024, factors:[2.47,"—","—","—","—","—"] }
+        ],
+        selectedLDF:[2.45,1.59,1.22,1.08,1.03],
+        cumulativeLDF:[4.76,1.94,1.22,1.08,1.03]
+      },
+      { cedentId:"c2", lob:"Workers Compensation",
+        header:["12","24","36","48","60"],
+        triangleRows:[
+          { year:2021, factors:[1.72,1.31,1.11,1.04,"—"] },
+          { year:2022, factors:[1.69,1.28,1.09,"—","—"] },
+          { year:2023, factors:[1.75,1.33,"—","—","—"] },
+          { year:2024, factors:[1.70,"—","—","—","—"] }
+        ],
+        selectedLDF:[1.72,1.31,1.10,1.04],
+        cumulativeLDF:[2.61,1.52,1.16,1.04]
+      },
+      { cedentId:"c5", lob:"General Liability",
+        header:["12","24","36","48","60","72","84"],
+        triangleRows:[
+          { year:2019, factors:[2.61,1.72,1.29,1.14,1.07,1.03,"—"] },
+          { year:2020, factors:[2.58,1.68,1.31,1.12,1.06,"—","—"] },
+          { year:2021, factors:[2.63,1.74,1.28,"—","—","—","—"] },
+          { year:2022, factors:[2.57,1.70,"—","—","—","—","—"] },
+          { year:2023, factors:[2.65,"—","—","—","—","—","—"] }
+        ],
+        selectedLDF:[2.61,1.71,1.29,1.13,1.06,1.03],
+        cumulativeLDF:[7.44,2.85,1.67,1.29,1.14,1.03]
+      }
+    ],
+    assumptions: [
+      { id:"as1", cedentId:"c1", assumption:"Ultimate Loss Ratio", category:"Pricing", value:"68.5%", priorValue:"67.2%", changedBy:"J. Phillips", date:"2026-03-10", status:"Approved" },
+      { id:"as2", cedentId:"c2", assumption:"Claim Frequency Trend", category:"Trending", value:"+2.8%", priorValue:"+2.1%", changedBy:"J. Phillips", date:"2026-04-01", status:"Pending Review" },
+      { id:"as3", cedentId:"c5", assumption:"Severity Trend", category:"Trending", value:"+4.2%", priorValue:"+3.9%", changedBy:"Yuki Tanaka", date:"2026-03-28", status:"Approved" },
+      { id:"as4", cedentId:"c5", assumption:"Loss Development Pattern", category:"IBNR", value:"See LDF v5", priorValue:"LDF v4", changedBy:"J. Phillips", date:"2026-04-01", status:"Approved" },
+      { id:"as5", cedentId:"c2", assumption:"Discount Rate", category:"Finance", value:"4.15%", priorValue:"3.90%", changedBy:"Sarah Chen", date:"2026-04-05", status:"Flagged" },
+      { id:"as6", cedentId:"c4", assumption:"Ultimate Loss Ratio", category:"Pricing", value:"74.1%", priorValue:"71.5%", changedBy:"J. Phillips", date:"2026-03-15", status:"Pending Review" },
+      { id:"as7", cedentId:"c3", assumption:"Tail Factor", category:"IBNR", value:"1.008", priorValue:"1.012", changedBy:"J. Phillips", date:"2026-02-20", status:"Approved" }
+    ]
+  },
+  legal: {
+    treaties: [
+      { id:"tr1", cedentId:"c1", name:"Acme GL Excess of Loss 2025", type:"Excess of Loss", effective:"2025-01-01", expiry:"2025-12-31", exposureM:350, governingLaw:"New York", status:"Active" },
+      { id:"tr2", cedentId:"c1", name:"Acme Prop Cat QS 2026", type:"Quota Share", effective:"2026-01-01", expiry:"2026-12-31", exposureM:210, governingLaw:"New York", status:"Active" },
+      { id:"tr3", cedentId:"c2", name:"Titan WC Surplus Lines 2025", type:"Surplus Lines", effective:"2025-04-01", expiry:"2026-03-31", exposureM:480, governingLaw:"New York", status:"Disputed" },
+      { id:"tr4", cedentId:"c3", name:"Harbor Auto AggXL 2026", type:"Aggregate XL", effective:"2026-01-01", expiry:"2026-12-31", exposureM:95, governingLaw:"Illinois", status:"Active" },
+      { id:"tr5", cedentId:"c5", name:"Summit GL Treaty 2025", type:"Quota Share", effective:"2025-07-01", expiry:"2026-06-30", exposureM:820, governingLaw:"New York", status:"Active" },
+      { id:"tr6", cedentId:"c5", name:"Summit Med Mal XL 2026", type:"Excess of Loss", effective:"2026-01-01", expiry:"2026-12-31", exposureM:340, governingLaw:"New York", status:"Expiring Soon" },
+      { id:"tr7", cedentId:"c6", name:"Atlantic Risk Data Pilot MOU", type:"MOU", effective:"2026-04-15", expiry:"2026-10-15", exposureM:0, governingLaw:"Delaware", status:"Active" },
+      { id:"tr8", cedentId:"c2", name:"Titan Prof Liability 2024", type:"Excess of Loss", effective:"2024-01-01", expiry:"2024-12-31", exposureM:120, governingLaw:"New York", status:"Expired" }
+    ],
+    disputes: [
+      { id:"d1", cedentId:"c2", matter:"Titan WC Coverage Dispute – Claim #WC-2024-0881", exposureM:4.2, stage:"Arbitration Filed", lastAction:"2026-04-03 — ERAC filed demand for arbitration", owner:"Mike Torres" },
+      { id:"d2", cedentId:"c2", matter:"Titan PL Treaty Interpretation – Policy Period", exposureM:1.8, stage:"Mediation", lastAction:"2026-03-18 — Parties agreed to mediation; date TBD", owner:"Mike Torres" },
+      { id:"d3", cedentId:"c1", matter:"Acme Prop Cat – Loss Occurrence Definition", exposureM:8.5, stage:"Negotiation", lastAction:"2026-04-10 — ERAC sent counter-proposal to Tom Vickers", owner:"Sarah Chen" }
+    ],
+    amendments: [
+      { id:"am1", treatyId:"tr5", treatyName:"Summit GL Treaty 2025", date:"2026-03-01", description:"Increase retention from $1M to $1.5M per occurrence", requestor:"George Whitfield", status:"Executed" },
+      { id:"am2", treatyId:"tr3", treatyName:"Titan WC Surplus Lines 2025", date:"2026-04-05", description:"Extend dispute resolution cure period to 90 days", requestor:"Karen Ostler", status:"Under Review" },
+      { id:"am3", treatyId:"tr6", treatyName:"Summit Med Mal XL 2026", date:"2026-04-01", description:"Renewal negotiation — ERAC proposed 5% rate increase", requestor:"Sarah Chen", status:"Pending Cedent" },
+      { id:"am4", treatyId:"tr1", treatyName:"Acme GL Excess of Loss 2025", date:"2026-02-14", description:"Add cyber exclusion endorsement per industry standard", requestor:"Tom Vickers", status:"Executed" },
+      { id:"am5", treatyId:"tr4", treatyName:"Harbor Auto AggXL 2026", date:"2026-03-20", description:"Adjust aggregate deductible from $250K to $300K", requestor:"Marcus Liu", status:"Executed" }
+    ]
+  }
+};
+
+function applyPhase2Data() { Object.assign(D, PHASE2_DATA); }
+
 // Try load external data
-fetch('../data/mock_data.json').then(r => r.json()).then(d => { D = d; initAll(); }).catch(() => initAll());
+fetch('../data/mock_data.json').then(r => r.json()).then(d => { D = d; applyPhase2Data(); initAll(); }).catch(() => { applyPhase2Data(); initAll(); });
 
 function initAll() {
   populateCedentSelects();
@@ -336,9 +590,15 @@ function initAll() {
   renderPartnerships();
   renderRisk();
   renderKanban();
+  renderActuarial();
+  renderLegal();
   // flag count
   const flagged = D.contacts.filter(c => c.riskFlags && c.riskFlags.length > 0).length;
   document.getElementById('flag-count').textContent = flagged;
+  // theme persistence
+  const saved = localStorage.getItem('erac-theme');
+  if (saved) document.documentElement.dataset.theme = saved;
+  updateThemeBtn();
 }
 
 // ---- TAB NAVIGATION ----
@@ -348,6 +608,8 @@ function switchTab(name) {
   event.target.classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
   if (name === 'partnerships') setTimeout(renderPRRCharts, 100);
+  if (name === 'actuarial') renderActuarial();
+  if (name === 'legal') renderLegal();
 }
 
 // ---- CEDENT SELECTS ----
@@ -732,6 +994,195 @@ function getFallbackResponse(q) {
     return `Top rated partners: Summit Treaty Partners (4.6 — Strategic), Acme Reinsurance (4.2 — Strategic), Titan Mutual Re (3.6 — Advisory), Harbor Group (3.3 — Tactical, Pending approval). Connect the Azure Function at localhost:7071 for live Copilot responses.`;
   }
   return `I can help with cedent analysis, partnership ratings, risk assessments, and engagement tracking. The Azure Function isn't connected right now — run \`func start\` locally to enable live AI responses. You can still explore all tabs using the live demo data.`;
+}
+
+// ---- THEME TOGGLE ----
+function updateThemeBtn() {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.textContent = document.documentElement.dataset.theme === 'light' ? '🌙' : '☀️';
+}
+function toggleTheme() {
+  const cur = document.documentElement.dataset.theme;
+  const next = cur === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem('erac-theme', next);
+  updateThemeBtn();
+}
+
+// ---- ACTUARIAL ----
+function cedentName(id) {
+  const c = (D.cedents||[]).find(x => x.id === id);
+  return c ? c.name : id;
+}
+function adequacyBadge(status) {
+  const m = { Adequate:'badge-active', Deficient:'badge-flagged', Excess:'badge-advisory' };
+  return `<span class="badge ${m[status]||'badge-inactive'}">${status}</span>`;
+}
+function studyBadge(status) {
+  const m = { Finalized:'badge-active', 'Under Review':'badge-advisory', Draft:'badge-inactive' };
+  return `<span class="badge ${m[status]||'badge-inactive'}">${status}</span>`;
+}
+function asBadge(status) {
+  const m = { Approved:'badge-active', 'Pending Review':'badge-advisory', Flagged:'badge-flagged' };
+  return `<span class="badge ${m[status]||'badge-inactive'}">${status}</span>`;
+}
+
+function renderActuarial() {
+  const act = D.actuarial || PHASE2_DATA.actuarial;
+  if (!act) return;
+
+  // Metrics
+  const total = act.reserveAdequacy.length;
+  const def = act.reserveAdequacy.filter(r => r.status === 'Deficient').length;
+  const avgAe = (act.experienceStudies.reduce((s,e) => s+e.aePct, 0) / act.experienceStudies.length).toFixed(1);
+  const pendAs = act.assumptions.filter(a => ['Pending Review','Flagged'].includes(a.status)).length;
+  const cards = document.querySelectorAll('#panel-actuarial .metric-card');
+  if (cards[0]) cards[0].querySelector('.metric-value').textContent = total;
+  if (cards[1]) cards[1].querySelector('.metric-value').textContent = def;
+  if (cards[2]) cards[2].querySelector('.metric-value').textContent = avgAe + '%';
+  if (cards[3]) cards[3].querySelector('.metric-value').textContent = pendAs;
+
+  // Reserve Adequacy
+  const atb = document.getElementById('adequacy-tbody');
+  if (atb) atb.innerHTML = act.reserveAdequacy.map(r => {
+    const diff = (r.currentReserve - r.recReserve).toFixed(1);
+    const sign = diff >= 0 ? '+' : '';
+    return `<tr>
+      <td>${cedentName(r.cedentId)}</td>
+      <td>${r.lob}</td>
+      <td>$${r.currentReserve.toFixed(1)}M</td>
+      <td>$${r.recReserve.toFixed(1)}M</td>
+      <td>${sign}$${diff}M</td>
+      <td>${r.adequacyPct.toFixed(1)}%</td>
+      <td>${adequacyBadge(r.status)}</td>
+    </tr>`;
+  }).join('');
+
+  // A/E Studies
+  const aetb = document.getElementById('ae-tbody');
+  if (aetb) aetb.innerHTML = act.experienceStudies.map(e => {
+    const cls = e.aePct > 105 ? 'ae-high' : e.aePct < 95 ? 'ae-low' : '';
+    const pct = e.aePct.toFixed(1) + '%';
+    return `<tr>
+      <td>${cedentName(e.cedentId)}</td>
+      <td>${e.studyType}</td>
+      <td>${e.period}</td>
+      <td class="${cls}">${pct}</td>
+      <td>${e.analyst}</td>
+      <td>${studyBadge(e.status)}</td>
+    </tr>`;
+  }).join('');
+
+  // LDF Triangles accordion
+  const ldfAcc = document.getElementById('ldf-accordion');
+  if (ldfAcc) ldfAcc.innerHTML = act.ldfTriangles.map((t, idx) => {
+    const headerRow = `<tr><th>Year</th>${t.header.map(h=>`<th>${h} Mo</th>`).join('')}</tr>`;
+    const dataRows = t.triangleRows.map(row =>
+      `<tr><td>${row.year}</td>${row.factors.map(f=>`<td>${f}</td>`).join('')}</tr>`
+    ).join('');
+    const selRow = `<tr class="ldf-selected"><td><strong>Selected</strong></td>${t.selectedLDF.map(f=>`<td><strong>${f}</strong></td>`).join('')}<td>—</td></tr>`;
+    const cumRow = `<tr class="ldf-cumulative"><td><em>Cumulative</em></td>${t.cumulativeLDF.map(f=>`<td><em>${f}</em></td>`).join('')}<td>1.00</td></tr>`;
+    return `<div class="accordion-item">
+      <div class="accordion-header ${idx===0?'open':''}" onclick="toggleAccordion(this)">
+        ▶ ${cedentName(t.cedentId)} — ${t.lob}
+      </div>
+      <div class="accordion-body ${idx===0?'open':''}">
+        <table class="data-table"><thead>${headerRow}</thead><tbody>${dataRows}${selRow}${cumRow}</tbody></table>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Assumptions log
+  const astb = document.getElementById('assumption-tbody');
+  if (astb) astb.innerHTML = act.assumptions.map(a =>
+    `<tr>
+      <td>${cedentName(a.cedentId)}</td>
+      <td>${a.assumption}</td>
+      <td><span class="badge badge-advisory">${a.category}</span></td>
+      <td>${a.value}</td>
+      <td>${a.priorValue}</td>
+      <td>${a.changedBy}</td>
+      <td>${a.date}</td>
+      <td>${asBadge(a.status)}</td>
+    </tr>`
+  ).join('');
+}
+
+function toggleAccordion(el) {
+  el.classList.toggle('open');
+  const body = el.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+
+// ---- LEGAL ----
+function treatyBadge(status) {
+  const m = { Active:'badge-active', Disputed:'badge-flagged', 'Expiring Soon':'badge-advisory', Expired:'badge-inactive' };
+  return `<span class="badge ${m[status]||'badge-inactive'}">${status}</span>`;
+}
+function disputeBadge(stage) {
+  const m = { Arbitration:'badge-flagged', 'Arbitration Filed':'badge-flagged', Mediation:'badge-advisory', Negotiation:'badge-advisory' };
+  return `<span class="badge ${m[stage]||'badge-inactive'}">${stage}</span>`;
+}
+function amendBadge(status) {
+  const m = { Executed:'badge-active', 'Under Review':'badge-advisory', 'Pending Cedent':'badge-inactive' };
+  return `<span class="badge ${m[status]||'badge-inactive'}">${status}</span>`;
+}
+
+function renderLegal() {
+  const leg = D.legal || PHASE2_DATA.legal;
+  if (!leg) return;
+
+  // Metrics
+  const active = leg.treaties.filter(t => t.status === 'Active').length;
+  const disp = leg.disputes.length;
+  const expiring = leg.treaties.filter(t => t.status === 'Expiring Soon').length;
+  const pendAm = leg.amendments.filter(a => ['Under Review','Pending Cedent'].includes(a.status)).length;
+  const cards = document.querySelectorAll('#panel-legal .metric-card');
+  if (cards[0]) cards[0].querySelector('.metric-value').textContent = active;
+  if (cards[1]) cards[1].querySelector('.metric-value').textContent = disp;
+  if (cards[2]) cards[2].querySelector('.metric-value').textContent = expiring;
+  if (cards[3]) cards[3].querySelector('.metric-value').textContent = pendAm;
+
+  // Treaty Register
+  const ttb = document.getElementById('treaty-tbody');
+  if (ttb) ttb.innerHTML = leg.treaties.map(t =>
+    `<tr>
+      <td>${cedentName(t.cedentId)}</td>
+      <td>${t.name}</td>
+      <td>${t.type}</td>
+      <td>${t.effective}</td>
+      <td>${t.expiry}</td>
+      <td>${t.exposureM > 0 ? '$'+t.exposureM+'M' : '—'}</td>
+      <td>${t.governingLaw}</td>
+      <td>${treatyBadge(t.status)}</td>
+    </tr>`
+  ).join('');
+
+  // Disputes
+  const dtb = document.getElementById('dispute-tbody');
+  if (dtb) dtb.innerHTML = leg.disputes.map(d =>
+    `<tr>
+      <td>${cedentName(d.cedentId)}</td>
+      <td>${d.matter}</td>
+      <td>$${d.exposureM}M</td>
+      <td>${disputeBadge(d.stage)}</td>
+      <td>${d.lastAction}</td>
+      <td>${d.owner}</td>
+    </tr>`
+  ).join('');
+
+  // Amendments
+  const amb = document.getElementById('amendment-tbody');
+  if (amb) amb.innerHTML = leg.amendments.map(a =>
+    `<tr>
+      <td>${a.treatyName}</td>
+      <td>${a.date}</td>
+      <td>${a.description}</td>
+      <td>${a.requestor}</td>
+      <td>${amendBadge(a.status)}</td>
+    </tr>`
+  ).join('');
 }
 
 // ---- INIT ----
