@@ -326,29 +326,53 @@
         <div id="kanban-board"></div>
       </div>
 
-      <!-- POWER BI -->
+      <!-- POWER BI / INSIGHTS -->
       <div id="panel-pbi" class="panel">
-        <div class="section-title">📈 Embedded Reports</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
-          <div>
-            <div class="section-title" style="font-size:12px;">Retail Industry Analysis</div>
-            <div class="pbi-frame" style="height:420px;">
-              <iframe title="Retail Analysis Sample" width="100%" height="420"
-                src="https://app.powerbi.com/view?r=eyJrIjoiZDM0OTFlNTYtMzg3OS00MjA4LTkxNGEtMjhmMTY1NjRlYmQ0IiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9"
-                frameborder="0" allowFullScreen="true" style="border:none;"></iframe>
-            </div>
+        <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          📈 Portfolio Analytics Dashboard
+          <span style="font-size:11px;color:var(--muted);font-weight:400;">
+            <select id="pbi-range" onchange="renderPBI()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;">
+              <option value="ytd">YTD 2026</option>
+              <option value="ltm">LTM</option>
+              <option value="3y">3 Years</option>
+            </select>
+          </span>
+        </div>
+
+        <!-- Top metrics row -->
+        <div class="metric-grid" style="margin-bottom:16px;">
+          <div class="metric-card"><div class="val" id="pbi-premium">$2.3B</div><div class="lbl">Total Portfolio Premium</div><div class="delta">▲ 8.2% YTD</div></div>
+          <div class="metric-card"><div class="val" id="pbi-lr">68.4%</div><div class="lbl">Blended Loss Ratio</div><div class="delta">▼ 1.8 pts vs prior period</div></div>
+          <div class="metric-card"><div class="val" id="pbi-cedents">6</div><div class="lbl">Active Cedents</div><div class="delta">stable</div></div>
+          <div class="metric-card"><div class="val" id="pbi-nr">$724M</div><div class="lbl">Net Retained Premium</div><div class="delta">▲ 5.1% YTD</div></div>
+        </div>
+
+        <!-- Charts row 1 -->
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;">
+          <div class="card" style="padding:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Premium & Loss Ratio Trend</div>
+            <canvas id="chart-trend" height="120"></canvas>
           </div>
-          <div>
-            <div class="section-title" style="font-size:12px;">Sales &amp; Returns Analysis</div>
-            <div class="pbi-frame" style="height:420px;">
-              <iframe title="Sales and Returns Sample" width="100%" height="420"
-                src="https://app.powerbi.com/view?r=eyJrIjoiYWVkNTAzOGEtOWM1OS00YTU3LTgzMjQtOWEwMGU3NTNmNDdjIiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9"
-                frameborder="0" allowFullScreen="true" style="border:none;"></iframe>
-            </div>
+          <div class="card" style="padding:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Portfolio Mix by Partner Type</div>
+            <canvas id="chart-mix" height="120"></canvas>
           </div>
         </div>
-        <div class="card-sm" style="background:var(--bg3);">
-          <div style="font-size:12px; color:var(--muted);">💡 <strong style="color:var(--gold);">Phase 2:</strong> Replace sample embeds with ERAC-specific workspace reports — Claims Triage, Partnership Trend, Actuarial Dashboard.</div>
+
+        <!-- Charts row 2 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="card" style="padding:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Loss Ratio by Cedent (Current Period)</div>
+            <canvas id="chart-lr-cedent" height="150"></canvas>
+          </div>
+          <div class="card" style="padding:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Reserve Adequacy by LOB</div>
+            <canvas id="chart-reserve" height="150"></canvas>
+          </div>
+        </div>
+
+        <div class="card-sm" style="background:var(--bg3);margin-top:16px;">
+          <div style="font-size:12px;color:var(--muted);">💡 <strong style="color:var(--gold);">Phase 3:</strong> Replace with live ERAC Power BI workspace embeds — Claims Triage, Partnership Trend, Actuarial Dashboard. Use Power BI Embedded SDK with service principal auth.</div>
         </div>
       </div>
 
@@ -366,7 +390,7 @@
             <div class="section-title">Reserve Adequacy by Cedent / LOB</div>
             <div class="card" style="padding:0;overflow:hidden;">
               <table>
-                <thead><tr><th>Cedent</th><th>LOB</th><th>Current Resv</th><th>Rec'd Resv</th><th>Adequacy</th><th>Status</th></tr></thead>
+                <thead><tr><th>Cedent</th><th>LOB</th><th>Current ($M)</th><th>Rec'd ($M)</th><th>Diff</th><th>Adequacy %</th><th>Status</th></tr></thead>
                 <tbody id="adequacy-tbody"></tbody>
               </table>
             </div>
@@ -376,7 +400,7 @@
             <div class="section-title">Experience Studies — A/E Ratios</div>
             <div class="card" style="padding:0;overflow:hidden;">
               <table>
-                <thead><tr><th>Cedent</th><th>Study Type</th><th>A/E Ratio</th><th>Period</th><th>Status</th></tr></thead>
+                <thead><tr><th>Cedent</th><th>Study Type</th><th>Period</th><th>A/E Ratio</th><th>Analyst</th><th>Status</th></tr></thead>
                 <tbody id="ae-tbody"></tbody>
               </table>
             </div>
@@ -423,7 +447,7 @@
             <div class="section-title">Dispute & Arbitration Tracker</div>
             <div class="card" style="padding:0;overflow:hidden;">
               <table>
-                <thead><tr><th>Cedent</th><th>Matter</th><th>Exposure</th><th>Stage</th><th>Last Action</th></tr></thead>
+                <thead><tr><th>Cedent</th><th>Matter</th><th>Exposure</th><th>Stage</th><th>Last Action</th><th>Owner</th></tr></thead>
                 <tbody id="dispute-tbody"></tbody>
               </table>
             </div>
@@ -610,6 +634,7 @@ function switchTab(name) {
   if (name === 'partnerships') setTimeout(renderPRRCharts, 100);
   if (name === 'actuarial') renderActuarial();
   if (name === 'legal') renderLegal();
+  if (name === 'pbi') setTimeout(renderPBI, 50);
 }
 
 // ---- CEDENT SELECTS ----
@@ -979,21 +1004,211 @@ function escHtml(s) {
 function getFallbackResponse(q) {
   q = q.toLowerCase();
   if (q.includes('summit') || q.includes('whitfield')) {
-    const p = D.partnerships.find(x => x.cedentId === 'c5');
-    return `Summit Treaty Partners is our top-rated strategic partner with an overall PRR score of ${p ? p.overallRating : 4.6}/5.0. The Q1 QBR (Apr 10) confirmed the Strategic tier rating and approved a joint predictive LDF modeling pilot for Q3 2026. Sarah Chen is the relationship owner. Connect the Azure Function endpoint to enable live AI responses.`;
+    const p = D.partnerships && D.partnerships.find(x => x.cedentId === 'c5');
+    return `Summit Treaty Partners is our top-rated strategic partner with an overall PRR score of ${p ? p.overallRating : 4.6}/5.0. The Q1 QBR (Apr 10) confirmed the Strategic tier rating and approved a joint predictive LDF modeling pilot for Q3 2026. Sarah Chen is the relationship owner.`;
   }
-  if (q.includes('titan') || q.includes('risk')) {
-    const r = D.riskAssessments.find(x => x.cedentId === 'c2');
-    return `Titan Mutual Re has an aggregate risk rating of "${r ? r.aggregateRisk : 'Medium'}". Key risk flags: Technology (High — critical system upgrade in progress), Organizational Stability (Medium — 2 senior departures), and 2 disputed claims pending resolution. Mike Torres is tracking a risk assessment completion by Apr 18. Connect the Azure Function for live AI analysis.`;
+  if (q.includes('titan') || (q.includes('risk') && !q.includes('reserve'))) {
+    const r = D.riskAssessments && D.riskAssessments.find(x => x.cedentId === 'c2');
+    return `Titan Mutual Re has an aggregate risk rating of "${r ? r.aggregateRisk : 'Medium'}". Key flags: Technology (High), Organizational Stability (Medium — 2 senior departures). 2 active disputes including arbitration filed Apr 3. Mike Torres owns this relationship.`;
   }
-  if (q.includes('action') || q.includes('open')) {
-    const tasks = D.kanbanTasks.filter(t => ['Executing','Planning'].includes(t.stage));
-    return `There are ${tasks.length} active engagement tasks. Most urgent: Acme reserve triangle data due Apr 15 (Sarah Chen), Titan system upgrade review due Apr 12 (Mike Torres), and Atlantic data sharing agreement due Apr 15 (Mike Torres). Connect Azure Function endpoint for full Copilot capabilities.`;
+  if (q.includes('action') || q.includes('open task')) {
+    const tasks = D.kanbanTasks && D.kanbanTasks.filter(t => ['Executing','Planning'].includes(t.stage));
+    return `There are ${tasks ? tasks.length : 5} active engagement tasks. Most urgent: Acme reserve triangle data due Apr 15 (Sarah Chen), Titan system upgrade review due Apr 12 (Mike Torres), Atlantic data sharing agreement due Apr 15 (Mike Torres).`;
   }
   if (q.includes('partner') || q.includes('prr') || q.includes('top')) {
-    return `Top rated partners: Summit Treaty Partners (4.6 — Strategic), Acme Reinsurance (4.2 — Strategic), Titan Mutual Re (3.6 — Advisory), Harbor Group (3.3 — Tactical, Pending approval). Connect the Azure Function at localhost:7071 for live Copilot responses.`;
+    return `Top rated partners: Summit Treaty Partners (4.6 — Strategic), Acme Reinsurance (4.2 — Strategic), Titan Mutual Re (3.6 — Advisory), Harbor Group (3.3 — Tactical, Pending approval).`;
   }
-  return `I can help with cedent analysis, partnership ratings, risk assessments, and engagement tracking. The Azure Function isn't connected right now — run \`func start\` locally to enable live AI responses. You can still explore all tabs using the live demo data.`;
+  // ACTUARIAL responses
+  if (q.includes('reserve') || q.includes('adequacy') || q.includes('ibnr')) {
+    const act = D.actuarial || (PHASE2_DATA && PHASE2_DATA.actuarial);
+    if (act) {
+      const def = act.reserveAdequacy.filter(r => r.status === 'Deficient');
+      const avg = (act.reserveAdequacy.reduce((s,r) => s+r.adequacyPct, 0) / act.reserveAdequacy.length).toFixed(1);
+      return `Current reserve adequacy averages ${avg}% across the portfolio. ${def.length} lines are deficient — most notably Acme Reinsurance (Property Cat, 95.9%) and Titan Mutual Re (Professional Liability, 94.0%). Pacific Coastal Re (Property Cat) is also flagged at 94.2%. Recommend Q2 reserve strengthening review.`;
+    }
+  }
+  if (q.includes('ldf') || q.includes('triangle') || q.includes('development')) {
+    return `LDF triangles are available for 3 cedents. Acme GL shows a selected LDF of 2.45 at 12 months (cumulative 4.76). Summit GL shows a 12-month factor of 2.61 (cumulative 7.44 — long-tail Med Mal mix). Titan WC is more short-tail at 1.72 (cumulative 2.61).`;
+  }
+  if (q.includes('a/e') || q.includes('experience') || q.includes('study') || q.includes('ae ratio')) {
+    const act = D.actuarial || (PHASE2_DATA && PHASE2_DATA.actuarial);
+    if (act) {
+      const over = act.experienceStudies.filter(e => e.aePct > 105);
+      return `${act.experienceStudies.length} experience studies on file. ${over.length} showing A/E above 105% (adverse): Titan Claim Frequency at 112.3% (Under Review), Pacific Coastal LDF at 108.7%. Recommend updating Titan frequency assumptions before Q2 pricing. Average A/E across portfolio: ${(act.experienceStudies.reduce((s,e)=>s+e.aePct,0)/act.experienceStudies.length).toFixed(1)}%.`;
+    }
+  }
+  if (q.includes('assumption')) {
+    const act = D.actuarial || (PHASE2_DATA && PHASE2_DATA.actuarial);
+    if (act) {
+      const flagged = act.assumptions.filter(a => a.status === 'Flagged');
+      return `${act.assumptions.length} actuarial assumptions on record. ${flagged.length} flagged for review: ${flagged.map(a => `${a.assumption} (${cedentName(a.cedentId)})`).join(', ')}. Most recent change: Summit Severity Trend bumped to +4.2% (Yuki Tanaka, Mar 28).`;
+    }
+  }
+  // LEGAL responses
+  if (q.includes('treaty') || q.includes('treaties')) {
+    const leg = D.legal || (PHASE2_DATA && PHASE2_DATA.legal);
+    if (leg) {
+      const active = leg.treaties.filter(t => t.status === 'Active').length;
+      const exp = leg.treaties.filter(t => t.status === 'Expiring Soon').length;
+      const totalExp = leg.treaties.reduce((s,t) => s + t.exposureM, 0);
+      return `${active} active treaties covering $${totalExp}M total exposure. ${exp} treaty expiring soon: Summit Med Mal XL 2026. 1 disputed: Titan WC Surplus Lines (arbitration filed). Oldest open treaty: Summit GL 2025 ($820M exposure, governed by New York law).`;
+    }
+  }
+  if (q.includes('dispute') || q.includes('arbitration') || q.includes('litigation')) {
+    const leg = D.legal || (PHASE2_DATA && PHASE2_DATA.legal);
+    if (leg) {
+      const total = leg.disputes.reduce((s,d) => s + d.exposureM, 0).toFixed(1);
+      return `${leg.disputes.length} open disputes totaling $${total}M exposure. Most significant: Acme Prop Cat loss occurrence dispute ($8.5M — Negotiation stage, counter-proposal sent Apr 10). Titan WC arbitration filed Apr 3 ($4.2M). Mike Torres owns 2 of 3 disputes.`;
+    }
+  }
+  if (q.includes('amendment') || q.includes('endorsement')) {
+    const leg = D.legal || (PHASE2_DATA && PHASE2_DATA.legal);
+    if (leg) {
+      const pend = leg.amendments.filter(a => a.status !== 'Executed').length;
+      return `${leg.amendments.length} treaty amendments on record, ${pend} pending execution. Most recent: Summit GL retention increase to $1.5M (executed Mar 1). Open items: Titan WC cure period extension (90 days, under review), Summit Med Mal renewal rate increase 5% (pending cedent).`;
+    }
+  }
+  if (q.includes('portfolio') || q.includes('premium') || q.includes('performance')) {
+    return `Portfolio YTD 2026: $2.3B total written premium, 68.4% blended loss ratio (▼1.8 pts vs prior period), 6 active cedents. Top 2 cedents (Summit + Acme) represent 46% of portfolio. Net retained premium $724M (▲5.1% YTD).`;
+  }
+  return `I can help with cedent analysis, partnership ratings (PRR), risk assessments, actuarial data (reserves, LDF triangles, A/E studies), legal/treaty management, and engagement tracking. Ask me about any cedent, metric, or topic. Run \`func start\` locally to connect the Azure Function for full Copilot AI responses.`;
+}
+
+// ---- POWER BI ANALYTICS ----
+let pbiTrendChart = null, pbiMixChart = null, pbiLRChart = null, pbiResChart = null;
+
+const PBI_DATA = {
+  ytd: {
+    labels: ['Jan','Feb','Mar','Apr'],
+    premium: [185,192,198,205],
+    lossRatio: [70.1,69.3,68.8,68.4],
+    premium_total: '$2.3B', lr: '68.4%', nr: '$724M'
+  },
+  ltm: {
+    labels: ['Q2 25','Q3 25','Q4 25','Q1 26'],
+    premium: [540,558,570,580],
+    lossRatio: [71.2,70.4,69.1,68.4],
+    premium_total: '$2.25B', lr: '69.6%', nr: '$710M'
+  },
+  '3y': {
+    labels: ['2023','2024','2025','2026E'],
+    premium: [1800,2050,2200,2300],
+    lossRatio: [74.2,71.8,70.1,68.4],
+    premium_total: '$8.35B', lr: '71.1%', nr: '$2.64B'
+  }
+};
+
+const CHART_COLORS = {
+  gold: '#c8a84b', navy: '#1a2744', teal: '#2dd4bf',
+  red: '#f87171', orange: '#fb923c', green: '#4ade80',
+  muted: 'rgba(200,168,75,0.15)', gridLine: 'rgba(255,255,255,0.06)'
+};
+
+function destroyChart(ref) { if (ref) { try { ref.destroy(); } catch(e) {} } return null; }
+
+function renderPBI() {
+  const range = (document.getElementById('pbi-range') || {}).value || 'ytd';
+  const d = PBI_DATA[range] || PBI_DATA.ytd;
+  const isDark = document.documentElement.dataset.theme !== 'light';
+  const textColor = isDark ? '#94a3b8' : '#616161';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+
+  // Update top metrics
+  const setV = (id,v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setV('pbi-premium', d.premium_total);
+  setV('pbi-lr', d.lr);
+  setV('pbi-nr', d.nr);
+
+  // Shared chart defaults
+  const baseOpts = {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { labels: { color: textColor, font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
+      y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } }
+    }
+  };
+
+  // ---- Premium & LR Trend ----
+  pbiTrendChart = destroyChart(pbiTrendChart);
+  const tCtx = document.getElementById('chart-trend');
+  if (tCtx) pbiTrendChart = new Chart(tCtx.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: d.labels,
+      datasets: [
+        { label: 'Written Premium ($M)', data: d.premium, backgroundColor: 'rgba(200,168,75,0.7)', borderColor: CHART_COLORS.gold, borderWidth: 1, yAxisID: 'y' },
+        { label: 'Loss Ratio (%)', data: d.lossRatio, type: 'line', borderColor: CHART_COLORS.teal, backgroundColor: 'rgba(45,212,191,0.1)', pointRadius: 4, tension: 0.4, yAxisID: 'y1' }
+      ]
+    },
+    options: { ...baseOpts,
+      scales: {
+        x: { ticks: { color: textColor, font:{size:10} }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor, font:{size:10}, callback: v => '$'+v+'M' }, grid: { color: gridColor }, position:'left' },
+        y1: { ticks: { color: textColor, font:{size:10}, callback: v => v+'%' }, grid: { display:false }, position:'right', min:60, max:80 }
+      }
+    }
+  });
+
+  // ---- Portfolio Mix Donut ----
+  pbiMixChart = destroyChart(pbiMixChart);
+  const mCtx = document.getElementById('chart-mix');
+  if (mCtx) pbiMixChart = new Chart(mCtx.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Strategic (46%)', 'Advisory (27%)', 'Tactical (16%)', 'Transactional (11%)'],
+      datasets: [{ data: [46,27,16,11], backgroundColor: ['#c8a84b','#2dd4bf','#60a5fa','#94a3b8'], borderWidth: 0 }]
+    },
+    options: { ...baseOpts, cutout:'65%', scales: undefined,
+      plugins: { legend: { position: 'bottom', labels: { color: textColor, font:{size:10}, padding:8 } } }
+    }
+  });
+
+  // ---- Loss Ratio by Cedent ----
+  pbiLRChart = destroyChart(pbiLRChart);
+  const lCtx = document.getElementById('chart-lr-cedent');
+  const lrCedents = ['Acme Re','Titan Mutual','Harbor Group','Pacific Coastal','Summit Treaty','Atlantic Risk'];
+  const lrVals = range==='ytd' ? [66.2,72.1,69.8,71.4,63.5,68.0] : range==='ltm' ? [67.8,73.2,70.4,72.1,65.1,69.5] : [71.2,75.4,72.8,74.9,68.2,72.1];
+  if (lCtx) pbiLRChart = new Chart(lCtx.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: lrCedents,
+      datasets: [{ label: 'Loss Ratio', data: lrVals, backgroundColor: lrVals.map(v => v > 70 ? 'rgba(248,113,113,0.75)' : 'rgba(74,222,128,0.75)'), borderWidth: 0 }]
+    },
+    options: { ...baseOpts, indexAxis:'y',
+      plugins: { legend:{display:false}, tooltip: { callbacks: { label: ctx => ' '+ctx.raw+'%' } } },
+      scales: {
+        x: { ticks:{color:textColor,font:{size:10},callback:v=>v+'%'},grid:{color:gridColor},min:55,max:80 },
+        y: { ticks:{color:textColor,font:{size:10}},grid:{color:gridColor} }
+      }
+    }
+  });
+
+  // ---- Reserve Adequacy by LOB ----
+  pbiResChart = destroyChart(pbiResChart);
+  const rCtx = document.getElementById('chart-reserve');
+  const act = D.actuarial || PHASE2_DATA.actuarial;
+  if (rCtx && act) {
+    const rData = act.reserveAdequacy.map(r => ({
+      lob: r.lob.length > 16 ? r.lob.slice(0,14)+'…' : r.lob,
+      pct: r.adequacyPct,
+      ok: r.status === 'Adequate'
+    }));
+    pbiResChart = new Chart(rCtx.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: rData.map(r => r.lob),
+        datasets: [{ label: 'Adequacy %', data: rData.map(r => r.pct), backgroundColor: rData.map(r => r.ok ? 'rgba(74,222,128,0.75)' : 'rgba(248,113,113,0.75)'), borderWidth: 0 }]
+      },
+      options: { ...baseOpts, indexAxis:'y',
+        plugins: { legend:{display:false} },
+        scales: {
+          x: { ticks:{color:textColor,font:{size:10},callback:v=>v+'%'},grid:{color:gridColor},min:90,max:108 },
+          y: { ticks:{color:textColor,font:{size:9}},grid:{color:gridColor} }
+        }
+      }
+    });
+  }
 }
 
 // ---- THEME TOGGLE ----
@@ -1011,10 +1226,6 @@ function toggleTheme() {
 }
 
 // ---- ACTUARIAL ----
-function cedentName(id) {
-  const c = (D.cedents||[]).find(x => x.id === id);
-  return c ? c.name : id;
-}
 function adequacyBadge(status) {
   const m = { Adequate:'badge-active', Deficient:'badge-flagged', Excess:'badge-advisory' };
   return `<span class="badge ${m[status]||'badge-inactive'}">${status}</span>`;
@@ -1033,15 +1244,15 @@ function renderActuarial() {
   if (!act) return;
 
   // Metrics
-  const total = act.reserveAdequacy.length;
-  const def = act.reserveAdequacy.filter(r => r.status === 'Deficient').length;
-  const avgAe = (act.experienceStudies.reduce((s,e) => s+e.aePct, 0) / act.experienceStudies.length).toFixed(1);
+  const avgAdq = (act.reserveAdequacy.reduce((s,r) => s+r.adequacyPct, 0) / act.reserveAdequacy.length).toFixed(1);
+  const uniqueLobs = [...new Set(act.reserveAdequacy.map(r=>r.lob))].length;
+  const studyCount = act.experienceStudies.length;
   const pendAs = act.assumptions.filter(a => ['Pending Review','Flagged'].includes(a.status)).length;
-  const cards = document.querySelectorAll('#panel-actuarial .metric-card');
-  if (cards[0]) cards[0].querySelector('.metric-value').textContent = total;
-  if (cards[1]) cards[1].querySelector('.metric-value').textContent = def;
-  if (cards[2]) cards[2].querySelector('.metric-value').textContent = avgAe + '%';
-  if (cards[3]) cards[3].querySelector('.metric-value').textContent = pendAs;
+  const setV = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setV('act-adequacy-val', avgAdq + '%');
+  setV('act-lob-count', uniqueLobs);
+  setV('act-studies-val', studyCount);
+  setV('act-flagged-val', pendAs);
 
   // Reserve Adequacy
   const atb = document.getElementById('adequacy-tbody');
@@ -1136,20 +1347,20 @@ function renderLegal() {
   // Metrics
   const active = leg.treaties.filter(t => t.status === 'Active').length;
   const disp = leg.disputes.length;
-  const expiring = leg.treaties.filter(t => t.status === 'Expiring Soon').length;
   const pendAm = leg.amendments.filter(a => ['Under Review','Pending Cedent'].includes(a.status)).length;
-  const cards = document.querySelectorAll('#panel-legal .metric-card');
-  if (cards[0]) cards[0].querySelector('.metric-value').textContent = active;
-  if (cards[1]) cards[1].querySelector('.metric-value').textContent = disp;
-  if (cards[2]) cards[2].querySelector('.metric-value').textContent = expiring;
-  if (cards[3]) cards[3].querySelector('.metric-value').textContent = pendAm;
+  const arbCount = leg.disputes.filter(d => d.stage.toLowerCase().includes('arbitration')).length;
+  const setLV = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setLV('leg-treaties-val', active);
+  setLV('leg-disputes-val', disp);
+  setLV('leg-amend-val', pendAm);
+  setLV('leg-arb-val', arbCount);
 
   // Treaty Register
   const ttb = document.getElementById('treaty-tbody');
   if (ttb) ttb.innerHTML = leg.treaties.map(t =>
     `<tr>
-      <td>${cedentName(t.cedentId)}</td>
       <td>${t.name}</td>
+      <td>${cedentName(t.cedentId)}</td>
       <td>${t.type}</td>
       <td>${t.effective}</td>
       <td>${t.expiry}</td>
