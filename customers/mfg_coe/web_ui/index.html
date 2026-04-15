@@ -904,15 +904,20 @@ async function renderWrapups() {
   } catch { el.innerHTML = '<p style="color:var(--text2)">Network error.</p>'; }
 }
 
-// ── Charter + SOPs (loaded from GitHub raw) ───────────────────────────────────
+// ── Charter + SOPs (loaded from GitHub Contents API — works on private repos) ─
 const RAW_BASE = `https://raw.githubusercontent.com/${HARDCODED_REPO}/main`;
 
 async function fetchRaw(path) {
+  // Use GitHub Contents API (supports private repos with PAT)
+  // Falls back to raw URL only for public repos
   try {
-    const headers = {};
+    const headers = { 'Accept': 'application/vnd.github+json' };
     if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
-    const r = await fetch(`${RAW_BASE}/${path}`, { headers });
-    return r.ok ? await r.text() : null;
+    const r = await fetch(`https://api.github.com/repos/${HARDCODED_REPO}/contents/${path}`, { headers });
+    if (!r.ok) return null;
+    const data = await r.json();
+    // Content is base64-encoded in the API response
+    return atob(data.content.replace(/\n/g, ''));
   } catch { return null; }
 }
 
