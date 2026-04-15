@@ -1,4 +1,3 @@
-import os
 """
 Agent: MfgCoE Orchestrator Agent
 Purpose: L0 Orchestrator for the Discrete Manufacturing Center of Excellence.
@@ -6,17 +5,22 @@ Purpose: L0 Orchestrator for the Discrete Manufacturing Center of Excellence.
          human-in-the-loop feedback cycle, and coordinates autonomous CoE operations.
 
 Architecture:
-  L0  MfgCoEOrchestrator        ← YOU ARE HERE
-   ├── MfgCoEIntakeAgent         — Idea capture, solution logging, Bill escalation
-   ├── MfgCoEPMAgent             — Backlog, sprint planning, weekly digest
-   ├── MfgCoESMEAgent            — SOPs, process docs, use case definitions
-   ├── MfgCoEDeveloperAgent      — Agent code, D365 configs, RAPP artifacts
-   ├── MfgCoEArchitectAgent      — Solution design, MS stack patterns
-   └── MfgCoECustomerPersonaAgent — Customer simulation, Playwright test scripts
+  L0  MfgCoEOrchestrator          ← YOU ARE HERE
+   ├── MfgCoEOutcomeFramerAgent    — Defines business problem + KPI BEFORE any build (runs first)
+   ├── MfgCoEIntakeAgent           — Idea capture, solution logging, Bill escalation
+   ├── MfgCoEPMAgent               — Backlog, sprint planning, weekly digest
+   ├── MfgCoESMEAgent              — SOPs, process docs, use case definitions
+   ├── MfgCoEDeveloperAgent        — Agent code, D365 configs, RAPP artifacts
+   ├── MfgCoEArchitectAgent        — Solution design, MS stack patterns
+   ├── MfgCoECustomerPersonaAgent  — Customer simulation, Playwright test scripts
+   └── MfgCoEOutcomeValidatorAgent — Validates outcome was delivered BEFORE closing (runs last)
+
+Pipeline (outcome-first, CongruentX-inspired):
+  raw-idea → outcome-defined → use-case → tech-solution → agent-task → outcome-validated → done
 
 Actions:
   route_request       — Intelligently route any request to the right persona agent
-  run_pipeline_item   — Run a GitHub issue through the full Idea→UseCase→Design→Build pipeline
+  run_pipeline_item   — Run a GitHub issue through the full outcome-first pipeline
   get_coe_status      — Full CoE status: open items, pending decisions, agents ready
   morning_standup     — Generate daily standup: what's in progress, blocked, next up
   process_bill_feedback — Parse a GitHub issue comment from Bill and continue agent work
@@ -37,6 +41,8 @@ from customers.mfg_coe.agents.mfg_coe_sme_agent import MfgCoESMEAgent
 from customers.mfg_coe.agents.mfg_coe_developer_agent import MfgCoEDeveloperAgent
 from customers.mfg_coe.agents.mfg_coe_architect_agent import MfgCoEArchitectAgent
 from customers.mfg_coe.agents.mfg_coe_customer_persona_agent import MfgCoECustomerPersonaAgent
+from customers.mfg_coe.agents.mfg_coe_outcome_framer_agent import MfgCoEOutcomeFramerAgent
+from customers.mfg_coe.agents.mfg_coe_outcome_validator_agent import MfgCoEOutcomeValidatorAgent
 from customers.mfg_coe.agents.context_card_loader import load_all_context_cards
 
 logging.basicConfig(level=logging.INFO)
@@ -165,6 +171,8 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         self.developer = MfgCoEDeveloperAgent()
         self.architect = MfgCoEArchitectAgent()
         self.customer_persona = MfgCoECustomerPersonaAgent()
+        self.outcome_framer = MfgCoEOutcomeFramerAgent()
+        self.outcome_validator = MfgCoEOutcomeValidatorAgent()
 
         self.agents = {
             "intake": self.intake,
@@ -173,6 +181,8 @@ class MfgCoEOrchestratorAgent(BasicAgent):
             "developer": self.developer,
             "architect": self.architect,
             "customer_persona": self.customer_persona,
+            "outcome_framer": self.outcome_framer,
+            "outcome_validator": self.outcome_validator,
         }
 
         # Load context cards at startup
@@ -324,8 +334,52 @@ class MfgCoEOrchestratorAgent(BasicAgent):
 
         steps_taken = []
 
-        # Step 1: SME defines use case (if still raw-idea)
-        if "raw-idea" in labels or "use-case" not in labels:
+        # Step 0: Outcome Framer — define business problem + KPI before any build work
+        # Skip if outcome already defined
+        if "outcome-defined" not in labels:
+            # Infer process area from title/labels
+            process_area = "default"
+            area_map = {
+                "warranty": "warranty", "rma": "returns_rma", "return": "returns_rma",
+                "case": "case_management", "triage": "case_management",
+                "field service": "field_service", "distributor": "dealer_management",
+                "dealer": "dealer_management", "crm": "crm", "lead": "crm",
+                "order": "order_management",
+            }
+            title_lower = title.lower()
+            for keyword, area in area_map.items():
+                if keyword in title_lower:
+                    process_area = area
+                    break
+
+            # Infer customer
+            customer = "Discrete Manufacturing customer"
+            for c in ["Navico", "Otis", "Zurn", "Vermeer", "Carrier", "AES"]:
+                if c.lower() in title_lower or c.lower() in (body or "").lower():
+                    customer = c
+                    break
+
+            framer_result_raw = self.outcome_framer.perform(
+                action="frame_outcome",
+                issue_number=issue_number,
+                issue_title=title,
+                issue_body=body,
+                process_area=process_area,
+                customer=customer,
+            )
+            framer_result = json.loads(framer_result_raw)
+            steps_taken.append({"step": "outcome_defined", "result": framer_result})
+
+            # Post outcome definition as issue comment
+            if framer_result.get("comment_body"):
+                _gh(["issue", "comment", str(issue_number), "--repo", REPO,
+                     "--body", framer_result["comment_body"]])
+
+            self.pm.perform(action="advance_pipeline_stage", issue_number=issue_number,
+                            target_stage="outcome-defined")
+
+        # Step 1: SME defines use case (if not already past this stage)
+        if "raw-idea" in labels or ("use-case" not in labels and "tech-solution" not in labels):
             uc_result = self.sme.perform(
                 action="define_use_case",
                 topic=title,
@@ -345,10 +399,22 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         self.pm.perform(action="advance_pipeline_stage", issue_number=issue_number, target_stage="tech-solution")
 
         # Step 3: Log solution summary back to GitHub
-        summary = f"## 🏗️ Architecture Design Complete\n\n**Recommended Patterns:** {', '.join([p.get('pattern_id','?') for p in arch_data.get('recommended_patterns',[])])}\n\n**Components:** {', '.join(arch_data.get('suggested_components',[]))}\n\n**Next:** Developer agent to scaffold implementation.\n\n---\n*Pipeline run by CoE Orchestrator at {datetime.utcnow().strftime('%Y-%m-%d %H:%M')} UTC*"
+        summary = (
+            f"## 🏗️ Architecture Design Complete\n\n"
+            f"**Recommended Patterns:** {', '.join([p.get('pattern_id','?') for p in arch_data.get('recommended_patterns',[])])}\n\n"
+            f"**Components:** {', '.join(arch_data.get('suggested_components',[]))}\n\n"
+            f"**Next:** Developer agent to scaffold implementation.\n\n"
+            f"---\n*Pipeline run by CoE Orchestrator at {datetime.utcnow().strftime('%Y-%m-%d %H:%M')} UTC*"
+        )
         _gh(["issue", "comment", str(issue_number), "--repo", REPO, "--body", summary])
         self.pm.perform(action="assign_work", issue_number=issue_number, persona="developer",
                         context="Architecture complete — ready for Developer agent to scaffold.")
+
+        next_steps = [
+            "Developer Agent to scaffold implementation",
+            "Outcome Validator will run before issue closes",
+            "Bill to review outcome definition and confirm KPI targets",
+        ]
 
         return json.dumps({
             "issue_number": issue_number,
@@ -356,7 +422,9 @@ class MfgCoEOrchestratorAgent(BasicAgent):
             "pipeline_steps": steps_taken,
             "current_stage": "tech-solution",
             "assigned_to": "developer",
-            "status": "pipeline_advanced"
+            "next_steps": next_steps,
+            "status": "pipeline_advanced",
+            "summary": f"Pipeline advanced for #{issue_number}. Outcome defined, use case documented, architecture designed. Assigned to Developer.",
         }, indent=2)
 
     # ── CoE Status ────────────────────────────────────────────────
