@@ -31,6 +31,62 @@ REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..",
 CUSTOMERS_DIR = os.path.join(REPO_ROOT, "customers")
 AGENTS_DIR = os.path.join(REPO_ROOT, "agents")
 
+# Developer skill areas — routes tasks to the right expertise
+SKILL_AREAS = {
+    "power_platform": {
+        "display": "Power Platform Developer",
+        "description": "Canvas apps, model-driven apps, Power Automate cloud flows, Dataverse tables, Power Pages portals",
+        "keywords": ["canvas app", "model-driven", "power automate", "flow", "dataverse", "power pages", "portal", "app"],
+        "tools": ["Power Apps Studio", "Power Automate Designer", "Dataverse", "Power Pages"],
+        "languages": ["Power Fx", "YAML", "JSON"],
+    },
+    "copilot_studio": {
+        "display": "Copilot Studio Developer",
+        "description": "Conversational AI topics, entities, generative AI actions, custom connectors, adaptive cards, voice bots",
+        "keywords": ["copilot studio", "bot", "topic", "conversational", "pva", "virtual agent", "chat", "voice", "adaptive card", "agent"],
+        "tools": ["Copilot Studio", "Adaptive Cards Designer", "Power Automate connector", "Bot Framework"],
+        "languages": ["YAML", "Adaptive Cards JSON", "Power Fx"],
+    },
+    "dynamics_crm": {
+        "display": "Dynamics 365 / CE Developer",
+        "description": "D365 CE customizations, plugins, PCF controls, solution packaging, business rules, workflows, Copilot in D365",
+        "keywords": ["d365", "dynamics", "crm", "ce", "plugin", "pcf", "entity", "form", "view", "solution", "business rule", "case", "incident", "account", "contact"],
+        "tools": ["Solution Explorer", "Plugin Registration Tool", "XrmToolBox", "Power Platform CLI", "D365 CE"],
+        "languages": ["C#", "TypeScript", "JavaScript", "Power Fx"],
+    },
+    "azure_functions": {
+        "display": "Azure Functions / Backend Developer",
+        "description": "Python/C# Azure Functions, API Management, Service Bus, Azure Storage, Logic Apps, custom connectors",
+        "keywords": ["azure function", "api", "backend", "service bus", "logic app", "storage", "queue", "python", "rest", "webhook", "endpoint"],
+        "tools": ["Azure Functions Core Tools", "VS Code Azure Extension", "Azure CLI", "API Management"],
+        "languages": ["Python", "C#", "JavaScript", "YAML"],
+    },
+    "azure_ai": {
+        "display": "Azure AI / Agent Developer",
+        "description": "Azure OpenAI, Copilot Studio AI actions, prompt engineering, agent design, AI Search, Azure AI Foundry, RAG pipelines",
+        "keywords": ["openai", "gpt", "ai", "agent", "prompt", "embedding", "search", "foundry", "rag", "semantic kernel", "langchain"],
+        "tools": ["Azure OpenAI Studio", "Azure AI Foundry", "Azure AI Search", "Semantic Kernel", "Prompt Flow"],
+        "languages": ["Python", "C#", "YAML", "JSON"],
+    },
+    "integration": {
+        "display": "Integration Developer",
+        "description": "API connectors, data flows, ETL pipelines, middleware, system-to-system integration between D365, Azure, and external systems",
+        "keywords": ["integration", "connector", "etl", "api", "middleware", "sync", "webhook", "dataflow", "erp", "sap", "external system"],
+        "tools": ["Azure Integration Services", "Power Platform connectors", "Azure Data Factory", "Logic Apps", "Azure Service Bus"],
+        "languages": ["Python", "C#", "JSON", "YAML"],
+    },
+}
+
+
+def _detect_required_skills(use_case: str, description: str = "") -> list:
+    """Detect which developer skill areas are needed for a given use case."""
+    combined = (use_case + " " + description).lower()
+    matched = []
+    for skill_key, skill in SKILL_AREAS.items():
+        if any(kw in combined for kw in skill["keywords"]):
+            matched.append(skill_key)
+    return matched if matched else ["dynamics_crm", "copilot_studio"]  # sensible default for mfg CoE
+
 
 class MfgCoEDeveloperAgent(BasicAgent):
     """Developer persona — scaffolds agents, D365 configs, RAPP artifacts, and Playwright tests."""
@@ -58,7 +114,9 @@ class MfgCoEDeveloperAgent(BasicAgent):
                             "code_review",
                             "generate_playwright_test",
                             "list_existing_agents",
-                            "get_agent_pattern"
+                            "get_agent_pattern",
+                            "recommend_skill",
+                            "list_skills",
                         ],
                         "description": "Developer action to perform"
                     },
@@ -121,6 +179,8 @@ class MfgCoEDeveloperAgent(BasicAgent):
             "generate_playwright_test": self._generate_playwright_test,
             "list_existing_agents":     self._list_existing_agents,
             "get_agent_pattern":        self._get_agent_pattern,
+            "recommend_skill":          self._recommend_skill,
+            "list_skills":              self._list_skills,
         }
         handler = handlers.get(action)
         if not handler:
@@ -473,4 +533,51 @@ test.describe('{scenario_name}', () => {{
                 "Wrap all handlers in try/except"
             ],
             "scaffold_command": "Use action=scaffold_agent to generate a pre-filled skeleton"
+        }, indent=2)
+
+    def _recommend_skill(self, **kwargs) -> str:
+        use_case = kwargs.get("use_case", kwargs.get("agent_name", ""))
+        description = kwargs.get("context", kwargs.get("agent_description", ""))
+        skills = _detect_required_skills(use_case, description)
+
+        skill_details = []
+        for sk in skills:
+            info = SKILL_AREAS.get(sk, {})
+            skill_details.append({
+                "skill_key": sk,
+                "display": info.get("display"),
+                "description": info.get("description"),
+                "tools": info.get("tools", []),
+                "languages": info.get("languages", []),
+            })
+
+        comment_lines = "\n".join(
+            f"- **{s['display']}** — {s['description']} _(tools: {', '.join(s['tools'][:3])})_"
+            for s in skill_details
+        )
+
+        return json.dumps({
+            "status": "ok",
+            "summary": f"Detected {len(skills)} required skill area(s) for: {use_case}",
+            "required_skills": skills,
+            "skill_details": skill_details,
+            "comment": f"### 🛠️ Required Developer Skills\n\n{comment_lines}",
+        }, indent=2)
+
+    def _list_skills(self, **kwargs) -> str:
+        skills_list = [
+            {
+                "skill_key": k,
+                "display": v["display"],
+                "description": v["description"],
+                "tools": v["tools"],
+                "languages": v["languages"],
+            }
+            for k, v in SKILL_AREAS.items()
+        ]
+        return json.dumps({
+            "status": "ok",
+            "count": len(skills_list),
+            "summary": f"{len(skills_list)} developer skill areas defined in the CoE.",
+            "skills": skills_list,
         }, indent=2)

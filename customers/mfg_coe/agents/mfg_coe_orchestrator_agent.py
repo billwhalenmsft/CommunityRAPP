@@ -368,12 +368,26 @@ class MfgCoEOrchestratorAgent(BasicAgent):
                 customer=customer,
             )
             framer_result = json.loads(framer_result_raw)
-            steps_taken.append({"step": "outcome_defined", "result": framer_result})
+            steps_taken.append({"step": "outcome_framing", "result": framer_result})
 
-            # Post outcome definition as issue comment
+            # Post outcome definition (or blocking request) as issue comment
             if framer_result.get("comment_body"):
                 _gh(["issue", "comment", str(issue_number), "--repo", REPO,
                      "--body", framer_result["comment_body"]])
+
+            # HARD BLOCK: if outcome can't be determined, halt the pipeline
+            if framer_result.get("pipeline_blocked"):
+                _gh(["issue", "edit", str(issue_number), "--repo", REPO,
+                     "--add-label", "needs-bill"])
+                return json.dumps({
+                    "issue_number": issue_number,
+                    "title": title,
+                    "pipeline_steps": steps_taken,
+                    "current_stage": "raw-idea",
+                    "status": "blocked_needs_outcome",
+                    "summary": framer_result.get("summary", f"Pipeline blocked for #{issue_number} — outcome definition required from Bill."),
+                    "next_steps": framer_result.get("next_steps", []),
+                }, indent=2)
 
             self.pm.perform(action="advance_pipeline_stage", issue_number=issue_number,
                             target_stage="outcome-defined")
@@ -398,11 +412,25 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         steps_taken.append({"step": "solution_designed", "result": arch_data})
         self.pm.perform(action="advance_pipeline_stage", issue_number=issue_number, target_stage="tech-solution")
 
-        # Step 3: Log solution summary back to GitHub
+        # Step 2b: Developer recommends required skill areas based on solution design
+        skill_result_raw = self.developer.perform(
+            action="recommend_skill",
+            use_case=title,
+            context=body[:300],
+        )
+        skill_result = json.loads(skill_result_raw)
+        required_skills = skill_result.get("required_skills", [])
+        skill_comment = skill_result.get("comment", "")
+        steps_taken.append({"step": "skills_identified", "result": skill_result})
+
+        # Step 3: Log solution summary + skill requirements back to GitHub
+        skills_display = ", ".join(required_skills) if required_skills else "dynamics_crm, copilot_studio"
         summary = (
             f"## 🏗️ Architecture Design Complete\n\n"
             f"**Recommended Patterns:** {', '.join([p.get('pattern_id','?') for p in arch_data.get('recommended_patterns',[])])}\n\n"
             f"**Components:** {', '.join(arch_data.get('suggested_components',[]))}\n\n"
+            f"{skill_comment}\n\n"
+            f"**Required Skills:** `{skills_display}`\n\n"
             f"**Next:** Developer agent to scaffold implementation.\n\n"
             f"---\n*Pipeline run by CoE Orchestrator at {datetime.utcnow().strftime('%Y-%m-%d %H:%M')} UTC*"
         )
