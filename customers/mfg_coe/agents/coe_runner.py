@@ -463,7 +463,7 @@ def action_run_backlog(max_tasks: int = 3) -> None:
         return
 
     # Skip issues already waiting on Bill or marked done
-    skip_labels = {"needs-bill", "done", "community-post", "daily-digest", "nudge-bill"}
+    skip_labels = {"needs-bill", "done", "community-post", "daily-digest", "nudge-bill", "coffee-break"}
     issues = [
         i for i in all_issues
         if not any(lbl["name"] in skip_labels for lbl in i.get("labels", []))
