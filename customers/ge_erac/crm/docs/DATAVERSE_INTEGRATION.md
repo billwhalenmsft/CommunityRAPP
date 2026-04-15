@@ -4,7 +4,29 @@ This document maps the ERAC Lite CRM data model to Dataverse OOTB tables from th
 
 ---
 
-## Architecture Overview
+## Filtering Strategy — Shared Org Isolation
+
+**Problem:** The demo Dataverse org contains accounts for multiple customers/scenarios. ERAC views must only show reinsurance cedents, not every account in the system.
+
+**Solution:** Single custom boolean column `erac_iscedent` on the `account` table.
+
+| | |
+|--|--|
+| **Column** | `erac_iscedent` (Boolean) |
+| **Default** | `false` (all existing accounts unaffected) |
+| **ERAC accounts** | Set to `true` during provisioning |
+| **OData filter** | `$filter=erac_iscedent eq true` |
+| **MDA views** | All ERAC views built with this filter baked in |
+
+This is non-destructive — no existing data changes. When the org is reused for other demos, accounts not tagged with `erac_iscedent=true` are invisible to ERAC views. For production, actual cedent onboarding sets this field.
+
+```
+Provisioning:  .\dataverse\scripts\Provision-EracDataverse.ps1 -OrgUrl "https://orgXXX.crm.dynamics.com"
+Schema:        .\dataverse\config\schema.json
+Demo data:     .\dataverse\data\demo-accounts.json
+```
+
+---
 
 ```
 ERAC Lite CRM (HTML/JS)

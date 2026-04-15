@@ -1,0 +1,88 @@
+{
+  "_comment": "ERAC demo seed data. partnershipTypeValue/tierValue/etc. are integer option set values matching Provision-EracDataverse.ps1 choice order (200000=first choice, 200001=second, etc.)",
+  "_choice_maps": {
+    "partnershipType":   { "Strategic":200000, "Advisory":200001, "Tactical":200002, "Transactional":200003 },
+    "tier":              { "Tier 1":200000, "Tier 2":200001, "Tier 3":200002 },
+    "ratingTrend":       { "Improving":200000, "Stable":200001, "Declining":200002 },
+    "contactTier":       { "Executive":200000, "Tier 1":200001, "Tier 2":200002, "Tier 3":200003 },
+    "function":          { "Claims":200000, "Actuarial":200001, "Legal":200002, "Finance":200003, "Data":200004, "Operations":200005, "Executive":200006 },
+    "preferredChannel":  { "Email":200000, "Phone":200001, "Teams":200002, "Portal":200003 }
+  },
+  "accounts": [
+    {
+      "id": "c1",
+      "name": "Acme Reinsurance",
+      "partnershipType": "Strategic",   "partnershipTypeValue": 200000,
+      "tier": "Tier 1",                 "tierValue": 200000,
+      "portfolioPct": 28.5,
+      "overallRating": 4.2,
+      "ratingTrend": "Improving",       "ratingTrendValue": 200000,
+      "description": "Long-standing strategic cedent. Claims and actuarial focus. QBR Q1 2026 completed."
+    },
+    {
+      "id": "c2",
+      "name": "Titan Mutual Re",
+      "partnershipType": "Strategic",   "partnershipTypeValue": 200000,
+      "tier": "Tier 1",                 "tierValue": 200000,
+      "portfolioPct": 22.1,
+      "overallRating": 3.8,
+      "ratingTrend": "Stable",          "ratingTrendValue": 200001,
+      "description": "Key Midwest carrier. Treaty renewal due Q3 2026. Financial signatory risk flag active."
+    },
+    {
+      "id": "c3",
+      "name": "Harbor Group",
+      "partnershipType": "Advisory",    "partnershipTypeValue": 200001,
+      "tier": "Tier 2",                 "tierValue": 200001,
+      "portfolioPct": 18.4,
+      "overallRating": 3.5,
+      "ratingTrend": "Stable",          "ratingTrendValue": 200001,
+      "description": "Mid-market cedent. Compliance and litigation flags. Multi-line exposure."
+    },
+    {
+      "id": "c4",
+      "name": "Pacific Coastal Re",
+      "partnershipType": "Tactical",    "partnershipTypeValue": 200002,
+      "tier": "Tier 2",                 "tierValue": 200001,
+      "portfolioPct": 15.2,
+      "overallRating": 4.0,
+      "ratingTrend": "Improving",       "ratingTrendValue": 200000,
+      "description": "West coast property & casualty focus. Growing relationship, new treaty under negotiation."
+    },
+    {
+      "id": "c5",
+      "name": "Meridian Re Partners",
+      "partnershipType": "Advisory",    "partnershipTypeValue": 200001,
+      "tier": "Tier 3",                 "tierValue": 200002,
+      "portfolioPct": 10.3,
+      "overallRating": 2.9,
+      "ratingTrend": "Declining",       "ratingTrendValue": 200002,
+      "description": "Newer cedent. Performance concerns. Risk review scheduled Q2 2026."
+    },
+    {
+      "id": "c6",
+      "name": "Summit Life & Casualty",
+      "partnershipType": "Transactional","partnershipTypeValue": 200003,
+      "tier": "Tier 3",                 "tierValue": 200002,
+      "portfolioPct": 5.5,
+      "overallRating": 3.1,
+      "ratingTrend": "Stable",          "ratingTrendValue": 200001,
+      "description": "Smaller life & casualty cedent. Transactional relationship. Annual review pending."
+    }
+  ],
+  "contacts": [
+    { "cedentId":"c1", "firstName":"Robert", "lastName":"Harmon",  "fullName":"Robert Harmon",  "title":"Chief Claims Officer",    "email":"r.harmon@acmere.com",   "function":"Claims",     "functionValue":200000, "tier":"Executive",  "tierValue":200000, "channel":"Email",  "channelValue":200000 },
+    { "cedentId":"c1", "firstName":"Diana",  "lastName":"Marsh",   "fullName":"Diana Marsh",    "title":"Actuarial VP",            "email":"d.marsh@acmere.com",    "function":"Actuarial",  "functionValue":200001, "tier":"Tier 2",    "tierValue":200002, "channel":"Teams",  "channelValue":200002 },
+    { "cedentId":"c1", "firstName":"Tom",    "lastName":"Vickers", "fullName":"Tom Vickers",    "title":"Legal Counsel",           "email":"t.vickers@acmere.com",  "function":"Legal",      "functionValue":200002, "tier":"Tier 1",    "tierValue":200001, "channel":"Phone",  "channelValue":200001 },
+    { "cedentId":"c2", "firstName":"Karen",  "lastName":"Ostler",  "fullName":"Karen Ostler",   "title":"SVP Claims Operations",   "email":"k.ostler@titanmre.com", "function":"Claims",     "functionValue":200000, "tier":"Tier 2",    "tierValue":200002, "channel":"Email",  "channelValue":200000 },
+    { "cedentId":"c2", "firstName":"Raj",    "lastName":"Patel",   "fullName":"Raj Patel",      "title":"Finance Director",        "email":"r.patel@titanmre.com",  "function":"Finance",    "functionValue":200003, "tier":"Tier 1",    "tierValue":200001, "channel":"Email",  "channelValue":200000 },
+    { "cedentId":"c2", "firstName":"Priya",  "lastName":"Nair",    "fullName":"Priya Nair",     "title":"Data Analytics Lead",     "email":"p.nair@titanmre.com",   "function":"Data",       "functionValue":200004, "tier":"Tier 1",    "tierValue":200001, "channel":"Teams",  "channelValue":200002 },
+    { "cedentId":"c3", "firstName":"Marcus", "lastName":"Liu",     "fullName":"Marcus Liu",     "title":"Claims Director",         "email":"m.liu@harborgroup.com", "function":"Claims",     "functionValue":200000, "tier":"Tier 2",    "tierValue":200002, "channel":"Phone",  "channelValue":200001 },
+    { "cedentId":"c3", "firstName":"Elaine", "lastName":"Cho",     "fullName":"Elaine Cho",     "title":"Compliance Officer",      "email":"e.cho@harborgroup.com", "function":"Legal",      "functionValue":200002, "tier":"Tier 1",    "tierValue":200001, "channel":"Email",  "channelValue":200000 },
+    { "cedentId":"c3", "firstName":"Steve",  "lastName":"Bowen",   "fullName":"Steve Bowen",    "title":"Operations Manager",      "email":"s.bowen@harborgroup.com","function":"Operations", "functionValue":200005, "tier":"Tier 1",    "tierValue":200001, "channel":"Email",  "channelValue":200000 },
+    { "cedentId":"c4", "firstName":"Nina",   "lastName":"Romero",  "fullName":"Nina Romero",    "title":"CEO",                     "email":"n.romero@paccoastalre.com","function":"Executive","functionValue":200006, "tier":"Executive", "tierValue":200000, "channel":"Email",  "channelValue":200000 },
+    { "cedentId":"c4", "firstName":"Carl",   "lastName":"Jensen",  "fullName":"Carl Jensen",    "title":"Claims Analyst",          "email":"c.jensen@paccoastalre.com","function":"Claims",   "functionValue":200000, "tier":"Tier 1",    "tierValue":200001, "channel":"Teams",  "channelValue":200002 },
+    { "cedentId":"c5", "firstName":"Angela", "lastName":"Torres",  "fullName":"Angela Torres",  "title":"CFO",                     "email":"a.torres@meridianre.com","function":"Finance",    "functionValue":200003, "tier":"Executive", "tierValue":200000, "channel":"Email",  "channelValue":200000 },
+    { "cedentId":"c6", "firstName":"David",  "lastName":"Huang",   "fullName":"David Huang",    "title":"Actuarial Director",      "email":"d.huang@summitlc.com",  "function":"Actuarial",  "functionValue":200001, "tier":"Tier 2",    "tierValue":200002, "channel":"Teams",  "channelValue":200002 }
+  ]
+}

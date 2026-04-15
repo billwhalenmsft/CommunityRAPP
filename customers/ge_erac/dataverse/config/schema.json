@@ -1,0 +1,239 @@
+{
+  "solution": {
+    "name": "ERACLiteCRM",
+    "display_name": "ERAC Lite CRM",
+    "publisher_prefix": "erac",
+    "publisher_name": "GE Verisk ERAC",
+    "version": "1.0.0.0",
+    "description": "Finance Transformation — ERAC Reinsurance CRM solution"
+  },
+
+  "filtering_strategy": {
+    "approach": "Custom boolean column on account table",
+    "column": "erac_iscedent",
+    "type": "Boolean",
+    "display_name": "Is Reinsurance Cedent",
+    "description": "Tags an Account as an ERAC reinsurance cedent. All ERAC views, queries, and reports filter on this field. Does not affect other app data in shared orgs.",
+    "default_value": false,
+    "filter_expression": "erac_iscedent eq true",
+    "rationale": "Single non-destructive field that survives org reuse. All existing accounts are unaffected (default false). ERAC demo accounts set to true. Scales to production: actual cedent onboarding sets this field."
+  },
+
+  "ootb_table_extensions": {
+    "account": {
+      "display_name": "Cedent (Account)",
+      "custom_columns": [
+        { "name": "erac_iscedent",         "type": "Boolean",     "display": "Is Reinsurance Cedent",  "default": false },
+        { "name": "erac_partnershiptype",   "type": "Choice",      "display": "Partnership Type",       "choices": ["Strategic","Advisory","Tactical","Transactional"] },
+        { "name": "erac_portfoliopct",      "type": "Decimal",     "display": "Portfolio %",            "min": 0, "max": 100 },
+        { "name": "erac_tier",             "type": "Choice",      "display": "Cedent Tier",            "choices": ["Tier 1","Tier 2","Tier 3"] },
+        { "name": "erac_overallrating",     "type": "Decimal",     "display": "PRR Overall Rating",     "min": 0, "max": 5 },
+        { "name": "erac_lastqbrdate",       "type": "DateOnly",    "display": "Last QBR Date" },
+        { "name": "erac_ratingtrend",       "type": "Choice",      "display": "Rating Trend",           "choices": ["Improving","Stable","Declining"] }
+      ]
+    },
+    "contact": {
+      "display_name": "Cedent Contact",
+      "custom_columns": [
+        { "name": "erac_contacttier",       "type": "Choice",      "display": "Contact Tier",           "choices": ["Executive","Tier 1","Tier 2","Tier 3"] },
+        { "name": "erac_function",          "type": "Choice",      "display": "Function",               "choices": ["Claims","Actuarial","Legal","Finance","Data","Operations","Executive"] },
+        { "name": "erac_riskflags",         "type": "MultiChoice", "display": "Risk Flags",             "choices": ["Litigation-Sensitive","Financial-Signatory","Regulatory-Audit","Data-Security"] },
+        { "name": "erac_lastcontactdate",   "type": "DateOnly",    "display": "Last Contact Date" },
+        { "name": "erac_preferredchannel",  "type": "Choice",      "display": "Preferred Channel",      "choices": ["Email","Phone","Teams","Portal"] }
+      ]
+    },
+    "task": {
+      "display_name": "Engagement Task",
+      "custom_columns": [
+        { "name": "erac_kanbanstage",       "type": "Choice",      "display": "Kanban Stage",           "choices": ["Backlog","Planning","Executing","Done"] },
+        { "name": "erac_engagementtype",    "type": "Choice",      "display": "Engagement Type",        "choices": ["Risk","Claims","Legal","Data Integration","Strategic","Program"] }
+      ]
+    },
+    "appointment": {
+      "display_name": "Engagement Meeting",
+      "custom_columns": [
+        { "name": "erac_meetingtype",       "type": "Choice",      "display": "Meeting Type",           "choices": ["QBR","Claims Review","Treaty Renewal","Risk Review","Ad Hoc","Executive Summit"] },
+        { "name": "erac_outcome",           "type": "Choice",      "display": "Outcome",                "choices": ["Positive","Neutral","Escalation Required","Follow-up Needed"] },
+        { "name": "erac_nextsteps",         "type": "MultilineText","display": "Next Steps" }
+      ]
+    }
+  },
+
+  "custom_tables": [
+    {
+      "name": "erac_partnershiprating",
+      "display_name": "Partnership Rating (PRR)",
+      "display_name_plural": "Partnership Ratings",
+      "primary_name_column": "erac_name",
+      "columns": [
+        { "name": "erac_name",              "type": "Text",        "display": "Rating Name",       "required": true },
+        { "name": "erac_accountid",         "type": "Lookup",      "display": "Cedent",            "target": "account", "required": true },
+        { "name": "erac_period",            "type": "Text",        "display": "Period",            "example": "Q1 2026" },
+        { "name": "erac_relationship",      "type": "Decimal",     "display": "Relationship",      "min": 0, "max": 5 },
+        { "name": "erac_technical",         "type": "Decimal",     "display": "Technical",         "min": 0, "max": 5 },
+        { "name": "erac_strategic",         "type": "Decimal",     "display": "Strategic",         "min": 0, "max": 5 },
+        { "name": "erac_operational",       "type": "Decimal",     "display": "Operational",       "min": 0, "max": 5 },
+        { "name": "erac_overallrating",     "type": "Decimal",     "display": "Overall Rating",    "min": 0, "max": 5 },
+        { "name": "erac_ratingtrend",       "type": "Choice",      "display": "Trend",             "choices": ["Improving","Stable","Declining"] },
+        { "name": "erac_lastqbrdate",       "type": "DateOnly",    "display": "Last QBR" },
+        { "name": "erac_status",            "type": "Choice",      "display": "Status",            "choices": ["Draft","Submitted","Approved","Under Review"] },
+        { "name": "erac_notes",             "type": "MultilineText","display": "Notes" }
+      ]
+    },
+    {
+      "name": "erac_riskassessment",
+      "display_name": "Risk Assessment",
+      "display_name_plural": "Risk Assessments",
+      "primary_name_column": "erac_name",
+      "columns": [
+        { "name": "erac_name",              "type": "Text",        "display": "Assessment Name",   "required": true },
+        { "name": "erac_accountid",         "type": "Lookup",      "display": "Cedent",            "target": "account", "required": true },
+        { "name": "erac_period",            "type": "Text",        "display": "Period" },
+        { "name": "erac_financialrisk",     "type": "Choice",      "display": "Financial Risk",    "choices": ["Low","Medium","High","Critical"] },
+        { "name": "erac_technologyrisk",    "type": "Choice",      "display": "Technology Risk",   "choices": ["Low","Medium","High","Critical"] },
+        { "name": "erac_compliancerisk",    "type": "Choice",      "display": "Compliance Risk",   "choices": ["Low","Medium","High","Critical"] },
+        { "name": "erac_counterpartyrisk",  "type": "Choice",      "display": "Counterparty Risk", "choices": ["Low","Medium","High","Critical"] },
+        { "name": "erac_aggregaterisk",     "type": "Choice",      "display": "Aggregate Risk",    "choices": ["Low","Medium","High","Critical"] },
+        { "name": "erac_approvalstatus",    "type": "Choice",      "display": "Approval Status",   "choices": ["Pending","Approved","Escalated","Rejected"] },
+        { "name": "erac_analystid",         "type": "Lookup",      "display": "Analyst",           "target": "systemuser" },
+        { "name": "erac_reviewdate",        "type": "DateOnly",    "display": "Review Date" },
+        { "name": "erac_notes",             "type": "MultilineText","display": "Notes" }
+      ]
+    },
+    {
+      "name": "erac_treaty",
+      "display_name": "Treaty",
+      "display_name_plural": "Treaties",
+      "primary_name_column": "erac_name",
+      "columns": [
+        { "name": "erac_name",              "type": "Text",        "display": "Treaty Name",       "required": true },
+        { "name": "erac_accountid",         "type": "Lookup",      "display": "Cedent",            "target": "account", "required": true },
+        { "name": "erac_treatytype",        "type": "Choice",      "display": "Treaty Type",       "choices": ["Quota Share","Excess of Loss","Facultative","Surplus","Stop Loss"] },
+        { "name": "erac_effectivedate",     "type": "DateOnly",    "display": "Effective Date" },
+        { "name": "erac_expirydate",        "type": "DateOnly",    "display": "Expiry Date" },
+        { "name": "erac_exposurem",         "type": "Decimal",     "display": "Exposure ($M)" },
+        { "name": "erac_governinglaw",      "type": "Text",        "display": "Governing Law" },
+        { "name": "erac_status",            "type": "Choice",      "display": "Status",            "choices": ["Active","Pending Renewal","Expired","In Dispute","Under Review"] },
+        { "name": "erac_notes",             "type": "MultilineText","display": "Notes" }
+      ]
+    },
+    {
+      "name": "erac_reserveadequacy",
+      "display_name": "Reserve Adequacy",
+      "display_name_plural": "Reserve Adequacy Records",
+      "primary_name_column": "erac_name",
+      "columns": [
+        { "name": "erac_name",              "type": "Text",        "display": "Record Name",       "required": true },
+        { "name": "erac_accountid",         "type": "Lookup",      "display": "Cedent",            "target": "account" },
+        { "name": "erac_lob",               "type": "Text",        "display": "Line of Business" },
+        { "name": "erac_period",            "type": "Text",        "display": "Period" },
+        { "name": "erac_currentreserve",    "type": "Decimal",     "display": "Current Reserve ($M)" },
+        { "name": "erac_recreserve",        "type": "Decimal",     "display": "Recommended Reserve ($M)" },
+        { "name": "erac_adequacypct",       "type": "Decimal",     "display": "Adequacy %" },
+        { "name": "erac_status",            "type": "Choice",      "display": "Status",            "choices": ["Adequate","Under-Reserved","Over-Reserved","Under Review"] },
+        { "name": "erac_analystid",         "type": "Lookup",      "display": "Actuary",           "target": "systemuser" }
+      ]
+    },
+    {
+      "name": "erac_dispute",
+      "display_name": "Legal Dispute",
+      "display_name_plural": "Legal Disputes",
+      "primary_name_column": "erac_name",
+      "columns": [
+        { "name": "erac_name",              "type": "Text",        "display": "Dispute Name",      "required": true },
+        { "name": "erac_accountid",         "type": "Lookup",      "display": "Cedent",            "target": "account" },
+        { "name": "erac_treatyid",          "type": "Lookup",      "display": "Related Treaty",    "target": "erac_treaty" },
+        { "name": "erac_disputetype",       "type": "Choice",      "display": "Dispute Type",      "choices": ["Coverage","Commutation","Data Quality","Regulatory","Contract Interpretation"] },
+        { "name": "erac_fileddate",         "type": "DateOnly",    "display": "Filed Date" },
+        { "name": "erac_exposure",          "type": "Decimal",     "display": "Exposure ($M)" },
+        { "name": "erac_status",            "type": "Choice",      "display": "Status",            "choices": ["Active","Settled","Dismissed","In Arbitration","Mediation"] },
+        { "name": "erac_counselid",         "type": "Lookup",      "display": "Counsel",           "target": "systemuser" },
+        { "name": "erac_notes",             "type": "MultilineText","display": "Notes" }
+      ]
+    }
+  ],
+
+  "mda_views": {
+    "account": [
+      {
+        "name": "ERAC Cedents — Active",
+        "filter": "erac_iscedent eq true AND statecode eq 0",
+        "columns": ["name","erac_partnershiptype","erac_tier","erac_overallrating","erac_portfoliopct","erac_lastqbrdate","erac_ratingtrend"],
+        "sort": "erac_overallrating desc",
+        "default_view": true
+      },
+      {
+        "name": "ERAC Cedents — All",
+        "filter": "erac_iscedent eq true",
+        "columns": ["name","erac_partnershiptype","erac_tier","erac_overallrating","statecode"]
+      }
+    ],
+    "contact": [
+      {
+        "name": "ERAC Contacts — Active",
+        "filter": "_parentcustomerid_value/erac_iscedent eq true AND statecode eq 0",
+        "columns": ["fullname","parentcustomerid","jobtitle","erac_function","erac_contacttier","erac_riskflags","erac_preferredchannel"],
+        "sort": "fullname asc",
+        "default_view": true
+      }
+    ]
+  },
+
+  "mda_sitemap": {
+    "areas": [
+      {
+        "id": "erac_main",
+        "title": "ERAC CRM",
+        "icon": "WebResource/erac_logo",
+        "groups": [
+          {
+            "id": "cedents_group",
+            "title": "Cedents & Contacts",
+            "subareas": [
+              { "entity": "account",              "title": "Cedents",            "view": "ERAC Cedents — Active" },
+              { "entity": "contact",              "title": "Contacts",           "view": "ERAC Contacts — Active" }
+            ]
+          },
+          {
+            "id": "engagement_group",
+            "title": "Engagement",
+            "subareas": [
+              { "entity": "appointment",          "title": "Engagement Log" },
+              { "entity": "task",                 "title": "Kanban Tasks" }
+            ]
+          },
+          {
+            "id": "risk_group",
+            "title": "Risk & Partnership",
+            "subareas": [
+              { "entity": "erac_riskassessment",  "title": "Risk Assessments" },
+              { "entity": "erac_partnershiprating","title": "Partnership Ratings (PRR)" }
+            ]
+          },
+          {
+            "id": "actuarial_group",
+            "title": "Actuarial",
+            "subareas": [
+              { "entity": "erac_reserveadequacy", "title": "Reserve Adequacy" }
+            ]
+          },
+          {
+            "id": "legal_group",
+            "title": "Legal",
+            "subareas": [
+              { "entity": "erac_treaty",          "title": "Treaties" },
+              { "entity": "erac_dispute",         "title": "Disputes" }
+            ]
+          },
+          {
+            "id": "analytics_group",
+            "title": "Analytics",
+            "subareas": [
+              { "type": "dashboard",              "title": "Portfolio Dashboard",  "note": "Embed Power BI or use native MDA charts" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
