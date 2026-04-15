@@ -671,13 +671,20 @@ async function fetchRecentActivity() {
 
 // ── Agent definitions ──────────────────────────────────────────────────────
 const AGENTS = [
-  { id: 'orchestrator', name: 'Orchestrator', icon: '⚙️', role: 'Routes & coordinates all work', status: 'idle' },
-  { id: 'pm', name: 'PM', icon: '🗂️', role: 'Sprint planning & backlog', status: 'idle' },
-  { id: 'sme', name: 'SME', icon: '🏭', role: 'SOPs & use case definitions', status: 'idle' },
-  { id: 'developer', name: 'Developer', icon: '🧑‍💻', role: 'Agent scaffolding & configs', status: 'idle' },
-  { id: 'architect', name: 'Architect', icon: '🏗️', role: 'Solution design & stack', status: 'idle' },
-  { id: 'persona', name: 'Customer Persona', icon: '🎭', role: 'Customer simulation & testing', status: 'idle' },
-  { id: 'intake', name: 'Intake/Logger', icon: '📋', role: 'Ideas, decisions & escalations', status: 'idle' },
+  { id: 'orchestrator',       name: 'Orchestrator',       icon: '⚙️',  role: 'Routes & coordinates all work',           status: 'idle' },
+  { id: 'outcome_framer',     name: 'Outcome Framer',     icon: '🎯',  role: 'Defines outcomes & KPIs before build',    status: 'idle' },
+  { id: 'pm',                 name: 'PM',                 icon: '🗂️',  role: 'Sprint planning & backlog',               status: 'idle' },
+  { id: 'sme',                name: 'SME',                icon: '🏭',  role: 'SOPs & use case definitions',             status: 'idle' },
+  { id: 'developer',          name: 'Developer',          icon: '🧑‍💻', role: 'Agent scaffolding & configs',            status: 'idle' },
+  { id: 'architect',          name: 'Architect',          icon: '🏗️',  role: 'Solution design & stack',                 status: 'idle' },
+  { id: 'ux_designer',        name: 'UX Designer',        icon: '🎨',  role: 'Wireframes, user stories & UX flows',     status: 'idle' },
+  { id: 'content_strategist', name: 'Content Strategist', icon: '✍️',  role: 'SOPs, summaries & editorial review',      status: 'idle' },
+  { id: 'data_analyst',       name: 'Data Analyst',       icon: '📊',  role: 'Trends, KPIs & outcome intelligence',     status: 'idle' },
+  { id: 'security_reviewer',  name: 'Security Reviewer',  icon: '🔒',  role: 'Code security & pre-deploy checklists',   status: 'idle' },
+  { id: 'qa_engineer',        name: 'QA Engineer',        icon: '🧪',  role: 'Test cases, plans & regression checks',   status: 'idle' },
+  { id: 'persona',            name: 'Customer Persona',   icon: '🎭',  role: 'Customer simulation & testing',           status: 'idle' },
+  { id: 'intake',             name: 'Intake/Logger',      icon: '📋',  role: 'Ideas, decisions & escalations',          status: 'idle' },
+  { id: 'outcome_validator',  name: 'Outcome Validator',  icon: '✅',  role: 'Validates outcomes before closing',       status: 'idle' },
 ];
 
 // ── Outcomes data ──────────────────────────────────────────────────────────
