@@ -109,6 +109,19 @@
       "search_paths": [],
       "stars": 108,
       "enabled": true
+    },
+    {
+      "id": "d365cc-fde-internal",
+      "name": "microsoft/d365cc-fde-internal",
+      "type": "github_repo",
+      "repo": "microsoft/d365cc-fde-internal",
+      "priority": 4,
+      "description": "Microsoft FDE (Forward Deployed Engineering) toolkit for D365 Contact Center. Production-grade parameterized JSON templates for Copilot Studio voice agents (Speech-to-Speech / streaming mode). Covers retail store routing, appointment management, pharma HCP, healthcare pharmacy, and a generic skeleton template. Templates use {{VARIABLE}} placeholders for fast customization and direct upload into Copilot Studio.",
+      "search_paths": ["tools/streaming-Mode-agent-templates/"],
+      "area": "customer-service",
+      "keywords": ["voice", "IVR", "streaming", "contact center", "copilot studio", "template", "pharmacy", "retail", "appointment", "routing", "escalation", "d365", "customer service"],
+      "stars": 0,
+      "enabled": true
     }
   ],
   "keywords_to_ignore": ["the", "a", "an", "and", "or", "for", "to", "of", "in", "with", "on", "at"],
