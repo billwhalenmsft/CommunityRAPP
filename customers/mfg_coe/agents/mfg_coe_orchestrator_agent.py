@@ -43,6 +43,11 @@ from customers.mfg_coe.agents.mfg_coe_architect_agent import MfgCoEArchitectAgen
 from customers.mfg_coe.agents.mfg_coe_customer_persona_agent import MfgCoECustomerPersonaAgent
 from customers.mfg_coe.agents.mfg_coe_outcome_framer_agent import MfgCoEOutcomeFramerAgent
 from customers.mfg_coe.agents.mfg_coe_outcome_validator_agent import MfgCoEOutcomeValidatorAgent
+from customers.mfg_coe.agents.mfg_coe_ux_designer_agent import MfgCoEUXDesignerAgent
+from customers.mfg_coe.agents.mfg_coe_content_strategist_agent import MfgCoEContentStrategistAgent
+from customers.mfg_coe.agents.mfg_coe_data_analyst_agent import MfgCoEDataAnalystAgent
+from customers.mfg_coe.agents.mfg_coe_security_reviewer_agent import MfgCoESecurityReviewerAgent
+from customers.mfg_coe.agents.mfg_coe_qa_engineer_agent import MfgCoEQAEngineerAgent
 from customers.mfg_coe.agents.context_card_loader import load_all_context_cards
 
 logging.basicConfig(level=logging.INFO)
@@ -59,7 +64,7 @@ ROUTING_MAP = {
         "description": "SME Agent (SOPs, processes, use cases)"
     },
     "developer": {
-        "keywords": ["code", "agent", "scaffold", "build", "implement", "python", "function", "playwright", "test", "d365 config"],
+        "keywords": ["code", "agent", "scaffold", "build", "implement", "python", "function", "playwright", "d365 config"],
         "agent_key": "developer",
         "description": "Developer Agent (code, configs, scaffolding)"
     },
@@ -79,10 +84,35 @@ ROUTING_MAP = {
         "description": "Intake Agent (ideas, solutions, flagging)"
     },
     "customer_persona": {
-        "keywords": ["customer", "persona", "test", "scenario", "simulate", "navico", "otis", "zurn", "vermeer", "carrier"],
+        "keywords": ["customer", "persona", "simulate", "navico", "otis", "zurn", "vermeer", "carrier"],
         "agent_key": "customer_persona",
         "description": "Customer Persona Agent (testing, simulation)"
-    }
+    },
+    "ux_designer": {
+        "keywords": ["ux", "wireframe", "user story", "user experience", "ui design", "screen", "layout", "information architecture", "conversation flow", "card design"],
+        "agent_key": "ux_designer",
+        "description": "UX Designer (wireframes, user stories, IA, conversation UX)"
+    },
+    "content_strategist": {
+        "keywords": ["sop template", "write", "content", "tone", "jargon", "executive summary", "ssm", "rfp", "documentation", "forum post", "editorial"],
+        "agent_key": "content_strategist",
+        "description": "Content Strategist (SOPs, outcome summaries, SSP responses, editorial)"
+    },
+    "data_analyst": {
+        "keywords": ["trend", "pattern", "metric", "kpi", "report", "dashboard", "insight", "analytics", "roi", "velocity", "coverage"],
+        "agent_key": "data_analyst",
+        "description": "Data Analyst (trends, patterns, KPI tracking, dashboard data)"
+    },
+    "security_reviewer": {
+        "keywords": ["security", "secret", "credential", "auth", "permission", "vulnerability", "hardcoded", "cors", "injection", "review code"],
+        "agent_key": "security_reviewer",
+        "description": "Security Reviewer (code security, auth flows, secrets scanning)"
+    },
+    "qa_engineer": {
+        "keywords": ["test", "test case", "regression", "edge case", "acceptance", "coverage", "qa", "verify", "playwright"],
+        "agent_key": "qa_engineer",
+        "description": "QA Engineer (test cases, test plans, regression, acceptance verification)"
+    },
 }
 
 
@@ -103,8 +133,26 @@ def _gh(args: List[str]) -> Any:
 class MfgCoEOrchestratorAgent(BasicAgent):
     """
     L0 Orchestrator for the Discrete Manufacturing CoE.
-    Routes requests to persona agents, manages the GitHub feedback loop,
+    Routes requests to 13 persona agents, manages the GitHub feedback loop,
     and coordinates autonomous CoE operations.
+
+    Agent Team (13 agents):
+      Core Pipeline:
+        - OutcomeFramer    : frames + scores outcomes; hard-blocks if LOW confidence
+        - OutcomeValidator : validates outcomes are delivered after work completes
+        - SME              : SOPs, business processes, use case definitions
+        - Developer        : code generation, D365 configs, RAPP artifacts (6 skill areas)
+        - Architect        : solution design, Microsoft stack patterns
+      Support:
+        - PM               : sprint planning, backlog, status digest
+        - Intake           : idea capture, solution logging, needs-bill alerts
+        - CustomerPersona  : customer simulation for testing
+      Quality & Craft:
+        - UXDesigner       : wireframes, user stories, conversation UX, card design
+        - ContentStrategist: SOPs, outcome summaries, SSP responses, editorial review
+        - DataAnalyst      : trend detection, KPI tracking, ROI signals, dashboard data
+        - SecurityReviewer : secrets scanning, auth review, pre-deploy checklists
+        - QAEngineer       : test case generation, test plans, regression checklists
     """
 
     def __init__(self):
@@ -173,6 +221,11 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         self.customer_persona = MfgCoECustomerPersonaAgent()
         self.outcome_framer = MfgCoEOutcomeFramerAgent()
         self.outcome_validator = MfgCoEOutcomeValidatorAgent()
+        self.ux_designer = MfgCoEUXDesignerAgent()
+        self.content_strategist = MfgCoEContentStrategistAgent()
+        self.data_analyst = MfgCoEDataAnalystAgent()
+        self.security_reviewer = MfgCoESecurityReviewerAgent()
+        self.qa_engineer = MfgCoEQAEngineerAgent()
 
         self.agents = {
             "intake": self.intake,
@@ -183,6 +236,11 @@ class MfgCoEOrchestratorAgent(BasicAgent):
             "customer_persona": self.customer_persona,
             "outcome_framer": self.outcome_framer,
             "outcome_validator": self.outcome_validator,
+            "ux_designer": self.ux_designer,
+            "content_strategist": self.content_strategist,
+            "data_analyst": self.data_analyst,
+            "security_reviewer": self.security_reviewer,
+            "qa_engineer": self.qa_engineer,
         }
 
         # Load context cards at startup

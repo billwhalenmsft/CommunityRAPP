@@ -227,6 +227,11 @@ raw-idea → outcome-defined → use-case → tech-solution → agent-task → o
 | **Customer Persona** | agent-task | Scenario simulation from the customer's POV, test script generation |
 | **Outcome Validator** 🆕 | outcome-validated | Validates the delivered artifact against the original outcome definition. Posts structured sign-off. Issues cannot close without this. |
 | **Intake/Logger** | any | Log idea, log solution, flag for Bill |
+| **UX Designer** 🆕 | tech-solution, use-case | Wireframes (ASCII), user stories with acceptance criteria, conversation UX flows, card design specs, information architecture |
+| **Content Strategist** 🆕 | sop, use-case, any | SOP templates, outcome summaries, SSP/RFP responses, editorial review (jargon-free), forum posts, voice guidelines |
+| **Data Analyst** 🆕 | outcome-validated, any | Trend detection, KPI tracking, outcome confidence scoring, ROI signals, dashboard data for web UI, weekly metrics |
+| **Security Reviewer** 🆕 | tech-solution | Secrets scanning (regex), auth/permission review, CORS/injection checks, pre-deploy security checklists |
+| **QA Engineer** 🆕 | tech-solution, outcome-validated | Test case generation from AC, test plans, regression checklists, edge case coverage, Playwright script skeletons |
 
 ### What "Verified Outcome" Means
 

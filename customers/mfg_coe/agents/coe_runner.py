@@ -261,6 +261,19 @@ def action_process_issue(issue_number: int) -> None:
         )
         _post_issue_comment(issue_number, comment_body)
 
+    elif status == "blocked_needs_outcome":
+        blocked_reason = result.get("blocked_reason", "Outcome could not be inferred from this issue.")
+        questions = result.get("questions", [])
+        questions_md = "\n".join(f"{i+1}. {q}" for i, q in enumerate(questions)) if questions else ""
+        comment_body = (
+            f"## 🚫 Pipeline Blocked — Outcome Required\n\n"
+            f"{blocked_reason}\n\n"
+            + (f"**Please answer the following before work can proceed:**\n\n{questions_md}\n\n" if questions_md else "")
+            + "Once you reply, the pipeline will resume automatically.\n\n"
+            + footer.lstrip("\n\n")
+        )
+        _post_issue_comment(issue_number, comment_body)
+
     else:
         comment_body = (
             f"## ⚠️ Agent Update — `{status}`\n\n"
