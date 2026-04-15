@@ -1,0 +1,99 @@
+name: {{TEAM_NAME}} Manual Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to run'
+        required: true
+        type: choice
+        options:
+          - run_backlog
+          - standup
+          - health_check
+          - process_issue
+          - bill_feedback
+          - daily_wrapup
+          - idle_check
+      issue_number:
+        description: 'Issue number (required for process_issue and bill_feedback)'
+        required: false
+        type: string
+      comment:
+        description: 'Comment/direction text (for bill_feedback)'
+        required: false
+        type: string
+      max_tasks:
+        description: 'Max tasks to process (for run_backlog)'
+        required: false
+        default: '5'
+        type: string
+
+jobs:
+  run-action:
+    name: Run — ${{ github.event.inputs.action }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: write
+      pull-requests: write
+
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+      AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+      AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+      AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
+      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+      USE_CLOUD_STORAGE: "true"
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      COE_REPO: {{REPO}}
+      GITHUB_RUN_ID: ${{ github.run_id }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run standup
+        if: github.event.inputs.action == 'standup'
+        run: python {{RUNNER_PATH}} --action standup
+
+      - name: Run backlog
+        if: github.event.inputs.action == 'run_backlog'
+        run: python {{RUNNER_PATH}} --action run_backlog --max ${{ github.event.inputs.max_tasks }}
+
+      - name: Process specific issue
+        if: github.event.inputs.action == 'process_issue'
+        run: python {{RUNNER_PATH}} --action process_issue --issue ${{ github.event.inputs.issue_number }}
+
+      - name: Submit feedback
+        if: github.event.inputs.action == 'bill_feedback'
+        run: |
+          python {{RUNNER_PATH}} \
+            --action bill_feedback \
+            --issue ${{ github.event.inputs.issue_number }} \
+            --comment "${{ github.event.inputs.comment }}"
+
+      - name: Health check
+        if: github.event.inputs.action == 'health_check'
+        run: python {{RUNNER_PATH}} --action health_check
+
+      - name: Daily wrap-up
+        if: github.event.inputs.action == 'daily_wrapup'
+        run: python {{RUNNER_PATH}} --action daily_wrapup
+
+      - name: Idle check
+        if: github.event.inputs.action == 'idle_check'
+        run: python {{RUNNER_PATH}} --action idle_check

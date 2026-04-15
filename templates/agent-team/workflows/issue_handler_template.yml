@@ -1,0 +1,92 @@
+name: {{TEAM_NAME}} Issue Handler
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  # ── Trigger: issue labeled with agent-task ─────────────────────────────────
+  process-agent-task:
+    name: Process agent-task issue
+    if: |
+      github.event_name == 'issues' &&
+      github.event.action == 'labeled' &&
+      (github.event.label.name == 'agent-task' || github.event.label.name == 'process-now') &&
+      contains(toJson(github.event.issue.labels), '{{TEAM_LABEL}}')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Process issue
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+          USE_CLOUD_STORAGE: "true"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COE_REPO: {{REPO}}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python {{RUNNER_PATH}} \
+            --action process_issue \
+            --issue ${{ github.event.issue.number }}
+
+  # ── Trigger: owner comments on a needs-bill issue ─────────────────────────
+  process-owner-feedback:
+    name: Process owner feedback
+    if: |
+      github.event_name == 'issue_comment' &&
+      github.event.action == 'created' &&
+      github.event.comment.user.login == '{{OWNER_LOGIN}}' &&
+      contains(toJson(github.event.issue.labels), 'needs-bill') &&
+      contains(toJson(github.event.issue.labels), '{{TEAM_LABEL}}')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Process owner feedback
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+          AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+          USE_CLOUD_STORAGE: "true"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COE_REPO: {{REPO}}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python {{RUNNER_PATH}} \
+            --action bill_feedback \
+            --issue ${{ github.event.issue.number }} \
+            --comment "${{ github.event.comment.body }}"

@@ -1,0 +1,66 @@
+name: {{TEAM_NAME}} Scheduled Pulse
+
+# Runs every hour during business hours, after-hours community check
+on:
+  schedule:
+    # Business hours — every hour ({{TIMEZONE_LABEL}})
+    - cron: '{{PULSE_CRON_UTC}}'
+    # After-hours idle check
+    - cron: '{{PULSE_AFTERHOURS_CRON_UTC}}'
+  workflow_dispatch:
+    inputs:
+      force_action:
+        description: 'Force a specific action'
+        required: false
+        type: choice
+        default: ''
+        options:
+          - ''
+          - run_backlog
+          - idle_check
+
+jobs:
+  pulse:
+    name: Scheduled Pulse
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+      AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+      AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+      AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
+      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+      USE_CLOUD_STORAGE: "true"
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      COE_REPO: {{REPO}}
+      GITHUB_RUN_ID: ${{ github.run_id }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Process backlog (business hours / forced)
+        if: |
+          github.event_name == 'workflow_dispatch' && github.event.inputs.force_action == 'run_backlog' ||
+          (github.event_name == 'schedule' && contains(github.event.schedule, '{{PULSE_CRON_UTC_IDENTIFIER}}'))
+        run: python {{RUNNER_PATH}} --action run_backlog --max 5
+
+      - name: After-hours idle check
+        if: |
+          github.event_name == 'workflow_dispatch' && github.event.inputs.force_action == 'idle_check' ||
+          (github.event_name == 'schedule' && contains(github.event.schedule, '{{PULSE_AFTERHOURS_CRON_UTC}}'))
+        run: python {{RUNNER_PATH}} --action idle_check

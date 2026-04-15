@@ -1,0 +1,114 @@
+{
+  "_comment": "Copy this file to team_config.json, fill in your values, then run: python setup_agent_team.py",
+
+  "team_name": "My Agent Team",
+  "team_slug": "my_team",
+  "repo": "your-org/your-repo",
+  "timezone_label": "CST",
+  "standup_cron_utc": "0 14 * * 1-5",
+  "wrapup_cron_utc": "0 23 * * 1-5",
+  "pulse_cron_utc": "0 13-22 * * 1-5",
+  "pulse_afterhours_cron_utc": "0 1 * * 2-6",
+  "bill_github_login": "your-github-username",
+  "output_path": ".",
+
+  "mode": "coe",
+  "_mode_comment": "coe = scheduled autonomous team | project = manual-only lightweight team",
+
+  "personas": [
+    {
+      "id": "orchestrator",
+      "name": "Orchestrator",
+      "icon": "⚙️",
+      "role": "Routes & coordinates all work",
+      "include": true,
+      "_comment": "Always include — this is the L0 router"
+    },
+    {
+      "id": "outcome_framer",
+      "name": "Outcome Framer",
+      "icon": "🎯",
+      "role": "Defines outcomes & success criteria before build",
+      "include": true,
+      "_comment": "Recommended — gates work on clear outcomes"
+    },
+    {
+      "id": "pm",
+      "name": "PM",
+      "icon": "🗂️",
+      "role": "Sprint planning & backlog management",
+      "include": true
+    },
+    {
+      "id": "sme",
+      "name": "SME",
+      "icon": "🏭",
+      "role": "Domain expertise, process docs, use case definitions",
+      "include": true
+    },
+    {
+      "id": "developer",
+      "name": "Developer",
+      "icon": "🧑‍💻",
+      "role": "Code generation & technical implementation",
+      "include": true
+    },
+    {
+      "id": "architect",
+      "name": "Architect",
+      "icon": "🏗️",
+      "role": "Solution design & technology stack recommendations",
+      "include": true
+    },
+    {
+      "id": "ux_designer",
+      "name": "UX Designer",
+      "icon": "🎨",
+      "role": "Wireframes, user stories & UX flows",
+      "include": false
+    },
+    {
+      "id": "content_strategist",
+      "name": "Content Strategist",
+      "icon": "✍️",
+      "role": "Documentation, summaries & editorial review",
+      "include": false
+    },
+    {
+      "id": "data_analyst",
+      "name": "Data Analyst",
+      "icon": "📊",
+      "role": "Trends, KPIs & outcome intelligence",
+      "include": false
+    },
+    {
+      "id": "security_reviewer",
+      "name": "Security Reviewer",
+      "icon": "🔒",
+      "role": "Code security & pre-deploy checklists",
+      "include": false
+    },
+    {
+      "id": "qa_engineer",
+      "name": "QA Engineer",
+      "icon": "🧪",
+      "role": "Test cases, plans & regression checks",
+      "include": false
+    },
+    {
+      "id": "intake",
+      "name": "Intake/Logger",
+      "icon": "📋",
+      "role": "Ideas, decisions & human escalations",
+      "include": true
+    },
+    {
+      "id": "outcome_validator",
+      "name": "Outcome Validator",
+      "icon": "✅",
+      "role": "Validates outcomes before closing",
+      "include": true,
+      "_comment": "Recommended — ensures nothing closes without verified outcome"
+    }
+  ]
+}
