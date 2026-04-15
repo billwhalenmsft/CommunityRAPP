@@ -201,15 +201,43 @@ Use `customers/mfg_coe/agents/mfg_coe_developer_agent.py` as the reference examp
 
 ## Personas and Responsibilities
 
-| Persona | When to Use | Key Capabilities |
+> **Operating Philosophy:** Inspired by CongruentX's outcome-based delivery model — we do not deliver hours or artifacts. We deliver verified outcomes. Every issue must have a defined business problem, success criteria, and KPI *before* any build work starts. Nothing is "done" until the outcome is validated against those criteria.
+
+### The Outcome-First Pipeline
+
+Every issue flows through this sequence:
+```
+raw-idea → outcome-defined → use-case → tech-solution → agent-task → outcome-validated → done
+```
+
+- **outcome-defined** — Outcome Framer agent runs first. Defines: who is affected, what changes for them, what KPI proves success.
+- **outcome-validated** — Outcome Validator runs last. Signs off that the delivered artifact actually solves the stated problem.
+- No issue closes without both gates.
+
+### Agent Team
+
+| Persona | Pipeline Stage | Key Responsibilities |
 |---|---|---|
-| **Orchestrator** | All requests — auto-routes | Route, standup, pipeline, bill feedback |
-| **PM** | Planning, prioritization, status | Sprint plan, conflict detection, weekly digest |
-| **SME** | Business processes, use cases | SOP generation, use case definition |
-| **Developer** | Code, configs, scaffolding | Agent scaffold, D365 config, Playwright tests |
-| **Architect** | Solution design | Architecture docs, stack recommendations |
-| **Customer Persona** | Testing | Scenario simulation, test script generation |
-| **Intake/Logger** | Ideas, decisions, escalations | Log idea, log solution, flag for Bill |
+| **Orchestrator** | All | Auto-routes, standup, bill feedback, pipeline management |
+| **Outcome Framer** 🆕 | outcome-defined | Defines business problem, affected users, success KPI, and acceptance criteria *before any build work* |
+| **PM** | use-case → planning | Sprint plan, priority conflicts, weekly digest, outcome tracking across all open issues |
+| **SME** | use-case, sop | Business process docs, use case definitions — always framed as before/after for the business user |
+| **Developer** | tech-solution | Agent scaffold, D365 config, Playwright tests |
+| **Architect** | tech-solution | Solution design, stack recommendations, reference architecture |
+| **Customer Persona** | agent-task | Scenario simulation from the customer's POV, test script generation |
+| **Outcome Validator** 🆕 | outcome-validated | Validates the delivered artifact against the original outcome definition. Posts structured sign-off. Issues cannot close without this. |
+| **Intake/Logger** | any | Log idea, log solution, flag for Bill |
+
+### What "Verified Outcome" Means
+
+When Outcome Validator signs off, it must confirm:
+1. ✅ The stated business problem is addressed
+2. ✅ The affected business user's process is demonstrably better
+3. ✅ The success KPI is achievable with this artifact
+4. ✅ The demo tells a complete before/after story
+5. ✅ No open questions that would prevent a customer from seeing value
+
+If any of these fail → issue gets `needs-bill` not `done`.
 
 ---
 
@@ -243,10 +271,14 @@ All CoE work is tracked as GitHub Issues in `kody-w/CommunityRAPP`.
 - `mfg-coe` — All CoE issues
 - `agent-task` — Ready for agent to pick up autonomously  
 - `needs-bill` — Waiting for Bill's input
-- `raw-idea → use-case → tech-solution → agent-task → done` — Pipeline stages
+- `raw-idea → outcome-defined → use-case → tech-solution → agent-task → outcome-validated → done` — Pipeline stages
 - `persona:*` — Which agent owns this
 - `p1-critical / p2-high / p3-medium` — Priority
 
-**The loop:**
-1. Open issue with `agent-task` label → GitHub Actions triggers → agent works → posts result as comment → issue closed
-2. Blocked? → Agent relabels to `needs-bill` → Bill comments → GHA triggers → agent resumes
+**The outcome-first loop:**
+1. New issue created → **Outcome Framer** defines business problem + KPI → `outcome-defined`
+2. SME validates use case makes sense → `use-case`
+3. Architect + Developer build the solution → `tech-solution` → `agent-task`
+4. **Outcome Validator** signs off against original KPI → `outcome-validated`
+5. Issue closed as `done` — only after outcome is verified, not just artifact delivered
+6. Blocked at any stage? → `needs-bill` → Bill comments → agent resumes
