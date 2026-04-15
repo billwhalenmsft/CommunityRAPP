@@ -63,7 +63,7 @@ jobs:
           github.event_name == 'workflow_dispatch' && github.event.inputs.force_action == 'run_backlog' ||
           (github.event_name == 'schedule' && contains(github.event.schedule, '0 12-22'))
         run: |
-          python customers/mfg_coe/agents/coe_runner.py --action run_backlog --max 2
+          python customers/mfg_coe/agents/coe_runner.py --action run_backlog --max 5
 
       # ── After-hours: community engagement / idle nudge ───────────────────────
       - name: After-hours community + idle check
