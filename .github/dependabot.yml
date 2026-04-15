@@ -1,0 +1,49 @@
+# Dependabot configuration
+# Keeps Python deps and GitHub Actions up to date
+# Groups related updates into single PRs to reduce noise
+
+version: 2
+
+updates:
+  # Python dependencies (requirements.txt)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 5
+    groups:
+      azure-sdk:
+        patterns:
+          - "azure-*"
+      openai:
+        patterns:
+          - "openai"
+          - "tiktoken"
+      security-patches:
+        update-types:
+          - "security"
+    labels:
+      - "on-deck"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # GitHub Actions versions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    labels:
+      - "on-deck"
+    commit-message:
+      prefix: "chore(actions)"
