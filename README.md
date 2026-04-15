@@ -1,6 +1,18 @@
 # ⚡ RAPP — Rapid AI Agent Production Pipeline
 
+<p align="center">
+  <img src="customers/mfg_coe/web_ui/logo.svg" alt="Bots in Blazers — Mfg CoE" width="480"/>
+</p>
+
+<p align="center">
+  <a href="https://bots-in-blazers.fun"><img src="https://img.shields.io/badge/🌐_Live_Dashboard-bots--in--blazers.fun-58a6ff?style=for-the-badge&logoColor=white" alt="Live Dashboard"/></a>
+  <img src="https://img.shields.io/badge/Agents-Always_On-3fb950?style=for-the-badge" alt="Agents Online"/>
+  <img src="https://img.shields.io/badge/Powered_by-GPT--4o-bc8cff?style=for-the-badge&logo=openai&logoColor=white" alt="GPT-4o"/>
+  <img src="https://img.shields.io/badge/Platform-Microsoft_Azure-0078d4?style=for-the-badge&logo=microsoftazure&logoColor=white" alt="Azure"/>
+</p>
+
 > Build, demo, and deploy enterprise AI agents — from a customer transcript to a working agent in minutes.
+> The **Bots in Blazers Mfg CoE** is a living, autonomous team of AI agents focused on Discrete Manufacturing excellence.
 
 ### 🌐 Quick Access
 
