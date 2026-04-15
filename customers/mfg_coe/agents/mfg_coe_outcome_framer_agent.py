@@ -2,8 +2,8 @@
 Agent: MfgCoE Outcome Framer Agent
 Purpose: Runs FIRST on every issue before any build work starts.
          Defines the business problem, affected users, success KPI, and acceptance
-         criteria. Inspired by CongruentX outcome-based delivery — nothing moves to
-         tech-solution until the outcome is clearly defined and traceable.
+         criteria. Nothing moves to tech-solution until the outcome is clearly
+         defined and traceable.
 
 Actions:
   frame_outcome     — Define business problem, affected users, KPI, and acceptance criteria
@@ -224,7 +224,7 @@ class MfgCoEOutcomeFramerAgent(BasicAgent):
             "description": (
                 "Outcome Framer agent — runs BEFORE any build work on CoE issues. "
                 "Defines the business problem, affected users, success KPIs, and "
-                "acceptance criteria. Inspired by CongruentX outcome-based delivery. "
+                "acceptance criteria. "
                 "Use this agent at the start of every issue to ensure we're solving "
                 "the right problem for the right business user with measurable success criteria."
             ),

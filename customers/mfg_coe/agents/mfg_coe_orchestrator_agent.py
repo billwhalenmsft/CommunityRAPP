@@ -15,7 +15,7 @@ Architecture:
    ├── MfgCoECustomerPersonaAgent  — Customer simulation, Playwright test scripts
    └── MfgCoEOutcomeValidatorAgent — Validates outcome was delivered BEFORE closing (runs last)
 
-Pipeline (outcome-first, CongruentX-inspired):
+Pipeline (outcome-first):
   raw-idea → outcome-defined → use-case → tech-solution → agent-task → outcome-validated → done
 
 Actions:

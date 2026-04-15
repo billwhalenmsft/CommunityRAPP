@@ -105,8 +105,8 @@ class MfgCoEOutcomeValidatorAgent(BasicAgent):
             "description": (
                 "Outcome Validator agent — runs AFTER build work on CoE issues, BEFORE closing. "
                 "Validates that the delivered artifact actually solves the stated business problem "
-                "and delivers the defined outcome. Inspired by CongruentX verified outcome model — "
-                "issues only close when outcomes are verified, not just when artifacts are delivered. "
+                "and delivers the defined outcome. "
+                "Issues only close when outcomes are verified, not just when artifacts are delivered. "
                 "Use this agent as the final step before marking any issue done."
             ),
             "parameters": {

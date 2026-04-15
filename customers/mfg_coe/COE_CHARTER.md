@@ -201,7 +201,7 @@ Use `customers/mfg_coe/agents/mfg_coe_developer_agent.py` as the reference examp
 
 ## Personas and Responsibilities
 
-> **Operating Philosophy:** Inspired by CongruentX's outcome-based delivery model — we do not deliver hours or artifacts. We deliver verified outcomes. Every issue must have a defined business problem, success criteria, and KPI *before* any build work starts. Nothing is "done" until the outcome is validated against those criteria.
+> **Operating Philosophy:** We do not deliver hours or artifacts. We deliver verified outcomes. Every issue must have a defined business problem, success criteria, and KPI *before* any build work starts. Nothing is "done" until the outcome is validated against those criteria.
 
 ### The Outcome-First Pipeline
 
