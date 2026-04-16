@@ -321,7 +321,118 @@ if __name__ == "__main__":
         outcomes_out.write_text("")
 
 
-def print_next_steps(cfg: dict):
+def create_web_ui(cfg: dict):
+    """Inject team config into the web UI template and write to output path."""
+    team_name = cfg["team_name"]
+    team_slug = cfg["team_slug"]
+    team_label = team_slug.replace("_", "-")
+    owner_login = cfg.get("bill_github_login", "owner")
+    owner_display = owner_login.replace("msft", "").replace("-", " ").title()
+    output_path = Path(REPO_ROOT) / cfg.get("output_path", f"customers/{team_slug}")
+    web_ui_dir = output_path / "web_ui"
+    included_personas = [p for p in cfg.get("personas", []) if p.get("include", True)]
+    agent_count = len(included_personas)
+
+    template_html = TEMPLATE_DIR / "web_ui" / "index_template.html"
+    if not template_html.exists():
+        print("  ⚠ web_ui/index_template.html not found — skipping web UI setup")
+        return
+
+    repo = cfg["repo"]
+    charter_path = str((output_path / "CHARTER.md").relative_to(REPO_ROOT)).replace("\\", "/")
+    endpoint = cfg.get("azure_function_endpoint", "https://YOUR-APP.azurewebsites.net/api/businessinsightbot_function")
+
+    # Build agent JS array from persona config
+    icon_map = {
+        "orchestrator": ("⚙️", "Routes & coordinates all work"),
+        "outcome_framer": ("🎯", "Defines outcomes & KPIs before build"),
+        "pm": ("🗂️", "Sprint planning & backlog"),
+        "sme": ("🏭", "SOPs & use case definitions"),
+        "developer": ("🧑‍💻", "Code generation & implementation"),
+        "architect": ("🏗️", "Solution design & stack"),
+        "ux_designer": ("🎨", "Wireframes, user stories & UX flows"),
+        "content_strategist": ("✍️", "Documentation & editorial"),
+        "data_analyst": ("📊", "Trends, KPIs & outcome intelligence"),
+        "security_reviewer": ("🔒", "Security review & compliance"),
+        "qa_engineer": ("🧪", "Test cases & regression checks"),
+        "intake": ("📋", "Ideas, decisions & escalations"),
+        "outcome_validator": ("✅", "Validates outcomes before closing"),
+    }
+    agent_js_lines = []
+    for p in included_personas:
+        pid = p["id"]
+        icon, role = icon_map.get(pid, ("🤖", f"{pid.replace('_', ' ').title()} agent"))
+        name = p.get("name", pid.replace("_", " ").title())
+        agent_js_lines.append(
+            f"  {{ id: '{pid}', name: '{name}', icon: '{icon}', role: '{role}', status: 'idle' }},"
+        )
+
+    agents_js = "const AGENTS = [\n" + "\n".join(agent_js_lines) + "\n];"
+
+    html = template_html.read_text(encoding="utf-8")
+    replacements = {
+        "{{TEAM_NAME}}":             team_name,
+        "{{TEAM_SUBTITLE}}":         team_slug.replace("_", " ").title(),
+        "{{TEAM_LABEL}}":            team_label,
+        "{{TEAM_PATH}}":             str(output_path.relative_to(REPO_ROOT)).replace("\\", "/"),
+        "{{REPO}}":                  repo,
+        "{{AGENT_COUNT}}":           str(agent_count),
+        "{{OWNER_DISPLAY_NAME}}":    owner_display,
+        "{{OWNER_DISPLAY_NAME_UPPER}}": owner_display.upper(),
+        "{{TEAM_NAME_UPPER}}":       team_name.upper(),
+        "{{AZURE_FUNCTION_ENDPOINT}}": endpoint,
+        "{{CHARTER_PATH}}":          charter_path,
+        "{{KB_PATH_1}}":             f"{str(output_path.relative_to(REPO_ROOT)).replace(chr(92), '/')}/knowledge_base/README.md",
+        "{{KB_PATH_2}}":             f"{str(output_path.relative_to(REPO_ROOT)).replace(chr(92), '/')}/knowledge_base/README.md",
+        "{{ENV_PRIMARY_DESCRIPTION}}": f"Primary {team_name} environment",
+        "{{ENVIRONMENTS}}":          "// Add your environments here",
+    }
+    for key, val in replacements.items():
+        html = html.replace(key, val)
+
+    # Replace the AGENTS array
+    import re as _re
+    html = _re.sub(r"const AGENTS = \[[\s\S]*?\];", agents_js, html, count=1)
+
+    web_ui_dir.mkdir(parents=True, exist_ok=True)
+    out_file = web_ui_dir / "index.html"
+    out_file.write_text(html, encoding="utf-8")
+    print(f"  ✓ {out_file.relative_to(REPO_ROOT)}")
+
+    # Copy deploy workflow based on user choice
+    print("\n🌐 Web UI deployment options:")
+    print("  1. GitHub Pages (free, easiest — public repo)")
+    print("  2. Azure Static Web Apps (free tier — works with private repo, supports auth)")
+    print("  3. Azure Blob Storage (near-zero cost — manual deploy)")
+    print("  4. Skip deployment setup")
+    choice = input("  Choose [1]: ").strip() or "1"
+
+    deploy_src_map = {
+        "1": "deploy_web_github_pages_template.yml",
+        "2": "deploy_web_azure_swa_template.yml",
+    }
+    if choice in deploy_src_map:
+        wf_src = TEMPLATE_DIR / "workflows" / deploy_src_map[choice]
+        wf_dst = REPO_ROOT / ".github" / "workflows" / f"{team_slug}_deploy_web.yml"
+        wf_content = render_template(wf_src.read_text(), {"TEAM_NAME": team_name, "TEAM_SLUG": team_slug, "TEAM_LABEL": team_label})
+        wf_dst.write_text(wf_content)
+        print(f"  ✓ .github/workflows/{team_slug}_deploy_web.yml")
+        if choice == "1":
+            print(f"\n  ➡ Next: Settings → Pages → Source: GitHub Actions")
+            print(f"  ➡ URL will be: https://YOUR-ORG.github.io/YOUR-REPO/")
+        elif choice == "2":
+            print(f"\n  ➡ Next: Create Azure Static Web App → copy deployment token")
+            print(f"  ➡ Add secret: AZURE_STATIC_WEB_APPS_API_TOKEN")
+
+    print(f"\n  📖 Full deployment guide: {(web_ui_dir / '..').resolve()}/web_ui/DEPLOY.md")
+
+    # Copy DEPLOY.md
+    deploy_doc = TEMPLATE_DIR / "web_ui" / "DEPLOY.md"
+    if deploy_doc.exists():
+        shutil.copy(deploy_doc, web_ui_dir / "DEPLOY.md")
+
+
+
     team_slug = cfg["team_slug"]
     repo = cfg["repo"]
     output_path = cfg.get("output_path", f"customers/{team_slug}")
@@ -399,6 +510,9 @@ def main():
     create_github_labels(cfg["repo"], team_label, cfg["team_name"], args.dry_run, included_personas)
 
     if not args.dry_run:
+        deploy = input("\n🌐 Set up the web UI / Command Center? [Y/n]: ").strip().lower()
+        if deploy in ("", "y", "yes"):
+            create_web_ui(cfg)
         print_next_steps(cfg)
 
 

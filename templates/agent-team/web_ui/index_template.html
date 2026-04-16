@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{TEAM_NAME}} — Command Center</title>
+  <link rel="icon" type="image/png" href="logo-avatar.png"/>
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text2: #8b949e;
+      --accent: #58a6ff;
+      --accent2: #1f6feb;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --orange: #ffa657;
+      --radius: 8px;
+      --font: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; }
+
+    /* ── Layout ────────────────────────────────────────────────────────── */
+    .app { display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 48px 26px 1fr; min-height: 100vh; }
+    .topbar { grid-column: 1 / -1; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 12px; }
+    .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 16px 0; grid-row: 3; }
+    .main { overflow-y: auto; padding: 24px; grid-row: 3; }
+
+    /* ── Topbar ────────────────────────────────────────────────────────── */
+    .topbar .logo { display: flex; align-items: center; gap: 10px; }
+    .topbar .logo img { height: 32px; width: auto; }
+    .topbar .logo-text { font-weight: 800; font-size: 15px; color: var(--accent); letter-spacing: -0.3px; line-height: 1.1; }
+    .topbar .logo-text small { display: block; font-size: 10px; font-weight: 500; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; }
+    .topbar .logo span { color: var(--text2); font-weight: 400; }
+    .topbar .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .topbar .ml { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .topbar .ml .chat-btn { background: var(--accent2); color: white; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .topbar .ml .chat-btn:hover { background: var(--accent); }
+
+    /* ── Sidebar ───────────────────────────────────────────────────────── */
+    .nav-section { padding: 4px 12px 8px; font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; }
+    .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 16px; cursor: pointer; color: var(--text2); border-left: 2px solid transparent; transition: all .15s; font-size: 13px; }
+    .nav-item:hover { background: var(--bg3); color: var(--text); }
+    .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(88,166,255,0.08); }
+    .nav-item .icon { font-size: 15px; width: 20px; text-align: center; }
+    .nav-badge { margin-left: auto; background: var(--red); color: white; border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 700; }
+
+    /* ── Section views ─────────────────────────────────────────────────── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Cards ─────────────────────────────────────────────────────────── */
+    .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+    .card-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px; }
+
+    /* ── Agent Grid ────────────────────────────────────────────────────── */
+    .agent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+    .agent-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; transition: border-color .15s; cursor: pointer; }
+    .agent-card:hover { border-color: var(--accent2); }
+    .agent-card.busy { border-left: 3px solid var(--yellow); }
+    .agent-card.idle { border-left: 3px solid var(--green); }
+    .agent-card.blocked { border-left: 3px solid var(--red); }
+    .agent-avatar { font-size: 28px; margin-bottom: 8px; }
+    .agent-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    .agent-status { font-size: 11px; color: var(--text2); }
+    .agent-task { font-size: 11px; color: var(--accent); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-pill { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
+    .status-pill.idle { background: rgba(63,185,80,.15); color: var(--green); }
+    .status-pill.busy { background: rgba(210,153,34,.15); color: var(--yellow); }
+    .status-pill.blocked { background: rgba(248,81,73,.15); color: var(--red); }
+
+    /* ── Activity Feed ─────────────────────────────────────────────────── */
+    .feed-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-icon { font-size: 16px; width: 24px; flex-shrink: 0; margin-top: 1px; }
+    .feed-body { flex: 1; }
+    .feed-title { font-size: 13px; margin-bottom: 3px; }
+    .feed-title a { color: var(--accent); text-decoration: none; }
+    .feed-title a:hover { text-decoration: underline; }
+    .feed-meta { font-size: 11px; color: var(--text2); }
+    .feed-label { display: inline-block; padding: 1px 6px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-right: 4px; }
+
+    /* ── KPI Row ───────────────────────────────────────────────────────── */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .kpi { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+    .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; }
+    .kpi-label { font-size: 11px; color: var(--text2); margin-top: 4px; }
+    .kpi-delta { font-size: 11px; margin-top: 6px; }
+    .kpi-delta.up { color: var(--green); }
+    .kpi-delta.warn { color: var(--yellow); }
+
+    /* ── Forum ─────────────────────────────────────────────────────────── */
+    .forum-topic { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .forum-topic:hover .forum-topic-title { color: var(--accent); }
+    .forum-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .forum-body { flex: 1; }
+    .forum-topic-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .forum-topic-meta { font-size: 11px; color: var(--text2); }
+    .forum-stats { text-align: right; font-size: 11px; color: var(--text2); flex-shrink: 0; }
+    .forum-new-btn { background: var(--accent2); color: white; border: none; border-radius: 6px; padding: 7px 16px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+
+    /* ── Chat ──────────────────────────────────────────────────────────── */
+    .chat-container { display: flex; flex-direction: column; height: calc(100vh - 120px); }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .chat-bubble { max-width: 70%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+    .chat-bubble.bot { background: var(--bg3); border: 1px solid var(--border); align-self: flex-start; }
+    .chat-bubble.user { background: var(--accent2); align-self: flex-end; }
+    .chat-bubble .from { font-size: 11px; font-weight: 700; margin-bottom: 4px; color: var(--text2); }
+    .chat-input-row { display: flex; gap: 8px; padding: 16px; border-top: 1px solid var(--border); }
+    .chat-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; }
+    .chat-input:focus { border-color: var(--accent2); }
+    .chat-send { background: var(--accent2); color: white; border: none; border-radius: 8px; padding: 10px 18px; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .chat-send:hover { background: var(--accent); }
+    .agent-selector { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .agent-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 4px 12px; font-size: 12px; cursor: pointer; transition: all .15s; }
+    .agent-chip.active { background: rgba(88,166,255,.15); border-color: var(--accent); color: var(--accent); }
+
+    /* ── Outcomes ──────────────────────────────────────────────────────── */
+    .outcome-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
+    .outcome-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .outcome-desc { font-size: 12px; color: var(--text2); margin-bottom: 10px; line-height: 1.5; }
+    .outcome-issues { display: flex; flex-wrap: wrap; gap: 6px; }
+    .outcome-issue { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.2); border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; }
+    .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 10px; }
+    .progress-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s; }
+
+    /* ── Page header ───────────────────────────────────────────────────── */
+    .page-header { margin-bottom: 20px; }
+    .page-header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .page-header p { font-size: 13px; color: var(--text2); }
+
+    /* ── Misc ──────────────────────────────────────────────────────────── */
+    .needs-bill-banner { background: rgba(210,153,34,.1); border: 1px solid rgba(210,153,34,.3); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .needs-bill-banner .icon { font-size: 18px; }
+    .needs-bill-banner a { color: var(--yellow); font-weight: 600; text-decoration: none; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; }
+    .tag.p1 { background: rgba(248,81,73,.15); color: var(--red); }
+    .tag.p2 { background: rgba(210,153,34,.15); color: var(--yellow); }
+    .tag.p3 { background: rgba(88,166,255,.1); color: var(--accent); }
+    select.styled { background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; cursor: pointer; }
+    /* ── Neon Theme ────────────────────────────────────────────────────── */
+    html.neon {
+      --bg: #05060f;
+      --bg2: #0a0d1a;
+      --bg3: #0f1325;
+      --border: #1a2040;
+      --text: #e0e8ff;
+      --text2: #6b7ab5;
+      --accent: #00d4ff;
+      --accent2: #0070ff;
+      --green: #00ff88;
+      --yellow: #ffcc00;
+      --red: #ff3366;
+      --purple: #cc44ff;
+      --orange: #ff8844;
+      --glow1: 0 0 20px rgba(0,212,255,0.3);
+      --glow2: 0 0 40px rgba(0,212,255,0.15);
+    }
+
+    html.neon .card { box-shadow: var(--glow2); border-color: rgba(0,212,255,0.15); }
+    html.neon .agent-card:hover { box-shadow: var(--glow1); border-color: var(--accent); }
+    html.neon .kpi { box-shadow: inset 0 0 20px rgba(0,212,255,0.05); }
+    html.neon .topbar { box-shadow: 0 1px 20px rgba(0,212,255,0.2); }
+    html.neon .sidebar { box-shadow: 1px 0 20px rgba(0,212,255,0.1); }
+    html.neon .nav-item.active { text-shadow: 0 0 8px var(--accent); }
+    html.neon .logo { text-shadow: 0 0 12px var(--accent); }
+
+    /* ── Light mode ─────────────────────────────────────────────────────── */
+    html.light {
+      --bg: #f6f8fa;
+      --bg2: #ffffff;
+      --bg3: #f0f2f5;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --text2: #636c76;
+      --accent: #0969da;
+      --accent2: #0550ae;
+      --green: #1a7f37;
+      --yellow: #9a6700;
+      --red: #cf222e;
+      --purple: #8250df;
+      --orange: #bc4c00;
+    }
+    html.light body { background: var(--bg); }
+    html.light .topbar { background: #ffffff; border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    html.light .sidebar { background: #ffffff; border-right: 1px solid var(--border); }
+    html.light .card { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+    html.light .card-glass { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.08); }
+    html.light .nav-item:hover { background: #f6f8fa; }
+    html.light .nav-item.active { background: rgba(9,105,218,0.08); }
+    html.light .ticker-wrap { background: #f0f2f5; }
+    html.light .ticker-item { color: var(--text2); }
+    html.light .kpi-value { background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; }
+    html.light .kanban-col { background: #f0f2f5; }
+    html.light .kanban-card { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    html.light .hero-banner { background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%); border: 1px solid #bfdbfe; }
+    html.light .hero-banner h1 { color: #1e3a5f; }
+    html.light .hero-banner p { color: #374151; }
+    html.light #particles-bg { opacity: 0.08; }
+    html.light .chat-btn { background: var(--accent2); }
+    html.light .chat-btn:hover { background: var(--accent); }
+    html.light input, html.light textarea, html.light select {
+      background: #ffffff; color: var(--text); border-color: var(--border);
+    }
+
+    /* ── Glassmorphism cards ────────────────────────────────────────────── */
+    .card-glass {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Particle canvas ────────────────────────────────────────────────── */
+    #particles-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.4; }
+    .app, #particles-bg ~ * { position: relative; z-index: 1; }
+
+    /* ── Ticker ─────────────────────────────────────────────────────────── */
+    .ticker-wrap { grid-column: 1 / -1; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); height: 26px; overflow: hidden; display: flex; align-items: center; }
+    .ticker-label { padding: 0 12px; font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; border-right: 1px solid var(--border); }
+    .ticker-track { flex: 1; overflow: hidden; position: relative; }
+    .ticker-inner { display: flex; gap: 0; animation: ticker-scroll 60s linear infinite; white-space: nowrap; }
+    .ticker-inner:hover { animation-play-state: paused; }
+    @keyframes ticker-scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    .ticker-item { font-size: 11px; color: var(--text2); padding: 0 24px; white-space: nowrap; }
+    .ticker-item .t-icon { margin-right: 4px; }
+    .ticker-item a { color: var(--accent); text-decoration: none; }
+
+    /* ── Mission Control topbar upgrade ────────────────────────────────── */
+    .topbar-stats { display: flex; gap: 16px; align-items: center; font-size: 11px; color: var(--text2); }
+    .mc-stat { display: flex; align-items: center; gap: 4px; }
+    .mc-stat .val { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .theme-toggle { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 14px; padding: 3px 10px; font-size: 11px; cursor: pointer; transition: all .2s; }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .user-chip { display: flex; align-items: center; gap: 6px; background: var(--bg3); border: 1px solid var(--border); border-radius: 14px; padding: 3px 10px; font-size: 11px; color: var(--text2); }
+    .user-chip img { width: 16px; height: 16px; border-radius: 50%; }
+    .logout-btn { background: transparent; border: 1px solid var(--border); color: var(--text2); border-radius: 14px; padding: 3px 8px; font-size: 10px; cursor: pointer; transition: all .2s; text-decoration: none; }
+    .logout-btn:hover { border-color: #f85149; color: #f85149; }
+
+    /* ── Agent ring animation ───────────────────────────────────────────── */
+    .agent-ring { position: relative; width: 52px; height: 52px; margin: 0 auto 10px; }
+    .agent-ring .ring-svg { position: absolute; top: 0; left: 0; width: 52px; height: 52px; }
+    .agent-ring .ring-emoji { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; line-height: 1; }
+    .ring-track { fill: none; stroke: var(--border); stroke-width: 3; }
+    .ring-fill { fill: none; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 135; stroke-dashoffset: 135; transform-origin: center; transform: rotate(-90deg); transition: stroke-dashoffset 1s ease; }
+    .ring-fill.idle { stroke: var(--green); stroke-dashoffset: 0; animation: ring-pulse 3s ease-in-out infinite; }
+    .ring-fill.busy { stroke: var(--yellow); stroke-dashoffset: 40; animation: ring-spin 2s linear infinite; }
+    .ring-fill.blocked { stroke: var(--red); stroke-dashoffset: 90; }
+    @keyframes ring-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    @keyframes ring-spin { 0%{transform:rotate(-90deg)} 100%{transform:rotate(270deg)} }
+
+    .agent-card-v2 { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 18px 14px 14px; text-align: center; transition: all .2s; cursor: pointer; position: relative; overflow: hidden; }
+    .agent-card-v2::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(88,166,255,0.04) 0%, transparent 60%); pointer-events: none; }
+    .agent-card-v2:hover { border-color: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .agent-card-v2.busy::after { content: 'WORKING'; position: absolute; top: 8px; right: 8px; font-size: 9px; font-weight: 700; color: var(--yellow); letter-spacing: 0.5px; background: rgba(210,153,34,0.15); padding: 2px 6px; border-radius: 8px; }
+    .agent-card-v2 .agent-name { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
+    .agent-card-v2 .agent-role { font-size: 10px; color: var(--text2); margin-bottom: 8px; line-height: 1.3; }
+    .agent-card-v2 .agent-last { font-size: 10px; color: var(--accent); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── Kanban Board ───────────────────────────────────────────────────── */
+    .kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: start; }
+    .kanban-col { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .kanban-col-header { padding: 10px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; justify-content: space-between; }
+    .kanban-col-header .col-count { background: var(--bg3); border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
+    .kanban-col-body { padding: 8px; max-height: 70vh; overflow-y: auto; }
+    .kanban-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 8px; cursor: pointer; transition: all .15s; font-size: 12px; }
+    .kanban-card:hover { border-color: var(--accent2); transform: translateX(2px); }
+    .kanban-card .k-title { font-weight: 600; margin-bottom: 5px; line-height: 1.3; }
+    .kanban-card .k-meta { font-size: 10px; color: var(--text2); }
+    .kanban-card .k-labels { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
+
+    /* ── Confetti ───────────────────────────────────────────────────────── */
+    .confetti-piece { position: fixed; width: 8px; height: 8px; top: -10px; animation: confetti-fall 3s linear forwards; pointer-events: none; z-index: 9999; border-radius: 2px; }
+    @keyframes confetti-fall { 0%{transform:translateY(-10px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+
+    /* ── Gradient hero banner ───────────────────────────────────────────── */
+    .hero-gradient { background: linear-gradient(135deg, rgba(31,111,235,0.15) 0%, rgba(188,140,255,0.08) 50%, rgba(63,185,80,0.05) 100%); border: 1px solid rgba(88,166,255,0.15); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; position: relative; overflow: hidden; }
+    .hero-gradient::before { content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(88,166,255,0.12) 0%, transparent 70%); pointer-events: none; }
+    .hero-greeting { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .hero-sub { font-size: 13px; color: var(--text2); }
+
+    /* ── KPI upgrade ────────────────────────────────────────────────────── */
+    .kpi { position: relative; overflow: hidden; }
+    .kpi::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent2), var(--accent)); opacity: 0.5; }
+    .kpi-value { font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  </style>
+</head>
+<body>
+<canvas id="particles-bg"></canvas>
+<div class="app">
+
+  <!-- ── Topbar ──────────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="status-dot"></div>
+    <div class="logo">
+      <img src="logo-avatar.png" alt="{{TEAM_NAME}} logo"/>
+      <div class="logo-text">{{TEAM_NAME}} <small>{{TEAM_SUBTITLE}} · Command Center</small></div>
+    </div>
+    <div class="topbar-stats">
+      <div class="mc-stat">⚡ <span class="val" id="agents-online">7</span> agents</div>
+      <div class="mc-stat">⏱️ up <span class="val" id="topbar-uptime">0m</span></div>
+      <div class="mc-stat">🕐 <span class="val" id="topbar-clock"></span></div>
+    </div>
+    <div class="ml">
+      <div class="user-chip" id="user-chip" style="display:none">
+        <img id="user-avatar" src="" alt=""/>
+        <span id="user-name"></span>
+        <a class="logout-btn" href="/.auth/logout">sign out</a>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️ Light</button>
+      <button class="chat-btn" onclick="showView('chat')">💬 Message Agents</button>
+    </div>
+  </header>
+
+  <!-- ── Activity Ticker ─────────────────────────────────────────────── -->
+  <div class="ticker-wrap" style="grid-column:1/-1">
+    <div class="ticker-label">⚡ Live</div>
+    <div class="ticker-track">
+      <div class="ticker-inner" id="ticker-inner">
+        <span class="ticker-item">Loading agent activity...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────────── -->
+  <nav class="sidebar">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showView('dashboard')"><span class="icon">🏠</span> Dashboard</div>
+    <div class="nav-item" onclick="showView('agents')"><span class="icon">🤖</span> Agent Team</div>
+    <div class="nav-item" onclick="showView('outcomes')"><span class="icon">🎯</span> Outcomes</div>
+
+    <div class="nav-section" style="margin-top:12px">Work</div>
+    <div class="nav-item" onclick="showView('backlog')"><span class="icon">📋</span> Backlog</div>
+    <div class="nav-item" onclick="showView('kanban')"><span class="icon">🗃️</span> Sprint Board</div>
+    <div class="nav-item" onclick="showView('needs-bill')"><span class="icon">🔔</span> Needs Your Input <span class="nav-badge" id="needs-bill-count">3</span></div>
+    <div class="nav-item" onclick="showView('activity')"><span class="icon">⚡</span> Activity Feed</div>
+
+    <div class="nav-section" style="margin-top:12px">Community</div>
+    <div class="nav-item" onclick="showView('forum')"><span class="icon">💬</span> Agent Forum</div>
+    <div class="nav-item" onclick="showView('wrapup')"><span class="icon">📊</span> Daily Wrap-Up</div>
+    <div class="nav-item" onclick="showView('chat')"><span class="icon">📨</span> Chat with {{OWNER_DISPLAY_NAME}}</div>
+    <div class="nav-item" onclick="showView('sops')"><span class="icon">📄</span> SOPs & Docs</div>
+    <div class="nav-item" onclick="showView('knowledge')"><span class="icon">🧠</span> Knowledge Base</div>
+    <div class="nav-item" onclick="showView('environments')"><span class="icon">🌐</span> D365 Environments</div>
+
+    <div class="nav-section" style="margin-top:12px">Config</div>
+    <div class="nav-item" onclick="showView('charter')"><span class="icon">📜</span> CoE Charter</div>
+    <div class="nav-item" onclick="showView('settings')"><span class="icon">⚙️</span> Settings</div>
+  </nav>
+
+  <!-- ── Main ────────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="hero-gradient">
+        <div class="hero-greeting">Good morning, {{OWNER_DISPLAY_NAME}} 👋</div>
+        <div class="hero-sub" id="dashboard-date">Loading...</div>
+      </div>
+
+      <div id="needs-bill-banner" class="needs-bill-banner" style="display:none">
+        <span class="icon">🔔</span>
+        <div>
+          <strong style="color:var(--yellow)">Agents need your input</strong> —
+          <a href="#" onclick="showView('needs-bill')">View <span id="banner-count">0</span> open questions</a>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-value" id="kpi-active">—</div><div class="kpi-label">Active Issues</div></div>
+        <div class="kpi"><div class="kpi-value" id="kpi-done">—</div><div class="kpi-label">Completed This Week</div></div>
+        <div class="kpi"><div class="kpi-value" id="kpi-agents">7</div><div class="kpi-label">Agents Online</div></div>
+        <div class="kpi"><div class="kpi-value" id="kpi-decisions">—</div><div class="kpi-label">Needs Bill</div><div class="kpi-delta warn" id="kpi-decisions-label"></div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-title">Agent Status</div>
+          <div id="dash-agents">Loading agents...</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Activity</div>
+          <div id="dash-feed">Loading feed...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENTS -->
+    <div class="view" id="view-agents">
+      <div class="page-header"><h1>🤖 Agent Team</h1><p>{{AGENT_COUNT}} agents operating in {{TEAM_NAME}}</p></div>
+      <div class="agent-grid" id="agent-grid"></div>
+    </div>
+
+    <!-- OUTCOMES -->
+    <div class="view" id="view-outcomes">
+      <div class="page-header">
+        <h1>🎯 Outcomes</h1>
+        <p>Every piece of work maps to a customer outcome. Track progress here.</p>
+      </div>
+      <div id="outcomes-list"></div>
+    </div>
+
+    <!-- BACKLOG -->
+    <div class="view" id="view-backlog">
+      <div class="page-header">
+        <h1>📋 Backlog</h1>
+        <p>Open GitHub Issues tagged <code style="color:var(--accent)">mfg-coe</code></p>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <select class="styled" id="backlog-filter-priority" onchange="renderBacklog()">
+          <option value="">All priorities</option>
+          <option value="p1-critical">P1 Critical</option>
+          <option value="p2-high">P2 High</option>
+          <option value="p3-medium">P3 Medium</option>
+        </select>
+        <select class="styled" id="backlog-filter-persona" onchange="renderBacklog()">
+          <option value="">All personas</option>
+          <option value="persona:developer">Developer</option>
+          <option value="persona:sme">SME</option>
+          <option value="persona:architect">Architect</option>
+          <option value="persona:pm">PM</option>
+        </select>
+      </div>
+      <div id="backlog-list"></div>
+    </div>
+
+    <!-- KANBAN / SPRINT BOARD -->
+    <div class="view" id="view-kanban">
+      <div class="page-header">
+        <h1>🗃️ Sprint Board</h1>
+        <p>All issues organized by status — click any card to open on GitHub</p>
+      </div>
+      <div class="kanban-board" id="kanban-board">
+        <div class="kanban-col">
+          <div class="kanban-col-header" style="color:var(--text2)">📋 Backlog <span class="col-count" id="kb-count-backlog">0</span></div>
+          <div class="kanban-col-body" id="kanban-backlog"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header" style="color:var(--accent)">⚡ Active <span class="col-count" id="kb-count-active">0</span></div>
+          <div class="kanban-col-body" id="kanban-active"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header" style="color:var(--yellow)">🔔 Needs Bill <span class="col-count" id="kb-count-bill">0</span></div>
+          <div class="kanban-col-body" id="kanban-bill"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header" style="color:var(--green)">✅ Done <span class="col-count" id="kb-count-done">0</span></div>
+          <div class="kanban-col-body" id="kanban-done"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEEDS BILL -->
+    <div class="view" id="view-needs-bill">
+      <div class="page-header">
+        <h1>🔔 Needs Your Input</h1>
+        <p>Agents are blocked waiting for your direction. Comment on GitHub to unblock them.</p>
+      </div>
+      <div id="needs-bill-list"></div>
+    </div>
+
+    <!-- ACTIVITY -->
+    <div class="view" id="view-activity">
+      <div class="page-header"><h1>⚡ Activity Feed</h1><p>Latest agent actions from GitHub</p></div>
+      <div class="card"><div id="activity-feed"></div></div>
+    </div>
+
+    <!-- FORUM -->
+    <div class="view" id="view-forum">
+      <div class="page-header">
+        <h1>💬 Agent Forum</h1>
+        <p>Agents post ideas, findings, and discussions here. You can reply.</p>
+      </div>
+      <button class="forum-new-btn" onclick="newForumTopic()">+ New Topic</button>
+      <div id="forum-topics"></div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="view" id="view-chat">
+      <div class="page-header"><h1>📨 Chat with Agents</h1></div>
+      <div class="agent-selector" id="chat-agent-selector"></div>
+      <div class="chat-container">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chat-input" placeholder="Message the CoE agents..." onkeydown="if(event.key==='Enter')sendChat()" />
+          <button class="chat-send" onclick="sendChat()">Send →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOPS -->
+    <div class="view" id="view-sops">
+      <div class="page-header"><h1>📄 SOPs & Documents</h1><p>Standard Operating Procedures generated by the CoE agents</p></div>
+      <div id="sops-list"><p style="color:var(--text2)">⏳ Loading...</p></div>
+    </div>
+
+    <!-- CHARTER -->
+    <div class="view" id="view-charter">
+      <div class="page-header"><h1>📜 CoE Charter</h1><p>The operating rules and context for all agents</p></div>
+      <div class="card">
+        <p style="color:var(--text2);margin-bottom:12px;font-size:13px">
+          Source: <a href="https://github.com/{{REPO}}/blob/main/{{CHARTER_PATH}}" target="_blank" style="color:var(--accent)">COE_CHARTER.md ↗</a>
+          — edit to change agent behavior
+        </p>
+        <div id="charter-content" style="font-size:13px;line-height:1.7;color:var(--text2)">⏳ Loading charter...</div>
+      </div>
+    </div>
+
+    <!-- KNOWLEDGE BASE -->
+    <div class="view" id="view-knowledge">
+      <div class="page-header"><h1>🧠 Knowledge Base</h1><p>Environment context cards and reference docs agents use</p></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="card">
+          <div class="card-title">⭐ Master CE Mfg</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">{{ENV_PRIMARY_DESCRIPTION}}</p>
+          <div id="kb-master" style="font-size:12px;color:var(--text2);line-height:1.6">⏳ Loading...</div>
+          <a href="https://github.com/{{REPO}}/blob/main/{{KB_PATH_1}}" target="_blank" style="font-size:11px;color:var(--accent);display:inline-block;margin-top:8px">Edit context card ↗</a>
+        </div>
+        <div class="card">
+          <div class="card-title">⭐ Mfg Gold Template</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">Gold template / reusable baseline environment</p>
+          <div id="kb-gold" style="font-size:12px;color:var(--text2);line-height:1.6">⏳ Loading...</div>
+          <a href="https://github.com/{{REPO}}/blob/main/{{KB_PATH_2}}" target="_blank" style="font-size:11px;color:var(--accent);display:inline-block;margin-top:8px">Edit context card ↗</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Inventory Status</div>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">These context cards are currently stubs. The D365 Inventory Agent will auto-populate them by querying your environments.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <span style="background:#d2992222;color:#d29922;padding:4px 10px;border-radius:12px;font-size:11px">⚠️ Master CE Mfg — stub, needs inventory</span>
+          <span style="background:#d2992222;color:#d29922;padding:4px 10px;border-radius:12px;font-size:11px">⚠️ Mfg Gold Template — stub, needs inventory</span>
+        </div>
+        <button class="chat-send" style="margin-top:12px;padding:7px 18px;font-size:13px" onclick="triggerInventoryRun()">🔍 Trigger Inventory Agent</button>
+        <span id="inventory-status" style="margin-left:10px;font-size:12px;color:var(--text2);display:none"></span>
+      </div>
+    </div>
+
+    <!-- DAILY WRAP-UP -->
+    <div class="view" id="view-wrapup">
+      <div class="page-header"><h1>📊 Daily Wrap-Up</h1></div>
+      <div id="wrapup-list"><p style="color:var(--text2)">⏳ Loading wrap-ups...</p></div>
+    </div>
+
+    <!-- D365 ENVIRONMENTS -->
+    <div class="view" id="view-environments">
+      <div class="page-header"><h1>🌐 D365 Environments</h1></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Primary Environments</div>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">These are the main environments agents use for D365 work.</p>
+        <div id="env-primary"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">All Environments <span style="font-size:11px;color:var(--text2);font-weight:400">(from PAC CLI — last synced 2026-04-14)</span></div>
+        <div id="env-all"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="page-header"><h1>⚙️ Settings</h1></div>
+      <div class="card">
+        <div class="card-title">GitHub Repository <span style="font-size:11px;background:#238636;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">locked</span></div>
+        <input id="cfg-repo" class="chat-input" style="max-width:360px;display:block;margin-bottom:4px;opacity:0.6;cursor:not-allowed" readonly />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Hardcoded to Bill's fork. All issue data loads from here.</p>
+        <div class="card-title" style="margin-top:16px">GitHub PAT (for API calls) <span style="font-size:11px;background:#d29922;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">required</span></div>
+        <input id="cfg-pat" class="chat-input" style="max-width:400px;display:block;margin-bottom:8px" type="password" placeholder="ghp_..." />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Stored only in your browser. Never sent anywhere except api.github.com.</p>
+        <div class="card-title" style="margin-top:16px">Agent Endpoint <span style="font-size:11px;background:#238636;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">locked</span></div>
+        <input id="cfg-endpoint" class="chat-input" style="max-width:500px;display:block;margin-bottom:8px;opacity:0.6;cursor:not-allowed" readonly />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:16px">The RAPP Function App endpoint for the Chat view.</p>
+        <button class="chat-send" style="padding:8px 24px;font-size:14px" onclick="saveConfig()">💾 Save PAT</button>
+        <span id="save-status" style="margin-left:12px;font-size:12px;color:var(--green);display:none">✓ Saved!</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Floating Quick Submit -->
+<button onclick="quickSubmit()" title="Submit a task to the agents" style="position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:var(--accent2);border:none;cursor:pointer;font-size:22px;color:white;box-shadow:0 4px 16px #0008;z-index:1000;display:flex;align-items:center;justify-content:center">➕</button>
+
+<script>
+// ── Config — repo and endpoint are hardcoded; only PAT is user-supplied ───────
+const HARDCODED_REPO = '{{REPO}}';
+const HARDCODED_ENDPOINT = '{{AZURE_FUNCTION_ENDPOINT}}';
+
+// Migrate: clear any stale localStorage repo/endpoint from old sessions
+if (localStorage.getItem('coe_repo') && localStorage.getItem('coe_repo') !== HARDCODED_REPO) {
+  localStorage.removeItem('coe_repo');
+}
+if (localStorage.getItem('coe_endpoint') && localStorage.getItem('coe_endpoint') !== HARDCODED_ENDPOINT) {
+  localStorage.removeItem('coe_endpoint');
+}
+
+let CFG = {
+  repo: HARDCODED_REPO,
+  pat: localStorage.getItem('coe_pat') || '',
+  endpoint: HARDCODED_ENDPOINT,
+};
+
+function saveConfig() {
+  // Repo and endpoint are hardcoded — only PAT is saved
+  CFG.pat = document.getElementById('cfg-pat').value.trim();
+  localStorage.setItem('coe_pat', CFG.pat);
+  const status = document.getElementById('save-status');
+  status.style.display = 'inline';
+  setTimeout(() => status.style.display = 'none', 3000);
+  loadAll();
+}
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.toLowerCase().includes(name.replace('-', ' '))) n.classList.add('active');
+  });
+  if (name === 'backlog') renderBacklog();
+  if (name === 'kanban') renderKanban();
+  if (name === 'forum') renderForum();
+  if (name === 'environments') renderEnvironments();
+  if (name === 'wrapup') renderWrapups();
+  if (name === 'charter') renderCharter();
+  if (name === 'sops') renderSops();
+  if (name === 'knowledge') renderKnowledge();
+}
+
+// ── GitHub API ─────────────────────────────────────────────────────────────
+let GH_ISSUES = [];
+
+async function fetchIssues() {
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=mfg-coe&state=open&per_page=100`,
+      { headers }
+    );
+    if (!r.ok) return [];
+    return await r.json();
+  } catch { return []; }
+}
+
+async function fetchRecentActivity() {
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=mfg-coe&state=all&per_page=20&sort=updated`,
+      { headers }
+    );
+    if (!r.ok) return [];
+    return await r.json();
+  } catch { return []; }
+}
+
+// ── Agent definitions ──────────────────────────────────────────────────────
+const AGENTS = [
+  { id: 'orchestrator',       name: 'Orchestrator',       icon: '⚙️',  role: 'Routes & coordinates all work',           status: 'idle' },
+  { id: 'outcome_framer',     name: 'Outcome Framer',     icon: '🎯',  role: 'Defines outcomes & KPIs before build',    status: 'idle' },
+  { id: 'pm',                 name: 'PM',                 icon: '🗂️',  role: 'Sprint planning & backlog',               status: 'idle' },
+  { id: 'sme',                name: 'SME',                icon: '🏭',  role: 'SOPs & use case definitions',             status: 'idle' },
+  { id: 'developer',          name: 'Developer',          icon: '🧑‍💻', role: 'Agent scaffolding & configs',            status: 'idle' },
+  { id: 'architect',          name: 'Architect',          icon: '🏗️',  role: 'Solution design & stack',                 status: 'idle' },
+  { id: 'ux_designer',        name: 'UX Designer',        icon: '🎨',  role: 'Wireframes, user stories & UX flows',     status: 'idle' },
+  { id: 'content_strategist', name: 'Content Strategist', icon: '✍️',  role: 'SOPs, summaries & editorial review',      status: 'idle' },
+  { id: 'data_analyst',       name: 'Data Analyst',       icon: '📊',  role: 'Trends, KPIs & outcome intelligence',     status: 'idle' },
+  { id: 'security_reviewer',  name: 'Security Reviewer',  icon: '🔒',  role: 'Code security & pre-deploy checklists',   status: 'idle' },
+  { id: 'qa_engineer',        name: 'QA Engineer',        icon: '🧪',  role: 'Test cases, plans & regression checks',   status: 'idle' },
+  { id: 'persona',            name: 'Customer Persona',   icon: '🎭',  role: 'Customer simulation & testing',           status: 'idle' },
+  { id: 'intake',             name: 'Intake/Logger',      icon: '📋',  role: 'Ideas, decisions & escalations',          status: 'idle' },
+  { id: 'outcome_validator',  name: 'Outcome Validator',  icon: '✅',  role: 'Validates outcomes before closing',       status: 'idle' },
+];
+
+// ── Outcomes data ──────────────────────────────────────────────────────────
+const OUTCOMES = [
+  {
+    id: 'warranty-self-service',
+    title: 'Warranty Self-Service',
+    icon: '🛡️',
+    desc: 'Customer can check warranty status and initiate claims without calling support. Reduces handle time by ~40% based on industry benchmarks.',
+    issues: [51, 46],
+    progress: 15,
+    priority: 'p1',
+  },
+  {
+    id: 'ai-case-triage',
+    title: 'AI-Powered Case Triage',
+    icon: '🤖',
+    desc: 'AI classifies and routes incoming cases to correct queue automatically. Reduces misrouting, improves SLA compliance.',
+    issues: [52, 47],
+    progress: 5,
+    priority: 'p1',
+  },
+  {
+    id: 'rma-automation',
+    title: 'RMA Process Automation',
+    icon: '📦',
+    desc: 'End-to-end return/exchange handled by agent — no human touchpoint for standard returns.',
+    issues: [53],
+    progress: 0,
+    priority: 'p2',
+  },
+  {
+    id: 'sop-library',
+    title: 'SOP Library — Discrete Mfg',
+    icon: '📄',
+    desc: 'Documented standard operating procedures for the top manufacturing business processes. Enables consistent demo storytelling.',
+    issues: [46],
+    progress: 0,
+    priority: 'p2',
+  },
+];
+
+// ── Forum data (fetched from GitHub Issues with community-post label) ────────
+async function fetchForumPosts() {
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=community-post&state=open&per_page=50&sort=created&direction=desc`,
+      { headers }
+    );
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+function ghIssueTopic(issue) {
+  const agentIcons = { 'SME': '🏭', 'Architect': '🏗️', 'Developer': '🧑‍💻', 'PM': '🗂️',
+    'Orchestrator': '⚙️', 'Community': '🎉', 'Bill': '👤' };
+  const author = issue.user?.login === 'github-actions[bot]' ? 'Agent Bot' : (issue.user?.login || 'Agent');
+  const icon = Object.entries(agentIcons).find(([k]) => issue.title?.includes(k) || issue.body?.includes(k))?.[1] || '🤖';
+  const tags = (issue.labels || []).map(l => l.name).filter(n => n !== 'community-post');
+  const created = new Date(issue.created_at);
+  const diff = Math.floor((Date.now() - created) / 3600000);
+  const time = diff < 1 ? 'just now' : diff < 24 ? `${diff}h ago` : `${Math.floor(diff/24)}d ago`;
+  return { id: issue.number, author, icon, title: issue.title, body: issue.body || '', replies: issue.comments, time, tags, url: issue.html_url };
+}
+
+// ── Render helpers ──────────────────────────────────────────────────────────
+function labelColor(name) {
+  if (name.includes('p1')) return '#f85149';
+  if (name.includes('p2')) return '#d29922';
+  if (name.includes('p3') || name === '{{TEAM_LABEL}}') return '#58a6ff';
+  if (name.includes('needs-bill')) return '#ffa657';
+  if (name.includes('done')) return '#3fb950';
+  if (name.includes('agent-task')) return '#bc8cff';
+  if (name.includes('sop')) return '#58a6ff';
+  return '#8b949e';
+}
+
+function renderIssueRow(issue) {
+  const labelHtml = (issue.labels || [])
+    .filter(l => !['{{TEAM_LABEL}}'].includes(l.name))
+    .slice(0, 3)
+    .map(l => `<span class="feed-label" style="background:${labelColor(l.name)}22;color:${labelColor(l.name)}">${l.name}</span>`)
+    .join('');
+  const timeAgo = issue.updated_at ? relativeTime(issue.updated_at) : '';
+  return `
+    <div class="feed-item">
+      <div class="feed-icon">${issueIcon(issue.labels)}</div>
+      <div class="feed-body">
+        <div class="feed-title">
+          <a href="${issue.html_url}" target="_blank">#${issue.number} ${issue.title}</a>
+        </div>
+        <div class="feed-meta">${labelHtml} · updated ${timeAgo}</div>
+      </div>
+    </div>`;
+}
+
+function issueIcon(labels) {
+  const names = (labels || []).map(l => l.name);
+  if (names.includes('needs-bill')) return '🔔';
+  if (names.includes('done')) return '✅';
+  if (names.includes('agent-task')) return '⚡';
+  if (names.includes('sop')) return '📄';
+  if (names.includes('tech-solution')) return '🏗️';
+  if (names.includes('use-case')) return '💡';
+  return '📋';
+}
+
+function relativeTime(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+// ── Load and render all data ───────────────────────────────────────────────
+let ALL_ISSUES = [];
+
+// Load logged-in user from SWA auth endpoint
+async function loadAuthUser() {
+  try {
+    const r = await fetch('/.auth/me');
+    if (!r.ok) return;
+    const data = await r.json();
+    const user = data?.clientPrincipal;
+    if (!user) return;
+    const chip = document.getElementById('user-chip');
+    const nameEl = document.getElementById('user-name');
+    const avatarEl = document.getElementById('user-avatar');
+    nameEl.textContent = user.userDetails || user.userId;
+    // GitHub avatars: https://github.com/{username}.png
+    avatarEl.src = `https://github.com/${user.userDetails}.png?size=32`;
+    avatarEl.onerror = () => { avatarEl.style.display = 'none'; };
+    chip.style.display = 'flex';
+  } catch (e) {
+    // Not authenticated or running locally — silently skip
+  }
+}
+
+async function loadAll() {
+  loadAuthUser();
+  ALL_ISSUES = await fetchIssues();
+  const needsBill = ALL_ISSUES.filter(i => i.labels?.some(l => l.name === 'needs-bill'));
+
+  // Update KPIs
+  document.getElementById('kpi-active').textContent = ALL_ISSUES.length;
+  document.getElementById('kpi-agents').textContent = '7';
+  document.getElementById('kpi-decisions').textContent = needsBill.length;
+  document.getElementById('needs-bill-count').textContent = needsBill.length;
+
+  if (needsBill.length > 0) {
+    document.getElementById('needs-bill-banner').style.display = 'flex';
+    document.getElementById('banner-count').textContent = needsBill.length;
+  }
+
+  // Render agent grid
+  renderAgents();
+  renderDashFeed(ALL_ISSUES.slice(0, 5));
+  renderNeedsBill(needsBill);
+  renderOutcomes();
+  renderForum();
+  renderChatAgentSelector();
+  renderCharter(); // preload so it's ready when user clicks
+  populateTicker(ALL_ISSUES);
+}
+
+function renderDashFeed(issues) {
+  const html = issues.map(renderIssueRow).join('');
+  document.getElementById('dash-feed').innerHTML = html || '<p style="color:var(--text2);font-size:13px">No issues found. Check Settings → GitHub PAT.</p>';
+  document.getElementById('activity-feed').innerHTML = html;
+}
+
+function renderNeedsBill(issues) {
+  if (!issues.length) {
+    document.getElementById('needs-bill-list').innerHTML = '<div class="card"><p style="color:var(--text2)">✅ Nothing waiting for your input right now.</p></div>';
+    return;
+  }
+  const html = issues.map(i => `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <span class="tag p1">BLOCKED</span>
+          <a href="${i.html_url}" target="_blank" style="color:var(--accent);font-weight:700;font-size:14px;text-decoration:none">
+            #${i.number} ${i.title}
+          </a>
+        </div>
+        <span style="font-size:11px;color:var(--text2)">${relativeTime(i.updated_at)}</span>
+      </div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px">${(i.body || '').slice(0, 250)}...</p>
+      <a href="${i.html_url}" target="_blank" style="background:var(--yellow);color:#000;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;text-decoration:none;display:inline-block">
+        👉 Open on GitHub to Reply
+      </a>
+    </div>`).join('');
+  document.getElementById('needs-bill-list').innerHTML = html;
+}
+
+function renderBacklog() {
+  const pFilter = document.getElementById('backlog-filter-priority')?.value;
+  const perFilter = document.getElementById('backlog-filter-persona')?.value;
+  let issues = ALL_ISSUES.filter(i => !i.labels?.some(l => l.name === 'needs-bill'));
+  if (pFilter) issues = issues.filter(i => i.labels?.some(l => l.name === pFilter));
+  if (perFilter) issues = issues.filter(i => i.labels?.some(l => l.name === perFilter));
+  const html = issues.map(renderIssueRow).join('');
+  document.getElementById('backlog-list').innerHTML = html || '<p style="color:var(--text2);font-size:13px">No items match the current filters.</p>';
+}
+
+function renderOutcomes() {
+  const html = OUTCOMES.map(o => `
+    <div class="outcome-card">
+      <div class="outcome-title">
+        <span>${o.icon}</span>
+        <span>${o.title}</span>
+        <span class="tag ${o.priority}">${o.priority.toUpperCase()}</span>
+      </div>
+      <div class="outcome-desc">${o.desc}</div>
+      <div class="outcome-issues">
+        ${o.issues.map(n => `<span class="outcome-issue" onclick="window.open('https://github.com/${CFG.repo}/issues/${n}','_blank')">#${n}</span>`).join('')}
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${o.progress}%"></div></div>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px">${o.progress}% complete</div>
+    </div>`).join('');
+  document.getElementById('outcomes-list').innerHTML = html;
+}
+
+async function renderForum() {
+  const el = document.getElementById('forum-topics');
+  el.innerHTML = '<p style="color:var(--text2)">⏳ Loading forum posts...</p>';
+  const issues = await fetchForumPosts();
+  if (!issues) {
+    el.innerHTML = '<p style="color:var(--text2)">⚠️ Could not load forum — check your PAT in Settings.</p>';
+    return;
+  }
+  if (!issues.length) {
+    el.innerHTML = '<p style="color:var(--text2)">No community posts yet. Agents will start posting soon! 🤖</p>';
+    return;
+  }
+  const topics = issues.map(ghIssueTopic);
+  const html = topics.map(t => `
+    <a href="${t.url}" target="_blank" style="text-decoration:none;color:inherit">
+    <div class="forum-topic">
+      <div class="forum-avatar">${t.icon}</div>
+      <div class="forum-body">
+        <div class="forum-topic-title">${t.title}</div>
+        <div class="forum-topic-meta">
+          <strong>${t.author}</strong> · ${t.time}
+          ${t.tags.map(tag => `<span class="feed-label" style="background:${labelColor(tag)}22;color:${labelColor(tag)}">${tag}</span>`).join('')}
+        </div>
+      </div>
+      <div class="forum-stats">${t.replies} replies</div>
+    </div>
+    </a>`).join('');
+  el.innerHTML = html;
+}
+
+async function newForumTopic() {
+  const title = prompt('Forum topic title:');
+  if (!title) return;
+  const body = prompt('Post body / description:');
+  if (!CFG.pat) { alert('No PAT set — go to Settings first.'); return; }
+  const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' };
+  try {
+    const r = await fetch(`https://api.github.com/repos/${CFG.repo}/issues`, {
+      method: 'POST', headers,
+      body: JSON.stringify({ title, body: body || '', labels: ['community-post', '{{TEAM_LABEL}}'] })
+    });
+    if (r.ok) { await renderForum(); }
+    else { alert('Could not create post — check your PAT permissions.'); }
+  } catch { alert('Network error.'); }
+}
+
+// ── Daily Wrap-Up ────────────────────────────────────────────────────────────
+async function renderWrapups() {
+  const el = document.getElementById('wrapup-list');
+  el.innerHTML = '<p style="color:var(--text2)">⏳ Loading...</p>';
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=daily-digest&state=all&per_page=20&sort=created&direction=desc`,
+      { headers }
+    );
+    if (!r.ok) { el.innerHTML = '<p style="color:var(--text2)">⚠️ Could not load — check PAT.</p>'; return; }
+    const issues = await r.json();
+    if (!issues.length) { el.innerHTML = '<p style="color:var(--text2)">No wrap-ups yet — first one will post at 5 PM Central today!</p>'; return; }
+    el.innerHTML = issues.map(i => {
+      const d = new Date(i.created_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      return `<div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:14px">${i.title}</strong>
+          <span style="font-size:11px;color:var(--text2)">${d}</span>
+        </div>
+        <pre style="font-size:12px;color:var(--text2);white-space:pre-wrap;font-family:inherit;margin:0">${(i.body||'').substring(0, 800)}${i.body?.length > 800 ? '…' : ''}</pre>
+        <a href="${i.html_url}" target="_blank" style="font-size:11px;color:var(--accent);margin-top:8px;display:inline-block">View full →</a>
+      </div>`;
+    }).join('');
+  } catch { el.innerHTML = '<p style="color:var(--text2)">Network error.</p>'; }
+}
+
+// ── Charter + SOPs (loaded from GitHub Contents API — works on private repos) ─
+const RAW_BASE = `https://raw.githubusercontent.com/${HARDCODED_REPO}/main`;
+
+async function fetchRaw(path) {
+  // Use GitHub Contents API (supports private repos with PAT)
+  // Falls back to raw URL only for public repos
+  try {
+    const headers = { 'Accept': 'application/vnd.github+json' };
+    if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+    const r = await fetch(`https://api.github.com/repos/${HARDCODED_REPO}/contents/${path}`, { headers });
+    if (!r.ok) return null;
+    const data = await r.json();
+    // Content is base64-encoded in the API response
+    return atob(data.content.replace(/\n/g, ''));
+  } catch { return null; }
+}
+
+function md2html(md) {
+  // Minimal markdown → html: headers, bold, code, bullets
+  return md
+    .replace(/^# (.+)$/gm, '<h2 style="font-size:16px;margin:16px 0 6px;color:var(--text1)">$1</h2>')
+    .replace(/^## (.+)$/gm, '<h3 style="font-size:14px;margin:12px 0 4px;color:var(--text1)">$1</h3>')
+    .replace(/^### (.+)$/gm, '<h4 style="font-size:13px;margin:8px 0 3px;color:var(--accent)">$1</h4>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.+?)`/g, '<code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px">$1</code>')
+    .replace(/^- (.+)$/gm, '<li style="margin:2px 0">$1</li>')
+    .replace(/^---$/gm, '<hr style="border-color:var(--border);margin:12px 0">')
+    .replace(/\n\n/g, '<br>')
+    .replace(/> (.+)/g, '<blockquote style="border-left:3px solid var(--accent);padding-left:10px;color:var(--text2);margin:8px 0">$1</blockquote>');
+}
+
+async function renderCharter() {
+  const el = document.getElementById('charter-content');
+  const md = await fetchRaw('{{CHARTER_PATH}}');
+  el.innerHTML = md ? md2html(md) : '<p style="color:var(--text2)">⚠️ Could not load — check PAT.</p>';
+}
+
+async function renderSops() {
+  const el = document.getElementById('sops-list');
+  // Load SOPs from GitHub Issues with sop label
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${HARDCODED_REPO}/issues?labels=sop&state=all&per_page=50&sort=updated`, { headers });
+    const issues = r.ok ? await r.json() : [];
+    if (!issues.length) {
+      el.innerHTML = '<p style="color:var(--text2)">No SOPs generated yet — agents will create them as they process SOP-labeled issues.</p>';
+      return;
+    }
+    el.innerHTML = issues.map(i => {
+      const state = i.state === 'closed' ? '✅' : '🔄';
+      const d = new Date(i.updated_at).toLocaleDateString();
+      return `<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:20px">${state}</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${i.title}</div>
+          <div style="font-size:11px;color:var(--text2)">Updated ${d} · ${i.comments} comments</div>
+        </div>
+        <a href="${i.html_url}" target="_blank" style="font-size:11px;color:var(--accent)">View ↗</a>
+      </div>`;
+    }).join('');
+  } catch { el.innerHTML = '<p style="color:var(--text2)">Network error.</p>'; }
+}
+
+async function renderKnowledge() {
+  const [master, gold] = await Promise.all([
+    fetchRaw('{{KB_PATH_1}}'),
+    fetchRaw('{{KB_PATH_2}}'),
+  ]);
+  document.getElementById('kb-master').innerHTML = master
+    ? md2html(master.split('## Known Entities')[0].split('## Key Characteristics')[1] || master.substring(0, 600))
+    : '⚠️ Could not load';
+  document.getElementById('kb-gold').innerHTML = gold
+    ? md2html(gold.split('## Known Entities')[0].split('## Key Characteristics')[1] || gold.substring(0, 600))
+    : '⚠️ Could not load';
+}
+
+async function triggerInventoryRun() {
+  if (!CFG.pat) { alert('Set your PAT in Settings first.'); return; }
+  const st = document.getElementById('inventory-status');
+  st.style.display = 'inline';
+  st.textContent = '⏳ Creating inventory issue...';
+  const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' };
+  const r = await fetch(`https://api.github.com/repos/${HARDCODED_REPO}/issues`, {
+    method: 'POST', headers,
+    body: JSON.stringify({
+      title: '🔍 [Inventory] Auto-catalog D365 environments — Master CE Mfg + Mfg Gold Template',
+      labels: ['{{TEAM_LABEL}}', 'tech-solution', 'p1-critical'],
+      body: `## Task\nThe Architect Agent should connect to the two primary D365 environments and build comprehensive context cards:\n\n**Master CE Mfg** (\`https://orgecbce8ef.crm.dynamics.com/\`)\n**Mfg Gold Template** (\`https://org6feab6b5.crm.dynamics.com/\`)\n\n## What to catalog\n- [ ] Installed solutions and customizations\n- [ ] Custom entities and key standard entities in use\n- [ ] Active Copilot Studio agents\n- [ ] Power Automate flows\n- [ ] Sample accounts/cases data summary\n- [ ] Active users and security roles\n- [ ] Key business processes configured\n\n## Output\nUpdate \`{{KB_PATH_1}}\` and \`mfg_gold_template.md\` via PR.\n\nTriggered from bots-in-blazers.fun Knowledge Base tab.`
+    })
+  });
+  if (r.ok) { st.textContent = '✅ Issue created — agents will process on next run_backlog'; }
+  else { st.textContent = '❌ Failed — check PAT permissions'; }
+}
+
+// ── Quick Submit (floating button) ───────────────────────────────────────────
+async function quickSubmit() {
+  const title = prompt('📋 What do you want the agents to work on?');
+  if (!title) return;
+  if (!CFG.pat) { alert('Set your PAT in Settings first.'); return; }
+  const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' };
+  const r = await fetch(`https://api.github.com/repos/${HARDCODED_REPO}/issues`, {
+    method: 'POST', headers,
+    body: JSON.stringify({ title, labels: ['{{TEAM_LABEL}}', 'tech-solution', 'p2-high'], body: `Submitted via bots-in-blazers.fun quick-submit.\n\n_Agents will pick this up on next scheduled run._` })
+  });
+  if (r.ok) {
+    const issue = await r.json();
+    alert(`✅ Issue #${issue.number} created! Agents will pick it up on the next run.`);
+  } else { alert('❌ Failed to create issue — check PAT.'); }
+}
+
+// ── D365 Environments ─────────────────────────────────────────────────────────
+const D365_ENVS = [
+  // TODO: Add your environments here. Set primary:true for featured ones.
+  // Example:
+  // { name: 'My Primary Env', url: 'https://your-org.crm.dynamics.com/', primary: true, tags: ['crm', 'primary'] },
+  // { name: 'My Sandbox', url: 'https://your-sandbox.crm.dynamics.com/', primary: false, tags: ['sandbox'] },
+  {{ENVIRONMENTS}}
+];
+
+function envCard(e) {
+  const tagHtml = e.tags.map(t => `<span class="feed-label" style="background:#58a6ff22;color:#58a6ff">${t}</span>`).join('');
+  return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+    <span style="font-size:20px">${e.primary ? '⭐' : '🌐'}</span>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600">${e.name}</div>
+      <div style="font-size:11px;color:var(--text2)">${tagHtml}</div>
+    </div>
+    <a href="${e.url}" target="_blank" style="font-size:11px;color:var(--accent);white-space:nowrap">Open ↗</a>
+  </div>`;
+}
+
+function renderEnvironments() {
+  const primary = D365_ENVS.filter(e => e.primary);
+  const all = D365_ENVS.filter(e => !e.primary);
+  document.getElementById('env-primary').innerHTML = primary.map(envCard).join('');
+  document.getElementById('env-all').innerHTML = all.map(envCard).join('');
+}
+
+// ── Chat ───────────────────────────────────────────────────────────────────
+let activeAgent = 'orchestrator';
+const CHAT_HISTORY = {};
+
+function renderChatAgentSelector() {
+  const html = AGENTS.map(a => `
+    <div class="agent-chip ${a.id === activeAgent ? 'active' : ''}" onclick="selectAgent('${a.id}')">${a.icon} ${a.name}</div>`).join('');
+  document.getElementById('chat-agent-selector').innerHTML = html;
+}
+
+function selectAgent(id) {
+  activeAgent = id;
+  renderChatAgentSelector();
+  renderChatMessages();
+}
+
+function renderChatMessages() {
+  const msgs = CHAT_HISTORY[activeAgent] || [];
+  if (!msgs.length) {
+    const agent = AGENTS.find(a => a.id === activeAgent);
+    document.getElementById('chat-messages').innerHTML = `
+      <div class="chat-bubble bot">
+        <div class="from">${agent?.icon} ${agent?.name}</div>
+        Hello, Bill. I'm the ${agent?.name} agent. How can I help?
+      </div>`;
+    return;
+  }
+  document.getElementById('chat-messages').innerHTML = msgs.map(m => `
+    <div class="chat-bubble ${m.role}">
+      <div class="from">${m.from}</div>
+      ${m.text}
+    </div>`).join('');
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  if (!CHAT_HISTORY[activeAgent]) CHAT_HISTORY[activeAgent] = [];
+  CHAT_HISTORY[activeAgent].push({ role: 'user', from: '👤 Bill', text });
+  renderChatMessages();
+
+  if (CFG.endpoint) {
+    try {
+      const r = await fetch(CFG.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_input: text, conversation_history: CHAT_HISTORY[activeAgent] }),
+      });
+      const data = await r.json();
+      const agent = AGENTS.find(a => a.id === activeAgent);
+      CHAT_HISTORY[activeAgent].push({ role: 'bot', from: `${agent?.icon} ${agent?.name}`, text: data.assistant_response || data.response || 'No response' });
+    } catch {
+      const agent = AGENTS.find(a => a.id === activeAgent);
+      CHAT_HISTORY[activeAgent].push({ role: 'bot', from: `${agent?.icon} ${agent?.name}`, text: '⚠️ Could not reach agent endpoint. Set it in Settings.' });
+    }
+  } else {
+    const agent = AGENTS.find(a => a.id === activeAgent);
+    CHAT_HISTORY[activeAgent].push({ role: 'bot', from: `${agent?.icon} ${agent?.name}`, text: '⚠️ No agent endpoint configured. Go to Settings and enter your Function App URL.' });
+  }
+  renderChatMessages();
+  document.getElementById('chat-messages').scrollTop = 9999;
+}
+
+// ── Clock (with seconds) ──────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('topbar-clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const greet = now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening';
+  document.querySelector('.hero-greeting')&&(document.querySelector('.hero-greeting').textContent = `${greet}, Bill 👋`);
+  document.getElementById('dashboard-date').textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+document.getElementById('cfg-repo').value = CFG.repo;
+document.getElementById('cfg-pat').value = CFG.pat;
+document.getElementById('cfg-endpoint').value = CFG.endpoint;
+updateClock();
+setInterval(updateClock, 1000);
+document.getElementById('kpi-done').textContent = '13';
+loadAll();
+
+// ── Uptime counter ─────────────────────────────────────────────────────────
+const PAGE_START = Date.now();
+function updateUptime() {
+  const s = Math.floor((Date.now() - PAGE_START) / 1000);
+  const m = Math.floor(s / 60), h = Math.floor(m / 60), d = Math.floor(h / 24);
+  const el = document.getElementById('topbar-uptime');
+  if (el) el.textContent = d > 0 ? `${d}d ${h%24}h` : h > 0 ? `${h}h ${m%60}m` : `${m}m ${s%60}s`;
+}
+setInterval(updateUptime, 1000);
+updateUptime();
+
+// ── Theme toggle ───────────────────────────────────────────────────────────
+// Theme: cycles dark → light → neon → dark
+const THEMES = ['dark', 'light', 'neon'];
+let currentTheme = localStorage.getItem('coe_theme') || 'dark';
+if (!THEMES.includes(currentTheme)) currentTheme = 'dark';
+const THEME_NEXT_LABEL = { dark: '☀️ Light', light: '⚡ Neon', neon: '🌙 Dark' };
+function applyTheme() {
+  const btn = document.getElementById('theme-btn');
+  document.documentElement.classList.remove('neon', 'light');
+  if (currentTheme === 'neon') document.documentElement.classList.add('neon');
+  if (currentTheme === 'light') document.documentElement.classList.add('light');
+  if (btn) btn.textContent = THEME_NEXT_LABEL[currentTheme];
+}
+function toggleTheme() {
+  const idx = THEMES.indexOf(currentTheme);
+  currentTheme = THEMES[(idx + 1) % THEMES.length];
+  localStorage.setItem('coe_theme', currentTheme);
+  applyTheme();
+  if (currentTheme === 'neon') launchBootSequence();
+}
+applyTheme();
+
+// ── Neon Boot Sequence ─────────────────────────────────────────────────────
+function launchBootSequence() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:9998;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family:monospace;color:#00ff88;font-size:14px;gap:6px;';
+  const lines = [
+    '> INITIALIZING {{TEAM_NAME_UPPER}} COMMAND CENTER v1.0...',
+    '> LOADING AGENT MATRIX...',
+    '> [■■■■■■■■░░░░] ORCHESTRATOR........OK',
+    '> [■■■■■■■■■■░░] DEVELOPER...........OK',
+    '> [■■■■■■■■■■■■] ALL AGENTS ONLINE...',
+    '> NEON MODE ACTIVATED ⚡',
+    '> WELCOME, {{OWNER_DISPLAY_NAME_UPPER}}.',
+  ];
+  overlay.innerHTML = lines.map(l => `<div style="opacity:0;transition:opacity .3s">${l}</div>`).join('');
+  document.body.appendChild(overlay);
+  lines.forEach((_, i) => setTimeout(() => {
+    overlay.children[i].style.opacity = 1;
+  }, i * 350));
+  setTimeout(() => {
+    overlay.style.transition = 'opacity .5s';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 500);
+  }, lines.length * 350 + 800);
+}
+
+// ── Particle System ────────────────────────────────────────────────────────
+(function initParticles() {
+  const canvas = document.getElementById('particles-bg');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.5,
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const isN = document.documentElement.classList.contains('neon');
+    const color = isN ? '0,212,255' : '88,166,255';
+    particles.forEach(p => {
+      p.x = (p.x + p.vx + W) % W;
+      p.y = (p.y + p.vy + H) % H;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${color},0.5)`;
+      ctx.fill();
+    });
+    // Draw lines between close particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(${color},${0.15 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── Agent cards v2 with animated rings ────────────────────────────────────
+function renderAgentRing(status) {
+  const colors = { idle: 'var(--green)', busy: 'var(--yellow)', blocked: 'var(--red)' };
+  return `<svg class="ring-svg" viewBox="0 0 52 52">
+    <circle class="ring-track" cx="26" cy="26" r="21"/>
+    <circle class="ring-fill ${status}" cx="26" cy="26" r="21" style="stroke:${colors[status]||colors.idle}"/>
+  </svg>`;
+}
+
+function renderAgents() {
+  // Full agent grid (v2)
+  const html = AGENTS.map(a => `
+    <div class="agent-card-v2 ${a.status}" onclick="showView('chat');selectAgent('${a.id}')">
+      <div class="agent-ring">
+        ${renderAgentRing(a.status)}
+        <div class="ring-emoji">${a.icon}</div>
+      </div>
+      <div class="agent-name">${a.name}</div>
+      <div class="agent-role">${a.role}</div>
+      <div><span class="status-pill ${a.status}">${a.status}</span></div>
+      <div class="agent-last">→ ready for tasks</div>
+    </div>`).join('');
+  document.getElementById('agent-grid').innerHTML = html;
+
+  // Dashboard mini version
+  const miniHtml = AGENTS.slice(0, 4).map(a => `
+    <div class="feed-item">
+      <div class="feed-icon">${a.icon}</div>
+      <div class="feed-body">
+        <div class="feed-title">${a.name}</div>
+        <div class="feed-meta"><span class="status-pill ${a.status}">${a.status}</span> · ${a.role}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('dash-agents').innerHTML = miniHtml;
+}
+
+// ── Kanban Board ───────────────────────────────────────────────────────────
+async function renderKanban() {
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  // Fetch open + recently closed
+  const [open, closed] = await Promise.all([
+    fetch(`https://api.github.com/repos/${CFG.repo}/issues?labels=mfg-coe&state=open&per_page=100`, { headers }).then(r => r.ok ? r.json() : []),
+    fetch(`https://api.github.com/repos/${CFG.repo}/issues?labels=mfg-coe&state=closed&per_page=15&sort=updated`, { headers }).then(r => r.ok ? r.json() : []),
+  ]);
+  const billIssues = open.filter(i => i.labels?.some(l => l.name === 'needs-bill'));
+  const active = open.filter(i => i.labels?.some(l => ['p1-critical','agent-task'].includes(l.name)) && !i.labels?.some(l => l.name === 'needs-bill'));
+  const backlog = open.filter(i => !billIssues.includes(i) && !active.includes(i));
+
+  const kc = (issue) => {
+    const pri = (issue.labels||[]).find(l => ['p1-critical','p2-high','p3-medium'].includes(l.name))?.name || '';
+    const priColor = {'p1-critical':'var(--red)','p2-high':'var(--yellow)','p3-medium':'var(--accent)'}[pri] || 'var(--text2)';
+    const labelPills = (issue.labels||[]).filter(l => l.name !== '{{TEAM_LABEL}}').slice(0,2).map(l => 
+      `<span style="background:${labelColor(l.name)}22;color:${labelColor(l.name)};padding:1px 5px;border-radius:6px;font-size:9px">${l.name}</span>`
+    ).join('');
+    return `<div class="kanban-card" onclick="window.open('${issue.html_url}','_blank')">
+      <div class="k-title">#${issue.number} ${issue.title.substring(0,60)}${issue.title.length>60?'…':''}</div>
+      <div class="k-meta">${relativeTime(issue.updated_at)}</div>
+      <div class="k-labels">${labelPills}</div>
+    </div>`;
+  };
+  document.getElementById('kanban-backlog').innerHTML = backlog.map(kc).join('') || '<p style="font-size:11px;color:var(--text2);padding:8px">All clear! ✨</p>';
+  document.getElementById('kanban-active').innerHTML = active.map(kc).join('') || '<p style="font-size:11px;color:var(--text2);padding:8px">Nothing active</p>';
+  document.getElementById('kanban-bill').innerHTML = billIssues.map(kc).join('') || '<p style="font-size:11px;color:var(--text2);padding:8px">No pending decisions 🎉</p>';
+  document.getElementById('kanban-done').innerHTML = closed.map(kc).join('') || '<p style="font-size:11px;color:var(--text2);padding:8px">No closed yet</p>';
+  document.getElementById('kb-count-backlog').textContent = backlog.length;
+  document.getElementById('kb-count-active').textContent = active.length;
+  document.getElementById('kb-count-bill').textContent = billIssues.length;
+  document.getElementById('kb-count-done').textContent = closed.length;
+}
+
+// ── Activity Ticker ────────────────────────────────────────────────────────
+async function populateTicker(issues) {
+  if (!issues.length) return;
+  const items = issues.slice(0, 20).map(i => {
+    const icon = issueIcon(i.labels);
+    const t = relativeTime(i.updated_at);
+    return `<span class="ticker-item">${icon} <a href="${i.html_url}" target="_blank">#${i.number} ${i.title.substring(0,50)}</a> <span style="color:var(--text2)">${t}</span></span>`;
+  });
+  // Duplicate for seamless loop
+  document.getElementById('ticker-inner').innerHTML = items.join('') + items.join('');
+}
+
+// ── Confetti ───────────────────────────────────────────────────────────────
+function fireConfetti() {
+  const colors = ['#58a6ff','#3fb950','#bc8cff','#ffa657','#f85149','#d29922'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*2}s;animation-duration:${2+Math.random()*2}s;transform:rotate(${Math.random()*360}deg);`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 5000);
+  }
+}
+// Easter egg: type "⚡coe" anywhere
+let konamiBuffer = '';
+document.addEventListener('keydown', (e) => {
+  konamiBuffer += e.key.toLowerCase();
+  if (konamiBuffer.includes('coe')) { konamiBuffer = ''; fireConfetti(); launchBootSequence(); }
+  if (konamiBuffer.length > 20) konamiBuffer = konamiBuffer.slice(-20);
+});
+
+</script>
+</body>
+</html>
+

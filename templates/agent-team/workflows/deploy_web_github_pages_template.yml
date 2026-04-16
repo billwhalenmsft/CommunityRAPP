@@ -1,0 +1,46 @@
+name: Deploy Web UI — {{TEAM_NAME}}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web_ui/**'
+      - '.github/workflows/{{TEAM_SLUG}}_deploy_web.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject config into index.html
+        run: |
+          sed -i "s|{{REPO}}|${{ vars.TEAM_REPO || github.repository }}|g" web_ui/index.html
+          sed -i "s|{{TEAM_LABEL}}|{{TEAM_LABEL}}|g" web_ui/index.html
+          sed -i "s|{{AZURE_FUNCTION_ENDPOINT}}|${{ vars.AZURE_FUNCTION_ENDPOINT }}|g" web_ui/index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web_ui/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
