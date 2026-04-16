@@ -315,6 +315,55 @@
     #particles-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.4; }
     .app, #particles-bg ~ * { position: relative; z-index: 1; }
 
+    /* ── Agent Library ──────────────────────────────────────────────────── */
+    .lib-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+    .lib-search { flex: 1; min-width: 180px; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; color: var(--text); font-size: 13px; outline: none; }
+    .lib-search:focus { border-color: var(--accent2); }
+    .lib-source-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .lib-tab { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 4px 12px; font-size: 12px; cursor: pointer; color: var(--text2); transition: all .15s; white-space: nowrap; }
+    .lib-tab:hover { border-color: var(--accent); color: var(--text); }
+    .lib-tab.active { background: rgba(88,166,255,0.12); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .lib-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s; display: flex; flex-direction: column; gap: 6px; }
+    .lib-card:hover { border-color: var(--accent2); box-shadow: 0 2px 12px rgba(88,166,255,0.1); }
+    .lib-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .lib-card-icon { font-size: 26px; flex-shrink: 0; }
+    .lib-card-name { font-weight: 700; font-size: 13px; line-height: 1.3; }
+    .lib-card-role { font-size: 11px; color: var(--text2); line-height: 1.4; flex: 1; }
+    .lib-card-footer { display: flex; gap: 6px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+    .source-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+    .source-badge.coe     { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .source-badge.rar     { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .source-badge.aibast  { background: rgba(63,185,80,0.15); color: var(--green); }
+    .source-badge.community { background: rgba(210,153,34,0.15); color: var(--yellow); }
+    .source-badge.local   { background: rgba(255,166,87,0.15); color: var(--orange); }
+    .quality-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; }
+    .quality-badge.official   { background: rgba(63,185,80,0.15); color: var(--green); }
+    .quality-badge.verified   { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .quality-badge.community  { background: rgba(139,148,158,0.15); color: var(--text2); }
+    .lib-card-actions { display: flex; gap: 6px; margin-top: 6px; }
+    .lib-btn { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; color: var(--text2); transition: all .15s; }
+    .lib-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .lib-btn.primary { background: var(--accent2); color: white; border-color: var(--accent2); }
+    .lib-btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+    .lib-stats { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
+    .lib-stat-item { font-size: 12px; color: var(--text2); }
+    .lib-stat-item strong { color: var(--text); }
+    /* Agent Library detail modal */
+    .lib-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; }
+    .lib-modal-overlay.open { display: flex; }
+    .lib-modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; max-width: 520px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative; }
+    .lib-modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; color: var(--text2); font-size: 18px; cursor: pointer; }
+    .lib-modal-close:hover { color: var(--text); }
+    .lib-modal-icon { font-size: 40px; margin-bottom: 8px; }
+    .lib-modal-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .lib-modal-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin: 12px 0; }
+    .lib-modal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .lib-modal-tag { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 3px 9px; font-size: 11px; color: var(--text2); }
+    .lib-modal-section { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; margin: 14px 0 6px; }
+    .lib-modal-code { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: monospace; font-size: 12px; color: var(--accent); margin-bottom: 12px; }
+
+
     /* ── Ticker ─────────────────────────────────────────────────────────── */
     .ticker-wrap { grid-column: 1 / -1; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); height: 26px; overflow: hidden; display: flex; align-items: center; }
     .ticker-label { padding: 0 12px; font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; border-right: 1px solid var(--border); }
@@ -455,6 +504,7 @@
     <div class="nav-item" onclick="showView('activity')"><span class="icon">⚡</span> Activity Feed</div>
 
     <div class="nav-section" style="margin-top:12px">Community</div>
+    <div class="nav-item" onclick="showView('library')"><span class="icon">🗂️</span> Agent Library</div>
     <div class="nav-item" onclick="showView('forum')"><span class="icon">💬</span> Agent Forum</div>
     <div class="nav-item" onclick="showView('wrapup')"><span class="icon">📊</span> Daily Wrap-Up</div>
     <div class="nav-item" onclick="showView('chat')"><span class="icon">📨</span> Chat with Bill</div>
@@ -674,6 +724,46 @@
       </div>
     </div>
 
+    <!-- AGENT LIBRARY -->
+    <div class="view" id="view-library">
+      <div class="page-header">
+        <h1>🗂️ Agent Library</h1>
+        <p>Browse and search agents across all connected sources — CoE team, RAR Registry, AIBAST, and Community Templates.</p>
+      </div>
+
+      <div class="lib-stats">
+        <div class="lib-stat-item"><strong id="lib-stat-total">0</strong> total agents</div>
+        <div class="lib-stat-item"><strong id="lib-stat-coe">0</strong> CoE team</div>
+        <div class="lib-stat-item" style="color:var(--purple)"><strong id="lib-stat-rar">0</strong> RAR registry</div>
+        <div class="lib-stat-item" style="color:var(--green)"><strong id="lib-stat-aibast">0</strong> AIBAST</div>
+        <div class="lib-stat-item" style="color:var(--yellow)"><strong id="lib-stat-community">0</strong> community</div>
+      </div>
+
+      <div class="lib-toolbar">
+        <input class="lib-search" id="lib-search-input" placeholder="Search agents by name, skill, or category…" oninput="renderLibrary()" />
+        <button class="lib-btn primary" onclick="liveLibrarySearch()">🔍 Search Live Sources</button>
+      </div>
+
+      <div class="lib-source-tabs" id="lib-source-tabs">
+        <div class="lib-tab active" data-source="all"       onclick="setLibTab(this,'all')">All Sources</div>
+        <div class="lib-tab"        data-source="coe"       onclick="setLibTab(this,'coe')">🤖 CoE Team</div>
+        <div class="lib-tab"        data-source="rar"       onclick="setLibTab(this,'rar')">⚡ RAR Registry</div>
+        <div class="lib-tab"        data-source="aibast"    onclick="setLibTab(this,'aibast')">🏭 AIBAST</div>
+        <div class="lib-tab"        data-source="community" onclick="setLibTab(this,'community')">🌐 Community</div>
+        <div class="lib-tab"        data-source="local"     onclick="setLibTab(this,'local')">💾 Local</div>
+      </div>
+
+      <div class="lib-grid" id="lib-grid"></div>
+    </div>
+
+    <!-- Agent Library Detail Modal -->
+    <div class="lib-modal-overlay" id="lib-modal-overlay" onclick="closeLibModal(event)">
+      <div class="lib-modal" id="lib-modal">
+        <button class="lib-modal-close" onclick="document.getElementById('lib-modal-overlay').classList.remove('open')">✕</button>
+        <div id="lib-modal-content"></div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="view" id="view-settings">
       <div class="page-header"><h1>⚙️ Settings</h1></div>
@@ -758,6 +848,7 @@ function showView(name) {
   if (name === 'charter') renderCharter();
   if (name === 'sops') renderSops();
   if (name === 'knowledge') renderKnowledge();
+  if (name === 'library') renderLibrary();
 }
 
 // ── GitHub API ─────────────────────────────────────────────────────────────
@@ -1378,7 +1469,175 @@ function toggleTheme() {
 }
 applyTheme();
 
-// ── Neon Boot Sequence ─────────────────────────────────────────────────────
+applyTheme();
+
+// ── Agent Library ──────────────────────────────────────────────────────────
+// Static catalog — enriched with live search via backend agents
+const AGENT_CATALOG = [
+  // ── CoE Team ──────────────────────────────────────────────────────────────
+  { id:'mfg-orchestrator',  source:'coe', icon:'⚙️',  name:'Orchestrator',         category:'coordination', quality:'official',  desc:'Routes all work, manages the GitHub feedback loop, and coordinates the full agent pipeline.' },
+  { id:'mfg-outcome-framer',source:'coe', icon:'🎯',  name:'Outcome Framer',        category:'strategy',     quality:'official',  desc:'Gates work on defined outcomes and KPIs. Nothing moves forward without a verified success metric.' },
+  { id:'mfg-pm',            source:'coe', icon:'🗂️', name:'PM',                    category:'management',   quality:'official',  desc:'Sprint planning, backlog grooming, weekly digest, and status reporting.' },
+  { id:'mfg-sme',           source:'coe', icon:'🏭',  name:'SME',                   category:'domain',       quality:'official',  desc:'SOPs, process documentation, and use case definitions for Discrete Manufacturing.' },
+  { id:'mfg-developer',     source:'coe', icon:'🧑‍💻',name:'Developer',             category:'engineering',  quality:'official',  desc:'Agent code, D365 configs, RAPP artifacts, and implementation scaffolding.' },
+  { id:'mfg-architect',     source:'coe', icon:'🏗️', name:'Architect',             category:'engineering',  quality:'official',  desc:'Microsoft stack design, integration patterns, and solution architecture.' },
+  { id:'mfg-ux',            source:'coe', icon:'🎨',  name:'UX Designer',           category:'design',       quality:'official',  desc:'Wireframes, user stories, accessibility reviews, and UX flow documentation.' },
+  { id:'mfg-content',       source:'coe', icon:'✍️',  name:'Content Strategist',    category:'content',      quality:'official',  desc:'Documentation, editorial strategy, communications, and knowledge base maintenance.' },
+  { id:'mfg-data',          source:'coe', icon:'📊',  name:'Data Analyst',          category:'analytics',    quality:'official',  desc:'Outcome trends, KPI dashboards, usage analytics, and data-driven recommendations.' },
+  { id:'mfg-security',      source:'coe', icon:'🔒',  name:'Security Reviewer',     category:'security',     quality:'official',  desc:'Security reviews, compliance checks, threat modeling, and best practices audits.' },
+  { id:'mfg-qa',            source:'coe', icon:'🧪',  name:'QA Engineer',           category:'quality',      quality:'official',  desc:'Test cases, regression checks, scenario validation, and quality gate sign-off.' },
+  { id:'mfg-intake',        source:'coe', icon:'📋',  name:'Intake / Logger',       category:'coordination', quality:'official',  desc:'Idea capture, solution logging, decision tracking, and escalation to owner.' },
+  { id:'mfg-outcome-val',   source:'coe', icon:'✅',  name:'Outcome Validator',     category:'quality',      quality:'official',  desc:'Validates outcomes before closing issues. Evidence-based sign-off only.' },
+  { id:'mfg-customer-sme',  source:'coe', icon:'🎭',  name:'Customer Persona',      category:'testing',      quality:'official',  desc:'Simulates customer personas for scenario testing and demo preparation.' },
+
+  // ── RAR Registry ──────────────────────────────────────────────────────────
+  { id:'borg-vaultmind',    source:'rar', icon:'🧠',  name:'VaultMind',             category:'knowledge',    quality:'community', desc:'Personal knowledge vault agent. Connects to Obsidian vault for deep note retrieval and synthesis across 28 action types. Requires OBSIDIAN_VAULT env var.', author:'@borg', tags:['knowledge','obsidian','notes'], installCmd:'apm install @borg/vaultmind_agent' },
+  { id:'borg-recon',        source:'rar', icon:'🔍',  name:'Recon',                 category:'research',     quality:'community', desc:'Deep reconnaissance and research agent. Gathers intelligence from web sources, synthesizes findings, and produces structured research reports.', author:'@borg', tags:['research','web','intelligence'], installCmd:'apm install @borg/recon_agent' },
+  { id:'borg-borg',         source:'rar', icon:'🤖',  name:'Borg',                  category:'meta',         quality:'community', desc:'Meta-agent that can spawn and coordinate other agents. Collective intelligence pattern — ideal for multi-agent workflows.', author:'@borg', tags:['meta','orchestration','multi-agent'], installCmd:'apm install @borg/borg_agent' },
+  { id:'rar-deal-prog',     source:'rar', icon:'💼',  name:'Deal Progression',      category:'sales',        quality:'verified',  desc:'Tracks deals through pipeline stages, identifies stalls, and recommends next actions.', author:'@kody', tags:['sales','crm','pipeline'], installCmd:'apm install @kody/deal_progression_agent' },
+  { id:'rar-email',         source:'rar', icon:'📧',  name:'Email Agent',           category:'communication',quality:'verified',  desc:'Drafts, summarizes, and routes emails. Integrates with Outlook and Exchange.', author:'@kody', tags:['email','outlook','communication'], installCmd:'apm install @kody/email_agent' },
+  { id:'rar-memory',        source:'rar', icon:'💾',  name:'Context Memory',        category:'core',         quality:'official',  desc:'Stores and retrieves facts, preferences, and conversation context across sessions.', author:'@rapp', tags:['memory','context','core'], installCmd:'apm install @rapp/context_memory_agent' },
+
+  // ── AIBAST Industry Agents ─────────────────────────────────────────────────
+  { id:'aibast-mfg-field',   source:'aibast', icon:'🔧', name:'Field Service Mfg',    category:'manufacturing', quality:'verified', desc:'Manages field service workflows for discrete manufacturing. Work orders, technician routing, parts availability.', tags:['manufacturing','field-service','dynamics'], installCmd:'apm install @aibast/field_service_mfg_agent' },
+  { id:'aibast-mfg-quality', source:'aibast', icon:'✅', name:'Quality Control',       category:'manufacturing', quality:'verified', desc:'Tracks defects, manages NCRs, and drives continuous improvement loops in manufacturing.', tags:['manufacturing','quality','ncr'], installCmd:'apm install @aibast/quality_control_agent' },
+  { id:'aibast-mfg-supply',  source:'aibast', icon:'🚚', name:'Supply Chain',          category:'manufacturing', quality:'verified', desc:'Supply chain visibility, supplier tracking, and inventory optimization for discrete mfg.', tags:['manufacturing','supply-chain','inventory'], installCmd:'apm install @aibast/supply_chain_agent' },
+  { id:'aibast-crm-sales',   source:'aibast', icon:'📈', name:'CRM Sales Coach',       category:'sales',         quality:'verified', desc:'AI sales coaching on top of D365 Sales — opportunity scoring, next-best-action, forecast.', tags:['crm','sales','dynamics365'], installCmd:'apm install @aibast/crm_sales_coach_agent' },
+  { id:'aibast-cs-case',     source:'aibast', icon:'🎧', name:'Case Management',       category:'customer-service', quality:'verified', desc:'Intelligent case routing, escalation detection, and resolution recommendations for D365 CS.', tags:['customer-service','cases','dynamics365'], installCmd:'apm install @aibast/case_management_agent' },
+  { id:'aibast-fin-risk',    source:'aibast', icon:'⚖️', name:'Financial Risk',        category:'financial',     quality:'verified', desc:'Monitors financial risk indicators, flags anomalies, and generates risk reports.', tags:['finance','risk','compliance'], installCmd:'apm install @aibast/financial_risk_agent' },
+  { id:'aibast-hr-onboard',  source:'aibast', icon:'👋', name:'HR Onboarding',         category:'hr',            quality:'community', desc:'Automates new hire onboarding workflows — tasks, approvals, document collection.', tags:['hr','onboarding','workflow'], installCmd:'apm install @aibast/hr_onboarding_agent' },
+  { id:'aibast-doc-intel',   source:'aibast', icon:'📄', name:'Document Intelligence', category:'productivity',  quality:'verified', desc:'Extracts, classifies, and routes structured data from unstructured documents using Azure AI.', tags:['documents','ai','azure'], installCmd:'apm install @aibast/document_intelligence_agent' },
+  { id:'aibast-copilot-ext', source:'aibast', icon:'🤝', name:'Copilot Studio Builder',category:'development',   quality:'official', desc:'Generates Copilot Studio agent YAML, topics, and connectors from natural language descriptions.', tags:['copilot-studio','power-platform','yaml'], installCmd:'apm install @aibast/copilot_studio_builder_agent' },
+
+  // ── Community Templates ────────────────────────────────────────────────────
+  { id:'comm-rapp',          source:'community', icon:'⚡', name:'RAPP Agent',          category:'meta',         quality:'official', desc:'The core RAPP pipeline agent. Drives all 14 steps from transcript to deployed agent.', author:'@kody-w', tags:['rapp','pipeline','core'], installCmd:'pip install (included in CommunityRAPP)' },
+  { id:'comm-scrdemo',       source:'community', icon:'🎬', name:'Scripted Demo',        category:'demo',         quality:'official', desc:'Interactive scripted demo agent. Plays back scenario data for consistent customer demos.', author:'@kody-w', tags:['demo','scripted','sales'], installCmd:'pip install (included in CommunityRAPP)' },
+  { id:'comm-ghlib',         source:'community', icon:'📦', name:'GitHub Library Mgr',  category:'meta',         quality:'official', desc:'Discovers, installs, and manages agents from kody-w/AI-Agent-Templates and AIBAST repo.', author:'@kody-w', tags:['library','install','discovery'], installCmd:'pip install (included in CommunityRAPP)' },
+  { id:'comm-rar',           source:'community', icon:'🗂️',name:'RAR Remote',           category:'meta',         quality:'official', desc:'Native RAR registry client. Browse, install, vote, review, and submit agents.', author:'@kody-w', tags:['rar','registry','discovery'], installCmd:'pip install (included in CommunityRAPP)' },
+  { id:'comm-recon',         source:'local', icon:'🔍',     name:'Recon (local)',        category:'research',     quality:'community', desc:'Local install of the Recon agent from the RAR registry. Already available in this deployment.', tags:['research','web'], installCmd:'(already installed)' },
+  { id:'comm-vaultmind',     source:'local', icon:'🧠',     name:'VaultMind (local)',    category:'knowledge',    quality:'community', desc:'Local install of the VaultMind agent from the RAR registry. Already available in this deployment.', tags:['knowledge','notes'], installCmd:'(already installed)' },
+  { id:'comm-borg',          source:'local', icon:'🤖',     name:'Borg (local)',         category:'meta',         quality:'community', desc:'Local install of the Borg agent from the RAR registry. Already available in this deployment.', tags:['meta','orchestration'], installCmd:'(already installed)' },
+];
+
+let libActiveTab = 'all';
+
+function setLibTab(el, source) {
+  document.querySelectorAll('.lib-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  libActiveTab = source;
+  renderLibrary();
+}
+
+function renderLibrary() {
+  const q = (document.getElementById('lib-search-input')?.value || '').toLowerCase().trim();
+  const filtered = AGENT_CATALOG.filter(a => {
+    const matchSource = libActiveTab === 'all' || a.source === libActiveTab;
+    const matchQ = !q ||
+      a.name.toLowerCase().includes(q) ||
+      (a.desc || '').toLowerCase().includes(q) ||
+      (a.category || '').toLowerCase().includes(q) ||
+      (a.tags || []).some(t => t.includes(q)) ||
+      a.source.includes(q);
+    return matchSource && matchQ;
+  });
+
+  // Update stat counters
+  document.getElementById('lib-stat-total').textContent     = AGENT_CATALOG.length;
+  document.getElementById('lib-stat-coe').textContent       = AGENT_CATALOG.filter(a => a.source === 'coe').length;
+  document.getElementById('lib-stat-rar').textContent       = AGENT_CATALOG.filter(a => a.source === 'rar').length;
+  document.getElementById('lib-stat-aibast').textContent    = AGENT_CATALOG.filter(a => a.source === 'aibast').length;
+  document.getElementById('lib-stat-community').textContent = AGENT_CATALOG.filter(a => a.source === 'community' || a.source === 'local').length;
+
+  const sourceLabel = { coe:'CoE Team', rar:'RAR', aibast:'AIBAST', community:'Community', local:'Local' };
+  const html = filtered.length
+    ? filtered.map(a => `
+      <div class="lib-card" onclick="showAgentDetail('${a.id}')">
+        <div class="lib-card-header">
+          <div class="lib-card-icon">${a.icon}</div>
+          <div style="flex:1">
+            <div class="lib-card-name">${a.name}</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:2px">${a.category || ''}</div>
+          </div>
+        </div>
+        <div class="lib-card-role">${(a.desc || '').substring(0,90)}${a.desc && a.desc.length > 90 ? '…' : ''}</div>
+        <div class="lib-card-footer">
+          <span class="source-badge ${a.source}">${sourceLabel[a.source] || a.source}</span>
+          <span class="quality-badge ${a.quality || 'community'}">${a.quality || 'community'}</span>
+        </div>
+        <div class="lib-card-actions">
+          <button class="lib-btn" onclick="event.stopPropagation();showAgentDetail('${a.id}')">ℹ Info</button>
+          ${a.source !== 'coe' && a.source !== 'local' ? `<button class="lib-btn primary" onclick="event.stopPropagation();requestInstallAgent('${a.id}','${a.name}')">+ Add</button>` : ''}
+          ${a.source === 'coe' ? `<button class="lib-btn" onclick="event.stopPropagation();showView('chat');selectAgent('${a.id.replace('mfg-','')}')">💬 Chat</button>` : ''}
+        </div>
+      </div>`).join('')
+    : '<p style="color:var(--text2);font-size:13px;grid-column:1/-1">No agents match your search. Try "Search Live Sources" to query the full registries.</p>';
+
+  document.getElementById('lib-grid').innerHTML = html;
+}
+
+function showAgentDetail(id) {
+  const a = AGENT_CATALOG.find(x => x.id === id);
+  if (!a) return;
+  const sourceLabel = { coe:'CoE Team', rar:'RAR Registry', aibast:'AIBAST', community:'Community Templates', local:'Local (installed)' };
+  const content = `
+    <div class="lib-modal-icon">${a.icon}</div>
+    <div class="lib-modal-name">${a.name}</div>
+    <div style="display:flex;gap:6px;margin-bottom:4px">
+      <span class="source-badge ${a.source}">${sourceLabel[a.source] || a.source}</span>
+      <span class="quality-badge ${a.quality || 'community'}">${a.quality || 'community'}</span>
+      ${a.author ? `<span style="font-size:11px;color:var(--text2)">${a.author}</span>` : ''}
+    </div>
+    <div class="lib-modal-desc">${a.desc || ''}</div>
+    ${a.tags ? `<div class="lib-modal-tags">${a.tags.map(t => `<span class="lib-modal-tag">${t}</span>`).join('')}</div>` : ''}
+    ${a.installCmd ? `<div class="lib-modal-section">Install</div><div class="lib-modal-code">${a.installCmd}</div>` : ''}
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      ${a.source !== 'coe' && a.source !== 'local' ? `<button class="lib-btn primary" onclick="requestInstallAgent('${a.id}','${a.name}');document.getElementById('lib-modal-overlay').classList.remove('open')">+ Add to Team</button>` : ''}
+      ${a.source === 'coe' ? `<button class="lib-btn primary" onclick="showView('chat');document.getElementById('lib-modal-overlay').classList.remove('open')">💬 Chat with Agent</button>` : ''}
+      <button class="lib-btn" onclick="document.getElementById('lib-modal-overlay').classList.remove('open')">Close</button>
+    </div>`;
+  document.getElementById('lib-modal-content').innerHTML = content;
+  document.getElementById('lib-modal-overlay').classList.add('open');
+}
+
+function closeLibModal(e) {
+  if (e.target === document.getElementById('lib-modal-overlay'))
+    document.getElementById('lib-modal-overlay').classList.remove('open');
+}
+
+function requestInstallAgent(id, name) {
+  // Creates a GitHub issue to request adding this agent to the CoE team
+  if (!CFG.pat) { alert('Set your GitHub PAT in Settings to create install requests.'); return; }
+  const title = `[Agent Library] Add agent: ${name}`;
+  const body  = `The \`${id}\` agent was requested from the Agent Library UI.\n\n` +
+                `**Agent ID:** \`${id}\`\n**Source:** See Agent Library\n\n` +
+                `Please evaluate and install this agent to the CoE team if appropriate.\n\n` +
+                `/cc @billwhalenmsft`;
+  fetch(`https://api.github.com/repos/${CFG.repo}/issues`, {
+    method: 'POST',
+    headers: { 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, body, labels: ['mfg-coe', 'agent-task', 'raw-idea'] })
+  }).then(r => r.json()).then(issue => {
+    if (issue.html_url) alert(`✓ Install request created: ${issue.html_url}`);
+    else alert('Could not create issue — check your PAT and repo permissions.');
+  }).catch(() => alert('Request failed — check PAT in Settings.'));
+}
+
+function liveLibrarySearch() {
+  const q = document.getElementById('lib-search-input')?.value?.trim() || '';
+  if (!q) { alert('Enter a search term first, then click Search Live Sources.'); return; }
+  // Switch to chat and send a search request to the library agent
+  showView('chat');
+  selectAgent('orchestrator');
+  setTimeout(() => {
+    const inp = document.getElementById('chat-input');
+    if (inp) {
+      inp.value = `Search the agent library for "${q}" — check both the GitHub Agent Library and RAR Registry and show me what's available.`;
+      sendChat();
+    }
+  }, 200);
+}
+
+
 function launchBootSequence() {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:9998;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family:monospace;color:#00ff88;font-size:14px;gap:6px;';
