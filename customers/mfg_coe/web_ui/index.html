@@ -213,6 +213,93 @@
       background: #ffffff; color: var(--text); border-color: var(--border);
     }
 
+    /* ── Forest Theme ───────────────────────────────────────────────────── */
+    html.forest {
+      --bg: #0a1208;
+      --bg2: #111d0e;
+      --bg3: #172610;
+      --border: #2a4020;
+      --text: #d4e8cc;
+      --text2: #7aaa6a;
+      --accent: #4ade80;
+      --accent2: #16a34a;
+      --green: #86efac;
+      --yellow: #fde047;
+      --red: #f87171;
+      --purple: #c084fc;
+      --orange: #fb923c;
+    }
+    html.forest .topbar { box-shadow: 0 1px 10px rgba(74,222,128,0.12); }
+    html.forest .nav-item.active { background: rgba(74,222,128,0.1); border-left-color: var(--accent); }
+    html.forest .kpi { border-top: 2px solid var(--accent2); }
+    html.forest .agent-card-v2:hover { box-shadow: 0 0 12px rgba(74,222,128,0.2); }
+
+    /* ── Midnight Theme ─────────────────────────────────────────────────── */
+    html.midnight {
+      --bg: #070714;
+      --bg2: #0e0e2a;
+      --bg3: #15153a;
+      --border: #2a2a5a;
+      --text: #e0deff;
+      --text2: #8080c0;
+      --accent: #a78bfa;
+      --accent2: #7c3aed;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --purple: #c084fc;
+      --orange: #fb923c;
+    }
+    html.midnight .topbar { box-shadow: 0 1px 15px rgba(167,139,250,0.15); }
+    html.midnight .nav-item.active { background: rgba(167,139,250,0.1); border-left-color: var(--accent); }
+    html.midnight .kpi { box-shadow: inset 0 0 20px rgba(167,139,250,0.05); }
+    html.midnight .agent-card-v2:hover { box-shadow: 0 0 16px rgba(167,139,250,0.25); border-color: var(--accent); }
+    html.midnight .logo-text { color: var(--accent); }
+
+    /* ── Sunset Theme ───────────────────────────────────────────────────── */
+    html.sunset {
+      --bg: #170a00;
+      --bg2: #221000;
+      --bg3: #301800;
+      --border: #4a2800;
+      --text: #ffecd2;
+      --text2: #cc8855;
+      --accent: #fb923c;
+      --accent2: #ea580c;
+      --green: #4ade80;
+      --yellow: #fde047;
+      --red: #f87171;
+      --purple: #e879f9;
+      --orange: #fdba74;
+    }
+    html.sunset .topbar { background: linear-gradient(90deg, #1a0800, #220f04); box-shadow: 0 1px 10px rgba(251,146,60,0.15); }
+    html.sunset .nav-item.active { background: rgba(251,146,60,0.1); border-left-color: var(--accent); }
+    html.sunset .kpi { border-bottom: 2px solid var(--accent2); }
+    html.sunset .agent-card-v2:hover { box-shadow: 0 0 14px rgba(251,146,60,0.25); }
+
+    /* ── Ocean Theme ────────────────────────────────────────────────────── */
+    html.ocean {
+      --bg: #020d18;
+      --bg2: #051525;
+      --bg3: #071e33;
+      --border: #0e3a5c;
+      --text: #c8e8ff;
+      --text2: #5599cc;
+      --accent: #38bdf8;
+      --accent2: #0284c7;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --purple: #818cf8;
+      --orange: #fb923c;
+    }
+    html.ocean .topbar { box-shadow: 0 1px 15px rgba(56,189,248,0.12); }
+    html.ocean .nav-item.active { background: rgba(56,189,248,0.1); border-left-color: var(--accent); }
+    html.ocean .kpi { box-shadow: inset 0 0 20px rgba(56,189,248,0.04); }
+    html.ocean .agent-card-v2:hover { box-shadow: 0 0 16px rgba(56,189,248,0.2); border-color: var(--accent); }
+    html.ocean .logo-text { color: var(--accent); }
+
+
     /* ── Glassmorphism cards ────────────────────────────────────────────── */
     .card-glass {
       background: rgba(255,255,255,0.04);
@@ -245,6 +332,12 @@
     .mc-stat .val { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
     .theme-toggle { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 14px; padding: 3px 10px; font-size: 11px; cursor: pointer; transition: all .2s; }
     .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    select.theme-select { background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
+      border-radius: 14px; padding: 3px 22px 3px 10px; font-size: 11px; cursor: pointer; transition: all .2s; outline: none;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b949e'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center; }
+    select.theme-select:hover { border-color: var(--accent); color: var(--accent); }
     .user-chip { display: flex; align-items: center; gap: 6px; background: var(--bg3); border: 1px solid var(--border); border-radius: 14px; padding: 3px 10px; font-size: 11px; color: var(--text2); }
     .user-chip img { width: 16px; height: 16px; border-radius: 50%; }
     .logout-btn { background: transparent; border: 1px solid var(--border); color: var(--text2); border-radius: 14px; padding: 3px 8px; font-size: 10px; cursor: pointer; transition: all .2s; text-decoration: none; }
@@ -311,7 +404,7 @@
       <div class="logo-text">Bots in Blazers <small>Mfg CoE · Command Center</small></div>
     </div>
     <div class="topbar-stats">
-      <div class="mc-stat">⚡ <span class="val" id="agents-online">7</span> agents</div>
+      <div class="mc-stat">⚡ <span class="val" id="agents-online">...</span> agents</div>
       <div class="mc-stat">⏱️ up <span class="val" id="topbar-uptime">0m</span></div>
       <div class="mc-stat">🕐 <span class="val" id="topbar-clock"></span></div>
     </div>
@@ -321,7 +414,15 @@
         <span id="user-name"></span>
         <a class="logout-btn" href="/.auth/logout">sign out</a>
       </div>
-      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️ Light</button>
+      <select class="theme-select" id="theme-btn" onchange="setTheme(this.value)" title="Choose theme">
+        <option value="dark">🌙 Dark</option>
+        <option value="light">☀️ Light</option>
+        <option value="neon">⚡ Neon</option>
+        <option value="forest">🌿 Forest</option>
+        <option value="midnight">🌌 Midnight</option>
+        <option value="sunset">🌅 Sunset</option>
+        <option value="ocean">🌊 Ocean</option>
+      </select>
       <button class="chat-btn" onclick="showView('chat')">💬 Message Agents</button>
     </div>
   </header>
@@ -401,7 +502,7 @@
 
     <!-- AGENTS -->
     <div class="view" id="view-agents">
-      <div class="page-header"><h1>🤖 Agent Team</h1><p>7 agents operating in the Discrete Manufacturing CoE</p></div>
+      <div class="page-header"><h1>🤖 Agent Team</h1><p id="agents-page-header">Loading agents…</p></div>
       <div class="agent-grid" id="agent-grid"></div>
     </div>
 
@@ -1229,24 +1330,25 @@ setInterval(updateUptime, 1000);
 updateUptime();
 
 // ── Theme toggle ───────────────────────────────────────────────────────────
-// Theme: cycles dark → light → neon → dark
-const THEMES = ['dark', 'light', 'neon'];
+const ALL_THEMES = ['dark', 'light', 'neon', 'forest', 'midnight', 'sunset', 'ocean'];
 let currentTheme = localStorage.getItem('coe_theme') || 'dark';
-if (!THEMES.includes(currentTheme)) currentTheme = 'dark';
-const THEME_NEXT_LABEL = { dark: '☀️ Light', light: '⚡ Neon', neon: '🌙 Dark' };
+if (!ALL_THEMES.includes(currentTheme)) currentTheme = 'dark';
 function applyTheme() {
-  const btn = document.getElementById('theme-btn');
-  document.documentElement.classList.remove('neon', 'light');
-  if (currentTheme === 'neon') document.documentElement.classList.add('neon');
-  if (currentTheme === 'light') document.documentElement.classList.add('light');
-  if (btn) btn.textContent = THEME_NEXT_LABEL[currentTheme];
+  document.documentElement.classList.remove(...ALL_THEMES);
+  if (currentTheme !== 'dark') document.documentElement.classList.add(currentTheme);
+  const sel = document.getElementById('theme-btn');
+  if (sel) sel.value = currentTheme;
 }
-function toggleTheme() {
-  const idx = THEMES.indexOf(currentTheme);
-  currentTheme = THEMES[(idx + 1) % THEMES.length];
+function setTheme(t) {
+  currentTheme = ALL_THEMES.includes(t) ? t : 'dark';
   localStorage.setItem('coe_theme', currentTheme);
   applyTheme();
   if (currentTheme === 'neon') launchBootSequence();
+}
+// keep backward-compat with any inline onclick="toggleTheme()"
+function toggleTheme() {
+  const idx = ALL_THEMES.indexOf(currentTheme);
+  setTheme(ALL_THEMES[(idx + 1) % ALL_THEMES.length]);
 }
 applyTheme();
 
@@ -1341,6 +1443,11 @@ function renderAgentRing(status) {
 }
 
 function renderAgents() {
+  // Update agent count in topbar and page header
+  const countEl = document.getElementById('agents-online');
+  if (countEl) countEl.textContent = AGENTS.length;
+  const hdr = document.getElementById('agents-page-header');
+  if (hdr) hdr.textContent = `${AGENTS.length} agents operating in the Discrete Manufacturing CoE`;
   // Full agent grid (v2)
   const html = AGENTS.map(a => `
     <div class="agent-card-v2 ${a.status}" onclick="showView('chat');selectAgent('${a.id}')">
