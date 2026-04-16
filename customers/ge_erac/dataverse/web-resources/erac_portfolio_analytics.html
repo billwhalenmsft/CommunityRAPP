@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ERAC Portfolio Analytics</title>
+<style>
+  :root {
+    --fluent-blue:      #0078D4;
+    --fluent-blue-dark: #005A9E;
+    --fluent-blue-light:#EFF6FC;
+    --surface:          #FFFFFF;
+    --bg:               #F5F5F5;
+    --border:           #E1DFDD;
+    --text-primary:     #323130;
+    --text-secondary:   #605E5C;
+    --text-disabled:    #A19F9D;
+    --green:            #107C10;
+    --green-bg:         #DFF6DD;
+    --red:              #D13438;
+    --red-bg:           #FDE7E9;
+    --yellow:           #935200;
+    --yellow-bg:        #FFF4CE;
+    --purple:           #5C2D91;
+    --radius:           4px;
+    --shadow:           0 1px 4px rgba(0,0,0,.12);
+    --font:             'Segoe UI', system-ui, sans-serif;
+    --c1: #0078D4;
+    --c2: #5C2D91;
+    --c3: #107C10;
+    --c4: #008272;
+    --c5: #D13438;
+    --c6: #A80000;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); font-size: 14px; color: var(--text-primary);
+         background: var(--bg); min-height: 100vh; }
+
+  .header { background: var(--fluent-blue-dark); color: #fff; padding: 12px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0,0,0,.2); }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-badge { background: rgba(255,255,255,.2); border-radius: 3px;
+                  padding: 2px 8px; font-size: 11px; font-weight: 600; letter-spacing: .5px; }
+  .header h1 { font-size: 18px; font-weight: 600; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .hbtn { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+          color: #fff; padding: 5px 12px; border-radius: var(--radius);
+          font-size: 13px; cursor: pointer; }
+  .hbtn:hover { background: rgba(255,255,255,.25); }
+  .live-badge { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255,255,255,.8); }
+  .live-dot   { width: 6px; height: 6px; border-radius: 50%; background: #54D25A;
+                animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+
+  .metrics-bar { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+                 padding: 16px 24px; }
+  .metric-card { background: var(--surface); border: 1px solid var(--border);
+                 border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); }
+  .metric-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .5px; margin-bottom: 8px; }
+  .metric-value { font-size: 28px; font-weight: 700; }
+  .metric-sub   { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+  .metric-card.blue .metric-value { color: var(--fluent-blue); }
+  .metric-card.green .metric-value { color: var(--green); }
+  .metric-card.warn .metric-value { color: var(--red); }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 24px 12px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 0 24px 12px; }
+  .row4 { padding: 0 24px 20px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border);
+          border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .card-header { padding: 12px 16px; border-bottom: 1px solid var(--border);
+                 display: flex; align-items: center; justify-content: space-between; }
+  .card-header h2 { font-size: 14px; font-weight: 600; }
+  .card-body { padding: 16px; }
+
+  /* Legend item */
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 16px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
+  .leg-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Tier section */
+  .tier-rows { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .tier-row  { display: flex; flex-direction: column; gap: 4px; }
+  .tier-hdr  { display: flex; justify-content: space-between; font-size: 12px; }
+  .tier-bar  { height: 12px; border-radius: 6px; background: var(--border); overflow: hidden; }
+  .tier-fill { height: 100%; border-radius: 6px; }
+
+  /* Rating dist */
+  .rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12px; }
+  .rating-bar  { flex: 1; height: 14px; background: var(--border); border-radius: 7px; overflow: hidden; }
+  .rating-fill { height: 100%; border-radius: 7px; }
+  .rating-lbl  { width: 80px; }
+  .rating-cnt  { width: 30px; text-align: right; font-weight: 600; color: var(--text-secondary); }
+
+  /* Engagement table */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { padding: 9px 12px; text-align: left; font-weight: 600; font-size: 12px;
+       color: var(--text-secondary); border-bottom: 2px solid var(--border);
+       background: #F8F8F8; white-space: nowrap; }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #F3F2F1; }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+           border-radius: 10px; }
+  .badge-blue   { background: var(--fluent-blue-light); color: var(--fluent-blue); }
+  .badge-green  { background: var(--green-bg);          color: var(--green); }
+  .badge-red    { background: var(--red-bg);            color: var(--red); }
+  .badge-yellow { background: var(--yellow-bg);         color: var(--yellow); }
+  .badge-gray   { background: #F3F2F1;                  color: var(--text-secondary); }
+
+  .footer { padding: 8px 24px; font-size: 11px; color: var(--text-disabled);
+            display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <span class="header-badge">GE VERISK · ERAC</span>
+    <h1>Portfolio Analytics</h1>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><span class="live-dot"></span> Live</div>
+    <button class="hbtn" onclick="loadData()">⟳ Refresh</button>
+    <button class="hbtn" onclick="window.print()">⊞ Export</button>
+  </div>
+</div>
+
+<!-- METRICS BAR -->
+<div class="metrics-bar">
+  <div class="metric-card blue">
+    <div class="metric-label">Total Portfolio Exposure</div>
+    <div class="metric-value">$4.8B</div>
+    <div class="metric-sub">6 active cedents · 3 treaty types</div>
+  </div>
+  <div class="metric-card green">
+    <div class="metric-label">Avg Cedent Rating</div>
+    <div class="metric-value">3.58</div>
+    <div class="metric-sub">▲ +0.12 vs Q4 2025</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Improving Relationships</div>
+    <div class="metric-value">2</div>
+    <div class="metric-sub">Acme Re · Pacific Coastal</div>
+  </div>
+  <div class="metric-card warn">
+    <div class="metric-label">At-Risk Cedents</div>
+    <div class="metric-value">1</div>
+    <div class="metric-sub">Meridian Re — rating declining</div>
+  </div>
+</div>
+
+<!-- ROW 2: Portfolio Donut + Ratings Bar Chart -->
+<div class="row2">
+
+  <div class="card">
+    <div class="card-header"><h2>Portfolio Allocation by Cedent</h2></div>
+    <div class="card-body" style="display:flex;align-items:center;gap:20px;">
+      <canvas id="donutCanvas" width="180" height="180"></canvas>
+      <div style="flex:1;">
+        <div id="donutLegend"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2>PRR Overall Rating by Cedent</h2>
+      <span style="font-size:11px;color:var(--text-secondary)">Q1 2026</span></div>
+    <div class="card-body">
+      <canvas id="barCanvas" width="400" height="170"></canvas>
+    </div>
+  </div>
+
+</div><!-- /row2 -->
+
+<!-- ROW 3: Tier Distribution + Rating Distribution + Partnership Types -->
+<div class="row3">
+
+  <div class="card">
+    <div class="card-header"><h2>Tier Distribution</h2></div>
+    <div class="tier-rows" id="tierRows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2>Rating Band Distribution</h2></div>
+    <div class="card-body" id="ratingDist"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2>Partnership Type Mix</h2></div>
+    <div class="card-body" style="display:flex;align-items:center;justify-content:center;">
+      <canvas id="typeDonut" width="160" height="160"></canvas>
+    </div>
+    <div class="legend" id="typeLegend"></div>
+  </div>
+
+</div><!-- /row3 -->
+
+<!-- ROW 4: Engagement Activity Table -->
+<div class="row4">
+  <div class="card">
+    <div class="card-header">
+      <h2>Engagement Activity Log</h2>
+      <span style="font-size:12px;color:var(--text-secondary)">Last 90 days · All cedents</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Date</th><th>Cedent</th><th>Type</th><th>Participants</th><th>Outcome</th><th>Next Steps</th>
+      </tr></thead>
+      <tbody id="engagementBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  <span>GE Verisk ERAC · Finance Transformation · Portfolio Management</span>
+  <span id="footerTs"></span>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────────────────────
+const CEDENTS = [
+  { name:'Acme Reinsurance',       portfolio:28.5, rating:4.2, tier:'Tier 1', type:'Strategic',      trend:'Improving', color:'#0078D4' },
+  { name:'Titan Mutual Re',        portfolio:22.1, rating:3.8, tier:'Tier 1', type:'Strategic',      trend:'Stable',    color:'#5C2D91' },
+  { name:'Harbor Group',           portfolio:18.4, rating:3.5, tier:'Tier 2', type:'Advisory',       trend:'Stable',    color:'#107C10' },
+  { name:'Pacific Coastal Re',     portfolio:15.2, rating:4.0, tier:'Tier 2', type:'Tactical',       trend:'Improving', color:'#008272' },
+  { name:'Meridian Re Partners',   portfolio:10.3, rating:2.9, tier:'Tier 3', type:'Advisory',       trend:'Declining', color:'#D13438' },
+  { name:'Summit Life & Casualty', portfolio: 5.5, rating:3.1, tier:'Tier 3', type:'Transactional',  trend:'Stable',    color:'#A80000' },
+];
+
+const ENGAGEMENTS = [
+  { date:'Mar 14 2026', cedent:'Acme Reinsurance',     type:'QBR',            participants:'Robert Harmon, Diana Marsh',  outcome:'Positive',           next:'Data integration milestone review Apr 2026' },
+  { date:'Feb 28 2026', cedent:'Pacific Coastal Re',   type:'Treaty Review',  participants:'Nina Romero, Carl Jensen',    outcome:'Positive',           next:'Draft new treaty terms by Mar 31' },
+  { date:'Feb 14 2026', cedent:'Titan Mutual Re',      type:'Claims Review',  participants:'Karen Ostler, Raj Patel',     outcome:'Neutral',            next:'Financial signatory documentation due Mar 15' },
+  { date:'Jan 30 2026', cedent:'Harbor Group',         type:'Risk Review',    participants:'Marcus Liu, Elaine Cho',      outcome:'Follow-up Needed',   next:'Compliance remediation plan due Q2' },
+  { date:'Jan 22 2026', cedent:'Meridian Re Partners', type:'Performance Review','participants':'Angela Torres',          outcome:'Escalation Required','next':'Risk review scheduled Q2 2026' },
+  { date:'Jan 10 2026', cedent:'Summit Life & Casualty','type':'Annual Review', participants:'David Huang',              outcome:'Neutral',            next:'Annual renewal discussion Mar 2026' },
+];
+
+const TYPE_COLORS = { Strategic:'#0078D4', Advisory:'#5C2D91', Tactical:'#008272', Transactional:'#A80000' };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DONUT CHART
+// ─────────────────────────────────────────────────────────────────────────────
+function drawDonut(canvasId, data, labelKey, valueKey, colorKey) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, R = Math.min(W,H)*0.42, rIn = R*0.55;
+  ctx.clearRect(0,0,W,H);
+  const total = data.reduce((s,d)=>s+d[valueKey],0);
+  let angle = -Math.PI/2;
+  data.forEach(d => {
+    const sweep = (d[valueKey]/total)*2*Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,angle,angle+sweep);
+    ctx.fillStyle = d[colorKey]; ctx.fill();
+    ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.stroke();
+    // percent label
+    if (d[valueKey]/total > 0.06) {
+      const midA = angle + sweep/2;
+      const lx = cx+(R*0.72)*Math.cos(midA), ly = cy+(R*0.72)*Math.sin(midA);
+      ctx.fillStyle='white'; ctx.font='bold 11px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(d[valueKey]+'%', lx, ly);
+    }
+    angle += sweep;
+  });
+  // Center hole
+  ctx.beginPath(); ctx.arc(cx,cy,rIn,0,2*Math.PI);
+  ctx.fillStyle='white'; ctx.fill();
+  // Center text
+  ctx.fillStyle='#323130'; ctx.font='bold 13px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Portfolio', cx, cy-8);
+  ctx.fillStyle='#605E5C'; ctx.font='11px Segoe UI';
+  ctx.fillText('Allocation', cx, cy+8);
+}
+
+function buildDonutLegend() {
+  const el = document.getElementById('donutLegend');
+  el.innerHTML = CEDENTS.map(c => `
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;">
+      <span style="width:10px;height:10px;border-radius:50%;background:${c.color};flex-shrink:0;display:inline-block;"></span>
+      <span style="font-size:12px;flex:1;color:var(--text-primary)">${c.name}</span>
+      <strong style="font-size:12px;color:${c.color}">${c.portfolio}%</strong>
+    </div>`).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BAR CHART
+// ─────────────────────────────────────────────────────────────────────────────
+function drawBars() {
+  const canvas = document.getElementById('barCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const padL=20, padR=10, padT=10, padB=28;
+  const chartW = W-padL-padR, chartH = H-padT-padB;
+  ctx.clearRect(0,0,W,H);
+  const n = CEDENTS.length, barW = (chartW/n)*0.6, gap = chartW/n;
+  const maxV = 5;
+
+  // Grid lines at 1,2,3,4,5
+  [1,2,3,4,5].forEach(v => {
+    const y = padT + chartH - (v/maxV)*chartH;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+chartW,y);
+    ctx.strokeStyle = v===5?'#C8C6C4':'#EDEBE9'; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle='#A19F9D'; ctx.font='10px Segoe UI'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText(v.toFixed(0), padL-4, y);
+  });
+  // Threshold line at 2.5
+  const threshY = padT + chartH - (2.5/maxV)*chartH;
+  ctx.beginPath(); ctx.moveTo(padL,threshY); ctx.lineTo(padL+chartW,threshY);
+  ctx.strokeStyle='#F4B400'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#935200'; ctx.font='10px Segoe UI'; ctx.textAlign='left';
+  ctx.fillText('Min 2.5', padL+chartW-48, threshY-6);
+
+  CEDENTS.forEach((c,i) => {
+    const x = padL + i*gap + (gap-barW)/2;
+    const barH = (c.rating/maxV)*chartH;
+    const y = padT + chartH - barH;
+    // Bar
+    ctx.fillStyle = c.color;
+    ctx.beginPath();
+    const r=3;
+    ctx.moveTo(x+r,y); ctx.lineTo(x+barW-r,y);
+    ctx.quadraticCurveTo(x+barW,y,x+barW,y+r);
+    ctx.lineTo(x+barW,y+barH); ctx.lineTo(x,y+barH);
+    ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.fill();
+    // Value label above bar
+    ctx.fillStyle=c.color; ctx.font='bold 11px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(c.rating.toFixed(1), x+barW/2, y-3);
+    // X label
+    const shortName = c.name.split(' ')[0];
+    ctx.fillStyle='#605E5C'; ctx.font='10px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText(shortName, x+barW/2, padT+chartH+4);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TIER DISTRIBUTION
+// ─────────────────────────────────────────────────────────────────────────────
+function renderTiers() {
+  const tiers = { 'Tier 1': {count:0,pct:0,color:'#0078D4'}, 'Tier 2':{count:0,pct:0,color:'#5C2D91'}, 'Tier 3':{count:0,pct:0,color:'#69797E'} };
+  CEDENTS.forEach(c => tiers[c.tier].count++);
+  const total = CEDENTS.length;
+  Object.values(tiers).forEach(t => t.pct = (t.count/total)*100);
+  document.getElementById('tierRows').innerHTML = Object.entries(tiers).map(([name,t]) => `
+    <div class="tier-row">
+      <div class="tier-hdr">
+        <span style="font-weight:600;color:${t.color}">${name}</span>
+        <span style="font-size:12px;color:var(--text-secondary)">${t.count} cedent${t.count!==1?'s':''} · ${t.pct.toFixed(0)}%</span>
+      </div>
+      <div class="tier-bar">
+        <div class="tier-fill" style="width:${t.pct}%;background:${t.color};"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RATING DISTRIBUTION
+// ─────────────────────────────────────────────────────────────────────────────
+function renderRatingDist() {
+  const bands = [
+    { label:'4.0 – 5.0 (Strong)',  min:4.0, max:5.0, color:'#107C10' },
+    { label:'3.0 – 3.9 (Good)',    min:3.0, max:3.99, color:'#0078D4' },
+    { label:'2.0 – 2.9 (Watch)',   min:2.0, max:2.99, color:'#935200' },
+    { label:'< 2.0 (Critical)',    min:0,   max:1.99, color:'#D13438' },
+  ];
+  const total = CEDENTS.length;
+  document.getElementById('ratingDist').innerHTML = bands.map(b => {
+    const cnt = CEDENTS.filter(c => c.rating >= b.min && c.rating <= b.max).length;
+    const pct = (cnt/total)*100;
+    return `<div class="rating-row">
+      <span class="rating-lbl" style="color:${b.color};font-size:11px;font-weight:600">${b.label}</span>
+      <div class="rating-bar"><div class="rating-fill" style="width:${pct}%;background:${b.color};"></div></div>
+      <span class="rating-cnt">${cnt}</span>
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PARTNERSHIP TYPE DONUT
+// ─────────────────────────────────────────────────────────────────────────────
+function renderTypeMix() {
+  const counts = {};
+  CEDENTS.forEach(c => { counts[c.type] = (counts[c.type]||0)+1; });
+  const data = Object.entries(counts).map(([k,v]) => ({ label:k, value:v, color:TYPE_COLORS[k]||'#888' }));
+  drawDonut('typeDonut', data, 'label', 'value', 'color');
+  document.getElementById('typeLegend').innerHTML = data.map(d =>
+    `<div class="leg-item"><span class="leg-dot" style="background:${d.color}"></span>${d.label}: ${d.value}</div>`
+  ).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENGAGEMENT TABLE
+// ─────────────────────────────────────────────────────────────────────────────
+function renderEngagement() {
+  const outcomeClass = { 'Positive':'badge-green','Neutral':'badge-gray','Follow-up Needed':'badge-yellow','Escalation Required':'badge-red' };
+  const typeClass = { 'QBR':'badge-blue','Treaty Review':'badge-blue','Claims Review':'badge-gray','Risk Review':'badge-yellow','Performance Review':'badge-red','Annual Review':'badge-gray' };
+  document.getElementById('engagementBody').innerHTML = ENGAGEMENTS.map(e => `
+    <tr>
+      <td style="white-space:nowrap;color:var(--text-secondary)">${e.date}</td>
+      <td style="font-weight:600">${e.cedent}</td>
+      <td><span class="badge ${typeClass[e.type]||'badge-gray'}">${e.type}</span></td>
+      <td style="font-size:12px;color:var(--text-secondary)">${e.participants}</td>
+      <td><span class="badge ${outcomeClass[e.outcome]||'badge-gray'}">${e.outcome}</span></td>
+      <td style="font-size:12px">${e.next}</td>
+    </tr>`).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA LOAD (Xrm.WebApi when available)
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    if (typeof parent !== 'undefined' && parent.Xrm && parent.Xrm.WebApi) {
+      const result = await parent.Xrm.WebApi.retrieveMultipleRecords(
+        'account',
+        '?$select=name,erac_portfoliopct,erac_overallrating,erac_tier&$filter=erac_iscedent eq true'
+      );
+      if (result.entities && result.entities.length > 0) {
+        result.entities.forEach(e => {
+          const match = CEDENTS.find(c => c.name === e.name);
+          if (match) {
+            if (e.erac_portfoliopct) match.portfolio = parseFloat(e.erac_portfoliopct);
+            if (e.erac_overallrating) match.rating = parseFloat(e.erac_overallrating);
+          }
+        });
+        renderAll();
+      }
+    }
+  } catch(err) {
+    console.log('[ERAC Analytics] Dataverse not available, using demo data:', err.message);
+  }
+}
+
+function renderAll() {
+  drawDonut('donutCanvas', CEDENTS, 'name', 'portfolio', 'color');
+  buildDonutLegend();
+  drawBars();
+  renderTiers();
+  renderRatingDist();
+  renderTypeMix();
+  renderEngagement();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+document.getElementById('footerTs').textContent =
+  'Last refreshed: ' + new Date().toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
+
+renderAll();
+loadData();
+</script>
+</body>
+</html>

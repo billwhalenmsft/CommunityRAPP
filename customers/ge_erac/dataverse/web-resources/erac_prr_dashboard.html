@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ERAC Partnership Rating Report</title>
+<style>
+  :root {
+    --fluent-blue:       #0078D4;
+    --fluent-blue-dark:  #005A9E;
+    --fluent-blue-light: #EFF6FC;
+    --surface:           #FFFFFF;
+    --bg:                #F5F5F5;
+    --border:            #E1DFDD;
+    --text-primary:      #323130;
+    --text-secondary:    #605E5C;
+    --text-disabled:     #A19F9D;
+    --green:             #107C10;
+    --green-bg:          #DFF6DD;
+    --red:               #D13438;
+    --red-bg:            #FDE7E9;
+    --yellow:            #935200;
+    --yellow-bg:         #FFF4CE;
+    --radius:            4px;
+    --shadow:            0 1px 4px rgba(0,0,0,.12);
+    --font:              'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); font-size: 14px; color: var(--text-primary);
+         background: var(--bg); min-height: 100vh; }
+
+  /* ── Header ── */
+  .header { background: var(--fluent-blue); color: #fff; padding: 12px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0,0,0,.2); }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-badge { background: rgba(255,255,255,.2); border-radius: 3px;
+                  padding: 2px 8px; font-size: 11px; font-weight: 600; letter-spacing: .5px; }
+  .header h1 { font-size: 18px; font-weight: 600; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .period-select { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+                   color: #fff; padding: 5px 10px; border-radius: var(--radius);
+                   font-size: 13px; cursor: pointer; }
+  .period-select option { color: var(--text-primary); background: white; }
+  .refresh-btn { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+                 color: #fff; padding: 5px 12px; border-radius: var(--radius);
+                 font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .refresh-btn:hover { background: rgba(255,255,255,.25); }
+
+  /* ── Metrics Bar ── */
+  .metrics-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+                 padding: 16px 24px; }
+  .metric-card { background: var(--surface); border: 1px solid var(--border);
+                 border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); }
+  .metric-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase;
+                  letter-spacing: .5px; margin-bottom: 8px; }
+  .metric-value { font-size: 28px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+  .metric-sub  { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+  .metric-card.highlight .metric-value { color: var(--fluent-blue); }
+  .metric-card.warn     .metric-value { color: var(--red); }
+
+  /* ── Main Grid ── */
+  .main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 12px;
+               padding: 0 24px 16px; }
+
+  /* ── Card ── */
+  .card { background: var(--surface); border: 1px solid var(--border);
+          border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .card-header { padding: 12px 16px; border-bottom: 1px solid var(--border);
+                 display: flex; align-items: center; justify-content: space-between; }
+  .card-header h2 { font-size: 14px; font-weight: 600; }
+  .card-body { padding: 0; }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: #F8F8F8; }
+  th { padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px;
+       color: var(--text-secondary); border-bottom: 2px solid var(--border); white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr { cursor: pointer; transition: background .12s; }
+  tr.selected td { background: var(--fluent-blue-light) !important; }
+  tr:hover td  { background: #F3F2F1; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Rating Score ── */
+  .score { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+  .score-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .score-high   { color: var(--green); }   .score-dot-high   { background: var(--green); }
+  .score-mid    { color: var(--yellow); }  .score-dot-mid    { background: #F4B400; }
+  .score-low    { color: var(--red); }     .score-dot-low    { background: var(--red); }
+
+  /* ── Trend Badge ── */
+  .trend { display: inline-flex; align-items: center; gap: 4px; font-size: 12px;
+           font-weight: 600; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .trend-up   { background: var(--green-bg);  color: var(--green); }
+  .trend-flat { background: #F3F2F1;           color: var(--text-secondary); }
+  .trend-down { background: var(--red-bg);    color: var(--red); }
+
+  /* ── Tier Badge ── */
+  .tier { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+          padding: 2px 7px; border-radius: 10px; }
+  .tier-1 { background: #EFF6FC; color: #0078D4; }
+  .tier-2 { background: #F0EBF9; color: #5C2D91; }
+  .tier-3 { background: #F3F2F1; color: var(--text-secondary); }
+
+  /* ── Mini score bar ── */
+  .score-bar-wrap { display: flex; align-items: center; gap: 6px; }
+  .score-bar { height: 6px; border-radius: 3px; flex: 0 0 60px; background: #E1DFDD; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 3px; }
+
+  /* ── Radar Panel ── */
+  .radar-panel { display: flex; flex-direction: column; gap: 12px; }
+  .radar-title { font-weight: 600; font-size: 13px; }
+  .radar-sub   { font-size: 12px; color: var(--text-secondary); }
+  svg.radar    { width: 100%; height: auto; }
+
+  /* ── Dimension bars ── */
+  .dim-rows { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .dim-row  { display: flex; flex-direction: column; gap: 4px; }
+  .dim-label-row { display: flex; justify-content: space-between; font-size: 12px; }
+  .dim-label { color: var(--text-secondary); }
+  .dim-val   { font-weight: 600; }
+  .dim-bar   { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .dim-fill  { height: 100%; border-radius: 4px; background: var(--fluent-blue);
+               transition: width .4s ease; }
+
+  /* ── Period buttons ── */
+  .period-tabs { display: flex; gap: 6px; padding: 8px 16px; border-bottom: 1px solid var(--border); }
+  .ptab { padding: 4px 10px; font-size: 12px; border-radius: 12px; cursor: pointer;
+          border: 1px solid transparent; background: none; color: var(--text-secondary); }
+  .ptab.active { background: var(--fluent-blue-light); color: var(--fluent-blue);
+                 border-color: var(--fluent-blue); font-weight: 600; }
+  .ptab:hover { background: #F3F2F1; }
+
+  /* ── Sparkline row ── */
+  .spark-section { padding: 0 24px 20px; }
+  .spark-section h2 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .sparks-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .spark-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+                padding: 10px 12px; box-shadow: var(--shadow); }
+  .spark-name { font-size: 11px; font-weight: 600; color: var(--text-secondary);
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+  .spark-val  { font-size: 16px; font-weight: 700; }
+
+  /* ── Live badge ── */
+  .live-badge { display: flex; align-items: center; gap: 5px; font-size: 11px;
+                color: var(--text-secondary); }
+  .live-dot   { width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+                animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+  /* ── Footer ── */
+  .footer { padding: 8px 24px; font-size: 11px; color: var(--text-disabled);
+            display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <span class="header-badge">GE VERISK · ERAC</span>
+    <h1>Partnership Rating Report</h1>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><span class="live-dot"></span> Live</div>
+    <select class="period-select" id="periodSelect" onchange="setPeriod(this.value)">
+      <option value="Q1 2026" selected>Q1 2026</option>
+      <option value="Q4 2025">Q4 2025</option>
+      <option value="Q3 2025">Q3 2025</option>
+      <option value="Q2 2025">Q2 2025</option>
+    </select>
+    <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
+  </div>
+</div>
+
+<!-- METRICS BAR -->
+<div class="metrics-bar">
+  <div class="metric-card highlight">
+    <div class="metric-label">Avg PRR Score</div>
+    <div class="metric-value" id="avgScore">3.58</div>
+    <div class="metric-sub">▲ +0.12 vs prior period</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">Active Cedents</div>
+    <div class="metric-value">6</div>
+    <div class="metric-sub">2 Tier 1 · 2 Tier 2 · 2 Tier 3</div>
+  </div>
+  <div class="metric-card warn">
+    <div class="metric-label">Reviews Due</div>
+    <div class="metric-value" id="reviewsDue">2</div>
+    <div class="metric-sub">Next 30 days</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-label">PRRs Pending Approval</div>
+    <div class="metric-value">1</div>
+    <div class="metric-sub">Meridian Re Partners</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main-grid">
+
+  <!-- LEFT: RATINGS TABLE -->
+  <div class="card">
+    <div class="card-header">
+      <h2>PRR Scorecard — <span id="periodLabel">Q1 2026</span></h2>
+      <div style="font-size:12px;color:var(--text-secondary)">Click row to drill into detail →</div>
+    </div>
+    <div class="card-body">
+      <table id="prrTable">
+        <thead>
+          <tr>
+            <th>Cedent</th>
+            <th>Tier</th>
+            <th>Relationship</th>
+            <th>Technical</th>
+            <th>Strategic</th>
+            <th>Operational</th>
+            <th>Overall</th>
+            <th>Trend</th>
+          </tr>
+        </thead>
+        <tbody id="prrTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT: DETAIL PANEL -->
+  <div class="card">
+    <div class="card-header">
+      <h2 id="detailName">Acme Reinsurance</h2>
+    </div>
+    <div class="period-tabs">
+      <button class="ptab active" onclick="selectPeriodTab(this,'Q1 2026')">Q1 2026</button>
+      <button class="ptab" onclick="selectPeriodTab(this,'Q4 2025')">Q4 2025</button>
+      <button class="ptab" onclick="selectPeriodTab(this,'Q3 2025')">Q3 2025</button>
+    </div>
+    <div style="padding:14px 16px 0;">
+      <canvas id="radarCanvas" width="270" height="230"></canvas>
+    </div>
+    <div class="dim-rows" id="dimRows"></div>
+    <div style="padding:0 16px 12px; border-top:1px solid var(--border); padding-top:10px;">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;">Last QBR · Notes</div>
+      <div id="noteText" style="font-size:12px;color:var(--text-primary);line-height:1.5;"></div>
+    </div>
+  </div>
+
+</div><!-- /main-grid -->
+
+<!-- SPARKLINE HISTORY -->
+<div class="spark-section">
+  <h2>Rating Trend — All Cedents (Last 4 Periods)</h2>
+  <div class="sparks-grid" id="sparksGrid"></div>
+</div>
+
+<div class="footer">
+  <span>GE Verisk ERAC · Finance Transformation · Partnership Management</span>
+  <span id="footerTs"></span>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────────────────────
+const CEDENTS = [
+  { id:'c1', name:'Acme Reinsurance',      tier:'Tier 1', type:'Strategic',
+    rel:4.5, tech:4.0, strat:4.2, ops:4.1, overall:4.2, trend:'Improving', portfolio:28.5,
+    lastQbr:'Feb 14 2026',
+    note:'QBR completed Q1 2026. Strong claims process maturity. Data integration milestone on track.',
+    history:[3.7, 3.9, 4.0, 4.2] },
+  { id:'c2', name:'Titan Mutual Re',       tier:'Tier 1', type:'Strategic',
+    rel:4.0, tech:3.5, strat:3.8, ops:3.9, overall:3.8, trend:'Stable',   portfolio:22.1,
+    lastQbr:'Jan 28 2026',
+    note:'Financial signatory risk flag active. Treaty renewal due Q3 2026. Stable performance.',
+    history:[3.6, 3.7, 3.8, 3.8] },
+  { id:'c3', name:'Harbor Group',          tier:'Tier 2', type:'Advisory',
+    rel:3.2, tech:3.8, strat:3.4, ops:3.6, overall:3.5, trend:'Stable',   portfolio:18.4,
+    lastQbr:'Mar 3 2026',
+    note:'Compliance and litigation flags under review. Multi-line exposure. Operations stable.',
+    history:[3.4, 3.5, 3.5, 3.5] },
+  { id:'c4', name:'Pacific Coastal Re',    tier:'Tier 2', type:'Tactical',
+    rel:4.2, tech:4.0, strat:3.8, ops:4.0, overall:4.0, trend:'Improving', portfolio:15.2,
+    lastQbr:'Feb 20 2026',
+    note:'New treaty negotiation in progress. West coast CAT exposure elevated. CEO engaged directly.',
+    history:[3.5, 3.7, 3.9, 4.0] },
+  { id:'c5', name:'Meridian Re Partners',  tier:'Tier 3', type:'Advisory',
+    rel:3.0, tech:2.5, strat:2.8, ops:3.3, overall:2.9, trend:'Declining', portfolio:10.3,
+    lastQbr:'—',
+    note:'Risk review scheduled Q2 2026. Performance concerns in technical and strategic dimensions. PRR pending approval.',
+    history:[3.3, 3.2, 3.0, 2.9] },
+  { id:'c6', name:'Summit Life & Casualty',tier:'Tier 3', type:'Transactional',
+    rel:3.2, tech:3.0, strat:2.9, ops:3.3, overall:3.1, trend:'Stable',   portfolio:5.5,
+    lastQbr:'Dec 12 2025',
+    note:'Annual review pending. Transactional relationship. Life & casualty mix stable.',
+    history:[3.0, 3.1, 3.1, 3.1] },
+];
+const DIMS = ['Relationship','Technical','Strategic','Operational'];
+
+let selectedIdx = 0;
+let currentPeriod = 'Q1 2026';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────────────────────────────────────
+function scoreClass(v) {
+  return v >= 3.5 ? 'high' : v >= 2.5 ? 'mid' : 'low';
+}
+function scoreColor(v) {
+  return v >= 3.5 ? '#107C10' : v >= 2.5 ? '#935200' : '#D13438';
+}
+function trendBadge(t) {
+  if (t==='Improving') return `<span class="trend trend-up">↑ ${t}</span>`;
+  if (t==='Declining') return `<span class="trend trend-down">↓ ${t}</span>`;
+  return `<span class="trend trend-flat">→ ${t}</span>`;
+}
+function tierBadge(t) {
+  const cls = t==='Tier 1'?'tier-1':t==='Tier 2'?'tier-2':'tier-3';
+  return `<span class="tier ${cls}">${t}</span>`;
+}
+function fillBar(pct, color) {
+  return `<div class="score-bar"><div class="score-bar-fill" style="width:${pct}%;background:${color};"></div></div>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TABLE
+// ─────────────────────────────────────────────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById('prrTableBody');
+  tbody.innerHTML = CEDENTS.map((c, i) => {
+    const cls = i === selectedIdx ? 'selected' : '';
+    function scoreTd(v) {
+      const sc = scoreClass(v);
+      const pct = (v/5)*100;
+      return `<td><div class="score-bar-wrap"><span class="score score-${sc}"><span class="score-dot score-dot-${sc}"></span>${v.toFixed(1)}</span>${fillBar(pct, scoreColor(v))}</div></td>`;
+    }
+    return `<tr class="${cls}" onclick="selectRow(${i})">
+      <td style="font-weight:600">${c.name}</td>
+      <td>${tierBadge(c.tier)}</td>
+      ${scoreTd(c.rel)}${scoreTd(c.tech)}${scoreTd(c.strat)}${scoreTd(c.ops)}
+      ${scoreTd(c.overall)}
+      <td>${trendBadge(c.trend)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RADAR CHART (Canvas 2D)
+// ─────────────────────────────────────────────────────────────────────────────
+function drawRadar(c) {
+  const canvas = document.getElementById('radarCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const cx = W/2, cy = H/2 + 10, R = Math.min(W,H)*0.38;
+  const angles = [0,1,2,3].map(i => -Math.PI/2 + (2*Math.PI/4)*i);
+  const vals = [c.rel, c.tech, c.strat, c.ops];
+
+  // Grid rings
+  [1,2,3,4,5].forEach(ring => {
+    const r = (ring/5)*R;
+    ctx.beginPath();
+    angles.forEach((a,i) => {
+      const x = cx + r*Math.cos(a), y = cy + r*Math.sin(a);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = ring===5?'#C8C6C4':'#EDEBE9';
+    ctx.lineWidth = ring===5?1.5:1;
+    ctx.stroke();
+    // ring label
+    if(ring===5||ring===3||ring===1){
+      ctx.fillStyle='#A19F9D'; ctx.font='10px Segoe UI'; ctx.textAlign='center';
+      ctx.fillText(ring.toFixed(1), cx+r*Math.cos(-Math.PI/2)+14, cy+r*Math.sin(-Math.PI/2));
+    }
+  });
+
+  // Axis lines + labels
+  const dimLabels = ['Relationship','Technical','Strategic','Operational'];
+  angles.forEach((a,i) => {
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+R*Math.cos(a), cy+R*Math.sin(a));
+    ctx.strokeStyle='#EDEBE9'; ctx.lineWidth=1; ctx.stroke();
+    const lx = cx+(R+22)*Math.cos(a), ly = cy+(R+22)*Math.sin(a);
+    ctx.fillStyle='#605E5C'; ctx.font='11px Segoe UI';
+    ctx.textAlign = Math.abs(Math.cos(a))<0.1 ? 'center' : Math.cos(a)>0 ? 'left' : 'right';
+    ctx.textBaseline = Math.abs(Math.sin(a))<0.1 ? 'middle' : Math.sin(a)>0 ? 'top' : 'bottom';
+    ctx.fillText(dimLabels[i], lx, ly);
+  });
+
+  // Data polygon
+  ctx.beginPath();
+  angles.forEach((a,i) => {
+    const r=(vals[i]/5)*R, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle='rgba(0,120,212,0.15)'; ctx.fill();
+  ctx.strokeStyle='#0078D4'; ctx.lineWidth=2; ctx.stroke();
+
+  // Dots
+  angles.forEach((a,i) => {
+    const r=(vals[i]/5)*R, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a);
+    ctx.beginPath(); ctx.arc(x,y,4,0,2*Math.PI);
+    ctx.fillStyle='#0078D4'; ctx.fill();
+    ctx.strokeStyle='white'; ctx.lineWidth=1.5; ctx.stroke();
+    // value label
+    const lx=cx+(r+16)*Math.cos(a), ly=cy+(r+16)*Math.sin(a);
+    ctx.fillStyle=scoreColor(vals[i]); ctx.font='bold 11px Segoe UI';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(vals[i].toFixed(1),lx,ly);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DETAIL PANEL
+// ─────────────────────────────────────────────────────────────────────────────
+function renderDetail(idx) {
+  const c = CEDENTS[idx];
+  document.getElementById('detailName').textContent = c.name;
+  document.getElementById('noteText').innerHTML =
+    `<strong>Last QBR:</strong> ${c.lastQbr}<br/>${c.note}`;
+  drawRadar(c);
+
+  const dims = [c.rel, c.tech, c.strat, c.ops];
+  document.getElementById('dimRows').innerHTML = DIMS.map((d,i) => {
+    const v = dims[i], pct=(v/5)*100;
+    return `<div class="dim-row">
+      <div class="dim-label-row">
+        <span class="dim-label">${d}</span>
+        <span class="dim-val" style="color:${scoreColor(v)}">${v.toFixed(1)}</span>
+      </div>
+      <div class="dim-bar"><div class="dim-fill" style="width:${pct}%;background:${scoreColor(v)};"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SPARKLINES (SVG inline)
+// ─────────────────────────────────────────────────────────────────────────────
+function sparkSvg(vals, color) {
+  const W=120, H=36, pad=4;
+  const min=Math.min(...vals)-0.2, max=Math.max(...vals)+0.2;
+  const pts = vals.map((v,i) => {
+    const x = pad + (i/(vals.length-1))*(W-2*pad);
+    const y = H-pad - ((v-min)/(max-min))*(H-2*pad);
+    return `${x},${y}`;
+  }).join(' ');
+  const last = vals[vals.length-1];
+  const lx = W-pad, ly = H-pad - ((last-min)/(max-min))*(H-2*pad);
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="${lx}" cy="${ly}" r="3.5" fill="${color}"/>
+  </svg>`;
+}
+
+function renderSparks() {
+  const grid = document.getElementById('sparksGrid');
+  grid.innerHTML = CEDENTS.map(c => {
+    const color = scoreColor(c.overall);
+    const delta = c.history[3]-c.history[0];
+    const arrow = delta>0?'▲':delta<0?'▼':'→';
+    return `<div class="spark-card">
+      <div class="spark-name">${c.name}</div>
+      ${sparkSvg(c.history, color)}
+      <div class="spark-val" style="color:${color};">${c.overall.toFixed(1)} <span style="font-size:12px;color:var(--text-secondary)">${arrow}${Math.abs(delta).toFixed(1)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INTERACTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+function selectRow(idx) {
+  selectedIdx = idx;
+  renderTable();
+  renderDetail(idx);
+}
+function setPeriod(v) {
+  currentPeriod = v;
+  document.getElementById('periodLabel').textContent = v;
+}
+function selectPeriodTab(btn, period) {
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA LOAD (Xrm.WebApi when available, else mock)
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    if (typeof parent !== 'undefined' && parent.Xrm && parent.Xrm.WebApi) {
+      const result = await parent.Xrm.WebApi.retrieveMultipleRecords(
+        'account',
+        '?$select=name,erac_tier,erac_overallrating,erac_ratingtrend,erac_portfoliopct&$filter=erac_iscedent eq true&$orderby=erac_overallrating desc'
+      );
+      if (result.entities && result.entities.length > 0) {
+        // Merge live data into CEDENTS array where names match
+        result.entities.forEach(e => {
+          const match = CEDENTS.find(c => c.name === e.name);
+          if (match) {
+            if (e.erac_overallrating) match.overall = parseFloat(e.erac_overallrating);
+            if (e.erac_ratingtrend) {
+              const trendMap = { 200000:'Improving', 200001:'Stable', 200002:'Declining' };
+              match.trend = trendMap[e.erac_ratingtrend] || match.trend;
+            }
+          }
+        });
+        renderTable();
+        renderDetail(selectedIdx);
+      }
+    }
+  } catch(err) {
+    // Silent fallback to mock data
+    console.log('[ERAC PRR] Dataverse not available, using demo data:', err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+document.getElementById('footerTs').textContent =
+  'Last refreshed: ' + new Date().toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
+
+renderTable();
+renderDetail(0);
+renderSparks();
+loadData();
+</script>
+</body>
+</html>
