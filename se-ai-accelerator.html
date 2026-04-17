@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered SE Accelerator | Microsoft Discrete Manufacturing</title>
+<style>
+  :root {
+    --ms-blue: #0078d4;
+    --ms-dark: #001a36;
+    --ms-mid: #003b6f;
+    --ms-accent: #50e6ff;
+    --ms-green: #107c10;
+    --ms-purple: #7719aa;
+    --ms-orange: #d83b01;
+    --text: #1a1a2e;
+    --text-light: #444;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    --shadow-hover: 0 8px 40px rgba(0,120,212,0.18);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; color: var(--ms-blue); }
+  .nav-brand svg { width: 28px; height: 28px; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { text-decoration: none; color: var(--text-light); font-size: 14px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--ms-blue); }
+  .nav-cta {
+    background: var(--ms-blue); color: white; padding: 8px 20px;
+    border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;
+    transition: background .2s;
+  }
+  .nav-cta:hover { background: #005a9e; }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--ms-dark) 0%, var(--ms-mid) 50%, #0062a3 100%);
+    color: white;
+    padding: 90px 40px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2350e6ff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(80,230,255,0.15); border: 1px solid rgba(80,230,255,0.35);
+    color: var(--ms-accent); padding: 6px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 600; margin-bottom: 24px; letter-spacing: 0.5px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 54px);
+    font-weight: 700; line-height: 1.15;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff 40%, var(--ms-accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: clamp(16px, 2vw, 20px);
+    opacity: 0.85; max-width: 680px; margin: 0 auto 36px;
+    line-height: 1.7;
+  }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
+    margin-top: 48px; padding-top: 40px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .num { font-size: 38px; font-weight: 800; color: var(--ms-accent); line-height: 1; }
+  .hero-stat .lbl { font-size: 13px; opacity: 0.7; margin-top: 4px; }
+
+  /* ── Sections ── */
+  section { padding: 72px 40px; max-width: 1200px; margin: 0 auto; }
+  .section-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #e8f4fd; color: var(--ms-blue);
+    padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+  }
+  .section-title { font-size: clamp(24px, 3vw, 36px); font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
+  .section-sub { font-size: 17px; color: var(--text-light); max-width: 640px; line-height: 1.7; }
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* ── Problem / Solution ── */
+  .problem-solution {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px;
+  }
+  .ps-card {
+    border-radius: 16px; padding: 36px;
+    border: 2px solid;
+  }
+  .ps-card.problem { border-color: #fde8e8; background: #fff8f8; }
+  .ps-card.solution { border-color: #e6f4ea; background: #f6fff7; }
+  .ps-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .ps-card.problem h3 { color: #c0392b; }
+  .ps-card.solution h3 { color: var(--ms-green); }
+  .ps-card ul { list-style: none; }
+  .ps-card ul li {
+    padding: 10px 0; font-size: 15px; display: flex; align-items: flex-start; gap: 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .ps-card ul li:last-child { border-bottom: none; }
+  .ps-card ul li .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── What It Is ── */
+  .stack-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px;
+  }
+  .stack-card {
+    background: var(--card); border-radius: 16px; padding: 32px;
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    transition: all .25s;
+  }
+  .stack-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-4px); }
+  .stack-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin-bottom: 20px;
+  }
+  .stack-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+  .stack-card p { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+  .stack-card .tech-tags { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 3px 10px; border-radius: 20px; font-size: 11px;
+    font-weight: 600; color: var(--text-light);
+  }
+
+  /* ── How It Works ── */
+  .workflow-bg { background: linear-gradient(180deg, #f0f7ff 0%, var(--bg) 100%); }
+  .workflow-steps {
+    display: flex; gap: 0; margin-top: 48px; position: relative;
+  }
+  .workflow-steps::before {
+    content: '';
+    position: absolute; top: 36px; left: 36px; right: 36px; height: 2px;
+    background: linear-gradient(90deg, var(--ms-blue), var(--ms-accent));
+    z-index: 0;
+  }
+  .wf-step {
+    flex: 1; text-align: center; position: relative; z-index: 1; padding: 0 12px;
+  }
+  .wf-num {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: white; border: 3px solid var(--ms-blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin: 0 auto 20px;
+    box-shadow: 0 0 0 6px var(--bg);
+  }
+  .wf-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .wf-step p { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+  .wf-step .time-badge {
+    display: inline-block; margin-top: 10px;
+    background: #e8f4fd; color: var(--ms-blue);
+    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  }
+
+  /* ── Agent Team ── */
+  .agents-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px; margin-top: 40px;
+  }
+  .agent-card {
+    background: var(--card); border-radius: 14px; padding: 20px;
+    border: 1px solid var(--border); text-align: center;
+    transition: all .2s;
+  }
+  .agent-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); border-color: var(--ms-blue); }
+  .agent-avatar { font-size: 32px; margin-bottom: 10px; }
+  .agent-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .agent-card p { font-size: 12px; color: var(--text-light); }
+  .agent-card .role-badge {
+    display: inline-block; margin-top: 8px;
+    padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+
+  /* ── Use Cases ── */
+  .use-cases { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+  .uc-card {
+    background: var(--card); border-radius: 16px; padding: 28px;
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+  }
+  .uc-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .uc-icon { font-size: 32px; }
+  .uc-header h3 { font-size: 17px; font-weight: 700; }
+  .uc-header .time-save {
+    margin-left: auto; background: #e6f4ea; color: var(--ms-green);
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .uc-card p { font-size: 14px; color: var(--text-light); margin-bottom: 14px; }
+  .uc-steps { list-style: none; }
+  .uc-steps li {
+    padding: 6px 0; font-size: 13px; display: flex; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .uc-steps li:last-child { border-bottom: none; }
+  .uc-steps .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--ms-blue); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+
+  /* ── Outcomes ── */
+  .outcomes-bg { background: linear-gradient(135deg, var(--ms-dark), var(--ms-mid)); }
+  .outcomes-inner { max-width: 1200px; margin: 0 auto; padding: 72px 40px; }
+  .outcomes-inner .section-tag { background: rgba(80,230,255,0.15); color: var(--ms-accent); }
+  .outcomes-inner .section-title { color: white; }
+  .outcomes-inner .section-sub { color: rgba(255,255,255,0.7); }
+  .outcomes-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 48px;
+  }
+  .outcome-card {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px; padding: 28px; text-align: center;
+    backdrop-filter: blur(10px); transition: all .2s;
+  }
+  .outcome-card:hover { background: rgba(255,255,255,0.12); transform: translateY(-4px); }
+  .outcome-num { font-size: 42px; font-weight: 800; color: var(--ms-accent); line-height: 1; }
+  .outcome-unit { font-size: 16px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+  .outcome-desc { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 12px; line-height: 1.5; }
+
+  /* ── Expansion ── */
+  .expand-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px;
+  }
+  .expand-card {
+    background: var(--card); border-radius: 16px; padding: 28px;
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    position: relative; overflow: hidden;
+  }
+  .expand-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--ms-blue), var(--ms-accent));
+  }
+  .expand-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; margin-top: 4px; }
+  .expand-card p { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+  .expand-steps { margin-top: 16px; list-style: none; }
+  .expand-steps li {
+    font-size: 13px; padding: 6px 0; display: flex; gap: 10px;
+    border-bottom: 1px solid var(--border); color: var(--text-light);
+  }
+  .expand-steps li:last-child { border-bottom: none; }
+  .expand-steps .check { color: var(--ms-green); font-size: 15px; flex-shrink: 0; }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: linear-gradient(135deg, var(--ms-blue), #005a9e);
+    padding: 72px 40px; text-align: center; color: white;
+  }
+  .cta-section h2 { font-size: clamp(24px, 3vw, 36px); font-weight: 700; margin-bottom: 16px; }
+  .cta-section p { font-size: 18px; opacity: 0.85; max-width: 600px; margin: 0 auto 36px; }
+  .cta-buttons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    background: white; color: var(--ms-blue);
+    padding: 14px 32px; border-radius: 8px;
+    font-size: 15px; font-weight: 700; text-decoration: none;
+    transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+  .btn-secondary {
+    background: transparent; color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+    padding: 14px 32px; border-radius: 8px;
+    font-size: 15px; font-weight: 600; text-decoration: none;
+    transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-secondary:hover { border-color: white; background: rgba(255,255,255,0.1); }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--ms-dark); color: rgba(255,255,255,0.5);
+    padding: 28px 40px; text-align: center; font-size: 13px;
+  }
+  footer a { color: var(--ms-accent); text-decoration: none; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .problem-solution, .use-cases, .stack-grid, .outcomes-grid, .expand-grid { grid-template-columns: 1fr; }
+    .workflow-steps { flex-direction: column; }
+    .workflow-steps::before { display: none; }
+    .wf-step { display: flex; align-items: flex-start; gap: 20px; text-align: left; margin-bottom: 24px; }
+    .wf-num { flex-shrink: 0; margin: 0; }
+    .nav-links { display: none; }
+    section { padding: 48px 20px; }
+    .hero { padding: 60px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="11" height="11" fill="#f25022"/>
+      <rect x="12" y="0" width="11" height="11" fill="#7fba00"/>
+      <rect x="0" y="12" width="11" height="11" fill="#00a4ef"/>
+      <rect x="12" y="12" width="11" height="11" fill="#ffb900"/>
+    </svg>
+    SE AI Accelerator
+  </div>
+  <div class="nav-links">
+    <a href="#problem">The Problem</a>
+    <a href="#what">What It Is</a>
+    <a href="#how">How It Works</a>
+    <a href="#agents">Agent Team</a>
+    <a href="#outcomes">Outcomes</a>
+    <a href="#expand">Scale It</a>
+  </div>
+  <a href="https://bots-in-blazers.fun" target="_blank" class="nav-cta">Live Demo →</a>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-badge">🏭 Discrete Manufacturing · Microsoft Solution Engineering</div>
+  <h1>Your AI Agent Team<br>Works While You Sleep</h1>
+  <p>A fully autonomous agentic system that researches, drafts, builds, and tracks work for Solution Engineers — so you show up to every customer meeting more prepared, faster.</p>
+  <a href="#how" class="btn-primary" style="display:inline-flex; background:var(--ms-accent); color:var(--ms-dark); padding:14px 32px; border-radius:8px; font-weight:700; text-decoration:none; font-size:16px;">See How It Works ↓</a>
+
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">14</div><div class="lbl">Specialized AI Agents</div></div>
+    <div class="hero-stat"><div class="num">24/7</div><div class="lbl">Autonomous Operation</div></div>
+    <div class="hero-stat"><div class="num">~10×</div><div class="lbl">Faster Demo Prep</div></div>
+    <div class="hero-stat"><div class="num">2 min</div><div class="lbl">To Kick Off a Task</div></div>
+  </div>
+</div>
+
+<!-- ── Problem / Solution ── -->
+<section id="problem">
+  <div class="section-tag">💡 Context</div>
+  <div class="section-title">SEs Are Incredible. Their Time Isn't Infinite.</div>
+  <p class="section-sub">Every SE juggles demos, discovery prep, POC builds, SOPs, and customer-specific customizations — often from scratch, every time.</p>
+
+  <div class="problem-solution">
+    <div class="ps-card problem">
+      <h3>😩 Without This System</h3>
+      <ul>
+        <li><span class="icon">⏱️</span>3–5 hours building a D365 demo from scratch for each new customer</li>
+        <li><span class="icon">🔁</span>Recreating the same agent use cases repeatedly with no reuse</li>
+        <li><span class="icon">📝</span>SOPs and best practices scattered in emails, OneNote, memory</li>
+        <li><span class="icon">🙋</span>Every question goes to the same 2–3 "tribal knowledge" people</li>
+        <li><span class="icon">🌙</span>Work stops when the SE stops — no async progress</li>
+        <li><span class="icon">🎯</span>Customer insights from one engagement never benefit the next</li>
+      </ul>
+    </div>
+    <div class="ps-card solution">
+      <h3>🚀 With This System</h3>
+      <ul>
+        <li><span class="icon">⚡</span>D365 demo customized for a new customer in under 30 minutes</li>
+        <li><span class="icon">📚</span>Proven agent templates reused and iterated across engagements</li>
+        <li><span class="icon">📋</span>SOPs auto-generated, versioned, and searchable in a shared repo</li>
+        <li><span class="icon">🤖</span>AI agents answer common questions autonomously at any hour</li>
+        <li><span class="icon">🌙</span>Agents process backlog items overnight — show up to work with PRs ready</li>
+        <li><span class="icon">🧠</span>Every customer insight feeds a shared knowledge base for the whole team</li>
+      </ul>
+    </div>
+  </div>
+</section>
+<hr class="section-divider">
+
+<!-- ── What It Is ── -->
+<section id="what">
+  <div class="section-tag">🧩 The System</div>
+  <div class="section-title">Three Layers That Work Together</div>
+  <p class="section-sub">Built on Microsoft's stack — Azure Functions, OpenAI, GitHub, Power Platform. No proprietary lock-in. Fully open and extensible.</p>
+
+  <div class="stack-grid">
+    <div class="stack-card">
+      <div class="stack-icon" style="background:#e8f4fd;">🧠</div>
+      <h3>RAPP Pipeline</h3>
+      <p>Rapid AI Agent Production Pipeline — a proven 14-step methodology for going from customer use case to deployable agent. Discovery → MVP → code → tests → deployment, all AI-assisted.</p>
+      <div class="tech-tags">
+        <span class="tag">Azure Functions</span>
+        <span class="tag">Azure OpenAI</span>
+        <span class="tag">Python</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-icon" style="background:#e6f4ea;">🏭</div>
+      <h3>Mfg CoE Command Center</h3>
+      <p>A web-based operations center for the Discrete Manufacturing Center of Excellence. Live dashboard, 14 AI agent personas, issue tracking, a full RAPP chat interface — all in one place.</p>
+      <div class="tech-tags">
+        <span class="tag">Azure Static Web Apps</span>
+        <span class="tag">GitHub</span>
+        <span class="tag">Copilot Studio</span>
+      </div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-icon" style="background:#f3e9fd;">⚙️</div>
+      <h3>Autonomous Agent Loop</h3>
+      <p>GitHub Actions workflows run the agent team on a schedule. Daily standup, issue processing, Copilot coding agent for code tasks, and a feedback loop that pings you only when a decision is needed.</p>
+      <div class="tech-tags">
+        <span class="tag">GitHub Actions</span>
+        <span class="tag">GitHub Copilot</span>
+        <span class="tag">GitHub Issues</span>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="section-divider">
+
+<!-- ── How It Works ── -->
+<div class="workflow-bg">
+<section id="how" style="padding-top:72px; padding-bottom:72px;">
+  <div class="section-tag">⚙️ Workflow</div>
+  <div class="section-title">Your New Daily Flow as an SE</div>
+  <p class="section-sub">You describe the work. Agents do it. You review and redirect when needed.</p>
+
+  <div class="workflow-steps">
+    <div class="wf-step">
+      <div class="wf-num">📝</div>
+      <h4>Create an Issue</h4>
+      <p>Use a structured template on GitHub. Fill in customer, use case, goals. That's it.</p>
+      <span class="time-badge">⏱ 2 min</span>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">🤖</div>
+      <h4>Agents Auto-Pick Up</h4>
+      <p>System detects your issue, routes to the right agent persona, starts working.</p>
+      <span class="time-badge">⚡ Automatic</span>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">🔨</div>
+      <h4>Work Gets Done</h4>
+      <p>Agents research, draft SOPs, generate agent code, or open a PR — depending on the task type.</p>
+      <span class="time-badge">⏱ Hours → Days</span>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">💬</div>
+      <h4>You Review</h4>
+      <p>If agents need a decision, issue gets tagged <strong>needs-bill</strong>. You comment. They resume.</p>
+      <span class="time-badge">⏱ 5 min max</span>
+    </div>
+    <div class="wf-step">
+      <div class="wf-num">✅</div>
+      <h4>Shipped</h4>
+      <p>Code PRs merged, docs committed, demo assets ready. Issue closed automatically.</p>
+      <span class="time-badge">Zero rework</span>
+    </div>
+  </div>
+</section>
+</div>
+<hr class="section-divider">
+
+<!-- ── Agent Team ── -->
+<section id="agents">
+  <div class="section-tag">👥 The Team</div>
+  <div class="section-title">14 AI Agents, Each with a Job</div>
+  <p class="section-sub">Not generic chatbots — purpose-built personas with specific roles, context about your environments, and defined handoffs between them.</p>
+
+  <div class="agents-grid">
+    <div class="agent-card">
+      <div class="agent-avatar">🎯</div>
+      <h4>Orchestrator</h4>
+      <p>Routes tasks, manages pipeline, assigns work</p>
+      <span class="role-badge" style="background:#e8f4fd;color:#0078d4;">PM</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">📋</div>
+      <h4>Project Manager</h4>
+      <p>Tracks progress, dependencies, timelines</p>
+      <span class="role-badge" style="background:#e8f4fd;color:#0078d4;">PM</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">🏗️</div>
+      <h4>Architect</h4>
+      <p>Solution design, tech stack decisions, patterns</p>
+      <span class="role-badge" style="background:#f3e9fd;color:#7719aa;">Dev</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">💻</div>
+      <h4>Developer</h4>
+      <p>Writes code, builds agents, creates demos</p>
+      <span class="role-badge" style="background:#f3e9fd;color:#7719aa;">Dev</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">🏭</div>
+      <h4>Mfg SME</h4>
+      <p>Manufacturing domain knowledge & best practices</p>
+      <span class="role-badge" style="background:#fef4e8;color:#d83b01;">SME</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">🔧</div>
+      <h4>D365 Expert</h4>
+      <p>Dynamics 365 configuration and demo setup</p>
+      <span class="role-badge" style="background:#fef4e8;color:#d83b01;">SME</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">⚡</div>
+      <h4>Power Platform</h4>
+      <p>Apps, flows, Copilot Studio agent builds</p>
+      <span class="role-badge" style="background:#f3e9fd;color:#7719aa;">Dev</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">📊</div>
+      <h4>Business Analyst</h4>
+      <p>Requirements, process flows, use case docs</p>
+      <span class="role-badge" style="background:#e6f4ea;color:#107c10;">Analysis</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">🎨</div>
+      <h4>Demo Designer</h4>
+      <p>Customer-facing demo scripts and narratives</p>
+      <span class="role-badge" style="background:#e8f4fd;color:#0078d4;">Demo</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">📚</div>
+      <h4>Knowledge Base</h4>
+      <p>Searches existing assets, prevents reinvention</p>
+      <span class="role-badge" style="background:#e6f4ea;color:#107c10;">Research</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">✅</div>
+      <h4>QA / Tester</h4>
+      <p>Quality gates, test cases, validation checks</p>
+      <span class="role-badge" style="background:#f3e9fd;color:#7719aa;">Dev</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">📝</div>
+      <h4>SOP Author</h4>
+      <p>Documents processes, writes structured guides</p>
+      <span class="role-badge" style="background:#e6f4ea;color:#107c10;">Docs</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">🔍</div>
+      <h4>Intake / Logger</h4>
+      <p>Captures ideas, logs decisions, tracks feedback</p>
+      <span class="role-badge" style="background:#e8f4fd;color:#0078d4;">PM</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-avatar">🌐</div>
+      <h4>Community</h4>
+      <p>Shares insights, escalates patterns across teams</p>
+      <span class="role-badge" style="background:#fef4e8;color:#d83b01;">CoE</span>
+    </div>
+  </div>
+</section>
+<hr class="section-divider">
+
+<!-- ── Use Cases ── -->
+<section id="usecases">
+  <div class="section-tag">📋 Real Examples</div>
+  <div class="section-title">What SEs Actually Use It For</div>
+  <p class="section-sub">These are the tasks that eat SE time. Here's how the system handles each one.</p>
+
+  <div class="use-cases">
+    <div class="uc-card">
+      <div class="uc-header">
+        <span class="uc-icon">🏭</span>
+        <h3>New Customer D365 Demo</h3>
+        <span class="time-save">Saves ~4 hrs</span>
+      </div>
+      <p>Customer meeting in 2 days. You need a Dynamics 365 demo tailored to their industry, use case, and known pain points.</p>
+      <ul class="uc-steps">
+        <li><span class="step-num">1</span>Fill "D365 Demo Setup" issue template (2 min)</li>
+        <li><span class="step-num">2</span>Agents research company, industry, and fit with existing environments</li>
+        <li><span class="step-num">3</span>D365 Expert + Demo Designer generate a tailored demo script</li>
+        <li><span class="step-num">4</span>You review, provide 1–2 tweaks, go deliver</li>
+      </ul>
+    </div>
+    <div class="uc-card">
+      <div class="uc-header">
+        <span class="uc-icon">🤖</span>
+        <h3>Build a New AI Agent</h3>
+        <span class="time-save">Saves ~8 hrs</span>
+      </div>
+      <p>Customer wants to see a Copilot Studio agent for contract review or field service dispatch. You need working code — fast.</p>
+      <ul class="uc-steps">
+        <li><span class="step-num">1</span>Fill "Build an Agent" template with use case and goals</li>
+        <li><span class="step-num">2</span>Architect designs the approach, selects patterns from library</li>
+        <li><span class="step-num">3</span>GitHub Copilot writes the code and opens a PR</li>
+        <li><span class="step-num">4</span>You review the PR, merge, demo-ready</li>
+      </ul>
+    </div>
+    <div class="uc-card">
+      <div class="uc-header">
+        <span class="uc-icon">📋</span>
+        <h3>Document a Process (SOP)</h3>
+        <span class="time-save">Saves ~3 hrs</span>
+      </div>
+      <p>Team needs a written SOP for how to set up Copilot Studio for manufacturing customers — before knowledge walks out the door.</p>
+      <ul class="uc-steps">
+        <li><span class="step-num">1</span>Fill "SOP / Process" template describing the process</li>
+        <li><span class="step-num">2</span>SOP Author + Mfg SME research and draft the document</li>
+        <li><span class="step-num">3</span>PR opened with the SOP in the shared repo</li>
+        <li><span class="step-num">4</span>Team reviews, it's versioned and searchable forever</li>
+      </ul>
+    </div>
+    <div class="uc-card">
+      <div class="uc-header">
+        <span class="uc-icon">⚡</span>
+        <h3>Rapid Prototype a Use Case</h3>
+        <span class="time-save">Saves ~6 hrs</span>
+      </div>
+      <p>Customer says "can your AI do X?" in a discovery call. You want a working prototype before the next meeting.</p>
+      <ul class="uc-steps">
+        <li><span class="step-num">1</span>Open Command Center chat, use "RAPP Prototype" starter</li>
+        <li><span class="step-num">2</span>Chat with Orchestrator agent to scope the use case</li>
+        <li><span class="step-num">3</span>RAPP pipeline generates agent code + demo assets</li>
+        <li><span class="step-num">4</span>Next meeting: live working prototype on screen</li>
+      </ul>
+    </div>
+  </div>
+</section>
+<hr class="section-divider">
+
+<!-- ── Outcomes ── -->
+<div class="outcomes-bg">
+<div class="outcomes-inner">
+  <div class="section-tag">📈 Impact</div>
+  <div class="section-title">What Changes for Your Team</div>
+  <p class="section-sub">These aren't projections — they're directional based on removing the tasks that take SE time today.</p>
+
+  <div class="outcomes-grid">
+    <div class="outcome-card">
+      <div class="outcome-num">10×</div>
+      <div class="outcome-unit">faster</div>
+      <div class="outcome-desc">Demo customization for new customers — from a day to under an hour</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-num">0</div>
+      <div class="outcome-unit">from scratch</div>
+      <div class="outcome-desc">No more rebuilding agent templates — every use case adds to a shared library</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-num">24/7</div>
+      <div class="outcome-unit">agent uptime</div>
+      <div class="outcome-desc">Work happens while you're in meetings, traveling, or sleeping</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-num">2 min</div>
+      <div class="outcome-unit">to assign work</div>
+      <div class="outcome-desc">Fill a template. Agents do the rest. You review the output.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ── Scale It ── -->
+<section id="expand">
+  <div class="section-tag">📡 Scalability</div>
+  <div class="section-title">This Model Scales Across SE Teams</div>
+  <p class="section-sub">Bill built this for Discrete Manufacturing. The same architecture works for any SE team with any vertical focus — in days, not months.</p>
+
+  <div class="expand-grid">
+    <div class="expand-card">
+      <h3>🚀 What You Need to Start</h3>
+      <p>The entire system runs on resources most teams already have.</p>
+      <ul class="expand-steps">
+        <li><span class="check">✓</span>Azure subscription (Function App + Storage = ~$10/mo)</li>
+        <li><span class="check">✓</span>Azure OpenAI deployment (GPT-4o or newer)</li>
+        <li><span class="check">✓</span>GitHub repository (free)</li>
+        <li><span class="check">✓</span>GitHub Copilot license (standard SE tooling)</li>
+        <li><span class="check">✓</span>1 day to configure for your vertical and customers</li>
+      </ul>
+    </div>
+    <div class="expand-card">
+      <h3>⚙️ How Teams Customize It</h3>
+      <p>Each team tailors the CoE to their vertical in a single config file.</p>
+      <ul class="expand-steps">
+        <li><span class="check">✓</span>Swap agent personas for your industry (Retail, FS, Healthcare)</li>
+        <li><span class="check">✓</span>Load your demo environments as knowledge base cards</li>
+        <li><span class="check">✓</span>Add customer-specific issue templates</li>
+        <li><span class="check">✓</span>Connect your existing Copilot Studio agents</li>
+        <li><span class="check">✓</span>Set your own GitHub repo as the work tracking hub</li>
+      </ul>
+    </div>
+    <div class="expand-card">
+      <h3>📈 The Compounding Effect</h3>
+      <p>The system gets smarter every week as the team uses it.</p>
+      <ul class="expand-steps">
+        <li><span class="check">✓</span>Each demo prep adds to the shared knowledge base</li>
+        <li><span class="check">✓</span>Each agent build adds to the reusable template library</li>
+        <li><span class="check">✓</span>Each SOP reduces time to onboard the next SE</li>
+        <li><span class="check">✓</span>Agents learn your team's patterns and preferences</li>
+        <li><span class="check">✓</span>Month 6 SE is 3× more effective than Month 1</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<div class="cta-section">
+  <h2>Ready to See It in Action?</h2>
+  <p>The Command Center is live. The agent team is running. Come watch it work — or fork it and stand up your own in a day.</p>
+  <div class="cta-buttons">
+    <a href="https://bots-in-blazers.fun" target="_blank" class="btn-primary">🚀 Open Command Center</a>
+    <a href="https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen" target="_blank" class="btn-secondary">⭐ View on GitHub</a>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>Built by <strong>Bill Whalen</strong> · Microsoft Solution Engineer, Discrete Manufacturing<br>
+  Powered by <a href="https://azure.microsoft.com/en-us/products/openai-service" target="_blank">Azure OpenAI</a>, 
+  <a href="https://github.com/features/copilot" target="_blank">GitHub Copilot</a>, 
+  <a href="https://azure.microsoft.com/en-us/products/azure-functions" target="_blank">Azure Functions</a> · 
+  <a href="https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen" target="_blank">CommunityRAPP on GitHub</a>
+  </p>
+</footer>
+
+</body>
+</html>
