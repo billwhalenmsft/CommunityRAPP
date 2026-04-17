@@ -115,15 +115,41 @@
     /* ── Chat ──────────────────────────────────────────────────────────── */
     .chat-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
     .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    .chat-bubble { max-width: 70%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+    .chat-bubble { max-width: 72%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6; }
     .chat-bubble.bot { background: var(--bg3); border: 1px solid var(--border); align-self: flex-start; }
-    .chat-bubble.user { background: var(--accent2); align-self: flex-end; }
-    .chat-bubble .from { font-size: 11px; font-weight: 700; margin-bottom: 4px; color: var(--text2); }
+    .chat-bubble.user { background: var(--accent2); align-self: flex-end; color: #fff; }
+    .chat-bubble .from { font-size: 11px; font-weight: 700; margin-bottom: 5px; color: var(--text2); }
+    .chat-bubble.user .from { color: rgba(255,255,255,0.7); }
+    /* Markdown rendering inside bot bubbles */
+    .chat-bubble.bot h2,.chat-bubble.bot h3,.chat-bubble.bot h4 { margin: 10px 0 4px; color: var(--text); }
+    .chat-bubble.bot h2 { font-size: 15px; }
+    .chat-bubble.bot h3 { font-size: 13px; }
+    .chat-bubble.bot code { background: var(--bg2); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; font-size: 11px; font-family: monospace; }
+    .chat-bubble.bot pre { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; overflow-x: auto; margin: 8px 0; }
+    .chat-bubble.bot pre code { background: none; border: none; padding: 0; }
+    .chat-bubble.bot ul,.chat-bubble.bot ol { padding-left: 18px; margin: 6px 0; }
+    .chat-bubble.bot li { margin: 3px 0; }
+    .chat-bubble.bot strong { color: var(--text); }
+    .chat-bubble.bot hr { border-color: var(--border); margin: 10px 0; }
+    .chat-bubble.bot blockquote { border-left: 3px solid var(--accent2); padding-left: 10px; color: var(--text2); margin: 6px 0; }
+    .chat-bubble.bot a { color: var(--accent); }
+    /* Typing indicator */
+    .chat-typing { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; align-self: flex-start; max-width: 200px; }
+    .chat-typing .from { font-size: 11px; font-weight: 700; color: var(--text2); white-space: nowrap; }
+    .typing-dots { display: flex; gap: 4px; }
+    .typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--text2); animation: typing-bounce 1.2s infinite; }
+    .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes typing-bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+    /* Create Issue button in chat */
+    .chat-create-issue { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; background: rgba(35,134,54,0.15); border: 1px solid rgba(35,134,54,0.4); color: var(--green); border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .chat-create-issue:hover { background: rgba(35,134,54,0.25); }
     .chat-input-row { display: flex; gap: 8px; padding: 16px; border-top: 1px solid var(--border); }
     .chat-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; }
     .chat-input:focus { border-color: var(--accent2); }
     .chat-send { background: var(--accent2); color: white; border: none; border-radius: 8px; padding: 10px 18px; cursor: pointer; font-size: 13px; font-weight: 600; }
     .chat-send:hover { background: var(--accent); }
+    .chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
     .agent-selector { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
     .agent-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 4px 12px; font-size: 12px; cursor: pointer; transition: all .15s; }
     .agent-chip.active { background: rgba(88,166,255,.15); border-color: var(--accent); color: var(--accent); }
@@ -1388,9 +1414,33 @@ function renderEnvironments() {
   document.getElementById('env-all').innerHTML = all.map(envCard).join('');
 }
 
+// ── Chat markdown renderer ────────────────────────────────────────────────
+function chatMd(text) {
+  let h = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  h = h.replace(/```(\w*)\n([\s\S]*?)```/g, (_,lang,code) =>
+    `<pre><code>${code.trimEnd()}</code></pre>`);
+  h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
+  h = h.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+  h = h.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  h = h.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  h = h.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  h = h.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+  h = h.replace(/^---$/gm, '<hr>');
+  h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  h = h.replace(/((?:^- .+\n?)+)/gm, match =>
+    '<ul>' + match.replace(/^- (.+)$/gm, '<li>$1</li>') + '</ul>');
+  h = h.replace(/((?:^\d+\. .+\n?)+)/gm, match =>
+    '<ol>' + match.replace(/^\d+\. (.+)$/gm, '<li>$1</li>') + '</ol>');
+  h = h.replace(/\n\n/g, '</p><p>');
+  h = h.replace(/\n/g, '<br>');
+  return `<p>${h}</p>`;
+}
+
 // ── Chat ───────────────────────────────────────────────────────────────────
 let activeAgent = 'orchestrator';
 const CHAT_HISTORY = {};
+let chatBusy = false;
 
 function renderChatAgentSelector() {
   const html = AGENTS.map(a => `
@@ -1406,7 +1456,6 @@ function selectAgent(id) {
 
 function renderChatMessages() {
   const msgs = CHAT_HISTORY[activeAgent] || [];
-  // Show/hide starter prompts based on whether conversation has started
   renderChatStarters();
   if (!msgs.length) {
     const agent = AGENTS.find(a => a.id === activeAgent);
@@ -1417,11 +1466,15 @@ function renderChatMessages() {
       </div>`;
     return;
   }
-  document.getElementById('chat-messages').innerHTML = msgs.map(m => `
-    <div class="chat-bubble ${m.role}">
+  document.getElementById('chat-messages').innerHTML = msgs.map((m, i) => {
+    const isBot = m.role === 'bot';
+    const content = isBot ? chatMd(m.text) : m.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const createBtn = isBot ? `<button class="chat-create-issue" onclick="createIssueFromChat(${i})">📋 Track this in GitHub</button>` : '';
+    return `<div class="chat-bubble ${m.role}">
       <div class="from">${m.from}</div>
-      ${m.text}
-    </div>`).join('');
+      ${content}${createBtn}
+    </div>`;
+  }).join('');
 }
 
 function renderChatStarters() {
@@ -1445,7 +1498,6 @@ function useStarterPrompt(key) {
   if (input) {
     input.value = text;
     input.focus();
-    // Select the first placeholder so user can immediately type over it
     const firstPlaceholder = text.indexOf('[');
     const firstEnd = text.indexOf(']');
     if (firstPlaceholder !== -1 && firstEnd !== -1) {
@@ -1456,34 +1508,79 @@ function useStarterPrompt(key) {
 
 async function sendChat() {
   const input = document.getElementById('chat-input');
+  const sendBtn = document.querySelector('.chat-send');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text || chatBusy) return;
+  chatBusy = true;
   input.value = '';
+  input.disabled = true;
+  if (sendBtn) sendBtn.disabled = true;
 
+  const agent = AGENTS.find(a => a.id === activeAgent);
   if (!CHAT_HISTORY[activeAgent]) CHAT_HISTORY[activeAgent] = [];
   CHAT_HISTORY[activeAgent].push({ role: 'user', from: '👤 Bill', text });
   renderChatMessages();
 
-  if (CFG.endpoint) {
-    try {
-      const r = await fetch(CFG.endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_input: text, conversation_history: CHAT_HISTORY[activeAgent] }),
-      });
-      const data = await r.json();
-      const agent = AGENTS.find(a => a.id === activeAgent);
-      CHAT_HISTORY[activeAgent].push({ role: 'bot', from: `${agent?.icon} ${agent?.name}`, text: data.assistant_response || data.response || 'No response' });
-    } catch {
-      const agent = AGENTS.find(a => a.id === activeAgent);
-      CHAT_HISTORY[activeAgent].push({ role: 'bot', from: `${agent?.icon} ${agent?.name}`, text: '⚠️ Could not reach agent endpoint. Set it in Settings.' });
-    }
-  } else {
-    const agent = AGENTS.find(a => a.id === activeAgent);
-    CHAT_HISTORY[activeAgent].push({ role: 'bot', from: `${agent?.icon} ${agent?.name}`, text: '⚠️ No agent endpoint configured. Go to Settings and enter your Function App URL.' });
+  // Typing indicator
+  const typingId = 'typing-' + Date.now();
+  document.getElementById('chat-messages').insertAdjacentHTML('beforeend',
+    `<div class="chat-typing" id="${typingId}">
+      <div class="from">${agent?.icon} ${agent?.name}</div>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>`);
+  document.getElementById('chat-messages').scrollTop = 9999;
+
+  const agentPersona = `You are the ${agent?.name} agent (${agent?.role}) in Bill Whalen's Discrete Manufacturing CoE. Bill is a Microsoft Solution Engineer. Be concise, action-oriented, use markdown. If work warrants a GitHub issue to track, say so at the end.`;
+
+  try {
+    const r = await fetch(CFG.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_input: text,
+        conversation_history: CHAT_HISTORY[activeAgent].slice(0, -1),
+        system_context: agentPersona,
+        agent_persona: agent?.id,
+        agent_name: agent?.name,
+      }),
+    });
+    const data = await r.json();
+    const reply = data.assistant_response || data.response || '_(no response)_';
+    document.getElementById(typingId)?.remove();
+    CHAT_HISTORY[activeAgent].push({ role: 'bot', from: `${agent?.icon} ${agent?.name}`, text: reply });
+  } catch(e) {
+    document.getElementById(typingId)?.remove();
+    CHAT_HISTORY[activeAgent].push({ role: 'bot', from: `${agent?.icon} ${agent?.name}`, text: `⚠️ Could not reach agent endpoint. Check Settings → Agent Endpoint.\n\n_Error: ${e.message}_` });
   }
+
   renderChatMessages();
   document.getElementById('chat-messages').scrollTop = 9999;
+  chatBusy = false;
+  input.disabled = false;
+  if (sendBtn) sendBtn.disabled = false;
+  input.focus();
+}
+
+async function createIssueFromChat(msgIndex) {
+  if (!CFG.pat) { alert('Set your GitHub PAT in Settings first.'); return; }
+  const msgs = CHAT_HISTORY[activeAgent] || [];
+  const botMsg = msgs[msgIndex];
+  const userMsg = msgIndex > 0 ? msgs[msgIndex - 1] : null;
+  const title = userMsg ? userMsg.text.slice(0, 80) : 'Chat-generated task';
+  const body = `## Origin\nGenerated via Command Center chat with ${AGENTS.find(a=>a.id===activeAgent)?.name} agent.\n\n## Request\n${userMsg?.text || ''}\n\n## Agent Response\n${botMsg?.text || ''}\n\n---\n_Submitted from bots-in-blazers.fun_`;
+  const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' };
+  const r = await fetch(`https://api.github.com/repos/${HARDCODED_REPO}/issues`, {
+    method: 'POST', headers,
+    body: JSON.stringify({ title, body, labels: ['mfg-coe', 'agent-task', 'p2-high'] }),
+  });
+  if (r.ok) {
+    const issue = await r.json();
+    CHAT_HISTORY[activeAgent].push({ role: 'bot', from: '📋 Intake/Logger', text: `✅ Created [#${issue.number}: ${issue.title}](${issue.html_url}) — agents will pick it up on the next scheduled run.` });
+    renderChatMessages();
+    document.getElementById('chat-messages').scrollTop = 9999;
+  } else {
+    alert('Failed to create issue — check PAT permissions.');
+  }
 }
 
 // ── Clock (with seconds) ──────────────────────────────────────────────────
