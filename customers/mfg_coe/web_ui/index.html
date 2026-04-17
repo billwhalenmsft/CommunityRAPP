@@ -580,6 +580,76 @@
     .lib-modal-status-bar { display: flex; align-items: center; gap: 8px; background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.25); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; font-size: 12px; color: var(--green); }
 
 
+    /* ── Outcome Editor Modal ──────────────────────────────────────────── */
+    .outcome-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2100;display:none;align-items:center;justify-content:center; }
+    .outcome-modal-overlay.open { display:flex; }
+    .outcome-modal { background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:520px;max-width:92vw;max-height:88vh;overflow-y:auto; }
+    .outcome-modal h3 { font-size:16px;font-weight:700;margin-bottom:18px; }
+    .outcome-field { margin-bottom:14px; }
+    .outcome-field label { display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px; }
+    .outcome-field input, .outcome-field textarea, .outcome-field select { width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;box-sizing:border-box; }
+    .outcome-field input:focus, .outcome-field textarea:focus { border-color:var(--accent2); }
+    .outcome-field textarea { min-height:80px;resize:vertical; }
+    .outcome-emoji-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:6px; }
+    .outcome-emoji-btn { font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;border:2px solid transparent;transition:border-color .12s; }
+    .outcome-emoji-btn.selected { border-color:var(--accent); }
+    .outcome-card-actions { display:flex;gap:6px;justify-content:flex-end;margin-top:6px; }
+    .outcome-edit-btn { background:none;border:none;cursor:pointer;font-size:13px;color:var(--text2);padding:2px 6px;border-radius:4px;transition:color .12s; }
+    .outcome-edit-btn:hover { color:var(--accent); }
+    .outcome-del-btn { background:none;border:none;cursor:pointer;font-size:13px;color:var(--text2);padding:2px 6px;border-radius:4px;transition:color .12s; }
+    .outcome-del-btn:hover { color:#f85149; }
+    .outcome-status-badge { font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:auto; }
+    .outcome-status-badge.achieved { background:rgba(63,185,80,0.15);color:var(--green); }
+    .outcome-status-badge.paused   { background:rgba(210,153,34,0.15);color:var(--yellow); }
+    .outcome-status-badge.active   { background:rgba(88,166,255,0.12);color:var(--accent); }
+
+    /* ── Achievement Cards ─────────────────────────────────────────────── */
+    .ach-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-top:20px; }
+    .ach-card { perspective:600px;height:190px;cursor:pointer; }
+    .ach-card-inner { position:relative;width:100%;height:100%;transition:transform .5s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d; }
+    .ach-card:hover .ach-card-inner, .ach-card.flipped .ach-card-inner { transform:rotateY(180deg); }
+    .ach-front, .ach-back { position:absolute;inset:0;border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden; }
+    .ach-front { background:var(--bg3);border:1px solid var(--border);text-align:center; }
+    .ach-back  { background:var(--bg2);border:1px solid var(--accent2);transform:rotateY(180deg);text-align:center;gap:8px; }
+    .ach-card.locked .ach-front { filter:grayscale(1);opacity:.45; }
+    .ach-card.locked .ach-card-inner:hover { transform:none; }
+    .ach-card.locked { cursor:default; }
+    .ach-icon { font-size:38px;margin-bottom:8px; }
+    .ach-name { font-size:12px;font-weight:700;color:var(--text); }
+    .ach-xp   { font-size:10px;color:var(--accent);font-weight:700;margin-top:4px; }
+    .ach-back .ach-desc { font-size:11px;color:var(--text2);line-height:1.5; }
+    .ach-back .ach-date { font-size:10px;color:var(--green);margin-top:4px; }
+    .ach-unlocked-badge { background:linear-gradient(135deg,var(--accent2),var(--green));color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;text-transform:uppercase;letter-spacing:.5px; }
+
+    /* ── Quick Capture (mobile) ────────────────────────────────────────── */
+    .qc-form { max-width:560px;margin:0 auto; }
+    .qc-type-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px; }
+    .qc-type-btn { background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s; }
+    .qc-type-btn:hover { border-color:var(--accent2); }
+    .qc-type-btn.selected { border-color:var(--accent);background:rgba(88,166,255,0.08); }
+    .qc-type-btn .qc-type-icon { font-size:26px;margin-bottom:6px; }
+    .qc-type-btn .qc-type-label { font-size:12px;font-weight:700; }
+    .qc-field { margin-bottom:14px; }
+    .qc-field label { display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px; }
+    .qc-field input, .qc-field textarea, .qc-field select { width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:9px 13px;color:var(--text);font-size:14px;outline:none;box-sizing:border-box; }
+    .qc-field input:focus, .qc-field textarea:focus { border-color:var(--accent2); }
+    .qc-field textarea { min-height:90px;resize:vertical; }
+    .qc-submit { width:100%;padding:13px;background:var(--accent2);color:white;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:4px; }
+    .qc-submit:hover { background:var(--accent); }
+    .qc-submit:disabled { opacity:.5;cursor:not-allowed; }
+    .qc-success { background:rgba(63,185,80,0.1);border:1px solid var(--green);border-radius:10px;padding:20px;text-align:center;margin-top:16px;display:none; }
+
+    /* ── Agent 365 Connect ─────────────────────────────────────────────── */
+    .a365-connect { background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:500px;margin:30px auto;text-align:center; }
+    .a365-connect h3 { font-size:18px;font-weight:700;margin-bottom:8px; }
+    .a365-connect p { font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px; }
+    .a365-input { width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:9px 13px;color:var(--text);font-size:13px;outline:none;box-sizing:border-box;margin-bottom:12px; }
+    .a365-input:focus { border-color:var(--accent2); }
+    .a365-connect-btn { background:var(--accent2);color:white;border:none;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s; }
+    .a365-connect-btn:hover { background:var(--accent); }
+    .a365-badge { display:inline-block;background:rgba(88,166,255,0.12);color:var(--accent);border:1px solid rgba(88,166,255,0.3);border-radius:8px;padding:2px 9px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px; }
+    .a365-ecosystem-chip { display:inline-flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:3px 10px;font-size:11px;color:var(--text2);margin:3px; }
+
     /* ── Ticker ─────────────────────────────────────────────────────────── */
     .ticker-wrap { grid-column: 1 / -1; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); height: 26px; overflow: hidden; display: flex; align-items: center; }
     .ticker-label { padding: 0 12px; font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; border-right: 1px solid var(--border); }
@@ -737,6 +807,8 @@
     <div class="nav-item" onclick="showView('sops')"><span class="icon">📄</span> SOPs & Docs</div>
     <div class="nav-item" onclick="showView('knowledge')"><span class="icon">🧠</span> Knowledge Base</div>
     <div class="nav-item" onclick="showView('environments')"><span class="icon">🌐</span> D365 Environments</div>
+    <div class="nav-item" onclick="showView('achievements')"><span class="icon">🏆</span> Achievements</div>
+    <div class="nav-item" onclick="showView('quick-capture')"><span class="icon">📱</span> Quick Capture</div>
 
     <div class="nav-section" style="margin-top:12px">Config</div>
     <div class="nav-item" onclick="showView('charter')"><span class="icon">📜</span> CoE Charter</div>
@@ -788,9 +860,12 @@
 
     <!-- OUTCOMES -->
     <div class="view" id="view-outcomes">
-      <div class="page-header" style="margin-bottom:14px">
-        <h1>🎯 Outcomes</h1>
-        <p>Every piece of work maps to a customer outcome. Progress calculated from live GitHub issues.</p>
+      <div class="page-header" style="margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div>
+          <h1>🎯 Outcomes</h1>
+          <p>Every piece of work maps to a customer outcome. Progress calculated from live GitHub issues.</p>
+        </div>
+        <button onclick="openOutcomeModal()" style="background:var(--accent2);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;margin-top:4px">+ New Outcome</button>
       </div>
       <!-- KPI strip -->
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px" id="outcomes-kpis">
@@ -800,8 +875,54 @@
         <div class="kpi"><div class="kpi-value" id="okpi-pct" style="color:var(--green)">—</div><div class="kpi-label">Overall Progress</div></div>
       </div>
       <div id="outcomes-list"><p style="color:var(--text2)">⏳ Loading...</p></div>
-      <div style="margin-top:16px">
-        <button onclick="showView('chat');openIntakeForm('RAPP')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 18px;font-size:13px;color:var(--text2);cursor:pointer">+ Define a new outcome via RAPP</button>
+    </div>
+
+    <!-- OUTCOME EDITOR MODAL -->
+    <div id="outcome-modal-overlay" class="outcome-modal-overlay" onclick="closeOutcomeModalClick(event)">
+      <div class="outcome-modal">
+        <h3 id="outcome-modal-heading">✏️ New Outcome</h3>
+        <input type="hidden" id="outcome-edit-id" value="" />
+        <div class="outcome-field">
+          <label>Icon</label>
+          <div class="outcome-emoji-row" id="outcome-emoji-row">
+            🎯🚀📦🛡️🤖✅📄💡🏭🔧📊🎭⚡🧪🔍
+          </div>
+          <input id="outcome-icon-val" type="text" placeholder="or type any emoji" style="margin-top:8px;width:120px" maxlength="4" />
+        </div>
+        <div class="outcome-field">
+          <label>Title *</label>
+          <input id="outcome-title-val" type="text" placeholder="e.g. Warranty Self-Service" />
+        </div>
+        <div class="outcome-field">
+          <label>Description *</label>
+          <textarea id="outcome-desc-val" placeholder="What outcome does this deliver for the customer?"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="outcome-field">
+            <label>Priority</label>
+            <select id="outcome-priority-val">
+              <option value="p1">P1 — Critical</option>
+              <option value="p2">P2 — High</option>
+              <option value="p3">P3 — Normal</option>
+            </select>
+          </div>
+          <div class="outcome-field">
+            <label>Status</label>
+            <select id="outcome-status-val">
+              <option value="active">Active</option>
+              <option value="achieved">Achieved ✅</option>
+              <option value="paused">Paused ⏸</option>
+            </select>
+          </div>
+        </div>
+        <div class="outcome-field">
+          <label>Linked GitHub Issue #s (comma-separated)</label>
+          <input id="outcome-issues-val" type="text" placeholder="e.g. 51, 46, 72" />
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+          <button onclick="closeOutcomeModal()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:7px;padding:8px 16px;font-size:13px;cursor:pointer">Cancel</button>
+          <button onclick="saveOutcome()" style="background:var(--accent2);color:white;border:none;border-radius:7px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer">Save Outcome</button>
+        </div>
       </div>
     </div>
 
@@ -1059,6 +1180,7 @@
         <div class="lib-tab"        data-source="rar"       onclick="setLibTab(this,'rar')">⚡ RAR Registry</div>
         <div class="lib-tab"        data-source="aibast"    onclick="setLibTab(this,'aibast')">🏭 AIBAST</div>
         <div class="lib-tab"        data-source="community" onclick="setLibTab(this,'community')">🌐 Community</div>
+        <div class="lib-tab"        data-source="agent365"  onclick="setLibTab(this,'agent365')">🔵 Agent 365</div>
       </div>
 
       <!-- Installed section -->
@@ -1083,6 +1205,54 @@
       <div class="lib-modal" id="lib-modal">
         <button class="lib-modal-close" onclick="document.getElementById('lib-modal-overlay').classList.remove('open')">✕</button>
         <div id="lib-modal-content"></div>
+      </div>
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="view" id="view-achievements">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div><h1>🏆 Achievements</h1><p>Milestones earned as the CoE grows. Hover a card to flip it.</p></div>
+        <div id="ach-xp-total" style="font-size:13px;color:var(--accent);font-weight:700;margin-top:6px"></div>
+      </div>
+      <div class="ach-grid" id="ach-grid"></div>
+    </div>
+
+    <!-- QUICK CAPTURE -->
+    <div class="view" id="view-quick-capture">
+      <div class="page-header"><h1>📱 Quick Capture</h1><p>Bookmark this page on your phone to instantly log ideas, use cases, bugs, or requests.</p></div>
+      <div class="qc-form">
+        <div class="qc-type-grid" id="qc-type-grid">
+          <div class="qc-type-btn selected" onclick="selectQcType('idea',this)"><div class="qc-type-icon">💡</div><div class="qc-type-label">Idea</div></div>
+          <div class="qc-type-btn" onclick="selectQcType('use-case',this)"><div class="qc-type-icon">🎯</div><div class="qc-type-label">Use Case</div></div>
+          <div class="qc-type-btn" onclick="selectQcType('sop',this)"><div class="qc-type-icon">📄</div><div class="qc-type-label">SOP Request</div></div>
+          <div class="qc-type-btn" onclick="selectQcType('bug',this)"><div class="qc-type-icon">🐛</div><div class="qc-type-label">Bug / Issue</div></div>
+        </div>
+        <div class="qc-field">
+          <label>Title *</label>
+          <input id="qc-title" type="text" placeholder="One-line summary" oninput="validateQcForm()" />
+        </div>
+        <div class="qc-field">
+          <label>Details</label>
+          <textarea id="qc-body" placeholder="More context, steps to reproduce, or expected outcome..."></textarea>
+        </div>
+        <div class="qc-field">
+          <label>Priority</label>
+          <select id="qc-priority">
+            <option value="p2">P2 — High</option>
+            <option value="p1">P1 — Critical</option>
+            <option value="p3">P3 — Normal</option>
+          </select>
+        </div>
+        <button id="qc-submit-btn" class="qc-submit" onclick="submitQuickCapture()" disabled>Submit</button>
+        <div id="qc-no-pat" style="font-size:12px;color:var(--text2);margin-top:10px;text-align:center;display:none">
+          ⚠️ No PAT set — will open GitHub in a new tab with pre-filled content. <a href="#" onclick="showView('settings');return false" style="color:var(--accent)">Add PAT in Settings</a> for direct submission.
+        </div>
+        <div class="qc-success" id="qc-success">
+          <div style="font-size:32px;margin-bottom:8px">✅</div>
+          <div style="font-weight:700;margin-bottom:4px">Captured!</div>
+          <div style="font-size:13px;color:var(--text2)" id="qc-success-msg"></div>
+          <button onclick="resetQcForm()" style="margin-top:14px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:7px;padding:7px 16px;font-size:13px;cursor:pointer">Capture Another</button>
+        </div>
       </div>
     </div>
 
@@ -1356,6 +1526,7 @@ function rebuildLibraryTabs() {
     { id: 'rar', label: '⚡ RAR Registry' },
     { id: 'aibast', label: '🏭 AIBAST' },
     { id: 'community', label: '🌐 Community' },
+    { id: 'agent365', label: '🔵 Agent 365' },
   ];
   // Custom source tabs
   _customSources.forEach(s => tabs.push({ id: s.id, label: `${s.icon} ${s.name}` }));
@@ -1435,6 +1606,8 @@ function showView(name) {
   if (name === 'knowledge') renderKnowledge();
   if (name === 'library') renderLibrary();
   if (name === 'chat') renderChatStarters();
+  if (name === 'achievements') renderAchievements();
+  if (name === 'quick-capture') { validateQcForm(); resetQcForm(); }
 }
 
 // ── GitHub API ─────────────────────────────────────────────────────────────
@@ -1962,43 +2135,55 @@ async function renderOutcomes() {
   const issueMap = {};
   allIssues.forEach(i => { issueMap[i.number] = i; });
 
-  // Compute per-outcome progress from actual issue states
-  const enriched = OUTCOMES.map(o => {
-    const linked = o.issues.map(n => issueMap[n]).filter(Boolean);
+  // Use getAllOutcomes() to include custom outcomes
+  const allOutcomes = getAllOutcomes();
+  const customIds = new Set(_loadCustomOutcomes().map(o => o.id));
+
+  const enriched = allOutcomes.map(o => {
+    const linked = (o.issues||[]).map(n => issueMap[n]).filter(Boolean);
     const total = linked.length || 1;
     const done = linked.filter(i => i._state === 'closed').length;
-    const progress = Math.round((done / total) * 100);
-    return { ...o, linked, done, total: linked.length, progress };
+    const progress = o.status === 'achieved' ? 100 : Math.round((done / total) * 100);
+    return { ...o, linked, done, total: linked.length, progress, _isCustom: customIds.has(o.id) };
   });
 
   // Update top KPIs
   const totalOpen = allIssues.filter(i => i._state === 'open').length;
   const totalClosed = allIssues.filter(i => i._state === 'closed').length;
   const overallPct = allIssues.length ? Math.round((totalClosed / allIssues.length) * 100) : 0;
-  document.getElementById('okpi-total').textContent = OUTCOMES.length;
+  document.getElementById('okpi-total').textContent = allOutcomes.length;
   document.getElementById('okpi-active').textContent = totalOpen;
   document.getElementById('okpi-done').textContent = totalClosed;
   document.getElementById('okpi-pct').textContent = overallPct + '%';
 
-  // Sort: in-progress first, then by priority
+  // Sort: achieved last, in-progress first, then by priority
   enriched.sort((a, b) => {
+    if (a.status === 'achieved' && b.status !== 'achieved') return 1;
+    if (b.status === 'achieved' && a.status !== 'achieved') return -1;
     if (b.progress !== a.progress && (b.progress > 0 || a.progress > 0)) return b.progress - a.progress;
     return (a.priority > b.priority ? 1 : -1);
   });
 
   el.innerHTML = enriched.map(o => {
-    const statusDot = o.progress === 100 ? '✅' : o.progress > 0 ? '🔄' : '⏳';
+    const statusDot = o.status === 'achieved' ? '✅' : o.status === 'paused' ? '⏸' : o.progress > 0 ? '🔄' : '⏳';
     const priorityColor = o.priority === 'p1' ? 'var(--red)' : o.priority === 'p2' ? 'var(--yellow)' : 'var(--text2)';
     const issueChips = o.linked.length
       ? o.linked.map(i => `<a class="outcome-issue ${i._state === 'closed' ? 'closed' : ''}" href="${i.html_url}" target="_blank">#${i.number} ${i.title.slice(0,30)}${i.title.length>30?'…':''}</a>`).join('')
-      : o.issues.map(n => `<a class="outcome-issue" href="https://github.com/${CFG.repo}/issues/${n}" target="_blank">#${n}</a>`).join('');
-    const noDataNote = !o.linked.length ? `<div style="font-size:11px;color:var(--text2);margin-top:4px">⚠️ Issues #${o.issues.join(', #')} not found — may be closed or in a different repo</div>` : '';
+      : (o.issues||[]).map(n => `<a class="outcome-issue" href="https://github.com/${CFG.repo}/issues/${n}" target="_blank">#${n}</a>`).join('');
+    const noDataNote = !o.linked.length && (o.issues||[]).length ? `<div style="font-size:11px;color:var(--text2);margin-top:4px">⚠️ Issues #${o.issues.join(', #')} not found — may be closed or in a different repo</div>` : '';
+    const statusBadge = o.status && o.status !== 'active' ? `<span class="outcome-status-badge ${o.status}">${o.status === 'achieved' ? '✅ Achieved' : '⏸ Paused'}</span>` : '';
+    const editBtns = `<div class="outcome-card-actions">
+      <button class="outcome-edit-btn" onclick="event.stopPropagation();openOutcomeModal('${o.id}')" title="Edit outcome">✏️</button>
+      ${o._isCustom ? `<button class="outcome-del-btn" onclick="event.stopPropagation();deleteOutcome('${o.id}')" title="Delete outcome">🗑</button>` : ''}
+    </div>`;
     return `<div class="outcome-card">
       <div class="outcome-title">
         <span>${statusDot}</span>
         <span>${o.icon}</span>
         <span>${o.title}</span>
-        <span style="font-size:11px;color:${priorityColor};font-weight:600;margin-left:auto">${o.priority.toUpperCase()}</span>
+        ${statusBadge}
+        <span style="font-size:11px;color:${priorityColor};font-weight:600;margin-left:${statusBadge?'6px':'auto'}">${(o.priority||'p2').toUpperCase()}</span>
+        ${editBtns}
       </div>
       <div class="outcome-desc">${o.desc}</div>
       <div class="outcome-meta">
@@ -2009,7 +2194,7 @@ async function renderOutcomes() {
       <div class="progress-bar"><div class="progress-fill" style="width:${o.progress}%"></div></div>
       <div style="font-size:11px;color:var(--text2);margin-top:4px;display:flex;justify-content:space-between">
         <span>${o.progress}% complete</span>
-        ${o.progress < 100 ? `<button onclick="showView('chat');selectAgent('orchestrator')" style="background:none;border:none;color:var(--accent);font-size:11px;cursor:pointer;padding:0">Ask an agent to work on this →</button>` : ''}
+        ${o.progress < 100 && o.status !== 'paused' ? `<button onclick="showView('chat');selectAgent('orchestrator')" style="background:none;border:none;color:var(--accent);font-size:11px;cursor:pointer;padding:0">Ask an agent to work on this →</button>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -2615,6 +2800,310 @@ function updateClock() {
   document.getElementById('dashboard-date').textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 }
 
+// ── Clock (with seconds) ──────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('topbar-clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const greet = now.getHours() < 12 ? 'Good morning' : now.getHours() < 17 ? 'Good afternoon' : 'Good evening';
+  document.querySelector('.hero-greeting')&&(document.querySelector('.hero-greeting').textContent = `${greet}, Bill 👋`);
+  document.getElementById('dashboard-date').textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+// ── Outcomes CRUD ─────────────────────────────────────────────────────────
+const OUTCOMES_STORAGE = 'coe_custom_outcomes';
+const OUTCOME_EMOJIS = ['🎯','🚀','📦','🛡️','🤖','✅','📄','💡','🏭','🔧','📊','🎭','⚡','🧪','🔍'];
+
+function _loadCustomOutcomes() {
+  try { return JSON.parse(localStorage.getItem(OUTCOMES_STORAGE) || '[]'); } catch { return []; }
+}
+function _saveCustomOutcomes(arr) {
+  localStorage.setItem(OUTCOMES_STORAGE, JSON.stringify(arr));
+}
+function getAllOutcomes() {
+  const custom = _loadCustomOutcomes();
+  // Merge: custom entries override base entries with same id
+  const customIds = new Set(custom.map(o => o.id));
+  const base = OUTCOMES.filter(o => !customIds.has(o.id));
+  return [...base, ...custom];
+}
+
+let _outcomeEditId = null;
+function openOutcomeModal(id) {
+  _outcomeEditId = id || null;
+  const overlay = document.getElementById('outcome-modal-overlay');
+  // Build emoji picker
+  const emojiRow = document.getElementById('outcome-emoji-row');
+  emojiRow.innerHTML = OUTCOME_EMOJIS.map(e =>
+    `<span class="outcome-emoji-btn" onclick="selectOutcomeEmoji('${e}',this)">${e}</span>`
+  ).join('');
+  if (id) {
+    const o = getAllOutcomes().find(x => x.id === id);
+    if (!o) return;
+    document.getElementById('outcome-modal-heading').textContent = '✏️ Edit Outcome';
+    document.getElementById('outcome-icon-val').value = o.icon || '🎯';
+    document.getElementById('outcome-title-val').value = o.title || '';
+    document.getElementById('outcome-desc-val').value = o.desc || '';
+    document.getElementById('outcome-priority-val').value = o.priority || 'p2';
+    document.getElementById('outcome-status-val').value = o.status || 'active';
+    document.getElementById('outcome-issues-val').value = (o.issues || []).join(', ');
+    // Highlight matching emoji
+    emojiRow.querySelectorAll('.outcome-emoji-btn').forEach(b => {
+      if (b.textContent === o.icon) b.classList.add('selected');
+    });
+  } else {
+    document.getElementById('outcome-modal-heading').textContent = '✨ New Outcome';
+    document.getElementById('outcome-icon-val').value = '🎯';
+    document.getElementById('outcome-title-val').value = '';
+    document.getElementById('outcome-desc-val').value = '';
+    document.getElementById('outcome-priority-val').value = 'p2';
+    document.getElementById('outcome-status-val').value = 'active';
+    document.getElementById('outcome-issues-val').value = '';
+    emojiRow.querySelector('.outcome-emoji-btn')?.classList.add('selected');
+  }
+  overlay.classList.add('open');
+}
+function selectOutcomeEmoji(e, btn) {
+  document.getElementById('outcome-icon-val').value = e;
+  document.querySelectorAll('.outcome-emoji-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function closeOutcomeModal() {
+  document.getElementById('outcome-modal-overlay').classList.remove('open');
+}
+function closeOutcomeModalClick(evt) {
+  if (evt.target === document.getElementById('outcome-modal-overlay')) closeOutcomeModal();
+}
+function saveOutcome() {
+  const title = document.getElementById('outcome-title-val').value.trim();
+  const desc  = document.getElementById('outcome-desc-val').value.trim();
+  if (!title) { alert('Title is required.'); return; }
+  const icon    = document.getElementById('outcome-icon-val').value.trim() || '🎯';
+  const priority= document.getElementById('outcome-priority-val').value;
+  const status  = document.getElementById('outcome-status-val').value;
+  const issuesRaw = document.getElementById('outcome-issues-val').value;
+  const issues = issuesRaw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+  const id = _outcomeEditId || title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '-' + Date.now().toString(36);
+  const custom = _loadCustomOutcomes();
+  const idx = custom.findIndex(o => o.id === id);
+  const entry = { id, icon, title, desc, priority, status: status || 'active', issues };
+  if (idx >= 0) custom[idx] = entry; else custom.push(entry);
+  _saveCustomOutcomes(custom);
+  closeOutcomeModal();
+  renderOutcomes();
+}
+function deleteOutcome(id) {
+  if (!confirm('Delete this outcome?')) return;
+  const custom = _loadCustomOutcomes().filter(o => o.id !== id);
+  _saveCustomOutcomes(custom);
+  renderOutcomes();
+}
+
+// ── Quick Capture ─────────────────────────────────────────────────────────
+let _qcType = 'idea';
+function selectQcType(type, btn) {
+  _qcType = type;
+  document.querySelectorAll('.qc-type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  validateQcForm();
+}
+function validateQcForm() {
+  const title = (document.getElementById('qc-title')?.value || '').trim();
+  const btn = document.getElementById('qc-submit-btn');
+  if (btn) btn.disabled = !title;
+  // Show PAT warning if needed
+  const warn = document.getElementById('qc-no-pat');
+  if (warn) warn.style.display = CFG.pat ? 'none' : 'block';
+}
+async function submitQuickCapture() {
+  const title = document.getElementById('qc-title').value.trim();
+  const body  = document.getElementById('qc-body').value.trim();
+  const prio  = document.getElementById('qc-priority').value;
+  if (!title) return;
+  const typeEmoji = { idea:'💡', 'use-case':'🎯', sop:'📄', bug:'🐛' };
+  const labelMap  = { idea:'idea', 'use-case':'mfg-coe', sop:'sop-request', bug:'bug' };
+  const fullTitle = `${typeEmoji[_qcType] || '📌'} ${title}`;
+  const fullBody  = `**Type:** ${_qcType}\n**Priority:** ${prio.toUpperCase()}\n\n${body || '_No additional details provided._'}\n\n---\n*Submitted via Quick Capture — Bots in Blazers Command Center*`;
+  const btn = document.getElementById('qc-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  if (CFG.pat) {
+    try {
+      const r = await fetch(`https://api.github.com/repos/${CFG.repo}/issues`, {
+        method: 'POST',
+        headers: { 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github+json' },
+        body: JSON.stringify({ title: fullTitle, body: fullBody, labels: [labelMap[_qcType] || 'idea'] })
+      });
+      const issue = r.ok ? await r.json() : null;
+      if (issue) {
+        document.getElementById('qc-success-msg').innerHTML = `Filed as <a href="${issue.html_url}" target="_blank">#${issue.number}</a> in ${CFG.repo}`;
+        showQcSuccess();
+        checkAchievements();
+        return;
+      }
+    } catch(e) {}
+  }
+  // No PAT or API fail — open GitHub
+  const url = `https://github.com/${CFG.repo}/issues/new?title=${encodeURIComponent(fullTitle)}&body=${encodeURIComponent(fullBody)}&labels=${labelMap[_qcType]||'idea'}`;
+  window.open(url, '_blank');
+  document.getElementById('qc-success-msg').textContent = 'Opened GitHub in a new tab — submit the issue there.';
+  showQcSuccess();
+}
+function showQcSuccess() {
+  document.getElementById('qc-success').style.display = 'block';
+  document.getElementById('qc-submit-btn').style.display = 'none';
+}
+function resetQcForm() {
+  document.getElementById('qc-title').value = '';
+  document.getElementById('qc-body').value = '';
+  document.getElementById('qc-success').style.display = 'none';
+  document.getElementById('qc-submit-btn').style.display = 'block';
+  document.getElementById('qc-submit-btn').disabled = true;
+  document.getElementById('qc-submit-btn').textContent = 'Submit';
+  _qcType = 'idea';
+  document.querySelectorAll('.qc-type-btn').forEach((b,i) => { b.classList.toggle('selected', i === 0); });
+  validateQcForm();
+}
+
+// ── Achievements ──────────────────────────────────────────────────────────
+const ACHIEVEMENTS_KEY = 'coe_achievements';
+const ACHIEVEMENTS = [
+  { id:'first-capture',   icon:'📱', name:'First Capture',     xp:50,  desc:'Submitted your first idea or issue via Quick Capture.', condition: () => true },
+  { id:'first-outcome',   icon:'🎯', name:'Outcome Owner',     xp:100, desc:'Defined your first CoE outcome.', condition: () => getAllOutcomes().length > 4 },
+  { id:'foundation',      icon:'🏗️', name:'Foundation',        xp:150, desc:'CoE launched with agents, outcomes, and SOPs defined.', condition: () => true },
+  { id:'agent-army',      icon:'🤖', name:'Agent Army',        xp:200, desc:'Installed 5+ agents from the library.', condition: () => _installedAgents.size >= 5 },
+  { id:'knowledge-base',  icon:'🧠', name:'Knowledge Builder', xp:150, desc:'Published first knowledge base entry.', condition: () => false },
+  { id:'forum-starter',   icon:'💬', name:'Forum Starter',     xp:75,  desc:'Posted the first topic in the Agent Forum.', condition: () => false },
+  { id:'admin-unlocked',  icon:'🔐', name:'Admin Unlocked',    xp:50,  desc:'Accessed Admin Mode for the first time.', condition: () => localStorage.getItem('coe_admin_active') === '1' },
+  { id:'custom-source',   icon:'🔗', name:'Source Master',     xp:200, desc:'Added a custom Agent Library source.', condition: () => _customSources.length > 0 },
+  { id:'ten-issues',      icon:'🔥', name:'On Fire',           xp:300, desc:'10+ GitHub issues filed in this CoE.', condition: () => false },
+  { id:'first-demo',      icon:'🎬', name:'Demo Day',          xp:250, desc:'Delivered a scripted demo from the Command Center.', condition: () => false },
+  { id:'sop-published',   icon:'📄', name:'SOP Published',     xp:175, desc:'Published the first Standard Operating Procedure.', condition: () => false },
+  { id:'rapp-master',     icon:'⚡', name:'RAPP Master',       xp:500, desc:'Completed the full RAPP pipeline from transcript to deployed agent.', condition: () => false },
+];
+function _loadUnlockedAch() {
+  try { return new Set(JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY) || '[]')); } catch { return new Set(); }
+}
+function checkAchievements() {
+  const unlocked = _loadUnlockedAch();
+  let changed = false;
+  const now = new Date().toLocaleDateString();
+  const dates = JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY + '_dates') || '{}');
+  ACHIEVEMENTS.forEach(a => {
+    if (!unlocked.has(a.id) && a.condition()) {
+      unlocked.add(a.id);
+      dates[a.id] = now;
+      changed = true;
+      showLibToast(`🏆 Achievement unlocked: ${a.name} (+${a.xp} XP)`, '#3fb950');
+    }
+  });
+  if (changed) {
+    localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify([...unlocked]));
+    localStorage.setItem(ACHIEVEMENTS_KEY + '_dates', JSON.stringify(dates));
+  }
+  return unlocked;
+}
+function renderAchievements() {
+  const unlocked = checkAchievements();
+  const dates = JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY + '_dates') || '{}');
+  const totalXP = ACHIEVEMENTS.filter(a => unlocked.has(a.id)).reduce((s,a) => s + a.xp, 0);
+  document.getElementById('ach-xp-total').textContent = `⚡ ${totalXP} XP earned`;
+  const grid = document.getElementById('ach-grid');
+  if (!grid) return;
+  grid.innerHTML = ACHIEVEMENTS.map(a => {
+    const earned = unlocked.has(a.id);
+    return `<div class="ach-card ${earned ? '' : 'locked'}" onclick="this.classList.toggle('flipped')">
+      <div class="ach-card-inner">
+        <div class="ach-front">
+          <div class="ach-icon">${a.icon}</div>
+          <div class="ach-name">${a.name}</div>
+          <div class="ach-xp">+${a.xp} XP</div>
+          ${earned ? '<div style="margin-top:6px"><span class="ach-unlocked-badge">Earned</span></div>' : '<div style="font-size:10px;color:var(--text2);margin-top:6px">🔒 Locked</div>'}
+        </div>
+        <div class="ach-back">
+          <div class="ach-icon">${a.icon}</div>
+          <div class="ach-name">${a.name}</div>
+          <div class="ach-desc">${a.desc}</div>
+          ${earned ? `<div class="ach-date">Earned ${dates[a.id] || ''}</div>` : '<div style="font-size:10px;color:var(--text2)">Keep working to unlock!</div>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Agent 365 Connect Panel ───────────────────────────────────────────────
+const A365_MOCK_AGENTS = [
+  { id:'a365-copilot-svc',  icon:'🎧', name:'Customer Service Agent',  category:'customer-service', source:'agent365', quality:'official', desc:'Microsoft-native Copilot Studio agent for customer service. Connected to D365 CS and Knowledge Base.', tags:['copilot-studio','d365-cs','microsoft'] },
+  { id:'a365-sales-coach',  icon:'📈', name:'Sales Coach',             category:'sales',            source:'agent365', quality:'official', desc:'AI-powered sales coaching connected to D365 Sales and Teams. Next-best-action recommendations.', tags:['sales','d365','teams'] },
+  { id:'a365-hr-assist',    icon:'👥', name:'HR Assistant',            category:'hr',               source:'agent365', quality:'official', desc:'Employee self-service HR agent integrated with SharePoint and Viva.', tags:['hr','sharepoint','viva'] },
+  { id:'a365-foundry-mfg',  icon:'🏭', name:'Foundry Mfg Agent',      category:'manufacturing',    source:'agent365', quality:'verified', desc:'Azure AI Foundry agent specialized for discrete manufacturing scenarios.', tags:['foundry','manufacturing','azure'] },
+  { id:'a365-foundry-doc',  icon:'📄', name:'Document Processor',     category:'productivity',     source:'agent365', quality:'verified', desc:'Azure AI Foundry multi-modal document processing and routing agent.', tags:['foundry','documents','azure'] },
+  { id:'a365-teams-sync',   icon:'💬', name:'Teams Meeting Recap',    category:'productivity',     source:'agent365', quality:'verified', desc:'Copilot Studio agent that summarizes Teams meetings, creates follow-up tasks, and posts to SharePoint.', tags:['teams','meetings','copilot-studio'] },
+];
+function renderA365ConnectPanel() {
+  const tenantHint = CFG.repo.split('/')[0] || 'your-tenant';
+  return `<div class="a365-connect">
+    <div style="font-size:48px;margin-bottom:12px">🔵</div>
+    <h3>Connect to Microsoft Agent 365</h3>
+    <p>Agent 365 is Microsoft's unified cross-ecosystem agent control plane. Connect your tenant to browse Copilot Studio agents, Azure AI Foundry agents, and marketplace listings all in one place.</p>
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+      <span class="a365-ecosystem-chip">🟦 Copilot Studio</span>
+      <span class="a365-ecosystem-chip">🔷 Azure AI Foundry</span>
+      <span class="a365-ecosystem-chip">🟩 Microsoft 365</span>
+      <span class="a365-ecosystem-chip">🌐 Marketplace</span>
+    </div>
+    <input id="a365-tenant-input" class="a365-input" placeholder="Enter Tenant ID or name (e.g. contoso.onmicrosoft.com)" value="" />
+    <br/>
+    <button class="a365-connect-btn" onclick="connectA365()">🔵 Connect Tenant</button>
+    <div style="margin-top:16px;font-size:11px;color:var(--text2)">
+      💡 <a href="https://aka.ms/agent365" target="_blank" style="color:var(--accent)">Learn about Microsoft Agent 365 →</a>
+    </div>
+  </div>`;
+}
+function connectA365() {
+  const tenant = (document.getElementById('a365-tenant-input')?.value || '').trim();
+  if (!tenant) return;
+  localStorage.setItem('coe_a365_tenant', tenant);
+  showLibToast(`🔵 Connected to Agent 365 tenant: ${tenant}`, '#58a6ff');
+  renderLibrary();
+  checkAchievements();
+}
+function disconnectA365() {
+  if (!confirm('Disconnect from Agent 365?')) return;
+  localStorage.removeItem('coe_a365_tenant');
+  renderLibrary();
+}
+function renderA365AgentCatalog(tenant, q, installedGrid, availableGrid) {
+  const filter = q ? A365_MOCK_AGENTS.filter(a =>
+    a.name.toLowerCase().includes(q) || (a.desc||'').toLowerCase().includes(q) || (a.tags||[]).some(t=>t.includes(q))
+  ) : A365_MOCK_AGENTS;
+  const installed = filter.filter(a => isInstalled(a.id));
+  const available = filter.filter(a => !isInstalled(a.id));
+  document.getElementById('lib-installed-count').textContent = installed.length;
+  document.getElementById('lib-available-count').textContent = available.length;
+  const header = `<div style="display:flex;align-items:center;gap:10px;background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--accent)">
+    <span class="a365-badge">CONNECTED</span>
+    <span>Browsing agents from tenant: <strong>${tenant}</strong></span>
+    <button onclick="disconnectA365()" style="margin-left:auto;background:none;border:none;color:var(--text2);cursor:pointer;font-size:11px">Disconnect ✕</button>
+  </div>`;
+  const sourceLabel = { agent365:'Agent 365' };
+  function renderA365Card(a) {
+    const inst = isInstalled(a.id);
+    return `<div class="lib-card ${inst?'installed':''}" onclick="showAgentDetail('${a.id}')">
+      <div class="lib-card-header"><div class="lib-card-icon">${a.icon}</div><div style="flex:1;min-width:0"><div class="lib-card-name">${a.name}</div><div style="font-size:10px;color:var(--text2);margin-top:1px">${a.category}</div></div></div>
+      <div class="lib-card-role">${(a.desc||'').substring(0,85)}${a.desc&&a.desc.length>85?'…':''}</div>
+      <div class="lib-card-footer"><span class="source-badge" style="background:rgba(88,166,255,0.15);color:var(--accent)">Agent 365</span><span class="quality-badge ${a.quality}">${a.quality}</span></div>
+      <div class="lib-card-actions" onclick="event.stopPropagation()">
+        <button class="lib-btn" onclick="showAgentDetail('${a.id}')">ℹ Info</button>
+        ${inst ? `<button class="lib-btn primary">💬 Chat</button><button class="lib-btn danger" onclick="uninstallAgent('${a.id}')">🗑 Uninstall</button>` : `<button class="lib-btn primary" onclick="installAgent('${a.id}')">⬇ Install</button>`}
+      </div>
+    </div>`;
+  }
+  // Inject A365 agents into AGENT_CATALOG if not already there
+  A365_MOCK_AGENTS.forEach(a => { if (!AGENT_CATALOG.find(x => x.id === a.id)) AGENT_CATALOG.push(a); });
+  installedGrid.innerHTML = header + (installed.length ? `<div class="lib-grid">${installed.map(renderA365Card).join('')}</div>` : '<p style="color:var(--text2);font-size:13px">No installed Agent 365 agents yet.</p>');
+  availableGrid.innerHTML = available.length ? `<div class="lib-grid">${available.map(renderA365Card).join('')}</div>` : '<p style="color:var(--text2);font-size:13px">All Agent 365 agents installed!</p>';
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────
 document.getElementById('cfg-repo').value = CFG.repo;
 document.getElementById('cfg-pat').value = CFG.pat;
@@ -2627,6 +3116,9 @@ applyAdminUI();
 renderSourceTypeHint();
 loadAll();
 loadCustomSources();
+checkAchievements();
+// URL param: ?quick=1 jumps to Quick Capture (phone bookmark)
+if (new URLSearchParams(location.search).get('quick') === '1') showView('quick-capture');
 
 // ── Uptime counter ─────────────────────────────────────────────────────────
 const PAGE_START = Date.now();
@@ -2815,7 +3307,23 @@ function setLibTab(el, source) {
 
 function renderLibrary() {
   const q = (document.getElementById('lib-search-input')?.value || '').toLowerCase().trim();
-  const sourceLabel = { coe:'CoE Team', rar:'RAR', aibast:'AIBAST', community:'Community', local:'Local' };
+  const sourceLabel = { coe:'CoE Team', rar:'RAR', aibast:'AIBAST', community:'Community', local:'Local', agent365:'Agent 365' };
+
+  // Agent 365 tab: show connect panel instead of catalog
+  if (libActiveTab === 'agent365') {
+    const installedGrid = document.getElementById('lib-installed-grid');
+    const availableGrid = document.getElementById('lib-grid');
+    const a365tenant = localStorage.getItem('coe_a365_tenant') || '';
+    if (!a365tenant) {
+      availableGrid.innerHTML = renderA365ConnectPanel();
+      installedGrid.innerHTML = '';
+      document.getElementById('lib-installed-count').textContent = '0';
+      document.getElementById('lib-available-count').textContent = '0';
+    } else {
+      renderA365AgentCatalog(a365tenant, q, installedGrid, availableGrid);
+    }
+    return;
+  }
 
   function matchesSearch(a) {
     return !q ||
