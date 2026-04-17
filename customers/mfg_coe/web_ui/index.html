@@ -432,6 +432,15 @@
     .confetti-piece { position: fixed; width: 8px; height: 8px; top: -10px; animation: confetti-fall 3s linear forwards; pointer-events: none; z-index: 9999; border-radius: 2px; }
     @keyframes confetti-fall { 0%{transform:translateY(-10px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
 
+    /* ── Chat Starter Prompts ───────────────────────────────────────────── */
+    .chat-starters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .chat-starter-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: all .18s; display: flex; flex-direction: column; gap: 5px; text-align: left; }
+    .chat-starter-card:hover { border-color: var(--accent2); background: rgba(88,166,255,0.07); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+    .chat-starter-icon { font-size: 24px; line-height: 1; }
+    .chat-starter-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .chat-starter-desc { font-size: 11px; color: var(--text2); line-height: 1.45; }
+    .chat-starters-header { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; }
+
     /* ── Gradient hero banner ───────────────────────────────────────────── */
     .hero-gradient { background: linear-gradient(135deg, rgba(31,111,235,0.15) 0%, rgba(188,140,255,0.08) 50%, rgba(63,185,80,0.05) 100%); border: 1px solid rgba(88,166,255,0.15); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; position: relative; overflow: hidden; }
     .hero-gradient::before { content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(88,166,255,0.12) 0%, transparent 70%); pointer-events: none; }
@@ -647,6 +656,34 @@
     <!-- CHAT -->
     <div class="view" id="view-chat">
       <div class="page-header"><h1>📨 Chat with Agents</h1></div>
+
+      <!-- Quick-start prompt cards — hidden once a conversation starts -->
+      <div id="chat-starters-section" style="display:none">
+        <div class="chat-starters-header">🚀 Quick start — pick a template or type your own below</div>
+        <div class="chat-starters">
+          <button class="chat-starter-card" onclick="useStarterPrompt('D365 Demo')">
+            <div class="chat-starter-icon">🏭</div>
+            <div class="chat-starter-title">Set up a D365 demo</div>
+            <div class="chat-starter-desc">Prep a new customer demo for Sales, Marketing, Customer Service, CCaaS or Field Service</div>
+          </button>
+          <button class="chat-starter-card" onclick="useStarterPrompt('Power Platform')">
+            <div class="chat-starter-icon">⚡</div>
+            <div class="chat-starter-title">Build a Power Platform solution</div>
+            <div class="chat-starter-desc">Describe what you need — apps, Copilot Studio agents, Power Automate flows, or other Power Platform tech</div>
+          </button>
+          <button class="chat-starter-card" onclick="useStarterPrompt('RAPP')">
+            <div class="chat-starter-icon">🚀</div>
+            <div class="chat-starter-title">Rapidly prototype with RAPP</div>
+            <div class="chat-starter-desc">Use RAPP to scaffold an agentic use case from idea to working agent — fast</div>
+          </button>
+          <button class="chat-starter-card" onclick="useStarterPrompt('CoE')">
+            <div class="chat-starter-icon">🏛️</div>
+            <div class="chat-starter-title">Set up a Center of Excellence</div>
+            <div class="chat-starter-desc">Define mission, agent personas, SOP structure, and tooling for a new CoE</div>
+          </button>
+        </div>
+      </div>
+
       <div class="agent-selector" id="chat-agent-selector"></div>
       <div class="chat-container">
         <div class="chat-messages" id="chat-messages"></div>
@@ -849,6 +886,7 @@ function showView(name) {
   if (name === 'sops') renderSops();
   if (name === 'knowledge') renderKnowledge();
   if (name === 'library') renderLibrary();
+  if (name === 'chat') renderChatStarters();
 }
 
 // ── GitHub API ─────────────────────────────────────────────────────────────
@@ -1357,11 +1395,13 @@ function renderChatAgentSelector() {
 function selectAgent(id) {
   activeAgent = id;
   renderChatAgentSelector();
-  renderChatMessages();
+  renderChatMessages();  // renderChatStarters called inside
 }
 
 function renderChatMessages() {
   const msgs = CHAT_HISTORY[activeAgent] || [];
+  // Show/hide starter prompts based on whether conversation has started
+  renderChatStarters();
   if (!msgs.length) {
     const agent = AGENTS.find(a => a.id === activeAgent);
     document.getElementById('chat-messages').innerHTML = `
@@ -1376,6 +1416,36 @@ function renderChatMessages() {
       <div class="from">${m.from}</div>
       ${m.text}
     </div>`).join('');
+}
+
+function renderChatStarters() {
+  const msgs = CHAT_HISTORY[activeAgent] || [];
+  const section = document.getElementById('chat-starters-section');
+  if (section) section.style.display = msgs.length === 0 ? 'block' : 'none';
+}
+
+// STARTER_PROMPTS — templates with editable placeholders
+const STARTER_PROMPTS = {
+  'D365 Demo': `Create a new D365 demo for [customer name] (website: [customer website URL]) for this use case: [describe the use case]. The demo is for [Sales / Marketing / Customer Service / CCaaS / Field Service]. Please ask me questions to understand the customer context and help set it up.`,
+  'Power Platform': `Build a Power Platform solution that does the following: [describe what you need]. This could involve Power Apps, Copilot Studio agents, Power Automate flows, Power Pages, or other Power Platform technology. Please ask me clarifying questions to define scope and approach.`,
+  'RAPP': `Use RAPP to rapidly prototype an agentic use case with me. The use case I want to explore is: [describe your use case and goals]. Let's go through the discovery questions and define what agents we need, what they'll do, and how to build them fast.`,
+  'CoE': `Help me set up a Center of Excellence for [team / domain / industry]. Walk me through defining the mission, the right agent personas to include, SOP structure, feature capture process, and recommended tooling. Ask me questions along the way to customize it for my situation.`,
+};
+
+function useStarterPrompt(key) {
+  const text = STARTER_PROMPTS[key];
+  if (!text) return;
+  const input = document.getElementById('chat-input');
+  if (input) {
+    input.value = text;
+    input.focus();
+    // Select the first placeholder so user can immediately type over it
+    const firstPlaceholder = text.indexOf('[');
+    const firstEnd = text.indexOf(']');
+    if (firstPlaceholder !== -1 && firstEnd !== -1) {
+      input.setSelectionRange(firstPlaceholder, firstEnd + 1);
+    }
+  }
 }
 
 async function sendChat() {
