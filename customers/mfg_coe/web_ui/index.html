@@ -177,10 +177,16 @@
     .chat-agent-bar {
       display: flex; align-items: center; gap: 12px;
       padding: 10px 20px; border-bottom: 1px solid var(--border);
-      background: var(--bg2); flex-wrap: wrap;
+      background: var(--bg2); position: relative;
     }
     .chat-agent-bar-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; }
-    .agent-selector { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; flex: 1; }
+    .agent-selector-wrap { flex: 1; position: relative; overflow: hidden; }
+    .agent-selector-wrap::after {
+      content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 40px;
+      background: linear-gradient(to right, transparent, var(--bg2));
+      pointer-events: none;
+    }
+    .agent-selector { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-right: 36px; }
     .agent-selector::-webkit-scrollbar { display: none; }
     .agent-chip {
       background: var(--bg3); border: 1px solid var(--border);
@@ -823,7 +829,9 @@
       <!-- Agent selector row -->
       <div class="chat-agent-bar">
         <span class="chat-agent-bar-label">Agent</span>
-        <div class="agent-selector" id="chat-agent-selector"></div>
+        <div class="agent-selector-wrap">
+          <div class="agent-selector" id="chat-agent-selector"></div>
+        </div>
       </div>
 
       <!-- Quick-start prompt cards — hidden once a conversation starts -->
@@ -1020,8 +1028,7 @@
   </main>
 </div>
 
-<!-- Floating Quick Submit -->
-<button onclick="quickSubmit()" title="Submit a task to the agents" style="position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:var(--accent2);border:none;cursor:pointer;font-size:22px;color:white;box-shadow:0 4px 16px #0008;z-index:1000;display:flex;align-items:center;justify-content:center">➕</button>
+<!-- Floating Quick Submit — removed; replaced by Chat intake wizard -->
 
 <script>
 // ── Config — repo and endpoint are hardcoded; only PAT is user-supplied ───────
