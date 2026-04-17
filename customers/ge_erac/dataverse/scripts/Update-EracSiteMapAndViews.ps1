@@ -75,7 +75,9 @@ function Invoke-SiteMap {
     Write-Host "`n=== PHASE: SITEMAP ===" -ForegroundColor Cyan
 
     # Find the ERAC sitemap — use known ID first, fall back to name search
-    $knownSiteMapId = "0124356c-1439-f111-88b5-7ced8d18cb3b"
+    # ce9e620c is the sitemap BOUND to the GEERACLiteCRM_App module (confirmed Phase 7)
+    # 0124356c is a standalone sitemap NOT bound to the app — do not use
+    $knownSiteMapId = "ce9e620c-7e3a-f111-88b5-7ced8dceb26a"
     $mapDetail = Invoke-Dv GET "sitemaps($knownSiteMapId)?`$select=sitemapid,sitemapname,sitemapxml"
     if (-not $mapDetail -or -not $mapDetail.sitemapid) {
         # Fallback: list all and pick the ERAC one

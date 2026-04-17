@@ -3,11 +3,18 @@
     Add ERAC custom table pages to the erac_LiteCRM Model-Driven App.
 
 .DESCRIPTION
-    Uses the AddAppComponents Dataverse action to register all 5 ERAC custom
-    entities (and their views/forms) into the erac_LiteCRM MDA app so the
-    SiteMap subareas resolve correctly.
+    RESOLVED (Phase 7): The AddAppComponents API rejected all payload formats
+    for componenttype=1 (Entity). The working solution was to set the app
+    module's navigationtype from 0 to 1, which tells D365 to use all entities
+    referenced in the sitemap rather than requiring explicit entity registration.
 
-    Entities added:
+    PowerShell one-liner that fixed it:
+        PATCH appmodules({appId}) with { "navigationtype": 1 }
+
+    This script is kept for reference. The navigationtype patch was applied
+    directly and is live. All 5 ERAC custom entities now appear in the app.
+
+    Entities accessible via sitemap:
       erac_partnershiprating, erac_riskassessment, erac_treaty,
       erac_reserveadequacy, erac_dispute
 
