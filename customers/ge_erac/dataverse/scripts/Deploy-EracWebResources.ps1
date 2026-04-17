@@ -161,7 +161,9 @@ function Invoke-UploadResources {
                     -Body ($body | ConvertTo-Json -Depth 5) -TimeoutSec 60
                 if ($resp.StatusCode -eq 204) {
                     $loc = $resp.Headers["OData-EntityId"]
-                    $id  = if ($loc -match '\(([^)]+)\)') { $Matches[1] } else { "?" }
+                    $locStr = if ($loc -is [array]) { $loc[0] } else { "$loc" }
+                    $id = "?"
+                    if ($locStr -match '\(([a-f0-9\-]{36})\)') { $id = $Matches[1] }
                     Write-Host "  ✓ Created: $($wr.displayName) (id=$id)" -ForegroundColor Green
                     $results[$wr.name] = $id
                 } else {
