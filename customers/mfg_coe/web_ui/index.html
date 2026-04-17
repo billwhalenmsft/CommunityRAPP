@@ -2989,7 +2989,10 @@ function checkAchievements() {
   const now = new Date().toLocaleDateString();
   const dates = JSON.parse(localStorage.getItem(ACHIEVEMENTS_KEY + '_dates') || '{}');
   ACHIEVEMENTS.forEach(a => {
-    if (!unlocked.has(a.id) && a.condition()) {
+    if (unlocked.has(a.id)) return;
+    let met = false;
+    try { met = a.condition(); } catch (_e) { /* guard against TDZ or missing deps */ }
+    if (met) {
       unlocked.add(a.id);
       dates[a.id] = now;
       changed = true;
