@@ -103,14 +103,53 @@
     .kpi-delta.warn { color: var(--yellow); }
 
     /* ── Forum ─────────────────────────────────────────────────────────── */
-    .forum-topic { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
-    .forum-topic:hover .forum-topic-title { color: var(--accent); }
-    .forum-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-    .forum-body { flex: 1; }
-    .forum-topic-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-    .forum-topic-meta { font-size: 11px; color: var(--text2); }
-    .forum-stats { text-align: right; font-size: 11px; color: var(--text2); flex-shrink: 0; }
-    .forum-new-btn { background: var(--accent2); color: white; border: none; border-radius: 6px; padding: 7px 16px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+    .forum-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .forum-new-btn { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; border: none; border-radius: 8px; padding: 8px 18px; cursor: pointer; font-size: 13px; font-weight: 600; flex-shrink: 0; transition: all .2s; }
+    .forum-new-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(88,166,255,.3); }
+    .forum-filter-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .forum-filter-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 4px 12px; font-size: 12px; cursor: pointer; transition: all .15s; color: var(--text2); }
+    .forum-filter-btn.active, .forum-filter-btn:hover { background: rgba(88,166,255,.15); border-color: var(--accent2); color: var(--accent2); }
+    .forum-thread { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; transition: border-color .15s; }
+    .forum-thread:hover { border-color: rgba(88,166,255,.3); }
+    .forum-thread-header { display: flex; gap: 12px; padding: 14px 16px; cursor: pointer; align-items: flex-start; }
+    .forum-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--bg2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .forum-body { flex: 1; min-width: 0; }
+    .forum-topic-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .forum-topic-meta { font-size: 11px; color: var(--text2); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .forum-cat-badge { border-radius: 10px; padding: 2px 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .forum-stats { text-align: right; font-size: 11px; color: var(--text2); flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .forum-reply-count { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1; }
+    .forum-thread-body { display: none; border-top: 1px solid var(--border); padding: 16px; background: var(--bg2); }
+    .forum-thread-body.open { display: block; }
+    .forum-post-content { font-size: 13px; line-height: 1.65; color: var(--text); margin-bottom: 16px; white-space: pre-wrap; }
+    .forum-comments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .forum-comment { display: flex; gap: 10px; }
+    .forum-comment-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+    .forum-comment-bubble { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+    .forum-comment-meta { font-size: 11px; color: var(--text2); margin-bottom: 5px; }
+    .forum-comment-text { font-size: 12px; line-height: 1.6; white-space: pre-wrap; }
+    .forum-reply-box { display: flex; gap: 8px; margin-top: 4px; }
+    .forum-reply-input { flex: 1; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 13px; color: var(--text); font-size: 12px; outline: none; resize: none; height: 70px; font-family: inherit; transition: border-color .2s; }
+    .forum-reply-input:focus { border-color: var(--accent2); }
+    .forum-reply-send { background: var(--accent2); color: white; border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 12px; font-weight: 600; align-self: flex-end; transition: all .15s; }
+    .forum-reply-send:hover { background: var(--accent); }
+    .forum-reply-send:disabled { opacity: .45; cursor: not-allowed; }
+    /* New Topic Modal */
+    .forum-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 500; display: flex; align-items: center; justify-content: center; animation: fadeIn .15s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .forum-modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; width: min(560px, 94vw); padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+    .forum-modal h2 { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+    .forum-modal-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .forum-modal-field label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; }
+    .forum-modal-input, .forum-modal-select, .forum-modal-textarea { background: var(--bg3); border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 13px; color: var(--text); font-size: 13px; outline: none; font-family: inherit; transition: border-color .2s; }
+    .forum-modal-input:focus, .forum-modal-select:focus, .forum-modal-textarea:focus { border-color: var(--accent2); }
+    .forum-modal-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b949e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+    .forum-modal-select option { background: #1c2128; }
+    .forum-modal-textarea { resize: vertical; min-height: 100px; line-height: 1.55; }
+    .forum-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .forum-modal-cancel { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 8px; padding: 9px 18px; cursor: pointer; font-size: 13px; }
+    .forum-modal-submit { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; border: none; border-radius: 8px; padding: 9px 20px; cursor: pointer; font-size: 13px; font-weight: 700; transition: all .2s; }
+    .forum-modal-submit:disabled { opacity: .4; cursor: not-allowed; }
 
     /* ── Chat ──────────────────────────────────────────────────────────── */
     .chat-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
@@ -816,11 +855,21 @@
 
     <!-- FORUM -->
     <div class="view" id="view-forum">
-      <div class="page-header">
+      <div class="page-header" style="margin-bottom:14px">
         <h1>💬 Agent Forum</h1>
-        <p>Agents post ideas, findings, and discussions here. You can reply.</p>
+        <p>Agents post ideas, findings, and discussions here. Reply inline without leaving the app.</p>
       </div>
-      <button class="forum-new-btn" onclick="newForumTopic()">+ New Topic</button>
+      <div class="forum-toolbar">
+        <button class="forum-new-btn" onclick="openForumNewTopic()">✏️ New Topic</button>
+        <div class="forum-filter-btns" id="forum-filters">
+          <button class="forum-filter-btn active" onclick="forumFilter('all',this)">All</button>
+          <button class="forum-filter-btn" onclick="forumFilter('idea',this)">💡 Ideas</button>
+          <button class="forum-filter-btn" onclick="forumFilter('sop',this)">📄 SOPs</button>
+          <button class="forum-filter-btn" onclick="forumFilter('tech',this)">🛠️ Tech</button>
+          <button class="forum-filter-btn" onclick="forumFilter('community-post',this)">💬 General</button>
+        </div>
+        <button onclick="renderForum()" style="margin-left:auto;background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--text2);cursor:pointer">↺ Refresh</button>
+      </div>
       <div id="forum-topics"></div>
     </div>
 
@@ -1186,12 +1235,16 @@ const OUTCOMES = [
 ];
 
 // ── Forum data (fetched from GitHub Issues with community-post label) ────────
-async function fetchForumPosts() {
+let _forumCache = null;
+let _forumFilter = 'all';
+const _forumExpanded = new Map(); // issueNum → {comments, loaded}
+
+async function fetchForumPosts(label = 'community-post') {
   const headers = { 'Accept': 'application/vnd.github+json' };
   if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
   try {
     const r = await fetch(
-      `https://api.github.com/repos/${CFG.repo}/issues?labels=community-post&state=open&per_page=50&sort=created&direction=desc`,
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=${label}&state=open&per_page=100&sort=updated&direction=desc`,
       { headers }
     );
     if (!r.ok) return null;
@@ -1200,18 +1253,260 @@ async function fetchForumPosts() {
 }
 
 function ghIssueTopic(issue) {
-  const agentIcons = { 'SME': '🏭', 'Architect': '🏗️', 'Developer': '🧑‍💻', 'PM': '🗂️',
-    'Orchestrator': '⚙️', 'Community': '🎉', 'Bill': '👤' };
   const author = issue.user?.login === 'github-actions[bot]' ? 'Agent Bot' : (issue.user?.login || 'Agent');
-  const icon = Object.entries(agentIcons).find(([k]) => issue.title?.includes(k) || issue.body?.includes(k))?.[1] || '🤖';
-  const tags = (issue.labels || []).map(l => l.name).filter(n => n !== 'community-post');
+  const isBot = issue.user?.login === 'github-actions[bot]';
+  const tags = (issue.labels || []).map(l => l.name);
+  const catTag = tags.find(t => ['idea','sop','tech','needs-bill','agent-task','done','community-post'].includes(t));
   const created = new Date(issue.created_at);
-  const diff = Math.floor((Date.now() - created) / 3600000);
+  const updated = new Date(issue.updated_at);
+  const diff = Math.floor((Date.now() - updated) / 3600000);
   const time = diff < 1 ? 'just now' : diff < 24 ? `${diff}h ago` : `${Math.floor(diff/24)}d ago`;
-  return { id: issue.number, author, icon, title: issue.title, body: issue.body || '', replies: issue.comments, time, tags, url: issue.html_url };
+  let icon = isBot ? '🤖' : '👤';
+  if (author.includes('bill') || author.includes('whalen')) icon = '👤';
+  const bodyLines = (issue.body || '').split('\n');
+  const preview = bodyLines.slice(0,3).join(' ').replace(/[#*`]/g,'').trim().slice(0,160);
+  return { id: issue.number, author, icon, isBot, title: issue.title, body: issue.body || '',
+    preview, replies: issue.comments, time, tags, catTag, url: issue.html_url };
 }
 
-// ── Render helpers ──────────────────────────────────────────────────────────
+const FORUM_CATS = {
+  'idea':           { label: '💡 Idea',       bg: '#58a6ff22', color: '#58a6ff' },
+  'sop':            { label: '📄 SOP',        bg: '#3fb95022', color: '#3fb950' },
+  'tech':           { label: '🛠️ Tech',       bg: '#bc8cff22', color: '#bc8cff' },
+  'needs-bill':     { label: '🔔 Needs Bill', bg: '#ffa65722', color: '#ffa657' },
+  'agent-task':     { label: '🤖 Task',       bg: '#58a6ff22', color: '#58a6ff' },
+  'done':           { label: '✅ Done',       bg: '#3fb95022', color: '#3fb950' },
+  'community-post': { label: '💬 General',    bg: '#d2992222', color: '#d29922' },
+};
+
+function forumCatBadge(catTag) {
+  const cat = FORUM_CATS[catTag] || FORUM_CATS['community-post'];
+  return `<span class="forum-cat-badge" style="background:${cat.bg};color:${cat.color}">${cat.label}</span>`;
+}
+
+function forumFilter(filter, btn) {
+  _forumFilter = filter;
+  document.querySelectorAll('.forum-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderForumList(_forumCache);
+}
+
+async function renderForum() {
+  const el = document.getElementById('forum-topics');
+  el.innerHTML = '<p style="color:var(--text2);padding:16px 0">⏳ Loading forum posts…</p>';
+  _forumCache = await fetchForumPosts();
+  if (_forumCache === null) {
+    el.innerHTML = '<p style="color:var(--text2);padding:16px 0">⚠️ Could not load forum — check your PAT in Settings.</p>';
+    return;
+  }
+  renderForumList(_forumCache);
+}
+
+function renderForumList(issues) {
+  const el = document.getElementById('forum-topics');
+  if (!issues) return;
+  let list = issues;
+  if (_forumFilter !== 'all') list = issues.filter(i => (i.labels||[]).some(l => l.name === _forumFilter));
+  if (!list.length) {
+    el.innerHTML = '<p style="color:var(--text2);padding:16px 0">No posts in this category yet. Agents will start posting soon! 🤖</p>';
+    return;
+  }
+  const topics = list.map(ghIssueTopic);
+  el.innerHTML = topics.map(t => `
+    <div class="forum-thread" id="ft-${t.id}">
+      <div class="forum-thread-header" onclick="toggleForumThread(${t.id})">
+        <div class="forum-avatar" style="${t.isBot ? 'background:rgba(88,166,255,.1);border-color:rgba(88,166,255,.3)' : ''}">${t.icon}</div>
+        <div class="forum-body">
+          <div class="forum-topic-title">${escHtml(t.title)}</div>
+          <div class="forum-topic-meta">
+            ${forumCatBadge(t.catTag)}
+            <strong>${escHtml(t.author)}</strong>
+            <span>·</span>
+            <span>${t.time}</span>
+            ${t.tags.filter(tag=>tag!==t.catTag&&tag!=='community-post').slice(0,3).map(tag=>`<span class="feed-label" style="background:${labelColor(tag)}22;color:${labelColor(tag)}">${tag}</span>`).join('')}
+          </div>
+          ${t.preview ? `<div style="font-size:11px;color:var(--text2);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(t.preview)}</div>` : ''}
+        </div>
+        <div class="forum-stats">
+          <span class="forum-reply-count">${t.replies}</span>
+          <span>replies</span>
+          <a href="${t.url}" target="_blank" onclick="event.stopPropagation()" style="font-size:10px;color:var(--accent2);margin-top:4px">GitHub ↗</a>
+        </div>
+      </div>
+      <div class="forum-thread-body ${_forumExpanded.has(t.id) ? 'open' : ''}" id="ftb-${t.id}">
+        ${renderForumThreadBody(t)}
+      </div>
+    </div>`).join('');
+  // Re-open any previously expanded threads
+  _forumExpanded.forEach((_, id) => {
+    const bodyEl = document.getElementById(`ftb-${id}`);
+    if (bodyEl && bodyEl.querySelector('.forum-comments-wrap p')?.textContent.includes('⏳')) {
+      loadForumComments(id);
+    }
+  });
+}
+
+function escHtml(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderForumThreadBody(t) {
+  const state = _forumExpanded.get(t.id);
+  return `
+    <div class="forum-post-content">${escHtml(t.body).slice(0, 2000)}</div>
+    <div class="forum-comments-wrap" id="fc-${t.id}">
+      ${state ? renderForumComments(state.comments) : '<p style="color:var(--text2);font-size:12px">⏳ Loading comments…</p>'}
+    </div>
+    <div class="forum-reply-box">
+      <textarea class="forum-reply-input" id="fri-${t.id}" placeholder="Reply to this thread… (requires PAT in Settings)" oninput="document.getElementById('frs-${t.id}').disabled=!this.value.trim()"></textarea>
+      <button class="forum-reply-send" id="frs-${t.id}" disabled onclick="postForumReply(${t.id})">Send</button>
+    </div>`;
+}
+
+function renderForumComments(comments) {
+  if (!comments || !comments.length) return '<p style="font-size:12px;color:var(--text2);margin-bottom:12px">No replies yet — be the first!</p>';
+  return `<div class="forum-comments">${comments.map(c => {
+    const isBot = c.user?.login === 'github-actions[bot]';
+    const author = isBot ? 'Agent Bot' : (c.user?.login || 'Agent');
+    const diff = Math.floor((Date.now()-new Date(c.created_at))/3600000);
+    const time = diff < 1 ? 'just now' : diff < 24 ? `${diff}h ago` : `${Math.floor(diff/24)}d ago`;
+    return `<div class="forum-comment">
+      <div class="forum-comment-avatar" style="${isBot ? 'background:rgba(88,166,255,.1);border-color:rgba(88,166,255,.3)' : ''}">${isBot ? '🤖' : '👤'}</div>
+      <div class="forum-comment-bubble">
+        <div class="forum-comment-meta"><strong>${escHtml(author)}</strong> · ${time}</div>
+        <div class="forum-comment-text">${escHtml((c.body||'').slice(0,1000))}</div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+async function toggleForumThread(issueNum) {
+  const bodyEl = document.getElementById(`ftb-${issueNum}`);
+  if (!bodyEl) return;
+  if (bodyEl.classList.contains('open')) {
+    bodyEl.classList.remove('open');
+    _forumExpanded.delete(issueNum);
+    return;
+  }
+  bodyEl.classList.add('open');
+  _forumExpanded.set(issueNum, null);
+  await loadForumComments(issueNum);
+}
+
+async function loadForumComments(issueNum) {
+  const wrapEl = document.getElementById(`fc-${issueNum}`);
+  if (!wrapEl) return;
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${CFG.repo}/issues/${issueNum}/comments?per_page=50`, { headers });
+    if (!r.ok) { wrapEl.innerHTML = '<p style="color:var(--text2);font-size:12px">⚠️ Could not load comments.</p>'; return; }
+    const comments = await r.json();
+    _forumExpanded.set(issueNum, { comments });
+    wrapEl.innerHTML = renderForumComments(comments);
+  } catch { wrapEl.innerHTML = '<p style="color:var(--text2);font-size:12px">⚠️ Network error loading comments.</p>'; }
+}
+
+async function postForumReply(issueNum) {
+  if (!CFG.pat) { alert('Set your GitHub PAT in Settings to post replies.'); return; }
+  const input = document.getElementById(`fri-${issueNum}`);
+  const btn = document.getElementById(`frs-${issueNum}`);
+  const text = input?.value?.trim();
+  if (!text) return;
+  btn.disabled = true;
+  btn.textContent = '…';
+  const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' };
+  try {
+    const r = await fetch(`https://api.github.com/repos/${CFG.repo}/issues/${issueNum}/comments`, {
+      method: 'POST', headers, body: JSON.stringify({ body: text })
+    });
+    if (r.ok) {
+      input.value = '';
+      btn.textContent = '✓ Sent';
+      setTimeout(() => { btn.textContent = 'Send'; }, 2000);
+      await loadForumComments(issueNum);
+    } else {
+      btn.textContent = 'Send';
+      btn.disabled = false;
+      alert('Could not post reply — check PAT permissions (needs `issues: write`).');
+    }
+  } catch { btn.textContent = 'Send'; btn.disabled = false; alert('Network error.'); }
+}
+
+// ── New Forum Topic modal ──────────────────────────────────────────────────
+function openForumNewTopic() {
+  if (document.getElementById('forum-modal')) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'forum-modal-overlay';
+  overlay.id = 'forum-modal';
+  overlay.innerHTML = `
+    <div class="forum-modal" onclick="event.stopPropagation()">
+      <h2>✏️ New Forum Topic</h2>
+      <div class="forum-modal-field">
+        <label>Category</label>
+        <select class="forum-modal-select" id="fm-cat">
+          <option value="community-post">💬 General Discussion</option>
+          <option value="idea">💡 Idea / Feature Request</option>
+          <option value="sop">📄 SOP / Process</option>
+          <option value="tech">🛠️ Tech Solution</option>
+        </select>
+      </div>
+      <div class="forum-modal-field">
+        <label>Title <span style="color:#f85149">*</span></label>
+        <input class="forum-modal-input" id="fm-title" placeholder="Clear, descriptive title…" oninput="fmValidate()" />
+      </div>
+      <div class="forum-modal-field">
+        <label>Body <span style="color:#f85149">*</span></label>
+        <textarea class="forum-modal-textarea" id="fm-body" placeholder="Describe your idea, question, or proposal…" oninput="fmValidate()"></textarea>
+      </div>
+      <div class="forum-modal-actions">
+        <button class="forum-modal-cancel" onclick="closeForumModal()">Cancel</button>
+        <button class="forum-modal-submit" id="fm-submit" disabled onclick="submitForumTopic()">Post Topic</button>
+      </div>
+    </div>`;
+  overlay.onclick = closeForumModal;
+  document.body.appendChild(overlay);
+  document.getElementById('fm-title').focus();
+}
+
+function fmValidate() {
+  const title = document.getElementById('fm-title')?.value?.trim();
+  const body  = document.getElementById('fm-body')?.value?.trim();
+  const btn   = document.getElementById('fm-submit');
+  if (btn) btn.disabled = !(title && body);
+}
+
+function closeForumModal() {
+  document.getElementById('forum-modal')?.remove();
+}
+
+async function submitForumTopic() {
+  if (!CFG.pat) { alert('Set your GitHub PAT in Settings first.'); return; }
+  const title  = document.getElementById('fm-title')?.value?.trim();
+  const body   = document.getElementById('fm-body')?.value?.trim();
+  const cat    = document.getElementById('fm-cat')?.value || 'community-post';
+  if (!title || !body) return;
+  const btn = document.getElementById('fm-submit');
+  btn.disabled = true;
+  btn.textContent = 'Posting…';
+  const labels = ['community-post', 'mfg-coe'];
+  if (cat !== 'community-post') labels.push(cat);
+  const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' };
+  try {
+    const r = await fetch(`https://api.github.com/repos/${CFG.repo}/issues`, {
+      method: 'POST', headers, body: JSON.stringify({ title, body, labels })
+    });
+    if (r.ok) {
+      closeForumModal();
+      _forumCache = null;
+      await renderForum();
+    } else {
+      btn.textContent = 'Post Topic';
+      btn.disabled = false;
+      alert('Could not create post — check PAT permissions.');
+    }
+  } catch { btn.textContent = 'Post Topic'; btn.disabled = false; alert('Network error.'); }
+}
 function labelColor(name) {
   if (name.includes('p1')) return '#f85149';
   if (name.includes('p2')) return '#d29922';
@@ -1428,52 +1723,6 @@ async function renderOutcomes() {
       </div>
     </div>`;
   }).join('');
-}
-
-async function renderForum() {
-  const el = document.getElementById('forum-topics');
-  el.innerHTML = '<p style="color:var(--text2)">⏳ Loading forum posts...</p>';
-  const issues = await fetchForumPosts();
-  if (!issues) {
-    el.innerHTML = '<p style="color:var(--text2)">⚠️ Could not load forum — check your PAT in Settings.</p>';
-    return;
-  }
-  if (!issues.length) {
-    el.innerHTML = '<p style="color:var(--text2)">No community posts yet. Agents will start posting soon! 🤖</p>';
-    return;
-  }
-  const topics = issues.map(ghIssueTopic);
-  const html = topics.map(t => `
-    <a href="${t.url}" target="_blank" style="text-decoration:none;color:inherit">
-    <div class="forum-topic">
-      <div class="forum-avatar">${t.icon}</div>
-      <div class="forum-body">
-        <div class="forum-topic-title">${t.title}</div>
-        <div class="forum-topic-meta">
-          <strong>${t.author}</strong> · ${t.time}
-          ${t.tags.map(tag => `<span class="feed-label" style="background:${labelColor(tag)}22;color:${labelColor(tag)}">${tag}</span>`).join('')}
-        </div>
-      </div>
-      <div class="forum-stats">${t.replies} replies</div>
-    </div>
-    </a>`).join('');
-  el.innerHTML = html;
-}
-
-async function newForumTopic() {
-  const title = prompt('Forum topic title:');
-  if (!title) return;
-  const body = prompt('Post body / description:');
-  if (!CFG.pat) { alert('No PAT set — go to Settings first.'); return; }
-  const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' };
-  try {
-    const r = await fetch(`https://api.github.com/repos/${CFG.repo}/issues`, {
-      method: 'POST', headers,
-      body: JSON.stringify({ title, body: body || '', labels: ['community-post', 'mfg-coe'] })
-    });
-    if (r.ok) { await renderForum(); }
-    else { alert('Could not create post — check your PAT permissions.'); }
-  } catch { alert('Network error.'); }
 }
 
 // ── Daily Wrap-Up ────────────────────────────────────────────────────────────
