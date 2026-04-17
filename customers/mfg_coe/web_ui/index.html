@@ -1101,6 +1101,15 @@
         <p style="font-size:12px;color:var(--text2);margin-bottom:16px">The RAPP Function App endpoint for the Chat view.</p>
         <button class="chat-send" style="padding:8px 24px;font-size:14px" onclick="saveConfig()">💾 Save PAT</button>
         <span id="save-status" style="margin-left:12px;font-size:12px;color:var(--green);display:none">✓ Saved!</span>
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+          <div class="card-title" style="margin-bottom:8px">🔐 Admin Mode</div>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Enter admin PIN to unlock advanced settings (agent sources, endpoint config).</p>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="cfg-admin-pin" class="chat-input" style="max-width:180px" type="password" placeholder="Admin PIN…" onkeydown="if(event.key==='Enter')toggleAdminMode()" />
+            <button class="lib-btn primary" onclick="toggleAdminMode()">Unlock</button>
+            <span id="admin-mode-badge" style="font-size:11px;display:none;background:rgba(248,81,73,.15);color:#f85149;padding:3px 10px;border-radius:10px;font-weight:700">🔐 ADMIN</span>
+          </div>
+        </div>
       </div>
 
       <div class="card" style="margin-top:16px">
@@ -1116,6 +1125,55 @@
           <button class="theme-swatch" data-theme="ocean"    onclick="setTheme('ocean')">🌊 Ocean</button>
         </div>
         <p style="font-size:12px;color:var(--text2)">Current: <strong id="settings-theme-label" style="color:var(--accent)">—</strong></p>
+      </div>
+
+      <!-- Admin-only: Agent Library Sources -->
+      <div class="card admin-only-card" id="admin-sources-card" style="margin-top:16px;display:none">
+        <div class="card-title">🗂️ Agent Library Sources <span style="font-size:11px;background:rgba(248,81,73,.15);color:#f85149;padding:2px 8px;border-radius:8px;margin-left:8px">Admin</span></div>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Add GitHub repositories or label-based feeds as browsable sources in the Agent Library. Each source gets its own tab.</p>
+
+        <!-- Existing sources list -->
+        <div id="admin-sources-list" style="margin-bottom:16px"></div>
+
+        <!-- Add new source form -->
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">➕ Add New Source</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div>
+              <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px">Display Name *</label>
+              <input id="src-name" class="chat-input" style="width:100%" placeholder="e.g. Field Operations" />
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px">Icon (emoji)</label>
+              <input id="src-icon" class="chat-input" style="width:100%" placeholder="🔧" maxlength="4" />
+            </div>
+          </div>
+          <div style="margin-bottom:10px">
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px">Source Type</label>
+            <select id="src-type" class="forum-modal-select" style="width:100%;max-width:300px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;padding:9px 13px;color:var(--text);font-size:13px" onchange="renderSourceTypeHint()">
+              <option value="github-repo">GitHub Repo — browse agents/*.py files</option>
+              <option value="github-issues">GitHub Issues — agents described as issues with a label</option>
+              <option value="catalog-json">JSON Catalog URL — fetch an agents.json array</option>
+            </select>
+          </div>
+          <div id="src-type-hint" style="font-size:11px;color:var(--text2);margin-bottom:10px"></div>
+          <div style="margin-bottom:10px">
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px">GitHub Repo or URL *</label>
+            <input id="src-url" class="chat-input" style="width:100%" placeholder="e.g. owner/repo or https://…" />
+          </div>
+          <div style="margin-bottom:10px" id="src-label-row">
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px">Label filter (for issues type)</label>
+            <input id="src-label" class="chat-input" style="width:100%;max-width:280px" placeholder="e.g. agent-listing" />
+          </div>
+          <div style="margin-bottom:14px">
+            <label style="font-size:11px;font-weight:700;color:var(--text2);display:block;margin-bottom:4px">Description</label>
+            <input id="src-desc" class="chat-input" style="width:100%" placeholder="Short description shown in the library…" />
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="lib-btn primary" style="padding:8px 20px;font-size:13px" onclick="addLibrarySource()">Add Source</button>
+            <span id="src-save-status" style="font-size:12px;color:var(--green);display:none">✓ Source added!</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1151,6 +1209,209 @@ function saveConfig() {
   status.style.display = 'inline';
   setTimeout(() => status.style.display = 'none', 3000);
   loadAll();
+}
+
+// ── Admin mode ─────────────────────────────────────────────────────────────
+const ADMIN_PIN_KEY = 'coe_admin_pin';
+const ADMIN_ACTIVE_KEY = 'coe_admin_active';
+// Default PIN stored in localStorage so admin can change it; default = 'admin'
+let _isAdmin = localStorage.getItem(ADMIN_ACTIVE_KEY) === '1';
+
+function toggleAdminMode() {
+  const input = document.getElementById('cfg-admin-pin');
+  const pin = input?.value?.trim();
+  if (!pin) return;
+  const stored = localStorage.getItem(ADMIN_PIN_KEY) || 'admin';
+  if (pin === stored) {
+    _isAdmin = true;
+    localStorage.setItem(ADMIN_ACTIVE_KEY, '1');
+    input.value = '';
+    applyAdminUI();
+    showLibToast('🔐 Admin mode enabled', '#f85149');
+  } else if (pin === 'lock') {
+    _isAdmin = false;
+    localStorage.removeItem(ADMIN_ACTIVE_KEY);
+    input.value = '';
+    applyAdminUI();
+    showLibToast('🔒 Admin mode disabled', '#8b949e');
+  } else {
+    showLibToast('❌ Incorrect PIN', '#f85149');
+    input.value = '';
+  }
+}
+
+function applyAdminUI() {
+  const badge = document.getElementById('admin-mode-badge');
+  const card  = document.getElementById('admin-sources-card');
+  if (badge) badge.style.display = _isAdmin ? 'inline' : 'none';
+  if (card)  card.style.display  = _isAdmin ? 'block'  : 'none';
+  if (_isAdmin) renderAdminSourcesList();
+}
+
+// ── Agent Library Custom Sources ─────────────────────────────────────────
+const LIB_SOURCES_KEY = 'coe_lib_sources';
+
+// Built-in source definitions (read-only)
+const BUILTIN_SOURCES = [
+  { id: 'coe',       name: 'CoE Team',   icon: '🤖', desc: 'Your 14 core Mfg CoE agents',               builtin: true },
+  { id: 'rar',       name: 'RAR Registry', icon: '⚡', desc: 'Community agent registry',                  builtin: true },
+  { id: 'aibast',    name: 'AIBAST',     icon: '🏭', desc: 'Industry agents from AIBAST accelerator',    builtin: true },
+  { id: 'community', name: 'Community',  icon: '🌐', desc: 'CommunityRAPP template agents',              builtin: true },
+  { id: 'local',     name: 'Local',      icon: '💾', desc: 'Locally installed agents',                   builtin: true },
+];
+
+function _loadCustomSources() {
+  try { return JSON.parse(localStorage.getItem(LIB_SOURCES_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function _saveCustomSources(sources) {
+  localStorage.setItem(LIB_SOURCES_KEY, JSON.stringify(sources));
+}
+
+let _customSources = _loadCustomSources();
+
+function renderAdminSourcesList() {
+  const el = document.getElementById('admin-sources-list');
+  if (!el) return;
+  const allSources = [...BUILTIN_SOURCES, ..._customSources];
+  if (!allSources.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Current Sources</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${allSources.map(s => `
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
+          <span style="font-size:18px">${s.icon || '📦'}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600">${s.name}</div>
+            <div style="font-size:11px;color:var(--text2)">${s.desc || ''}${s.type ? ` · ${s.type}` : ''}${s.url ? ` · <code style="font-size:10px">${s.url}</code>` : ''}</div>
+          </div>
+          ${s.builtin
+            ? `<span style="font-size:10px;font-weight:700;color:var(--text2);background:var(--bg2);padding:2px 8px;border-radius:8px">Built-in</span>`
+            : `<button class="lib-btn danger" onclick="removeLibrarySource('${s.id}')">Remove</button>`}
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderSourceTypeHint() {
+  const type = document.getElementById('src-type')?.value;
+  const hint = document.getElementById('src-type-hint');
+  const labelRow = document.getElementById('src-label-row');
+  const urlInput = document.getElementById('src-url');
+  if (!hint) return;
+  if (type === 'github-repo') {
+    hint.textContent = 'Scans the agents/ folder of the repo for .py files and adds them as browsable entries.';
+    if (urlInput) urlInput.placeholder = 'owner/repo';
+    if (labelRow) labelRow.style.display = 'none';
+  } else if (type === 'github-issues') {
+    hint.textContent = 'Fetches GitHub Issues with the specified label — each issue is treated as an agent listing.';
+    if (urlInput) urlInput.placeholder = 'owner/repo';
+    if (labelRow) labelRow.style.display = 'block';
+  } else if (type === 'catalog-json') {
+    hint.textContent = 'Fetches a JSON array from the URL. Each object should have: id, name, icon, desc, category.';
+    if (urlInput) urlInput.placeholder = 'https://example.com/agents.json';
+    if (labelRow) labelRow.style.display = 'none';
+  }
+}
+
+function addLibrarySource() {
+  const name  = document.getElementById('src-name')?.value?.trim();
+  const icon  = document.getElementById('src-icon')?.value?.trim() || '📦';
+  const type  = document.getElementById('src-type')?.value;
+  const url   = document.getElementById('src-url')?.value?.trim();
+  const label = document.getElementById('src-label')?.value?.trim();
+  const desc  = document.getElementById('src-desc')?.value?.trim();
+  if (!name || !url) { showLibToast('⚠️ Name and URL/Repo are required', '#d29922'); return; }
+  // Generate a stable slug ID
+  const id = 'custom-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
+  const source = { id, name, icon, type, url, label: label || '', desc: desc || '', builtin: false };
+  _customSources.push(source);
+  _saveCustomSources(_customSources);
+  // Clear form
+  ['src-name','src-icon','src-url','src-label','src-desc'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('src-icon').value = '';
+  renderAdminSourcesList();
+  rebuildLibraryTabs();
+  const status = document.getElementById('src-save-status');
+  if (status) { status.style.display = 'inline'; setTimeout(() => status.style.display = 'none', 3000); }
+  showLibToast(`✅ "${name}" added as a library source`, '#3fb950');
+}
+
+function removeLibrarySource(id) {
+  if (!confirm('Remove this source from the Agent Library?')) return;
+  _customSources = _customSources.filter(s => s.id !== id);
+  _saveCustomSources(_customSources);
+  renderAdminSourcesList();
+  rebuildLibraryTabs();
+  showLibToast('🗑️ Source removed', '#8b949e');
+}
+
+// Rebuild the source tabs + fetch custom source agents into AGENT_CATALOG
+function rebuildLibraryTabs() {
+  const tabsEl = document.getElementById('lib-source-tabs');
+  if (!tabsEl) return;
+  // Built-in tabs
+  const tabs = [
+    { id: 'all', label: 'All Sources' },
+    { id: 'rar', label: '⚡ RAR Registry' },
+    { id: 'aibast', label: '🏭 AIBAST' },
+    { id: 'community', label: '🌐 Community' },
+  ];
+  // Custom source tabs
+  _customSources.forEach(s => tabs.push({ id: s.id, label: `${s.icon} ${s.name}` }));
+  tabsEl.innerHTML = tabs.map(t =>
+    `<div class="lib-tab ${libActiveTab === t.id ? 'active' : ''}" data-source="${t.id}" onclick="setLibTab(this,'${t.id}')">${t.label}</div>`
+  ).join('');
+}
+
+async function fetchCustomSourceAgents(source) {
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  const existing = new Set(AGENT_CATALOG.map(a => a.id));
+  const newAgents = [];
+  try {
+    if (source.type === 'github-issues') {
+      const label = source.label || 'agent-listing';
+      const r = await fetch(`https://api.github.com/repos/${source.url}/issues?labels=${label}&state=open&per_page=50`, { headers });
+      if (!r.ok) return;
+      const issues = await r.json();
+      issues.forEach(i => {
+        const id = `${source.id}-${i.number}`;
+        if (existing.has(id)) return;
+        newAgents.push({ id, source: source.id, icon: '🤖', name: i.title.replace(/^\[Agent\]\s*/i, ''), category: 'custom', quality: 'community', desc: (i.body || '').slice(0, 200), tags: (i.labels || []).map(l => l.name) });
+      });
+    } else if (source.type === 'github-repo') {
+      const r = await fetch(`https://api.github.com/repos/${source.url}/contents/agents`, { headers });
+      if (!r.ok) return;
+      const files = await r.json();
+      (Array.isArray(files) ? files : []).filter(f => f.name.endsWith('.py') && !f.name.startsWith('_')).forEach(f => {
+        const name = f.name.replace(/_agent\.py$/, '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        const id = `${source.id}-${f.name.replace('.py', '')}`;
+        if (existing.has(id)) return;
+        newAgents.push({ id, source: source.id, icon: '🐍', name, category: 'custom', quality: 'community', desc: `Python agent from ${source.url}`, tags: ['python', 'github'], installCmd: `# from ${source.url}` });
+      });
+    } else if (source.type === 'catalog-json') {
+      const r = await fetch(source.url);
+      if (!r.ok) return;
+      const items = await r.json();
+      (Array.isArray(items) ? items : []).forEach(a => {
+        const id = a.id ? `${source.id}-${a.id}` : `${source.id}-${Math.random().toString(36).slice(2)}`;
+        if (existing.has(id)) return;
+        newAgents.push({ ...a, id, source: source.id });
+      });
+    }
+  } catch { /* silently skip failed sources */ }
+  if (newAgents.length) {
+    AGENT_CATALOG.push(...newAgents);
+    renderLibrary();
+  }
+}
+
+async function loadCustomSources() {
+  rebuildLibraryTabs();
+  for (const s of _customSources) {
+    await fetchCustomSourceAgents(s);
+  }
 }
 
 // ── Navigation ─────────────────────────────────────────────────────────────
@@ -2362,7 +2623,10 @@ updateClock();
 setInterval(updateClock, 1000);
 document.getElementById('kpi-done').textContent = '13';
 updateActiveAgentHeader();
+applyAdminUI();
+renderSourceTypeHint();
 loadAll();
+loadCustomSources();
 
 // ── Uptime counter ─────────────────────────────────────────────────────────
 const PAGE_START = Date.now();
