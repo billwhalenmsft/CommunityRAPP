@@ -522,9 +522,20 @@
     .lib-tab { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 4px 12px; font-size: 12px; cursor: pointer; color: var(--text2); transition: all .15s; white-space: nowrap; }
     .lib-tab:hover { border-color: var(--accent); color: var(--text); }
     .lib-tab.active { background: rgba(88,166,255,0.12); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    /* Section headers for Installed / Available */
+    .lib-section-header { display: flex; align-items: center; gap: 10px; margin: 20px 0 12px; }
+    .lib-section-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; }
+    .lib-section-count { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 2px 8px; font-size: 11px; color: var(--text2); }
+    .lib-section-line { flex: 1; height: 1px; background: var(--border); }
+    .lib-section-header:first-child { margin-top: 4px; }
+    /* Cards */
     .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-    .lib-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s; display: flex; flex-direction: column; gap: 6px; }
+    .lib-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s; display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden; }
     .lib-card:hover { border-color: var(--accent2); box-shadow: 0 2px 12px rgba(88,166,255,0.1); }
+    .lib-card.installed { border-color: rgba(63,185,80,0.35); }
+    .lib-card.installed::after { content: '✓ Active'; position: absolute; top: 10px; right: 10px; font-size: 9px; font-weight: 700; color: var(--green); background: rgba(63,185,80,0.12); padding: 2px 7px; border-radius: 8px; letter-spacing: .4px; }
+    .lib-card.core-agent::after { content: '⚙️ Core'; color: var(--accent2); background: rgba(88,166,255,.1); }
+    .lib-card.installing { opacity: .65; pointer-events: none; }
     .lib-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
     .lib-card-icon { font-size: 26px; flex-shrink: 0; }
     .lib-card-name { font-weight: 700; font-size: 13px; line-height: 1.3; }
@@ -545,13 +556,18 @@
     .lib-btn:hover { border-color: var(--accent); color: var(--accent); }
     .lib-btn.primary { background: var(--accent2); color: white; border-color: var(--accent2); }
     .lib-btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+    .lib-btn.danger { background: rgba(248,81,73,0.12); color: #f85149; border-color: rgba(248,81,73,0.3); }
+    .lib-btn.danger:hover { background: rgba(248,81,73,0.2); }
     .lib-stats { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
     .lib-stat-item { font-size: 12px; color: var(--text2); }
     .lib-stat-item strong { color: var(--text); }
+    /* Install toast */
+    .lib-toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,.4); z-index: 9000; display: flex; align-items: center; gap: 10px; animation: slideUp .25s ease; pointer-events: none; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
     /* Agent Library detail modal */
     .lib-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; }
     .lib-modal-overlay.open { display: flex; }
-    .lib-modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; max-width: 520px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative; }
+    .lib-modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; max-width: 540px; width: 90%; max-height: 82vh; overflow-y: auto; position: relative; }
     .lib-modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; color: var(--text2); font-size: 18px; cursor: pointer; }
     .lib-modal-close:hover { color: var(--text); }
     .lib-modal-icon { font-size: 40px; margin-bottom: 8px; }
@@ -560,7 +576,8 @@
     .lib-modal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
     .lib-modal-tag { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 3px 9px; font-size: 11px; color: var(--text2); }
     .lib-modal-section { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; margin: 14px 0 6px; }
-    .lib-modal-code { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: monospace; font-size: 12px; color: var(--accent); margin-bottom: 12px; }
+    .lib-modal-code { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: monospace; font-size: 12px; color: var(--accent); margin-bottom: 12px; word-break: break-all; }
+    .lib-modal-status-bar { display: flex; align-items: center; gap: 8px; background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.25); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; font-size: 12px; color: var(--green); }
 
 
     /* ── Ticker ─────────────────────────────────────────────────────────── */
@@ -1025,9 +1042,9 @@
       </div>
 
       <div class="lib-stats">
-        <div class="lib-stat-item"><strong id="lib-stat-total">0</strong> total agents</div>
-        <div class="lib-stat-item"><strong id="lib-stat-coe">0</strong> CoE team</div>
-        <div class="lib-stat-item" style="color:var(--purple)"><strong id="lib-stat-rar">0</strong> RAR registry</div>
+        <div class="lib-stat-item"><strong id="lib-stat-installed">0</strong> installed</div>
+        <div class="lib-stat-item"><strong id="lib-stat-available">0</strong> available</div>
+        <div class="lib-stat-item" style="color:var(--purple)"><strong id="lib-stat-rar">0</strong> RAR</div>
         <div class="lib-stat-item" style="color:var(--green)"><strong id="lib-stat-aibast">0</strong> AIBAST</div>
         <div class="lib-stat-item" style="color:var(--yellow)"><strong id="lib-stat-community">0</strong> community</div>
       </div>
@@ -1039,13 +1056,25 @@
 
       <div class="lib-source-tabs" id="lib-source-tabs">
         <div class="lib-tab active" data-source="all"       onclick="setLibTab(this,'all')">All Sources</div>
-        <div class="lib-tab"        data-source="coe"       onclick="setLibTab(this,'coe')">🤖 CoE Team</div>
         <div class="lib-tab"        data-source="rar"       onclick="setLibTab(this,'rar')">⚡ RAR Registry</div>
         <div class="lib-tab"        data-source="aibast"    onclick="setLibTab(this,'aibast')">🏭 AIBAST</div>
         <div class="lib-tab"        data-source="community" onclick="setLibTab(this,'community')">🌐 Community</div>
-        <div class="lib-tab"        data-source="local"     onclick="setLibTab(this,'local')">💾 Local</div>
       </div>
 
+      <!-- Installed section -->
+      <div class="lib-section-header">
+        <span class="lib-section-title">✅ Installed Agents</span>
+        <span class="lib-section-count" id="lib-installed-count">0</span>
+        <div class="lib-section-line"></div>
+      </div>
+      <div class="lib-grid" id="lib-installed-grid"></div>
+
+      <!-- Available section -->
+      <div class="lib-section-header" style="margin-top:28px">
+        <span class="lib-section-title">📦 Available to Install</span>
+        <span class="lib-section-count" id="lib-available-count">0</span>
+        <div class="lib-section-line"></div>
+      </div>
       <div class="lib-grid" id="lib-grid"></div>
     </div>
 
@@ -2428,6 +2457,91 @@ const AGENT_CATALOG = [
 
 let libActiveTab = 'all';
 
+// ── Installed agent state (localStorage persisted) ─────────────────────────
+const LIB_STORAGE_KEY = 'bib_installed_agents';
+// Core agents (always installed, cannot be removed)
+const CORE_AGENT_IDS = new Set(AGENT_CATALOG.filter(a => a.source === 'coe' || a.source === 'local').map(a => a.id));
+
+function _loadInstalledSet() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LIB_STORAGE_KEY) || '[]');
+    return new Set([...CORE_AGENT_IDS, ...saved]);
+  } catch { return new Set(CORE_AGENT_IDS); }
+}
+
+function _saveInstalledSet(set) {
+  // Only persist non-core IDs
+  const extra = [...set].filter(id => !CORE_AGENT_IDS.has(id));
+  localStorage.setItem(LIB_STORAGE_KEY, JSON.stringify(extra));
+}
+
+let _installedAgents = _loadInstalledSet();
+
+function isInstalled(id) { return _installedAgents.has(id); }
+function isCoreAgent(id) { return CORE_AGENT_IDS.has(id); }
+
+// ── Install / Uninstall ────────────────────────────────────────────────────
+async function installAgent(id) {
+  const agent = AGENT_CATALOG.find(a => a.id === id);
+  if (!agent) return;
+  // Optimistic UI
+  _installedAgents.add(id);
+  _saveInstalledSet(_installedAgents);
+  renderLibrary();
+  showLibToast(`⚙️ Installing ${agent.name}…`, '#58a6ff');
+
+  // If we have an endpoint, ask GithubAgentLibraryManager to actually install it
+  if (CFG.endpoint) {
+    try {
+      const payload = {
+        user_input: `Install agent "${agent.name}" (id: ${agent.id}) from the ${agent.source} registry. ` +
+          `${agent.installCmd ? `Install command: ${agent.installCmd}.` : ''} ` +
+          `Fetch the agent Python file and save it to the agents/ folder in Azure File Storage so it loads on next restart.`,
+        conversation_history: [],
+        user_guid: CFG.userGuid || ''
+      };
+      const resp = await fetch(CFG.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(CFG.apiKey ? { 'x-functions-key': CFG.apiKey } : {}) },
+        body: JSON.stringify(payload)
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        showLibToast(`✅ ${agent.name} installed!`, '#3fb950');
+      } else {
+        showLibToast(`✅ ${agent.name} marked as installed (offline install — restart to activate)`, '#3fb950');
+      }
+    } catch {
+      showLibToast(`✅ ${agent.name} marked as installed (no endpoint — restart to activate)`, '#d29922');
+    }
+  } else {
+    showLibToast(`✅ ${agent.name} installed! Configure endpoint in Settings to activate server-side.`, '#3fb950');
+  }
+  document.getElementById('lib-modal-overlay').classList.remove('open');
+}
+
+async function uninstallAgent(id) {
+  const agent = AGENT_CATALOG.find(a => a.id === id);
+  if (!agent) return;
+  if (isCoreAgent(id)) { showLibToast('⚠️ Core CoE agents cannot be removed.', '#d29922'); return; }
+  if (!confirm(`Remove ${agent.name} from your installed agents?\n\nNote: You can reinstall at any time from the library.`)) return;
+  _installedAgents.delete(id);
+  _saveInstalledSet(_installedAgents);
+  renderLibrary();
+  showLibToast(`🗑️ ${agent.name} removed`, '#8b949e');
+  document.getElementById('lib-modal-overlay').classList.remove('open');
+}
+
+function showLibToast(msg, color = '#58a6ff') {
+  document.querySelectorAll('.lib-toast').forEach(t => t.remove());
+  const toast = document.createElement('div');
+  toast.className = 'lib-toast';
+  toast.innerHTML = `<span style="color:${color};font-size:16px">●</span> ${msg}`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
 function setLibTab(el, source) {
   document.querySelectorAll('.lib-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
@@ -2437,70 +2551,105 @@ function setLibTab(el, source) {
 
 function renderLibrary() {
   const q = (document.getElementById('lib-search-input')?.value || '').toLowerCase().trim();
-  const filtered = AGENT_CATALOG.filter(a => {
-    const matchSource = libActiveTab === 'all' || a.source === libActiveTab;
-    const matchQ = !q ||
+  const sourceLabel = { coe:'CoE Team', rar:'RAR', aibast:'AIBAST', community:'Community', local:'Local' };
+
+  function matchesSearch(a) {
+    return !q ||
       a.name.toLowerCase().includes(q) ||
       (a.desc || '').toLowerCase().includes(q) ||
       (a.category || '').toLowerCase().includes(q) ||
       (a.tags || []).some(t => t.includes(q)) ||
       a.source.includes(q);
-    return matchSource && matchQ;
-  });
+  }
+  function matchesTab(a) {
+    return libActiveTab === 'all' || a.source === libActiveTab;
+  }
 
-  // Update stat counters
-  document.getElementById('lib-stat-total').textContent     = AGENT_CATALOG.length;
-  document.getElementById('lib-stat-coe').textContent       = AGENT_CATALOG.filter(a => a.source === 'coe').length;
-  document.getElementById('lib-stat-rar').textContent       = AGENT_CATALOG.filter(a => a.source === 'rar').length;
-  document.getElementById('lib-stat-aibast').textContent    = AGENT_CATALOG.filter(a => a.source === 'aibast').length;
-  document.getElementById('lib-stat-community').textContent = AGENT_CATALOG.filter(a => a.source === 'community' || a.source === 'local').length;
+  const installed = AGENT_CATALOG.filter(a => isInstalled(a.id) && matchesSearch(a));
+  const available = AGENT_CATALOG.filter(a => !isInstalled(a.id) && matchesTab(a) && matchesSearch(a));
 
-  const sourceLabel = { coe:'CoE Team', rar:'RAR', aibast:'AIBAST', community:'Community', local:'Local' };
-  const html = filtered.length
-    ? filtered.map(a => `
-      <div class="lib-card" onclick="showAgentDetail('${a.id}')">
+  // Stats
+  const totalInstalled = AGENT_CATALOG.filter(a => isInstalled(a.id)).length;
+  const totalAvailable = AGENT_CATALOG.filter(a => !isInstalled(a.id)).length;
+  document.getElementById('lib-stat-installed').textContent  = totalInstalled;
+  document.getElementById('lib-stat-available').textContent  = totalAvailable;
+  document.getElementById('lib-stat-rar').textContent        = AGENT_CATALOG.filter(a => a.source === 'rar').length;
+  document.getElementById('lib-stat-aibast').textContent     = AGENT_CATALOG.filter(a => a.source === 'aibast').length;
+  document.getElementById('lib-stat-community').textContent  = AGENT_CATALOG.filter(a => a.source === 'community' || a.source === 'local').length;
+  document.getElementById('lib-installed-count').textContent = installed.length;
+  document.getElementById('lib-available-count').textContent = available.length;
+
+  function renderCard(a) {
+    const inst = isInstalled(a.id);
+    const core = isCoreAgent(a.id);
+    return `
+      <div class="lib-card ${inst ? 'installed' : ''} ${core ? 'core-agent' : ''}" onclick="showAgentDetail('${a.id}')">
         <div class="lib-card-header">
           <div class="lib-card-icon">${a.icon}</div>
-          <div style="flex:1">
+          <div style="flex:1;min-width:0">
             <div class="lib-card-name">${a.name}</div>
-            <div style="font-size:10px;color:var(--text2);margin-top:2px">${a.category || ''}</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:1px">${a.category || ''}</div>
           </div>
         </div>
-        <div class="lib-card-role">${(a.desc || '').substring(0,90)}${a.desc && a.desc.length > 90 ? '…' : ''}</div>
+        <div class="lib-card-role">${(a.desc || '').substring(0,85)}${a.desc && a.desc.length > 85 ? '…' : ''}</div>
         <div class="lib-card-footer">
           <span class="source-badge ${a.source}">${sourceLabel[a.source] || a.source}</span>
           <span class="quality-badge ${a.quality || 'community'}">${a.quality || 'community'}</span>
         </div>
-        <div class="lib-card-actions">
-          <button class="lib-btn" onclick="event.stopPropagation();showAgentDetail('${a.id}')">ℹ Info</button>
-          ${a.source !== 'coe' && a.source !== 'local' ? `<button class="lib-btn primary" onclick="event.stopPropagation();requestInstallAgent('${a.id}','${a.name}')">+ Add</button>` : ''}
-          ${a.source === 'coe' ? `<button class="lib-btn" onclick="event.stopPropagation();showView('chat');selectAgent('${a.id.replace('mfg-','')}')">💬 Chat</button>` : ''}
+        <div class="lib-card-actions" onclick="event.stopPropagation()">
+          <button class="lib-btn" onclick="showAgentDetail('${a.id}')">ℹ Info</button>
+          ${inst && core ? `<button class="lib-btn primary" onclick="showView('chat');selectAgent('${a.id.replace('mfg-','')}')">💬 Chat</button>` : ''}
+          ${inst && !core ? `<button class="lib-btn primary" onclick="showView('chat')">💬 Chat</button>
+            <button class="lib-btn danger" onclick="uninstallAgent('${a.id}')">Uninstall</button>` : ''}
+          ${!inst ? `<button class="lib-btn primary" onclick="installAgent('${a.id}')">⬇ Install</button>` : ''}
         </div>
-      </div>`).join('')
-    : '<p style="color:var(--text2);font-size:13px;grid-column:1/-1">No agents match your search. Try "Search Live Sources" to query the full registries.</p>';
+      </div>`;
+  }
 
-  document.getElementById('lib-grid').innerHTML = html;
+  const installedGrid = document.getElementById('lib-installed-grid');
+  const availableGrid = document.getElementById('lib-grid');
+
+  installedGrid.innerHTML = installed.length
+    ? installed.map(renderCard).join('')
+    : '<p style="color:var(--text2);font-size:13px;grid-column:1/-1">No installed agents match your search.</p>';
+
+  availableGrid.innerHTML = available.length
+    ? available.map(renderCard).join('')
+    : q || libActiveTab !== 'all'
+      ? '<p style="color:var(--text2);font-size:13px;grid-column:1/-1">No available agents match your search/filter. Try "Search Live Sources".</p>'
+      : '<p style="color:var(--text2);font-size:13px;grid-column:1/-1">All catalog agents are already installed! 🎉</p>';
 }
 
 function showAgentDetail(id) {
   const a = AGENT_CATALOG.find(x => x.id === id);
   if (!a) return;
+  const inst = isInstalled(a.id);
+  const core = isCoreAgent(a.id);
   const sourceLabel = { coe:'CoE Team', rar:'RAR Registry', aibast:'AIBAST', community:'Community Templates', local:'Local (installed)' };
+
+  const statusBar = inst
+    ? `<div class="lib-modal-status-bar">✅ <strong>Active</strong> — this agent is installed and available${core ? ' (core agent)' : ''}.</div>`
+    : `<div style="display:flex;align-items:center;gap:8px;background:rgba(139,148,158,.08);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--text2)">📦 Not installed — click <strong>Install</strong> to activate.</div>`;
+
   const content = `
     <div class="lib-modal-icon">${a.icon}</div>
     <div class="lib-modal-name">${a.name}</div>
-    <div style="display:flex;gap:6px;margin-bottom:4px">
+    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
       <span class="source-badge ${a.source}">${sourceLabel[a.source] || a.source}</span>
       <span class="quality-badge ${a.quality || 'community'}">${a.quality || 'community'}</span>
       ${a.author ? `<span style="font-size:11px;color:var(--text2)">${a.author}</span>` : ''}
+      ${a.category ? `<span style="font-size:11px;color:var(--text2)">• ${a.category}</span>` : ''}
     </div>
+    ${statusBar}
     <div class="lib-modal-desc">${a.desc || ''}</div>
     ${a.tags ? `<div class="lib-modal-tags">${a.tags.map(t => `<span class="lib-modal-tag">${t}</span>`).join('')}</div>` : ''}
-    ${a.installCmd ? `<div class="lib-modal-section">Install</div><div class="lib-modal-code">${a.installCmd}</div>` : ''}
-    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
-      ${a.source !== 'coe' && a.source !== 'local' ? `<button class="lib-btn primary" onclick="requestInstallAgent('${a.id}','${a.name}');document.getElementById('lib-modal-overlay').classList.remove('open')">+ Add to Team</button>` : ''}
-      ${a.source === 'coe' ? `<button class="lib-btn primary" onclick="showView('chat');document.getElementById('lib-modal-overlay').classList.remove('open')">💬 Chat with Agent</button>` : ''}
-      <button class="lib-btn" onclick="document.getElementById('lib-modal-overlay').classList.remove('open')">Close</button>
+    ${a.installCmd ? `<div class="lib-modal-section">Install Command</div><div class="lib-modal-code">${a.installCmd}</div>` : ''}
+    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
+      ${!inst ? `<button class="lib-btn primary" style="padding:8px 18px;font-size:13px" onclick="installAgent('${a.id}')">⬇ Install Agent</button>` : ''}
+      ${inst && core ? `<button class="lib-btn primary" style="padding:8px 18px;font-size:13px" onclick="showView('chat');document.getElementById('lib-modal-overlay').classList.remove('open');selectAgent('${a.id.replace('mfg-','')}')">💬 Chat with Agent</button>` : ''}
+      ${inst && !core ? `<button class="lib-btn primary" style="padding:8px 18px;font-size:13px" onclick="showView('chat');document.getElementById('lib-modal-overlay').classList.remove('open')">💬 Chat with Agent</button>
+        <button class="lib-btn danger" style="padding:8px 18px;font-size:13px" onclick="uninstallAgent('${a.id}')">🗑️ Uninstall</button>` : ''}
+      <button class="lib-btn" style="padding:8px 18px;font-size:13px" onclick="document.getElementById('lib-modal-overlay').classList.remove('open')">Close</button>
     </div>`;
   document.getElementById('lib-modal-content').innerHTML = content;
   document.getElementById('lib-modal-overlay').classList.add('open');
@@ -2511,28 +2660,9 @@ function closeLibModal(e) {
     document.getElementById('lib-modal-overlay').classList.remove('open');
 }
 
-function requestInstallAgent(id, name) {
-  // Creates a GitHub issue to request adding this agent to the CoE team
-  if (!CFG.pat) { alert('Set your GitHub PAT in Settings to create install requests.'); return; }
-  const title = `[Agent Library] Add agent: ${name}`;
-  const body  = `The \`${id}\` agent was requested from the Agent Library UI.\n\n` +
-                `**Agent ID:** \`${id}\`\n**Source:** See Agent Library\n\n` +
-                `Please evaluate and install this agent to the CoE team if appropriate.\n\n` +
-                `/cc @billwhalenmsft`;
-  fetch(`https://api.github.com/repos/${CFG.repo}/issues`, {
-    method: 'POST',
-    headers: { 'Authorization': `token ${CFG.pat}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, body, labels: ['mfg-coe', 'agent-task', 'raw-idea'] })
-  }).then(r => r.json()).then(issue => {
-    if (issue.html_url) alert(`✓ Install request created: ${issue.html_url}`);
-    else alert('Could not create issue — check your PAT and repo permissions.');
-  }).catch(() => alert('Request failed — check PAT in Settings.'));
-}
-
 function liveLibrarySearch() {
   const q = document.getElementById('lib-search-input')?.value?.trim() || '';
   if (!q) { alert('Enter a search term first, then click Search Live Sources.'); return; }
-  // Switch to chat and send a search request to the library agent
   showView('chat');
   selectAgent('orchestrator');
   setTimeout(() => {
