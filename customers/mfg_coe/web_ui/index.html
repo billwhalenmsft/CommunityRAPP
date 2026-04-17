@@ -236,6 +236,43 @@
     .chat-starter-arrow { position: absolute; bottom: 14px; right: 14px; font-size: 16px; color: var(--text2); opacity: 0; transition: all .2s; }
     .chat-starter-card:hover .chat-starter-arrow { opacity: 1; transform: translateX(3px); }
 
+    /* ── Intake Form Panel ──────────────────────────────────────────────── */
+    .chat-intake-panel { padding: 20px 20px 0; animation: intakeSlideIn .2s ease; }
+    @keyframes intakeSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .intake-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .intake-back { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 6px 12px; font-size: 12px; cursor: pointer; color: var(--text2); transition: all .15s; flex-shrink: 0; }
+    .intake-back:hover { border-color: var(--accent2); color: var(--accent2); }
+    .intake-icon-circle { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .intake-title-area { flex: 1; }
+    .intake-title { font-size: 15px; font-weight: 700; }
+    .intake-subtitle { font-size: 12px; color: var(--text2); margin-top: 3px; }
+    .intake-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; margin-bottom: 20px; }
+    .intake-field { display: flex; flex-direction: column; gap: 6px; }
+    .intake-field.full { grid-column: 1 / -1; }
+    .intake-field label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; }
+    .intake-req { color: var(--accent2); }
+    .intake-optional { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); border-radius: 4px; padding: 1px 6px; font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: 0; }
+    .intake-input, .intake-select, .intake-textarea {
+      background: var(--bg3); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 10px 13px; color: var(--text);
+      font-size: 13px; outline: none; font-family: inherit;
+      transition: border-color .2s, box-shadow .2s; width: 100%; box-sizing: border-box;
+    }
+    .intake-input::placeholder, .intake-textarea::placeholder { color: var(--text2); }
+    .intake-input:focus, .intake-select:focus, .intake-textarea:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(88,166,255,0.1); }
+    .intake-input.filled, .intake-select.filled, .intake-textarea.filled { border-color: rgba(63,185,80,0.5); }
+    .intake-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b949e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+    .intake-select option { background: #1c2128; }
+    .intake-textarea { resize: vertical; min-height: 80px; line-height: 1.55; }
+    .intake-footer { display: flex; align-items: center; gap: 16px; padding: 14px 0 18px; border-top: 1px solid var(--border); }
+    .intake-progress { flex: 1; }
+    .intake-progress-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+    .intake-progress-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .intake-progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent2), var(--green)); transition: width .3s ease; }
+    .intake-submit { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; border: none; border-radius: 10px; padding: 11px 24px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; box-shadow: 0 2px 8px rgba(88,166,255,.25); white-space: nowrap; flex-shrink: 0; }
+    .intake-submit:disabled { opacity: 0.38; cursor: not-allowed; box-shadow: none; background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+    .intake-submit:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(88,166,255,.4); }
+
     /* ── Outcomes ──────────────────────────────────────────────────────── */
     .outcome-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
     .outcome-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
@@ -793,25 +830,25 @@
       <div id="chat-starters-section" style="display:none; padding: 20px 20px 0;">
         <div class="chat-starters-header">✨ Quick Start</div>
         <div class="chat-starters">
-          <button class="chat-starter-card" onclick="useStarterPrompt('D365 Demo')">
+          <button class="chat-starter-card" onclick="openIntakeForm('D365 Demo')">
             <div class="chat-starter-icon">🏭</div>
             <div class="chat-starter-title">Set up a D365 demo</div>
             <div class="chat-starter-desc">Prep a tailored customer demo for Sales, Marketing, Customer Service, CCaaS or Field Service</div>
             <span class="chat-starter-arrow">→</span>
           </button>
-          <button class="chat-starter-card" onclick="useStarterPrompt('Power Platform')">
+          <button class="chat-starter-card" onclick="openIntakeForm('Power Platform')">
             <div class="chat-starter-icon">⚡</div>
             <div class="chat-starter-title">Build a Power Platform solution</div>
             <div class="chat-starter-desc">Apps, Copilot Studio agents, Power Automate flows, or other Power Platform tech</div>
             <span class="chat-starter-arrow">→</span>
           </button>
-          <button class="chat-starter-card" onclick="useStarterPrompt('RAPP')">
+          <button class="chat-starter-card" onclick="openIntakeForm('RAPP')">
             <div class="chat-starter-icon">🚀</div>
             <div class="chat-starter-title">Rapidly prototype with RAPP</div>
             <div class="chat-starter-desc">Scaffold an agentic use case from idea to working agent — fast</div>
             <span class="chat-starter-arrow">→</span>
           </button>
-          <button class="chat-starter-card" onclick="useStarterPrompt('CoE')">
+          <button class="chat-starter-card" onclick="openIntakeForm('CoE')">
             <div class="chat-starter-icon">🏛️</div>
             <div class="chat-starter-title">Set up a Center of Excellence</div>
             <div class="chat-starter-desc">Define mission, agent personas, SOP structure, and tooling for a new CoE</div>
@@ -819,6 +856,9 @@
           </button>
         </div>
       </div>
+
+      <!-- Guided intake form — rendered dynamically when a card is clicked -->
+      <div id="chat-intake-section" style="display:none"></div>
 
       <div class="chat-container">
         <div class="chat-messages" id="chat-messages"></div>
@@ -1607,11 +1647,13 @@ function renderChatMessages() {
 
 function renderChatStarters() {
   const msgs = CHAT_HISTORY[activeAgent] || [];
+  const intakeOpen = document.getElementById('chat-intake-section')?.style.display !== 'none';
+  if (intakeOpen) return;  // don't override intake
   const section = document.getElementById('chat-starters-section');
   if (section) section.style.display = msgs.length === 0 ? 'block' : 'none';
 }
 
-// STARTER_PROMPTS — templates with editable placeholders
+// STARTER_PROMPTS — kept as fallback for direct use
 const STARTER_PROMPTS = {
   'D365 Demo': `Create a new D365 demo for [customer name] (website: [customer website URL]) for this use case: [describe the use case]. The demo is for [Sales / Marketing / Customer Service / CCaaS / Field Service]. Please ask me questions to understand the customer context and help set it up.`,
   'Power Platform': `Build a Power Platform solution that does the following: [describe what you need]. This could involve Power Apps, Copilot Studio agents, Power Automate flows, Power Pages, or other Power Platform technology. Please ask me clarifying questions to define scope and approach.`,
@@ -1625,7 +1667,6 @@ function useStarterPrompt(key) {
   const input = document.getElementById('chat-input');
   if (input) {
     input.value = text;
-    // Auto-resize textarea
     input.style.height = '44px';
     input.style.height = Math.min(input.scrollHeight, 120) + 'px';
     input.focus();
@@ -1636,6 +1677,234 @@ function useStarterPrompt(key) {
     }
   }
 }
+
+// ── Intake Forms ──────────────────────────────────────────────────────────────
+// Discovery questions by discipline. Add new forms here — no other code changes needed.
+const INTAKE_FORMS = {
+  'D365 Demo': {
+    icon: '🏭', color: '#0078d4', bgColor: 'rgba(0,120,212,0.12)',
+    title: 'Set up a D365 Demo',
+    subtitle: 'A few details so I can prep a tailored, insight-led demo for your customer',
+    fields: [
+      { id: 'customer', label: 'Customer Name', type: 'text', required: true, placeholder: 'e.g. Zurn Elkay Water Solutions' },
+      { id: 'website',  label: 'Customer Website', type: 'text', required: true, placeholder: 'e.g. zurn.com' },
+      { id: 'industry', label: 'Industry', type: 'select', required: true,
+        options: ['Manufacturing','Distribution / Wholesale','Retail','Healthcare','Financial Services','Energy & Utilities','Professional Services','Other'] },
+      { id: 'area',     label: 'Demo Focus Area', type: 'select', required: true,
+        options: ['Sales','Marketing','Customer Service','CCaaS / Contact Center','Field Service','Multiple Areas'] },
+      { id: 'pain',     label: 'Key Pain Point or Business Goal', type: 'textarea', required: true, full: true,
+        placeholder: 'What challenge is this customer facing? What outcome matters most to them?' },
+      { id: 'incumbent', label: 'Current CRM / System', type: 'text', required: false, placeholder: 'e.g. Salesforce, SAP, None' },
+      { id: 'audience',  label: 'Who\'s in the Room?',   type: 'text', required: false, placeholder: 'e.g. VP of Sales, IT Director — ~5 people' },
+      { id: 'demo_date', label: 'Demo Date',             type: 'date', required: false },
+    ],
+    buildPrompt(v) {
+      return `Set up a tailored D365 demo for **${v.customer}** (${v.website}).
+
+**Industry:** ${v.industry}
+**Demo Focus:** ${v.area}
+**Key Pain Point / Goal:** ${v.pain}${v.incumbent ? `\n**Current System:** ${v.incumbent}` : ''}${v.audience ? `\n**Audience:** ${v.audience}` : ''}${v.demo_date ? `\n**Demo Date:** ${v.demo_date}` : ''}
+
+Please help me prep this demo end-to-end: outline the recommended demo flow, key talking points, discovery questions to open with, and the specific D365 capabilities that will resonate most with this customer's pain points. Ask any follow-up questions you need to sharpen the story.`;
+    }
+  },
+
+  'Power Platform': {
+    icon: '⚡', color: '#7719aa', bgColor: 'rgba(119,25,170,0.12)',
+    title: 'Build a Power Platform Solution',
+    subtitle: 'Define what you need so I can scope and design the right solution',
+    fields: [
+      { id: 'solution_type', label: 'Solution Type', type: 'select', required: true,
+        options: ['Power App (canvas)','Power App (model-driven)','Copilot Studio Agent','Power Automate Flow','Power Pages Portal','Multiple / Full Solution'] },
+      { id: 'timeline',     label: 'Timeline', type: 'select', required: false,
+        options: ['ASAP / Demo this week','1–2 weeks','1 month','Just exploring / no deadline'] },
+      { id: 'problem',  label: 'Problem to Solve', type: 'textarea', required: true, full: true,
+        placeholder: 'What business problem does this solve? Who does it help? What does success look like?' },
+      { id: 'users',        label: 'Who Uses It?',            type: 'text', required: true,  placeholder: 'Role or persona — e.g. Field Technician, Sales Rep' },
+      { id: 'integrations', label: 'Systems to Integrate',   type: 'text', required: false, placeholder: 'e.g. D365, SharePoint, Teams, SAP, Dataverse' },
+      { id: 'constraints',  label: 'Constraints / Guardrails', type: 'text', required: false, placeholder: 'e.g. No external APIs, must work offline, licensed for PP E3' },
+    ],
+    buildPrompt(v) {
+      return `Build a Power Platform solution: **${v.solution_type}**
+
+**Problem to solve:** ${v.problem}
+**Target users:** ${v.users}${v.integrations ? `\n**Integrations needed:** ${v.integrations}` : ''}${v.constraints ? `\n**Constraints:** ${v.constraints}` : ''}${v.timeline ? `\n**Timeline:** ${v.timeline}` : ''}
+
+Please help me design and build this. Start with any clarifying questions, then outline the recommended architecture, key components, data model, and implementation steps.`;
+    }
+  },
+
+  'RAPP': {
+    icon: '🚀', color: '#d83b01', bgColor: 'rgba(216,59,1,0.1)',
+    title: 'Rapidly Prototype with RAPP',
+    subtitle: 'Tell me the use case and we\'ll spin up agents to prototype it fast',
+    fields: [
+      { id: 'use_case', label: 'Use Case Description', type: 'textarea', required: true, full: true,
+        placeholder: 'What agentic use case do you want to prototype? What should the agent(s) do? Who does it help?' },
+      { id: 'customer',    label: 'Customer or Team Context', type: 'text', required: true,  placeholder: 'e.g. Zurn Elkay — Mfg SE demo' },
+      { id: 'agent_type',  label: 'Agent Type', type: 'select', required: true,
+        options: ['Customer Service','Sales Assist','Operations / Supply Chain','Field Service','HR / Internal Helpdesk','IT & DevOps','Marketing','Custom / Multi-agent'] },
+      { id: 'success', label: 'What Does Success Look Like?', type: 'textarea', required: true, full: true,
+        placeholder: 'What\'s the primary outcome? How will you know it worked? What\'s the wow moment?' },
+      { id: 'tech',        label: 'Existing Tech / APIs to Connect', type: 'text', required: false, full: true,
+        placeholder: 'e.g. D365 Customer Service, SharePoint, Azure OpenAI, Teams, SAP' },
+    ],
+    buildPrompt(v) {
+      return `Use RAPP to rapidly prototype an agentic solution for: **${v.customer}**
+
+**Use case:** ${v.use_case}
+**Agent type:** ${v.agent_type}
+**Success looks like:** ${v.success}${v.tech ? `\n**Tech stack / APIs:** ${v.tech}` : ''}
+
+Let's run RAPP discovery. Start with the discovery questions to understand the use case deeply, then define the agent architecture, what each agent does, and how to build and demo it quickly.`;
+    }
+  },
+
+  'CoE': {
+    icon: '🏛️', color: '#107c10', bgColor: 'rgba(16,124,16,0.1)',
+    title: 'Set up a Center of Excellence',
+    subtitle: 'Define the mission and structure to stand up your CoE right',
+    fields: [
+      { id: 'team',        label: 'Team / Organization',  type: 'text', required: true, placeholder: 'e.g. Discrete Manufacturing SE team' },
+      { id: 'domain',      label: 'Domain / Industry',    type: 'text', required: true, placeholder: 'e.g. Manufacturing, Retail, Healthcare' },
+      { id: 'goal',        label: 'Primary CoE Goal', type: 'select', required: true,
+        options: ['SOPs & Process Documentation','Agent Development & Rapid Prototyping','Demo Readiness','Customer Delivery Acceleration','All of the Above'] },
+      { id: 'team_size',   label: 'Team Size', type: 'select', required: false,
+        options: ['1–5 people','6–15 people','16–50 people','50+ people'] },
+      { id: 'current_state', label: 'Current State', type: 'textarea', required: false, full: true,
+        placeholder: 'What exists today? What\'s working, what\'s missing or inconsistent?' },
+      { id: 'top_challenge', label: 'Top Challenge to Solve', type: 'text', required: false, full: true,
+        placeholder: 'What\'s the #1 thing slowing your team down right now?' },
+    ],
+    buildPrompt(v) {
+      return `Set up a Center of Excellence for **${v.team}** in the **${v.domain}** space.
+
+**Primary goal:** ${v.goal}${v.team_size ? `\n**Team size:** ${v.team_size}` : ''}${v.current_state ? `\n**Current state:** ${v.current_state}` : ''}${v.top_challenge ? `\n**Top challenge:** ${v.top_challenge}` : ''}
+
+Walk me through: defining the CoE mission, the right agent personas to include, SOP structure, feature capture process, and recommended tooling. Ask questions along the way to customize for our specific situation.`;
+    }
+  },
+};
+
+let activeIntakeKey = null;
+
+function openIntakeForm(key) {
+  activeIntakeKey = key;
+  const form = INTAKE_FORMS[key];
+  if (!form) return;
+
+  document.getElementById('chat-starters-section').style.display = 'none';
+
+  const requiredFields = form.fields.filter(f => f.required);
+
+  const fieldsHtml = form.fields.map(f => {
+    const colClass = 'intake-field' + (f.full ? ' full' : '');
+    const reqBadge = f.required
+      ? `<span class="intake-req">Required</span>`
+      : `<span class="intake-optional">Optional</span>`;
+    let inputHtml;
+    if (f.type === 'select') {
+      const opts = f.options.map(o => `<option value="${o}">${o}</option>`).join('');
+      inputHtml = `<select class="intake-select" id="ifield_${f.id}" onchange="onIntakeInput('${f.id}')">
+        <option value="">Select an option…</option>${opts}
+      </select>`;
+    } else if (f.type === 'textarea') {
+      inputHtml = `<textarea class="intake-textarea" id="ifield_${f.id}"
+        placeholder="${(f.placeholder||'').replace(/'/g,"&#39;")}"
+        oninput="onIntakeInput('${f.id}')"></textarea>`;
+    } else {
+      inputHtml = `<input class="intake-input" type="${f.type}" id="ifield_${f.id}"
+        placeholder="${(f.placeholder||'').replace(/'/g,"&#39;")}"
+        oninput="onIntakeInput('${f.id}')" />`;
+    }
+    return `<div class="${colClass}">
+      <label for="ifield_${f.id}">${f.label} ${reqBadge}</label>
+      ${inputHtml}
+    </div>`;
+  }).join('');
+
+  document.getElementById('chat-intake-section').innerHTML = `
+    <div class="chat-intake-panel">
+      <div class="intake-header">
+        <button class="intake-back" onclick="backToStarters()">← Back</button>
+        <div class="intake-icon-circle" style="background:${form.bgColor}">${form.icon}</div>
+        <div class="intake-title-area">
+          <div class="intake-title">${form.title}</div>
+          <div class="intake-subtitle">${form.subtitle}</div>
+        </div>
+      </div>
+      <div class="intake-fields">${fieldsHtml}</div>
+      <div class="intake-footer">
+        <div class="intake-progress">
+          <div class="intake-progress-label" id="intake-progress-label">
+            Fill in the ${requiredFields.length} required field${requiredFields.length !== 1 ? 's' : ''} to continue
+          </div>
+          <div class="intake-progress-track">
+            <div class="intake-progress-fill" id="intake-progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+        <button class="intake-submit" id="intake-submit" disabled onclick="submitIntake()">
+          Start Chat →
+        </button>
+      </div>
+    </div>`;
+
+  document.getElementById('chat-intake-section').style.display = 'block';
+}
+
+function backToStarters() {
+  document.getElementById('chat-intake-section').style.display = 'none';
+  document.getElementById('chat-starters-section').style.display = 'block';
+  activeIntakeKey = null;
+}
+
+function onIntakeInput(fieldId) {
+  // Mark field as filled visually
+  const el = document.getElementById('ifield_' + fieldId);
+  if (el) el.classList.toggle('filled', el.value.trim().length > 0);
+  validateIntake();
+}
+
+function validateIntake() {
+  const form = INTAKE_FORMS[activeIntakeKey];
+  if (!form) return;
+  const required = form.fields.filter(f => f.required);
+  let filled = 0;
+  required.forEach(f => {
+    const el = document.getElementById('ifield_' + f.id);
+    if (el && el.value.trim()) filled++;
+  });
+  const pct = Math.round((filled / required.length) * 100);
+  const fillEl = document.getElementById('intake-progress-fill');
+  const labelEl = document.getElementById('intake-progress-label');
+  const btn = document.getElementById('intake-submit');
+  if (fillEl) fillEl.style.width = pct + '%';
+  if (btn) btn.disabled = filled < required.length;
+  if (labelEl) {
+    labelEl.textContent = filled < required.length
+      ? `${filled} of ${required.length} required fields complete`
+      : '✅ All set — ready to start!';
+  }
+}
+
+function submitIntake() {
+  const form = INTAKE_FORMS[activeIntakeKey];
+  if (!form) return;
+  const vals = {};
+  form.fields.forEach(f => {
+    const el = document.getElementById('ifield_' + f.id);
+    vals[f.id] = el ? el.value.trim() : '';
+  });
+  const prompt = form.buildPrompt(vals);
+  document.getElementById('chat-intake-section').style.display = 'none';
+  activeIntakeKey = null;
+  // Put in textarea and immediately send
+  const input = document.getElementById('chat-input');
+  input.value = prompt;
+  input.style.height = '44px';
+  sendChat();
+}
+
 
 async function sendChat() {
   const input = document.getElementById('chat-input');
