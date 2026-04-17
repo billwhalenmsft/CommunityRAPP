@@ -1,0 +1,93 @@
+name: 🎯 D365 Demo Setup
+description: Set up a Dynamics 365 demo for a customer meeting
+labels: ["mfg-coe", "agent-task", "d365-demo"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill this out completely — agents will act on it immediately without needing to ask follow-up questions.
+
+  - type: input
+    id: customer_name
+    attributes:
+      label: Customer Name
+      placeholder: e.g. Zurn Elkay, Parker Hannifin
+    validations:
+      required: true
+
+  - type: input
+    id: customer_website
+    attributes:
+      label: Customer Website
+      placeholder: e.g. https://www.zurnelkay.com
+    validations:
+      required: false
+
+  - type: dropdown
+    id: use_case
+    attributes:
+      label: Primary Use Case / Module
+      multiple: true
+      options:
+        - Sales (Opportunity management, quoting)
+        - Marketing (Campaigns, lead gen)
+        - Customer Service (Case management, omnichannel)
+        - CCaaS (Contact center, voice/digital channels)
+        - Field Service (Work orders, technician dispatch)
+        - Supply Chain / Operations
+        - Power Platform (Apps, flows, agents)
+    validations:
+      required: true
+
+  - type: input
+    id: meeting_date
+    attributes:
+      label: Meeting / Demo Date
+      placeholder: e.g. April 22, 2026
+    validations:
+      required: false
+
+  - type: textarea
+    id: pain_points
+    attributes:
+      label: Known Pain Points / Business Challenge
+      description: What problem is this customer trying to solve?
+      placeholder: e.g. They have 3 disconnected CRM systems, field techs can't see customer history on-site...
+    validations:
+      required: true
+
+  - type: textarea
+    id: key_personas
+    attributes:
+      label: Key Personas in the Meeting
+      description: Who will be in the room?
+      placeholder: e.g. VP of Sales, IT Director, Customer Service Manager
+    validations:
+      required: false
+
+  - type: textarea
+    id: existing_env
+    attributes:
+      label: D365 Environment to Use
+      description: Which demo environment? Leave blank to use Master CE Mfg default.
+      placeholder: e.g. Master CE Mfg, Mfg Gold Template, or customer's own org
+    validations:
+      required: false
+
+  - type: textarea
+    id: wow_moments
+    attributes:
+      label: "Desired 'Wow' Moments"
+      description: What specific capabilities do you want to highlight?
+      placeholder: e.g. Copilot summarizing cases, real-time field service scheduling, embedded Teams chat in D365...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Anything else the agent team should know?
+    validations:
+      required: false

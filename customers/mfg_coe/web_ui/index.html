@@ -577,7 +577,7 @@
       <div class="kpi-row">
         <div class="kpi"><div class="kpi-value" id="kpi-active">—</div><div class="kpi-label">Active Issues</div></div>
         <div class="kpi"><div class="kpi-value" id="kpi-done">—</div><div class="kpi-label">Completed This Week</div></div>
-        <div class="kpi"><div class="kpi-value" id="kpi-agents">7</div><div class="kpi-label">Agents Online</div></div>
+        <div class="kpi"><div class="kpi-value" id="kpi-agents">14</div><div class="kpi-label">Agents Online</div></div>
         <div class="kpi"><div class="kpi-value" id="kpi-decisions">—</div><div class="kpi-label">Needs Bill</div><div class="kpi-delta warn" id="kpi-decisions-label"></div></div>
       </div>
 
@@ -1116,7 +1116,7 @@ async function loadAll() {
 
   // Update KPIs
   document.getElementById('kpi-active').textContent = ALL_ISSUES.length;
-  document.getElementById('kpi-agents').textContent = '7';
+  document.getElementById('kpi-agents').textContent = AGENTS.length;
   document.getElementById('kpi-decisions').textContent = needsBill.length;
   document.getElementById('needs-bill-count').textContent = needsBill.length;
 

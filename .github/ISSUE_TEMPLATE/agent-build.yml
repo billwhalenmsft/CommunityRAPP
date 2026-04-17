@@ -1,0 +1,100 @@
+name: 🤖 Build an Agent (RAPP)
+description: Rapidly prototype an AI agent or agentic use case
+labels: ["mfg-coe", "agent-task", "agent-build"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill this out and the agent team will start building immediately. The more context you give, the less back-and-forth needed.
+
+  - type: input
+    id: agent_name
+    attributes:
+      label: Agent Name / Title
+      placeholder: e.g. Contract Review Agent, Chargeback Classifier
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this agent solve? Who benefits?
+      placeholder: e.g. Sales reps spend 2 hours per deal manually reviewing contract redlines. This agent should flag risky clauses automatically.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent_type
+    attributes:
+      label: Agent Type
+      options:
+        - Copilot Studio (declarative, no-code)
+        - Azure OpenAI / Function App (custom Python)
+        - Power Automate flow agent
+        - Microsoft Foundry agent
+        - Not sure — let agents recommend
+    validations:
+      required: true
+
+  - type: dropdown
+    id: industry_context
+    attributes:
+      label: Industry / Domain Context
+      options:
+        - Discrete Manufacturing
+        - Process Manufacturing
+        - Distribution / Supply Chain
+        - Professional Services
+        - Cross-industry / Generic
+    validations:
+      required: false
+
+  - type: textarea
+    id: inputs_outputs
+    attributes:
+      label: Inputs and Outputs
+      description: What does the agent receive? What does it produce?
+      placeholder: |
+        Input: Contract PDF, customer name
+        Output: Risk summary, flagged clauses, recommended action
+    validations:
+      required: false
+
+  - type: textarea
+    id: integrations
+    attributes:
+      label: Systems / Integrations Needed
+      placeholder: e.g. SharePoint for document storage, D365 for customer lookup, Teams for notification
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - p1-critical (blocking a customer engagement)
+        - p2-high (needed within 2 weeks)
+        - p3-medium (needed this quarter)
+        - p4-low (backlog / nice to have)
+    validations:
+      required: true
+
+  - type: textarea
+    id: success_criteria
+    attributes:
+      label: Success Criteria
+      description: How will you know the agent works?
+      placeholder: e.g. Agent correctly flags 80%+ of risky clauses in test contracts. Demo-ready in 3 days.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context / Reference Materials
+      description: Links, docs, prior conversations, anything else useful
+    validations:
+      required: false

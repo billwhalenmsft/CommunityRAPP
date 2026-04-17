@@ -53,6 +53,16 @@ jobs:
             --action process_issue \
             --issue ${{ github.event.issue.number }}
 
+      - name: Assign Copilot if tech-solution
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python customers/mfg_coe/agents/coe_runner.py \
+            --action assign_copilot \
+            --issue ${{ github.event.issue.number }}
+
   # ── Trigger: Bill comments on a needs-bill issue ─────────────────────────
   process-bill-feedback:
     name: Process Bill's feedback

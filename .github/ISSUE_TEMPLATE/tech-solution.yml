@@ -1,0 +1,97 @@
+name: 🔧 Tech Solution / Code Task
+description: Build, fix, or improve a technical solution — agents will write code and open a PR
+labels: ["mfg-coe", "agent-task", "tech-solution"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For code tasks, agents will use GitHub Copilot to generate a pull request. The more specific you are, the better the output.
+
+  - type: input
+    id: title
+    attributes:
+      label: Task Title
+      placeholder: e.g. Add D365 environment health check to the Command Center dashboard
+    validations:
+      required: true
+
+  - type: dropdown
+    id: task_type
+    attributes:
+      label: Task Type
+      options:
+        - New feature
+        - Bug fix
+        - Refactor / improvement
+        - Integration (connect two systems)
+        - Research spike (explore options, no code yet)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tech_area
+    attributes:
+      label: Technology Area
+      options:
+        - Web UI (Command Center / bots-in-blazers.fun)
+        - Azure Functions / Python backend
+        - Copilot Studio agent
+        - Power Platform (Apps / Automate / Pages)
+        - GitHub Actions / CI-CD
+        - D365 / Dataverse
+        - Azure infrastructure (storage, OpenAI, etc.)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What needs to be built or fixed?
+      description: Be specific — include file names, function names, or component names if known
+      placeholder: |
+        In customers/mfg_coe/web_ui/index.html, the Outcomes view shows static placeholder text.
+        It should instead load real GitHub issues with the label 'outcome' and display them as cards.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How do you know it's done?
+      placeholder: |
+        - Outcomes view shows live issues from GitHub
+        - Each card shows title, status label, and link to the issue
+        - Handles empty state gracefully
+    validations:
+      required: false
+
+  - type: textarea
+    id: files_affected
+    attributes:
+      label: Files / Areas Likely Affected
+      placeholder: e.g. customers/mfg_coe/web_ui/index.html, agents/coe_runner.py
+    validations:
+      required: false
+
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference / Prior Art
+      description: Links to docs, existing patterns in the codebase, or examples to follow
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - p1-critical
+        - p2-high
+        - p3-medium
+        - p4-low
+    validations:
+      required: true

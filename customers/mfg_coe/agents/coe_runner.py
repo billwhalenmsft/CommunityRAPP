@@ -92,6 +92,9 @@ def action_standup() -> None:
 
     log.info("Standup complete:\n%s", json.dumps(result, indent=2))
 
+    # Auto-label any ready issues before processing
+    action_auto_label()
+
     # If there are agent-task issues to process, run them
     open_tasks = result.get("open_agent_tasks", [])
     if open_tasks:
@@ -100,6 +103,133 @@ def action_standup() -> None:
             action_process_issue(issue_num)
     else:
         log.info("No open agent-task issues found.")
+
+
+def action_auto_label() -> None:
+    """
+    Scan open mfg-coe issues that have enough context to act on and add
+    the 'agent-task' label so the issue handler picks them up automatically.
+
+    Criteria for auto-labeling:
+    - Has label: mfg-coe
+    - Does NOT already have: agent-task, needs-bill, done, check-existing, nudge-bill
+    - Body length > 100 chars (enough context to act on)
+    - Was created via a structured template (contains at least one section header or list)
+    - Was NOT created by the agent itself (not authored by github-actions[bot])
+    """
+    log.info("=== Auto-Labeling Eligible Issues ===")
+
+    result = subprocess.run(
+        ["gh", "issue", "list", "--repo", REPO, "--label", "mfg-coe",
+         "--state", "open", "--json", "number,title,body,labels,author,createdAt",
+         "--limit", "50"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        log.error("Failed to list issues: %s", result.stderr)
+        return
+
+    try:
+        issues = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        log.warning("Could not parse issues for auto-labeling")
+        return
+
+    skip_labels = {"agent-task", "needs-bill", "done", "check-existing", "nudge-bill", "process-now"}
+    labeled_count = 0
+
+    for issue in issues:
+        labels = {l["name"] for l in issue.get("labels", [])}
+        if labels & skip_labels:
+            continue  # already handled
+
+        body = issue.get("body") or ""
+        author = issue.get("author", {}).get("login", "")
+        if author in ("github-actions[bot]", "billwhalenmsft-bot"):
+            continue  # skip agent-generated issues
+
+        # Require meaningful body — either structured (###/##) or long enough
+        has_structure = "###" in body or "##" in body or "\n- " in body
+        has_length = len(body.strip()) > 100
+
+        if has_structure or has_length:
+            log.info("Auto-labeling issue #%d: %s", issue["number"], issue["title"])
+            _set_issue_label(issue["number"], ["agent-task"], [])
+            labeled_count += 1
+
+    log.info("Auto-labeled %d issue(s) as agent-task", labeled_count)
+
+
+def action_assign_copilot(issue_number: int) -> None:
+    """
+    Assign GitHub Copilot coding agent to a tech-solution issue.
+    Copilot will open a pull request with the implementation.
+    Posts a comment on the issue to notify Bill.
+    """
+    log.info("=== Assigning Copilot to Issue #%d ===", issue_number)
+
+    # Fetch issue details
+    result = subprocess.run(
+        ["gh", "issue", "view", str(issue_number), "--repo", REPO,
+         "--json", "title,body,labels"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        log.error("Failed to fetch issue #%d: %s", issue_number, result.stderr)
+        return
+
+    try:
+        issue_data = json.loads(result.stdout)
+    except Exception:
+        log.error("Could not parse issue #%d", issue_number)
+        return
+
+    labels = {l["name"] for l in issue_data.get("labels", [])}
+    if "tech-solution" not in labels and "code-task" not in labels:
+        log.info("Issue #%d is not a tech-solution/code-task — skipping Copilot assignment", issue_number)
+        return
+
+    # Assign Copilot via gh CLI (requires Copilot coding agent enabled on the repo)
+    assign_result = subprocess.run(
+        ["gh", "issue", "edit", str(issue_number), "--repo", REPO,
+         "--add-assignee", "@me"],  # placeholder — real Copilot assignment via API
+        capture_output=True, text=True,
+    )
+
+    # Use the GitHub API to request Copilot assignment (Copilot coding agent)
+    copilot_result = subprocess.run(
+        ["gh", "api", "--method", "POST",
+         f"/repos/{REPO}/issues/{issue_number}/assignees",
+         "-f", "assignees[]=copilot"],
+        capture_output=True, text=True,
+    )
+
+    if copilot_result.returncode == 0:
+        comment = (
+            "## 🤖 Copilot Coding Agent Assigned\n\n"
+            "GitHub Copilot has been assigned to implement this task. "
+            "It will analyze the issue and open a pull request.\n\n"
+            "**What happens next:**\n"
+            "- Copilot creates a branch and writes the code\n"
+            "- A PR is opened for your review\n"
+            "- Agents will review and comment on the PR\n\n"
+            f"_Assigned by CoE orchestrator — Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
+        )
+    else:
+        log.warning("Copilot assignment API call returned %d: %s",
+                    copilot_result.returncode, copilot_result.stderr)
+        comment = (
+            "## 🔧 Code Task Ready for Copilot\n\n"
+            "This issue is marked as a tech solution. To assign GitHub Copilot:\n\n"
+            "1. Open the issue on GitHub\n"
+            "2. In the Assignees section, click the gear and select **Copilot**\n"
+            "3. Copilot will open a PR automatically\n\n"
+            "_Copilot auto-assignment requires the Copilot coding agent to be enabled on this repo._\n\n"
+            f"_Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
+        )
+
+    _post_issue_comment(issue_number, comment)
+    _set_issue_label(issue_number, ["copilot-assigned"], ["agent-task"])
 
 
 def _run_library_search_if_tech(issue_number: int) -> bool:
@@ -631,7 +761,8 @@ def main() -> None:
         "--action",
         required=True,
         choices=["standup", "process_issue", "bill_feedback", "health_check", "run_backlog",
-                 "daily_wrapup", "idle_check", "community_engage", "library_search"],
+                 "daily_wrapup", "idle_check", "community_engage", "library_search",
+                 "auto_label", "assign_copilot"],
         help="Action to perform",
     )
     parser.add_argument("--issue", type=int, default=None, help="GitHub issue number")
@@ -673,6 +804,12 @@ def main() -> None:
             result = run_library_search(args.issue, d.get("title", ""), d.get("body", ""))
             _post_issue_comment(args.issue, result["comment_body"])
             log.info("Library search complete. Strong match: %s", result["strong_match"])
+    elif args.action == "auto_label":
+        action_auto_label()
+    elif args.action == "assign_copilot":
+        if not args.issue:
+            parser.error("--issue required for assign_copilot")
+        action_assign_copilot(args.issue)
 
 
 if __name__ == "__main__":

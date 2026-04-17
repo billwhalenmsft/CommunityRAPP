@@ -1,0 +1,78 @@
+name: 📋 Define SOP / Business Process
+description: Document or improve a standard operating procedure or business process
+labels: ["mfg-coe", "agent-task", "sop"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to have the agent team research, draft, or improve a standard operating procedure.
+
+  - type: input
+    id: sop_title
+    attributes:
+      label: SOP / Process Title
+      placeholder: e.g. D365 Customer Onboarding SOP, Field Service Work Order Process
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sop_type
+    attributes:
+      label: Type of Work
+      options:
+        - Draft a new SOP from scratch
+        - Improve / update an existing SOP
+        - Document a process that exists but isn't written down
+        - Research best practices and recommend an approach
+    validations:
+      required: true
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Business Domain
+      options:
+        - CRM (Sales, Marketing, Customer Service)
+        - Field Service / Operations
+        - Agentic AI / Copilot use cases
+        - Power Platform development
+        - Microsoft tech stack / architecture
+        - Discrete Manufacturing processes
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Current State / Context
+      description: Describe what exists today (if anything) and why this SOP is needed
+      placeholder: e.g. We do this process manually today with spreadsheets. The team has no consistent approach...
+    validations:
+      required: true
+
+  - type: textarea
+    id: stakeholders
+    attributes:
+      label: Stakeholders / Audience
+      description: Who will use or follow this SOP?
+      placeholder: e.g. SEs doing manufacturing demos, CoE members, new team members onboarding
+    validations:
+      required: false
+
+  - type: textarea
+    id: desired_output
+    attributes:
+      label: Desired Output Format
+      placeholder: e.g. Markdown doc in the repo, step-by-step checklist, decision tree, PowerPoint slide
+    validations:
+      required: false
+
+  - type: textarea
+    id: reference_materials
+    attributes:
+      label: Reference Materials / Links
+      description: Any existing docs, templates, or prior work to build from
+    validations:
+      required: false
