@@ -177,16 +177,16 @@
     .chat-agent-bar {
       display: flex; align-items: center; gap: 12px;
       padding: 10px 20px; border-bottom: 1px solid var(--border);
-      background: var(--bg2); position: relative; overflow: hidden;
+      background: var(--bg2);
     }
-    /* Fade on the right edge of the bar itself */
-    .chat-agent-bar::after {
+    /* Fade on the right edge indicating more chips */
+    .agent-selector-wrap::after {
       content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 48px;
       background: linear-gradient(to right, transparent, var(--bg2));
       pointer-events: none; z-index: 2;
     }
     .chat-agent-bar-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; flex-shrink: 0; z-index: 3; }
-    .agent-selector-wrap { flex: 1; min-width: 0; }
+    .agent-selector-wrap { flex: 1; min-width: 0; overflow: hidden; position: relative; }
     .agent-selector { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-right: 48px; }
     .agent-selector::-webkit-scrollbar { display: none; }
     .agent-chip {
@@ -281,13 +281,18 @@
     .intake-submit:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(88,166,255,.4); }
 
     /* ── Outcomes ──────────────────────────────────────────────────────── */
-    .outcome-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
-    .outcome-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .outcome-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; transition: border-color .15s; }
+    .outcome-card:hover { border-color: rgba(88,166,255,.3); }
+    .outcome-title { font-weight: 700; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
     .outcome-desc { font-size: 12px; color: var(--text2); margin-bottom: 10px; line-height: 1.5; }
-    .outcome-issues { display: flex; flex-wrap: wrap; gap: 6px; }
-    .outcome-issue { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.2); border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; }
-    .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 10px; }
-    .progress-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width .5s; }
+    .outcome-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .outcome-issues { display: flex; flex-wrap: wrap; gap: 5px; flex: 1; }
+    .outcome-issue { background: rgba(88,166,255,.1); color: var(--accent); border: 1px solid rgba(88,166,255,.2); border-radius: 4px; padding: 3px 8px; font-size: 11px; cursor: pointer; text-decoration: none; }
+    .outcome-issue:hover { background: rgba(88,166,255,.2); }
+    .outcome-issue.closed { background: rgba(63,185,80,.1); color: var(--green); border-color: rgba(63,185,80,.2); }
+    .outcome-stats { font-size: 11px; color: var(--text2); white-space: nowrap; }
+    .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent2), var(--green)); transition: width .6s ease; }
 
     /* ── Page header ───────────────────────────────────────────────────── */
     .page-header { margin-bottom: 20px; }
@@ -727,11 +732,21 @@
 
     <!-- OUTCOMES -->
     <div class="view" id="view-outcomes">
-      <div class="page-header">
+      <div class="page-header" style="margin-bottom:14px">
         <h1>🎯 Outcomes</h1>
-        <p>Every piece of work maps to a customer outcome. Track progress here.</p>
+        <p>Every piece of work maps to a customer outcome. Progress calculated from live GitHub issues.</p>
       </div>
-      <div id="outcomes-list"></div>
+      <!-- KPI strip -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px" id="outcomes-kpis">
+        <div class="kpi"><div class="kpi-value" id="okpi-total">—</div><div class="kpi-label">Total Outcomes</div></div>
+        <div class="kpi"><div class="kpi-value" id="okpi-active">—</div><div class="kpi-label">Active Issues</div></div>
+        <div class="kpi"><div class="kpi-value" id="okpi-done">—</div><div class="kpi-label">Issues Closed</div></div>
+        <div class="kpi"><div class="kpi-value" id="okpi-pct" style="color:var(--green)">—</div><div class="kpi-label">Overall Progress</div></div>
+      </div>
+      <div id="outcomes-list"><p style="color:var(--text2)">⏳ Loading...</p></div>
+      <div style="margin-top:16px">
+        <button onclick="showView('chat');openIntakeForm('RAPP')" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 18px;font-size:13px;color:var(--text2);cursor:pointer">+ Define a new outcome via RAPP</button>
+      </div>
     </div>
 
     <!-- BACKLOG -->
@@ -1073,6 +1088,7 @@ function showView(name) {
   if (name === 'backlog') renderBacklog();
   if (name === 'kanban') renderKanban();
   if (name === 'forum') renderForum();
+  if (name === 'outcomes') renderOutcomes();
   if (name === 'environments') renderEnvironments();
   if (name === 'wrapup') renderWrapups();
   if (name === 'charter') renderCharter();
@@ -1290,7 +1306,6 @@ async function loadAll() {
   renderAgents();
   renderDashFeed(ALL_ISSUES.slice(0, 5));
   renderNeedsBill(needsBill);
-  renderOutcomes();
   renderForum();
   renderChatAgentSelector();
   renderCharter(); // preload so it's ready when user clicks
@@ -1337,22 +1352,82 @@ function renderBacklog() {
   document.getElementById('backlog-list').innerHTML = html || '<p style="color:var(--text2);font-size:13px">No items match the current filters.</p>';
 }
 
-function renderOutcomes() {
-  const html = OUTCOMES.map(o => `
-    <div class="outcome-card">
+async function renderOutcomes() {
+  const el = document.getElementById('outcomes-list');
+  el.innerHTML = '<p style="color:var(--text2)">⏳ Loading live issue data...</p>';
+
+  // Fetch all mfg-coe issues (open + closed) to calculate real progress
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+  let allIssues = [];
+  try {
+    const [openR, closedR] = await Promise.all([
+      fetch(`https://api.github.com/repos/${CFG.repo}/issues?labels=mfg-coe&state=open&per_page=100`, { headers }),
+      fetch(`https://api.github.com/repos/${CFG.repo}/issues?labels=mfg-coe&state=closed&per_page=100`, { headers }),
+    ]);
+    const open = openR.ok ? await openR.json() : [];
+    const closed = closedR.ok ? await closedR.json() : [];
+    allIssues = [...open.map(i => ({...i, _state:'open'})), ...closed.map(i => ({...i, _state:'closed'}))];
+  } catch(e) {
+    el.innerHTML = `<p style="color:var(--text2)">⚠️ Could not load live data — check PAT in Settings.</p>`;
+    return;
+  }
+
+  // Map issue numbers to state for fast lookup
+  const issueMap = {};
+  allIssues.forEach(i => { issueMap[i.number] = i; });
+
+  // Compute per-outcome progress from actual issue states
+  const enriched = OUTCOMES.map(o => {
+    const linked = o.issues.map(n => issueMap[n]).filter(Boolean);
+    const total = linked.length || 1;
+    const done = linked.filter(i => i._state === 'closed').length;
+    const progress = Math.round((done / total) * 100);
+    return { ...o, linked, done, total: linked.length, progress };
+  });
+
+  // Update top KPIs
+  const totalOpen = allIssues.filter(i => i._state === 'open').length;
+  const totalClosed = allIssues.filter(i => i._state === 'closed').length;
+  const overallPct = allIssues.length ? Math.round((totalClosed / allIssues.length) * 100) : 0;
+  document.getElementById('okpi-total').textContent = OUTCOMES.length;
+  document.getElementById('okpi-active').textContent = totalOpen;
+  document.getElementById('okpi-done').textContent = totalClosed;
+  document.getElementById('okpi-pct').textContent = overallPct + '%';
+
+  // Sort: in-progress first, then by priority
+  enriched.sort((a, b) => {
+    if (b.progress !== a.progress && (b.progress > 0 || a.progress > 0)) return b.progress - a.progress;
+    return (a.priority > b.priority ? 1 : -1);
+  });
+
+  el.innerHTML = enriched.map(o => {
+    const statusDot = o.progress === 100 ? '✅' : o.progress > 0 ? '🔄' : '⏳';
+    const priorityColor = o.priority === 'p1' ? 'var(--red)' : o.priority === 'p2' ? 'var(--yellow)' : 'var(--text2)';
+    const issueChips = o.linked.length
+      ? o.linked.map(i => `<a class="outcome-issue ${i._state === 'closed' ? 'closed' : ''}" href="${i.html_url}" target="_blank">#${i.number} ${i.title.slice(0,30)}${i.title.length>30?'…':''}</a>`).join('')
+      : o.issues.map(n => `<a class="outcome-issue" href="https://github.com/${CFG.repo}/issues/${n}" target="_blank">#${n}</a>`).join('');
+    const noDataNote = !o.linked.length ? `<div style="font-size:11px;color:var(--text2);margin-top:4px">⚠️ Issues #${o.issues.join(', #')} not found — may be closed or in a different repo</div>` : '';
+    return `<div class="outcome-card">
       <div class="outcome-title">
+        <span>${statusDot}</span>
         <span>${o.icon}</span>
         <span>${o.title}</span>
-        <span class="tag ${o.priority}">${o.priority.toUpperCase()}</span>
+        <span style="font-size:11px;color:${priorityColor};font-weight:600;margin-left:auto">${o.priority.toUpperCase()}</span>
       </div>
       <div class="outcome-desc">${o.desc}</div>
-      <div class="outcome-issues">
-        ${o.issues.map(n => `<span class="outcome-issue" onclick="window.open('https://github.com/${CFG.repo}/issues/${n}','_blank')">#${n}</span>`).join('')}
+      <div class="outcome-meta">
+        <div class="outcome-issues">${issueChips}</div>
+        <div class="outcome-stats">${o.done}/${o.total} issues closed</div>
       </div>
+      ${noDataNote}
       <div class="progress-bar"><div class="progress-fill" style="width:${o.progress}%"></div></div>
-      <div style="font-size:11px;color:var(--text2);margin-top:4px">${o.progress}% complete</div>
-    </div>`).join('');
-  document.getElementById('outcomes-list').innerHTML = html;
+      <div style="font-size:11px;color:var(--text2);margin-top:4px;display:flex;justify-content:space-between">
+        <span>${o.progress}% complete</span>
+        ${o.progress < 100 ? `<button onclick="showView('chat');selectAgent('orchestrator')" style="background:none;border:none;color:var(--accent);font-size:11px;cursor:pointer;padding:0">Ask an agent to work on this →</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 async function renderForum() {
