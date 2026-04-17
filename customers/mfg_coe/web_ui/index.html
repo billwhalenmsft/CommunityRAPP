@@ -2862,9 +2862,10 @@ function renderLibrary() {
         </div>
         <div class="lib-card-actions" onclick="event.stopPropagation()">
           <button class="lib-btn" onclick="showAgentDetail('${a.id}')">ℹ Info</button>
-          ${inst && core ? `<button class="lib-btn primary" onclick="showView('chat');selectAgent('${a.id.replace('mfg-','')}')">💬 Chat</button>` : ''}
+          ${inst && core ? `<button class="lib-btn primary" onclick="showView('chat');selectAgent('${a.id.replace('mfg-','')}')">💬 Chat</button>
+            <button class="lib-btn" disabled title="Core CoE agents are always active and cannot be removed" style="opacity:0.4;cursor:not-allowed">⚙️ Core</button>` : ''}
           ${inst && !core ? `<button class="lib-btn primary" onclick="showView('chat')">💬 Chat</button>
-            <button class="lib-btn danger" onclick="uninstallAgent('${a.id}')">Uninstall</button>` : ''}
+            <button class="lib-btn danger" onclick="uninstallAgent('${a.id}')">🗑 Uninstall</button>` : ''}
           ${!inst ? `<button class="lib-btn primary" onclick="installAgent('${a.id}')">⬇ Install</button>` : ''}
         </div>
       </div>`;
@@ -2910,7 +2911,8 @@ function showAgentDetail(id) {
     ${a.installCmd ? `<div class="lib-modal-section">Install Command</div><div class="lib-modal-code">${a.installCmd}</div>` : ''}
     <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
       ${!inst ? `<button class="lib-btn primary" style="padding:8px 18px;font-size:13px" onclick="installAgent('${a.id}')">⬇ Install Agent</button>` : ''}
-      ${inst && core ? `<button class="lib-btn primary" style="padding:8px 18px;font-size:13px" onclick="showView('chat');document.getElementById('lib-modal-overlay').classList.remove('open');selectAgent('${a.id.replace('mfg-','')}')">💬 Chat with Agent</button>` : ''}
+      ${inst && core ? `<button class="lib-btn primary" style="padding:8px 18px;font-size:13px" onclick="showView('chat');document.getElementById('lib-modal-overlay').classList.remove('open');selectAgent('${a.id.replace('mfg-','')}')">💬 Chat with Agent</button>
+        <button class="lib-btn" disabled title="Core CoE agents are always active and cannot be removed" style="padding:8px 18px;font-size:13px;opacity:0.4;cursor:not-allowed">⚙️ Core — Always Active</button>` : ''}
       ${inst && !core ? `<button class="lib-btn primary" style="padding:8px 18px;font-size:13px" onclick="showView('chat');document.getElementById('lib-modal-overlay').classList.remove('open')">💬 Chat with Agent</button>
         <button class="lib-btn danger" style="padding:8px 18px;font-size:13px" onclick="uninstallAgent('${a.id}')">🗑️ Uninstall</button>` : ''}
       <button class="lib-btn" style="padding:8px 18px;font-size:13px" onclick="document.getElementById('lib-modal-overlay').classList.remove('open')">Close</button>
