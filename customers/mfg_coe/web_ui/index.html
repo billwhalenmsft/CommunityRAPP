@@ -114,12 +114,12 @@
 
     /* ── Chat ──────────────────────────────────────────────────────────── */
     .chat-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    .chat-bubble { max-width: 72%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6; }
-    .chat-bubble.bot { background: var(--bg3); border: 1px solid var(--border); align-self: flex-start; }
-    .chat-bubble.user { background: var(--accent2); align-self: flex-end; color: #fff; }
-    .chat-bubble .from { font-size: 11px; font-weight: 700; margin-bottom: 5px; color: var(--text2); }
-    .chat-bubble.user .from { color: rgba(255,255,255,0.7); }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .chat-bubble { max-width: 76%; padding: 12px 16px; border-radius: 14px; font-size: 13px; line-height: 1.65; }
+    .chat-bubble.bot { background: var(--bg3); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .chat-bubble.user { background: linear-gradient(135deg, var(--accent2), var(--accent)); align-self: flex-end; color: #fff; border-bottom-right-radius: 4px; box-shadow: 0 2px 12px rgba(88,166,255,0.3); }
+    .chat-bubble .from { font-size: 11px; font-weight: 700; margin-bottom: 6px; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+    .chat-bubble.user .from { color: rgba(255,255,255,0.75); }
     /* Markdown rendering inside bot bubbles */
     .chat-bubble.bot h2,.chat-bubble.bot h3,.chat-bubble.bot h4 { margin: 10px 0 4px; color: var(--text); }
     .chat-bubble.bot h2 { font-size: 15px; }
@@ -134,25 +134,107 @@
     .chat-bubble.bot blockquote { border-left: 3px solid var(--accent2); padding-left: 10px; color: var(--text2); margin: 6px 0; }
     .chat-bubble.bot a { color: var(--accent); }
     /* Typing indicator */
-    .chat-typing { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; align-self: flex-start; max-width: 200px; }
+    .chat-typing { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 14px; border-bottom-left-radius: 4px; align-self: flex-start; }
     .chat-typing .from { font-size: 11px; font-weight: 700; color: var(--text2); white-space: nowrap; }
     .typing-dots { display: flex; gap: 4px; }
-    .typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--text2); animation: typing-bounce 1.2s infinite; }
+    .typing-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--text2); animation: typing-bounce 1.2s infinite; }
     .typing-dots span:nth-child(2) { animation-delay: .2s; }
     .typing-dots span:nth-child(3) { animation-delay: .4s; }
     @keyframes typing-bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
     /* Create Issue button in chat */
-    .chat-create-issue { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; background: rgba(35,134,54,0.15); border: 1px solid rgba(35,134,54,0.4); color: var(--green); border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; }
-    .chat-create-issue:hover { background: rgba(35,134,54,0.25); }
-    .chat-input-row { display: flex; gap: 8px; padding: 16px; border-top: 1px solid var(--border); }
-    .chat-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; }
-    .chat-input:focus { border-color: var(--accent2); }
-    .chat-send { background: var(--accent2); color: white; border: none; border-radius: 8px; padding: 10px 18px; cursor: pointer; font-size: 13px; font-weight: 600; }
-    .chat-send:hover { background: var(--accent); }
-    .chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
-    .agent-selector { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-    .agent-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 4px 12px; font-size: 12px; cursor: pointer; transition: all .15s; }
-    .agent-chip.active { background: rgba(88,166,255,.15); border-color: var(--accent); color: var(--accent); }
+    .chat-create-issue { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; background: rgba(35,134,54,0.12); border: 1px solid rgba(35,134,54,0.35); color: var(--green); border-radius: 6px; padding: 5px 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .chat-create-issue:hover { background: rgba(35,134,54,0.22); transform: translateY(-1px); }
+
+    /* ── Chat Input Bar ─────────────────────────────────────────────────── */
+    .chat-input-bar {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+    }
+    .chat-input-row { display: flex; gap: 10px; align-items: flex-end; }
+    .chat-input {
+      flex: 1; background: var(--bg3); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 12px 16px; color: var(--text);
+      font-size: 13px; outline: none; resize: none; height: 44px; max-height: 120px;
+      overflow-y: auto; line-height: 1.5; transition: border-color .2s, box-shadow .2s;
+      font-family: inherit;
+    }
+    .chat-input:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(88,166,255,0.12); }
+    .chat-input::placeholder { color: var(--text2); }
+    .chat-send {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: white; border: none; border-radius: 12px;
+      width: 44px; height: 44px; cursor: pointer;
+      font-size: 18px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all .2s; box-shadow: 0 2px 8px rgba(88,166,255,0.3);
+    }
+    .chat-send:hover { transform: translateY(-1px) scale(1.05); box-shadow: 0 4px 16px rgba(88,166,255,0.4); }
+    .chat-send:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .chat-input-hint { font-size: 11px; color: var(--text2); margin-top: 7px; display: flex; align-items: center; gap: 12px; }
+    .chat-input-hint kbd { background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-size: 10px; }
+
+    /* ── Active Agent Bar ───────────────────────────────────────────────── */
+    .chat-agent-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 20px; border-bottom: 1px solid var(--border);
+      background: var(--bg2); flex-wrap: wrap;
+    }
+    .chat-agent-bar-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; }
+    .agent-selector { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; flex: 1; }
+    .agent-selector::-webkit-scrollbar { display: none; }
+    .agent-chip {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 12px; font-size: 12px;
+      cursor: pointer; transition: all .15s; white-space: nowrap; flex-shrink: 0;
+    }
+    .agent-chip:hover { border-color: var(--accent2); color: var(--accent2); }
+    .agent-chip.active {
+      background: linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.08));
+      border-color: var(--accent2); color: var(--accent2); font-weight: 600;
+    }
+
+    /* ── Chat Active Agent Header ───────────────────────────────────────── */
+    .chat-active-header {
+      display: none; align-items: center; gap: 12px;
+      padding: 10px 20px; background: linear-gradient(135deg, rgba(88,166,255,0.08), transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .chat-active-header.visible { display: flex; }
+    .chat-active-avatar { font-size: 22px; }
+    .chat-active-info { flex: 1; }
+    .chat-active-name { font-size: 13px; font-weight: 700; }
+    .chat-active-role { font-size: 11px; color: var(--text2); }
+    .chat-active-badge { background: rgba(35,134,54,0.15); color: var(--green); border: 1px solid rgba(35,134,54,0.3); border-radius: 12px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+
+    /* ── Chat Starter Cards ─────────────────────────────────────────────── */
+    .chat-starters-header {
+      font-size: 12px; color: var(--text2); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.7px;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .chat-starters-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .chat-starters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .chat-starter-card {
+      background: var(--bg3); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 18px 18px 16px; cursor: pointer;
+      transition: all .2s; display: flex; flex-direction: column; gap: 8px;
+      text-align: left; position: relative; overflow: hidden;
+    }
+    .chat-starter-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      opacity: 0; transition: opacity .2s;
+    }
+    .chat-starter-card:nth-child(1)::before { background: linear-gradient(90deg, #0078d4, #50e6ff); }
+    .chat-starter-card:nth-child(2)::before { background: linear-gradient(90deg, #7719aa, #c099ff); }
+    .chat-starter-card:nth-child(3)::before { background: linear-gradient(90deg, #d83b01, #ff8c42); }
+    .chat-starter-card:nth-child(4)::before { background: linear-gradient(90deg, #107c10, #54d354); }
+    .chat-starter-card:hover { border-color: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
+    .chat-starter-card:hover::before { opacity: 1; }
+    .chat-starter-icon { font-size: 28px; line-height: 1; }
+    .chat-starter-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .chat-starter-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+    .chat-starter-arrow { position: absolute; bottom: 14px; right: 14px; font-size: 16px; color: var(--text2); opacity: 0; transition: all .2s; }
+    .chat-starter-card:hover .chat-starter-arrow { opacity: 1; transform: translateX(3px); }
 
     /* ── Outcomes ──────────────────────────────────────────────────────── */
     .outcome-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
@@ -685,41 +767,72 @@
 
     <!-- CHAT -->
     <div class="view" id="view-chat">
-      <div class="page-header"><h1>🚀 Start Something</h1></div>
+      <div class="page-header" style="padding-bottom:12px;">
+        <h1>🚀 Start Something</h1>
+        <p style="font-size:12px;color:var(--text2);margin-top:4px;">Choose an agent, pick a starter, or just type below</p>
+      </div>
+
+      <!-- Active agent context bar — shown once conversation starts -->
+      <div class="chat-active-header" id="chat-active-header">
+        <div class="chat-active-avatar" id="chat-active-avatar">🎯</div>
+        <div class="chat-active-info">
+          <div class="chat-active-name" id="chat-active-name">Orchestrator</div>
+          <div class="chat-active-role" id="chat-active-role">Routes tasks across the CoE agent team</div>
+        </div>
+        <span class="chat-active-badge">● Online</span>
+        <button onclick="clearChat()" style="background:none;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;">New Chat</button>
+      </div>
+
+      <!-- Agent selector row -->
+      <div class="chat-agent-bar">
+        <span class="chat-agent-bar-label">Agent</span>
+        <div class="agent-selector" id="chat-agent-selector"></div>
+      </div>
 
       <!-- Quick-start prompt cards — hidden once a conversation starts -->
-      <div id="chat-starters-section" style="display:none">
-        <div class="chat-starters-header">🚀 Quick start — pick a template or type your own below</div>
+      <div id="chat-starters-section" style="display:none; padding: 20px 20px 0;">
+        <div class="chat-starters-header">✨ Quick Start</div>
         <div class="chat-starters">
           <button class="chat-starter-card" onclick="useStarterPrompt('D365 Demo')">
             <div class="chat-starter-icon">🏭</div>
             <div class="chat-starter-title">Set up a D365 demo</div>
-            <div class="chat-starter-desc">Prep a new customer demo for Sales, Marketing, Customer Service, CCaaS or Field Service</div>
+            <div class="chat-starter-desc">Prep a tailored customer demo for Sales, Marketing, Customer Service, CCaaS or Field Service</div>
+            <span class="chat-starter-arrow">→</span>
           </button>
           <button class="chat-starter-card" onclick="useStarterPrompt('Power Platform')">
             <div class="chat-starter-icon">⚡</div>
             <div class="chat-starter-title">Build a Power Platform solution</div>
-            <div class="chat-starter-desc">Describe what you need — apps, Copilot Studio agents, Power Automate flows, or other Power Platform tech</div>
+            <div class="chat-starter-desc">Apps, Copilot Studio agents, Power Automate flows, or other Power Platform tech</div>
+            <span class="chat-starter-arrow">→</span>
           </button>
           <button class="chat-starter-card" onclick="useStarterPrompt('RAPP')">
             <div class="chat-starter-icon">🚀</div>
             <div class="chat-starter-title">Rapidly prototype with RAPP</div>
-            <div class="chat-starter-desc">Use RAPP to scaffold an agentic use case from idea to working agent — fast</div>
+            <div class="chat-starter-desc">Scaffold an agentic use case from idea to working agent — fast</div>
+            <span class="chat-starter-arrow">→</span>
           </button>
           <button class="chat-starter-card" onclick="useStarterPrompt('CoE')">
             <div class="chat-starter-icon">🏛️</div>
             <div class="chat-starter-title">Set up a Center of Excellence</div>
             <div class="chat-starter-desc">Define mission, agent personas, SOP structure, and tooling for a new CoE</div>
+            <span class="chat-starter-arrow">→</span>
           </button>
         </div>
       </div>
 
-      <div class="agent-selector" id="chat-agent-selector"></div>
       <div class="chat-container">
         <div class="chat-messages" id="chat-messages"></div>
-        <div class="chat-input-row">
-          <input class="chat-input" id="chat-input" placeholder="Message the CoE agents..." onkeydown="if(event.key==='Enter')sendChat()" />
-          <button class="chat-send" onclick="sendChat()">Send →</button>
+        <div class="chat-input-bar">
+          <div class="chat-input-row">
+            <textarea class="chat-input" id="chat-input" placeholder="Message the CoE agents… or pick a starter above" rows="1"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
+              oninput="this.style.height='44px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+            <button class="chat-send" onclick="sendChat()" title="Send (Enter)">↑</button>
+          </div>
+          <div class="chat-input-hint">
+            <span><kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</span>
+            <span id="chat-agent-hint" style="margin-left:auto;">Talking to: <strong>Orchestrator</strong></span>
+          </div>
         </div>
       </div>
     </div>
@@ -1448,22 +1561,37 @@ function renderChatAgentSelector() {
   document.getElementById('chat-agent-selector').innerHTML = html;
 }
 
+function updateActiveAgentHeader() {
+  const agent = AGENTS.find(a => a.id === activeAgent);
+  if (!agent) return;
+  document.getElementById('chat-active-avatar').textContent = agent.icon;
+  document.getElementById('chat-active-name').textContent = agent.name;
+  document.getElementById('chat-active-role').textContent = agent.role || 'CoE Agent';
+  const hint = document.getElementById('chat-agent-hint');
+  if (hint) hint.innerHTML = `Talking to: <strong>${agent.icon} ${agent.name}</strong>`;
+}
+
 function selectAgent(id) {
   activeAgent = id;
   renderChatAgentSelector();
+  updateActiveAgentHeader();
   renderChatMessages();  // renderChatStarters called inside
+}
+
+function clearChat() {
+  delete CHAT_HISTORY[activeAgent];
+  const header = document.getElementById('chat-active-header');
+  if (header) header.classList.remove('visible');
+  renderChatMessages();
 }
 
 function renderChatMessages() {
   const msgs = CHAT_HISTORY[activeAgent] || [];
   renderChatStarters();
+  const header = document.getElementById('chat-active-header');
+  if (header) header.classList.toggle('visible', msgs.length > 0);
   if (!msgs.length) {
-    const agent = AGENTS.find(a => a.id === activeAgent);
-    document.getElementById('chat-messages').innerHTML = `
-      <div class="chat-bubble bot">
-        <div class="from">${agent?.icon} ${agent?.name}</div>
-        Hello, Bill. I'm the ${agent?.name} agent. How can I help?
-      </div>`;
+    document.getElementById('chat-messages').innerHTML = '';
     return;
   }
   document.getElementById('chat-messages').innerHTML = msgs.map((m, i) => {
@@ -1497,6 +1625,9 @@ function useStarterPrompt(key) {
   const input = document.getElementById('chat-input');
   if (input) {
     input.value = text;
+    // Auto-resize textarea
+    input.style.height = '44px';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
     input.focus();
     const firstPlaceholder = text.indexOf('[');
     const firstEnd = text.indexOf(']');
@@ -1513,6 +1644,7 @@ async function sendChat() {
   if (!text || chatBusy) return;
   chatBusy = true;
   input.value = '';
+  input.style.height = '44px';
   input.disabled = true;
   if (sendBtn) sendBtn.disabled = true;
 
@@ -1599,6 +1731,7 @@ document.getElementById('cfg-endpoint').value = CFG.endpoint;
 updateClock();
 setInterval(updateClock, 1000);
 document.getElementById('kpi-done').textContent = '13';
+updateActiveAgentHeader();
 loadAll();
 
 // ── Uptime counter ─────────────────────────────────────────────────────────
