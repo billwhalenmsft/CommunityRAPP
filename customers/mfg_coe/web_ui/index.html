@@ -177,16 +177,17 @@
     .chat-agent-bar {
       display: flex; align-items: center; gap: 12px;
       padding: 10px 20px; border-bottom: 1px solid var(--border);
-      background: var(--bg2); position: relative;
+      background: var(--bg2); position: relative; overflow: hidden;
     }
-    .chat-agent-bar-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; }
-    .agent-selector-wrap { flex: 1; position: relative; overflow: hidden; }
-    .agent-selector-wrap::after {
-      content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 40px;
+    /* Fade on the right edge of the bar itself */
+    .chat-agent-bar::after {
+      content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 48px;
       background: linear-gradient(to right, transparent, var(--bg2));
-      pointer-events: none;
+      pointer-events: none; z-index: 2;
     }
-    .agent-selector { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-right: 36px; }
+    .chat-agent-bar-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; flex-shrink: 0; z-index: 3; }
+    .agent-selector-wrap { flex: 1; min-width: 0; }
+    .agent-selector { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-right: 48px; }
     .agent-selector::-webkit-scrollbar { display: none; }
     .agent-chip {
       background: var(--bg3); border: 1px solid var(--border);
