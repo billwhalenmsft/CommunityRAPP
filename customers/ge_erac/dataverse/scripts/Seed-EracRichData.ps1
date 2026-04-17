@@ -137,10 +137,10 @@ function Invoke-OotbData {
             scheduledstart           = $appt.start
             scheduledend             = $appt.scheduledend
             actualdurationminutes    = $appt.duration
-            "regardingobjectid_account@odata.bind" = "/accounts($($appt.accountId))"
+            description              = $appt.nextsteps
+            "regardingobjectid_account_appointment@odata.bind" = "/accounts($($appt.accountId))"
             erac_meetingtype         = $appt.meetingtype
             erac_outcome             = $appt.outcome
-            erac_nextsteps           = $appt.nextsteps
         }
         Post-Record "appointments" $body $appt.subject | Out-Null
         Start-Sleep -Seconds 1
@@ -217,7 +217,7 @@ function Invoke-CustomData {
     foreach ($p in $prrs) {
         $body = @{ erac_name=$p.name; erac_period=$p.period; erac_relationship=$p.rel; erac_technical=$p.tech; erac_strategic=$p.strat; erac_operational=$p.ops; erac_overallrating=$p.overall; erac_ratingtrend=$p.trend; erac_status=$p.status; erac_notes=$p.notes }
         if ($p.qbr) { $body["erac_lastqbrdate"] = $p.qbr }
-        $body["erac_accountid@odata.bind"] = "/accounts($($p.acct))"
+        $body["erac_AccountId@odata.bind"] = "/accounts($($p.acct))"
         Post-Record "erac_partnershipratings" $body $p.name | Out-Null
         Start-Sleep -Seconds 1
     }
@@ -234,7 +234,7 @@ function Invoke-CustomData {
     )
     foreach ($r in $risks) {
         $body = @{ erac_name=$r.name; erac_period=$r.period; erac_financialrisk=$r.fin; erac_technologyrisk=$r.tech; erac_compliancerisk=$r.comp; erac_counterpartyrisk=$r.cpty; erac_aggregaterisk=$r.agg; erac_approvalstatus=$r.status; erac_reviewdate=$r.date; erac_notes=$r.notes }
-        $body["erac_accountid@odata.bind"] = "/accounts($($r.acct))"
+        $body["erac_AccountId@odata.bind"] = "/accounts($($r.acct))"
         Post-Record "erac_riskassessments" $body $r.name | Out-Null
         Start-Sleep -Seconds 1
     }
@@ -253,7 +253,7 @@ function Invoke-CustomData {
     )
     foreach ($t in $treaties) {
         $body = @{ erac_name=$t.name; erac_treatytype=$t.type; erac_effectivedate=$t.eff; erac_expirydate=$t.exp; erac_exposurem=$t.expM; erac_governinglaw=$t.law; erac_status=$t.status; erac_notes=$t.notes }
-        $body["erac_accountid@odata.bind"] = "/accounts($($t.acct))"
+        $body["erac_AccountId@odata.bind"] = "/accounts($($t.acct))"
         Post-Record "erac_treaties" $body $t.name | Out-Null
         Start-Sleep -Seconds 1
     }
@@ -271,7 +271,7 @@ function Invoke-CustomData {
     )
     foreach ($r in $reserves) {
         $body = @{ erac_name=$r.name; erac_lob=$r.lob; erac_period=$r.period; erac_currentreserve=$r.curr; erac_recreserve=$r.rec; erac_adequacypct=$r.pct; erac_status=$r.status; erac_notes=$r.notes }
-        $body["erac_accountid@odata.bind"] = "/accounts($($r.acct))"
+        $body["erac_AccountId@odata.bind"] = "/accounts($($r.acct))"
         Post-Record "erac_reserveadequacies" $body $r.name | Out-Null
         Start-Sleep -Seconds 1
     }
@@ -286,7 +286,7 @@ function Invoke-CustomData {
     )
     foreach ($d in $disputes) {
         $body = @{ erac_name=$d.name; erac_disputetype=$d.type; erac_fileddate=$d.filed; erac_exposure=$d.expM; erac_status=$d.status; erac_notes=$d.notes }
-        $body["erac_accountid@odata.bind"] = "/accounts($($d.acct))"
+        $body["erac_AccountId@odata.bind"] = "/accounts($($d.acct))"
         Post-Record "erac_disputes" $body $d.name | Out-Null
         Start-Sleep -Seconds 1
     }
