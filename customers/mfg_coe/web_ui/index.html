@@ -34,6 +34,9 @@
     .topbar { grid-column: 1 / -1; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 12px; }
     .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 16px 0; grid-row: 3; }
     .main { overflow-y: auto; padding: 24px; grid-row: 3; }
+    .main.chat-mode { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
+    #view-chat { display: flex; flex-direction: column; }
+    #view-chat.active { flex: 1; min-height: 0; height: 100%; }
 
     /* ── Topbar ────────────────────────────────────────────────────────── */
     .topbar .logo { display: flex; align-items: center; gap: 10px; }
@@ -110,7 +113,7 @@
     .forum-new-btn { background: var(--accent2); color: white; border: none; border-radius: 6px; padding: 7px 16px; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
 
     /* ── Chat ──────────────────────────────────────────────────────────── */
-    .chat-container { display: flex; flex-direction: column; height: calc(100vh - 120px); }
+    .chat-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
     .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
     .chat-bubble { max-width: 70%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
     .chat-bubble.bot { background: var(--bg3); border: 1px solid var(--border); align-self: flex-start; }
@@ -434,12 +437,13 @@
 
     /* ── Chat Starter Prompts ───────────────────────────────────────────── */
     .chat-starters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-    .chat-starter-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: all .18s; display: flex; flex-direction: column; gap: 5px; text-align: left; }
+    .chat-starters.compact { grid-template-columns: 1fr 1fr; }
+    .chat-starter-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all .18s; display: flex; flex-direction: column; gap: 4px; text-align: left; }
     .chat-starter-card:hover { border-color: var(--accent2); background: rgba(88,166,255,0.07); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-    .chat-starter-icon { font-size: 24px; line-height: 1; }
+    .chat-starter-icon { font-size: 20px; line-height: 1; }
     .chat-starter-title { font-size: 13px; font-weight: 700; color: var(--text); }
-    .chat-starter-desc { font-size: 11px; color: var(--text2); line-height: 1.45; }
-    .chat-starters-header { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; }
+    .chat-starter-desc { font-size: 11px; color: var(--text2); line-height: 1.4; }
+    .chat-starters-header { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
 
     /* ── Gradient hero banner ───────────────────────────────────────────── */
     .hero-gradient { background: linear-gradient(135deg, rgba(31,111,235,0.15) 0%, rgba(188,140,255,0.08) 50%, rgba(63,185,80,0.05) 100%); border: 1px solid rgba(88,166,255,0.15); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; position: relative; overflow: hidden; }
@@ -877,6 +881,8 @@ function showView(name) {
   document.querySelectorAll('.nav-item').forEach(n => {
     if (n.textContent.toLowerCase().includes(name.replace('-', ' '))) n.classList.add('active');
   });
+  // Toggle chat layout mode on the main panel
+  document.querySelector('.main').classList.toggle('chat-mode', name === 'chat');
   if (name === 'backlog') renderBacklog();
   if (name === 'kanban') renderKanban();
   if (name === 'forum') renderForum();
