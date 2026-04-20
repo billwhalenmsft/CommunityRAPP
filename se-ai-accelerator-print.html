@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered SE Accelerator — Print / PDF Version</title>
+<style>
+  :root {
+    --ms-blue:   #0078d4;
+    --ms-dark:   #001a36;
+    --ms-mid:    #003b6f;
+    --ms-accent: #50e6ff;
+    --ms-green:  #107c10;
+    --ms-purple: #7719aa;
+    --ms-orange: #d83b01;
+    --text:      #1a1a2e;
+    --text-light:#444;
+    --bg:        #f8fafc;
+    --card:      #ffffff;
+    --border:    #e2e8f0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #e0e5ec;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* ── Print controls (hidden when printing) ─────────────── */
+  .print-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: var(--ms-dark); color: white;
+    display: flex; align-items: center; padding: 10px 24px; gap: 16px;
+    font-size: 14px;
+  }
+  .print-bar .hint { color: rgba(255,255,255,0.65); font-size: 12px; }
+  .print-bar .ml { margin-left: auto; display: flex; gap: 8px; }
+  .print-bar button {
+    background: var(--ms-blue); color: white; border: none;
+    border-radius: 6px; padding: 7px 18px; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+  }
+  .print-bar button:hover { background: #005a9e; }
+  .print-bar button.sec { background: rgba(255,255,255,0.12); }
+  .print-bar button.sec:hover { background: rgba(255,255,255,0.2); }
+
+  /* ── Page setup ─────────────────────────────────────────── */
+  @page { size: A4 landscape; margin: 0; }
+  @media print {
+    .print-bar { display: none; }
+    body { background: white; padding-top: 0 !important; }
+    .slide { box-shadow: none !important; margin: 0 !important; }
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Slide wrapper ──────────────────────────────────────── */
+  .slides { padding: 60px 0 40px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .slide {
+    width: 297mm; /* A4 landscape width */
+    min-height: 210mm;
+    background: white;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+    page-break-after: always;
+    page-break-inside: avoid;
+    overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── Slide accent bar (top) ─────────────────────────────── */
+  .slide-accent { height: 5px; background: linear-gradient(90deg, var(--ms-dark), var(--ms-blue), var(--ms-accent)); }
+  .slide-accent.green { background: linear-gradient(90deg, #004b16, var(--ms-green), #86efac); }
+
+  /* ── Slide header strip ─────────────────────────────────── */
+  .slide-header {
+    background: var(--ms-dark);
+    color: white;
+    padding: 14px 36px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .slide-header .brand { font-size: 13px; font-weight: 700; color: var(--ms-accent); letter-spacing: 0.3px; }
+  .slide-header .brand small { display: block; font-size: 10px; color: rgba(255,255,255,0.5); font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
+  .slide-header .ms-logo { display: flex; gap: 2px; flex-wrap: wrap; width: 18px; }
+  .slide-header .ms-logo span { display: block; width: 8px; height: 8px; }
+  .slide-header .slide-num { margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* ── Slide body ─────────────────────────────────────────── */
+  .slide-body { flex: 1; padding: 28px 36px; display: flex; flex-direction: column; }
+  .slide-body.row { flex-direction: row; gap: 32px; }
+
+  /* ── Slide footer ───────────────────────────────────────── */
+  .slide-footer {
+    background: var(--bg); border-top: 1px solid var(--border);
+    padding: 7px 36px; font-size: 10px; color: var(--text-light);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  /* ── Typography ─────────────────────────────────────────── */
+  .slide-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,120,212,0.08); color: var(--ms-blue);
+    border: 1px solid rgba(0,120,212,0.2);
+    padding: 3px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; margin-bottom: 10px; width: fit-content;
+  }
+  .slide-title { font-size: 26px; font-weight: 700; line-height: 1.2; margin-bottom: 6px; color: var(--text); }
+  .slide-sub { font-size: 13px; color: var(--text-light); margin-bottom: 20px; }
+
+  /* ── Cards ──────────────────────────────────────────────── */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .card-sm { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+
+  /* ── Tag pills ──────────────────────────────────────────── */
+  .tag { display: inline-block; background: #e8f4fd; color: var(--ms-blue); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin: 2px; }
+  .tag.green { background: #e6f4ea; color: var(--ms-green); }
+  .tag.purple { background: #f3e9fd; color: var(--ms-purple); }
+  .tag.orange { background: #fef4e8; color: var(--ms-orange); }
+
+  /* ── Role badge ─────────────────────────────────────────── */
+  .role-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-top: 4px; display: inline-block; }
+
+  /* ── Stat numbers ───────────────────────────────────────── */
+  .big-num {
+    font-size: 44px; font-weight: 800; line-height: 1;
+    background: linear-gradient(135deg, var(--ms-dark) 30%, var(--ms-blue));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .big-unit { font-size: 14px; color: var(--ms-blue); font-weight: 700; margin-bottom: 4px; }
+  .big-desc { font-size: 11px; color: var(--text-light); line-height: 1.4; }
+
+  /* ── Step badge ─────────────────────────────────────────── */
+  .step-num-circle {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--ms-blue); color: white;
+    font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .check { color: var(--ms-green); font-weight: 700; margin-right: 6px; }
+
+  /* ── Workflow step ──────────────────────────────────────── */
+  .wf-box {
+    background: linear-gradient(135deg, var(--ms-dark), #0a2a50);
+    color: white; border-radius: 10px;
+    padding: 16px 14px; text-align: center; flex: 1;
+  }
+  .wf-icon { font-size: 28px; margin-bottom: 6px; }
+  .wf-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .wf-desc { font-size: 11px; color: rgba(255,255,255,0.7); line-height: 1.4; }
+  .wf-time { font-size: 10px; color: var(--ms-accent); font-weight: 700; margin-top: 6px; }
+  .wf-arrow { color: var(--ms-blue); font-size: 18px; align-self: center; flex-shrink: 0; }
+
+  /* ── Agent card ─────────────────────────────────────────── */
+  .agent-mini {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; text-align: center;
+  }
+  .agent-mini .ico { font-size: 22px; margin-bottom: 4px; }
+  .agent-mini h4 { font-size: 11px; font-weight: 700; margin-bottom: 2px; color: var(--text); }
+  .agent-mini p { font-size: 10px; color: var(--text-light); line-height: 1.3; }
+
+  /* ── Use case card ──────────────────────────────────────── */
+  .uc-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; flex: 1;
+  }
+  .uc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .uc-header .uc-icon { font-size: 20px; }
+  .uc-header h3 { font-size: 13px; font-weight: 700; flex: 1; }
+  .time-save { font-size: 10px; font-weight: 700; color: var(--ms-green); background: #e6f4ea; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .uc-card > p { font-size: 11px; color: var(--text-light); margin-bottom: 8px; line-height: 1.4; }
+  .uc-steps { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .uc-steps li { font-size: 11px; display: flex; align-items: flex-start; gap: 6px; color: var(--text-light); }
+
+  /* ── Outcome stat ───────────────────────────────────────── */
+  .outcome-stat {
+    background: linear-gradient(135deg, var(--ms-dark) 0%, var(--ms-mid) 100%);
+    border-radius: 10px; padding: 20px 16px; text-align: center; color: white; flex: 1;
+  }
+  .out-num { font-size: 36px; font-weight: 800; color: var(--ms-accent); line-height: 1; }
+  .out-unit { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+  .out-desc { font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.4; }
+
+  /* ── Divider ────────────────────────────────────────────── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* ── Hero specific ──────────────────────────────────────── */
+  .hero-bg {
+    background: linear-gradient(135deg, var(--ms-dark) 0%, var(--ms-mid) 55%, #0062a3 100%);
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 36px 60px; color: white; position: relative; overflow: hidden;
+  }
+  .hero-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2350e6ff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-bg > * { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(80,230,255,0.15); border: 1px solid rgba(80,230,255,0.35);
+    color: var(--ms-accent); padding: 5px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 600; margin-bottom: 16px;
+  }
+  .hero-h1 {
+    font-size: 38px; font-weight: 700; line-height: 1.15; margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 40%, var(--ms-accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-p { font-size: 14px; color: rgba(255,255,255,0.75); max-width: 580px; margin: 0 auto 24px; line-height: 1.6; }
+  .hero-stats { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .hero-stat { text-align: center; }
+  .hero-stat .num { font-size: 30px; font-weight: 800; color: var(--ms-accent); line-height: 1; }
+  .hero-stat .lbl { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+
+  /* ── Problem / Solution ─────────────────────────────────── */
+  .ps-col { flex: 1; border-radius: 10px; padding: 16px 18px; }
+  .ps-col.problem { background: #fff5f5; border: 1px solid #fed7d7; }
+  .ps-col.solution { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .ps-col h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .ps-col.problem h3 { color: var(--ms-orange); }
+  .ps-col.solution h3 { color: var(--ms-green); }
+  .ps-col ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .ps-col li { font-size: 12px; display: flex; align-items: flex-start; gap: 8px; color: var(--text-light); }
+
+  /* ── Stack card ─────────────────────────────────────────── */
+  .stack-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; flex: 1; }
+  .stack-icon { font-size: 28px; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .stack-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .stack-card p { font-size: 12px; color: var(--text-light); margin-bottom: 10px; line-height: 1.5; }
+
+  /* ── Expand card ────────────────────────────────────────── */
+  .expand-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; flex: 1; }
+  .expand-card h3 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .expand-card > p { font-size: 12px; color: var(--text-light); margin-bottom: 10px; }
+  .expand-card ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .expand-card li { font-size: 12px; color: var(--text-light); display: flex; align-items: flex-start; gap: 4px; }
+
+  /* ── CTA slide ──────────────────────────────────────────── */
+  .cta-body {
+    background: linear-gradient(135deg, var(--ms-dark), var(--ms-mid));
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center; color: white; padding: 36px;
+  }
+  .cta-body h2 { font-size: 30px; font-weight: 700; margin-bottom: 12px; }
+  .cta-body p { font-size: 14px; color: rgba(255,255,255,0.7); max-width: 500px; margin-bottom: 24px; }
+  .btn-cta {
+    display: inline-block; background: var(--ms-accent); color: var(--ms-dark);
+    padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 700;
+    text-decoration: none; margin: 6px;
+  }
+  .btn-cta.outline { background: rgba(255,255,255,0.1); color: white; border: 2px solid rgba(255,255,255,0.3); }
+
+  /* ── Slide label ────────────────────────────────────────── */
+  .label-chip {
+    font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 10px;
+    background: rgba(0,120,212,0.08); color: var(--ms-blue);
+    letter-spacing: 0.5px; text-transform: uppercase;
+    display: inline-block; margin-bottom: 8px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Print controls -->
+<div class="print-bar" id="printBar">
+  <div>
+    <strong>SE AI Accelerator</strong> — Print / PDF
+  </div>
+  <span class="hint">→ File → Print → Save as PDF · Layout: Landscape · Margins: None · Background graphics: ON</span>
+  <div class="ml">
+    <button class="sec" onclick="document.getElementById('printBar').style.display='none'">Hide bar</button>
+    <button onclick="window.print()">🖨️ Print / Save PDF</button>
+  </div>
+</div>
+
+<div class="slides">
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 1 — COVER / HERO
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-accent"></div>
+  <div class="slide-header">
+    <div class="ms-logo">
+      <span style="background:#f25022"></span><span style="background:#7fba00"></span>
+      <span style="background:#00a4ef"></span><span style="background:#ffb900"></span>
+    </div>
+    <div class="brand">SE AI Accelerator<small>Microsoft · Discrete Manufacturing</small></div>
+    <div class="slide-num">01 / 08</div>
+  </div>
+
+  <div class="hero-bg">
+    <div class="hero-badge">🏭 Discrete Manufacturing · Microsoft Solution Engineering</div>
+    <div class="hero-h1">Your AI Agent Team<br>Works While You Sleep</div>
+    <p class="hero-p">A fully autonomous agentic system that researches, drafts, builds, and tracks work for Solution Engineers — so you show up to every customer meeting more prepared, faster.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">14</div><div class="lbl">Specialized AI Agents</div></div>
+      <div class="hero-stat"><div class="num">24/7</div><div class="lbl">Autonomous Operation</div></div>
+      <div class="hero-stat"><div class="num">~10×</div><div class="lbl">Faster Demo Prep</div></div>
+      <div class="hero-stat"><div class="num">2 min</div><div class="lbl">To Kick Off a Task</div></div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>AI-Powered SE Accelerator — Bill Whalen, Microsoft</span>
+    <span>bots-in-blazers.fun · github.com/billwhalenmsft/CommunityRAPP-BillWhalen</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 2 — THE PROBLEM / SOLUTION
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-accent"></div>
+  <div class="slide-header">
+    <div class="ms-logo">
+      <span style="background:#f25022"></span><span style="background:#7fba00"></span>
+      <span style="background:#00a4ef"></span><span style="background:#ffb900"></span>
+    </div>
+    <div class="brand">SE AI Accelerator<small>Microsoft · Discrete Manufacturing</small></div>
+    <div class="slide-num">02 / 08</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="slide-tag">💡 Context</div>
+    <div class="slide-title">SEs Are Incredible. Their Time Isn't Infinite.</div>
+    <p class="slide-sub">Every SE juggles demos, discovery prep, POC builds, SOPs, and customer-specific customizations — often from scratch, every time.</p>
+
+    <div style="display:flex;gap:20px;flex:1">
+      <div class="ps-col problem">
+        <h3>😩 Without This System</h3>
+        <ul>
+          <li><span>⏱️</span>3–5 hours building a D365 demo from scratch for each new customer</li>
+          <li><span>🔁</span>Recreating the same agent use cases repeatedly with no reuse</li>
+          <li><span>📝</span>SOPs and best practices scattered in emails, OneNote, memory</li>
+          <li><span>🙋</span>Every question goes to the same 2–3 "tribal knowledge" people</li>
+          <li><span>🌙</span>Work stops when the SE stops — no async progress</li>
+          <li><span>🎯</span>Customer insights from one engagement never benefit the next</li>
+        </ul>
+      </div>
+      <div class="ps-col solution">
+        <h3>🚀 With This System</h3>
+        <ul>
+          <li><span>⚡</span>D365 demo customized for a new customer in under 30 minutes</li>
+          <li><span>📚</span>Proven agent templates reused and iterated across engagements</li>
+          <li><span>📋</span>SOPs auto-generated, versioned, and searchable in a shared repo</li>
+          <li><span>🤖</span>AI agents answer common questions autonomously at any hour</li>
+          <li><span>🌙</span>Agents process backlog items overnight — show up to work with PRs ready</li>
+          <li><span>🧠</span>Every customer insight feeds a shared knowledge base for the whole team</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>The Challenge — SE Time & Scale</span>
+    <span>Microsoft SE AI Accelerator</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 3 — THREE LAYERS
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-accent"></div>
+  <div class="slide-header">
+    <div class="ms-logo">
+      <span style="background:#f25022"></span><span style="background:#7fba00"></span>
+      <span style="background:#00a4ef"></span><span style="background:#ffb900"></span>
+    </div>
+    <div class="brand">SE AI Accelerator<small>Microsoft · Discrete Manufacturing</small></div>
+    <div class="slide-num">03 / 08</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="slide-tag">🧩 The System</div>
+    <div class="slide-title">Three Layers That Work Together</div>
+    <p class="slide-sub">Built on Microsoft's stack — Azure Functions, OpenAI, GitHub, Power Platform. No proprietary lock-in. Fully open and extensible.</p>
+
+    <div style="display:flex;gap:20px;flex:1">
+      <div class="stack-card">
+        <div class="stack-icon" style="background:#e8f4fd;">🧠</div>
+        <h3>RAPP Pipeline</h3>
+        <p>Rapid AI Agent Production Pipeline — a proven 14-step methodology for going from customer use case to deployable agent. Discovery → MVP → code → tests → deployment, all AI-assisted.</p>
+        <div>
+          <span class="tag">Azure Functions</span>
+          <span class="tag">Azure OpenAI</span>
+          <span class="tag">Python</span>
+        </div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon" style="background:#e6f4ea;">🏭</div>
+        <h3>Mfg CoE Command Center</h3>
+        <p>A web-based operations center for the Discrete Manufacturing Center of Excellence. Live dashboard, 14 AI agent personas, issue tracking, a full RAPP chat interface — all in one place.</p>
+        <div>
+          <span class="tag">Azure Static Web Apps</span>
+          <span class="tag">GitHub</span>
+          <span class="tag">Copilot Studio</span>
+        </div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon" style="background:#f3e9fd;">⚙️</div>
+        <h3>Autonomous Agent Loop</h3>
+        <p>GitHub Actions workflows run the agent team on a schedule. Daily standup, issue processing, Copilot coding agent for code tasks, and a feedback loop that pings you only when a decision is needed.</p>
+        <div>
+          <span class="tag">GitHub Actions</span>
+          <span class="tag">GitHub Copilot</span>
+          <span class="tag">GitHub Issues</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>System Architecture — Three Layers</span>
+    <span>Microsoft SE AI Accelerator</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 4 — HOW IT WORKS (DAILY FLOW)
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-accent"></div>
+  <div class="slide-header">
+    <div class="ms-logo">
+      <span style="background:#f25022"></span><span style="background:#7fba00"></span>
+      <span style="background:#00a4ef"></span><span style="background:#ffb900"></span>
+    </div>
+    <div class="brand">SE AI Accelerator<small>Microsoft · Discrete Manufacturing</small></div>
+    <div class="slide-num">04 / 08</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="slide-tag">⚙️ Workflow</div>
+    <div class="slide-title">Your New Daily Flow as an SE</div>
+    <p class="slide-sub">You describe the work. Agents do it. You review and redirect when needed.</p>
+
+    <div style="display:flex;gap:10px;flex:1;align-items:stretch">
+      <div class="wf-box">
+        <div class="wf-icon">📝</div>
+        <div class="wf-title">Create an Issue</div>
+        <div class="wf-desc">Use a structured template on GitHub. Fill in customer, use case, goals. That's it.</div>
+        <div class="wf-time">⏱ 2 min</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-box">
+        <div class="wf-icon">🤖</div>
+        <div class="wf-title">Agents Auto-Pick Up</div>
+        <div class="wf-desc">System detects your issue, routes to the right agent persona, starts working.</div>
+        <div class="wf-time">⚡ Automatic</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-box">
+        <div class="wf-icon">🔨</div>
+        <div class="wf-title">Work Gets Done</div>
+        <div class="wf-desc">Agents research, draft SOPs, generate agent code, or open a PR — depending on the task type.</div>
+        <div class="wf-time">⏱ Hours → Days</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-box">
+        <div class="wf-icon">💬</div>
+        <div class="wf-title">You Review</div>
+        <div class="wf-desc">If agents need a decision, issue gets tagged <em>needs-bill</em>. You comment. They resume.</div>
+        <div class="wf-time">⏱ 5 min max</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-box">
+        <div class="wf-icon">✅</div>
+        <div class="wf-title">Shipped</div>
+        <div class="wf-desc">Code PRs merged, docs committed, demo assets ready. Issue closed automatically.</div>
+        <div class="wf-time">Zero rework</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>Workflow — SE Daily Flow</span>
+    <span>Microsoft SE AI Accelerator</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 5 — 14 AGENTS
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-accent"></div>
+  <div class="slide-header">
+    <div class="ms-logo">
+      <span style="background:#f25022"></span><span style="background:#7fba00"></span>
+      <span style="background:#00a4ef"></span><span style="background:#ffb900"></span>
+    </div>
+    <div class="brand">SE AI Accelerator<small>Microsoft · Discrete Manufacturing</small></div>
+    <div class="slide-num">05 / 08</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="slide-tag">👥 The Team</div>
+    <div class="slide-title">14 AI Agents, Each with a Job</div>
+    <p class="slide-sub" style="margin-bottom:14px">Not generic chatbots — purpose-built personas with specific roles, context about your environments, and defined handoffs between them.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">
+      <div class="agent-mini"><div class="ico">🎯</div><h4>Orchestrator</h4><p>Routes tasks, manages pipeline</p><span class="role-badge" style="background:#e8f4fd;color:#0078d4">PM</span></div>
+      <div class="agent-mini"><div class="ico">📋</div><h4>Project Manager</h4><p>Tracks progress, dependencies</p><span class="role-badge" style="background:#e8f4fd;color:#0078d4">PM</span></div>
+      <div class="agent-mini"><div class="ico">🏗️</div><h4>Architect</h4><p>Solution design, tech decisions</p><span class="role-badge" style="background:#f3e9fd;color:#7719aa">Dev</span></div>
+      <div class="agent-mini"><div class="ico">💻</div><h4>Developer</h4><p>Writes code, builds agents</p><span class="role-badge" style="background:#f3e9fd;color:#7719aa">Dev</span></div>
+      <div class="agent-mini"><div class="ico">🏭</div><h4>Mfg SME</h4><p>Manufacturing domain knowledge</p><span class="role-badge" style="background:#fef4e8;color:#d83b01">SME</span></div>
+      <div class="agent-mini"><div class="ico">🔧</div><h4>D365 Expert</h4><p>Dynamics 365 configuration</p><span class="role-badge" style="background:#fef4e8;color:#d83b01">SME</span></div>
+      <div class="agent-mini"><div class="ico">⚡</div><h4>Power Platform</h4><p>Apps, flows, Copilot Studio</p><span class="role-badge" style="background:#f3e9fd;color:#7719aa">Dev</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:8px">
+      <div class="agent-mini"><div class="ico">📊</div><h4>Business Analyst</h4><p>Requirements, use case docs</p><span class="role-badge" style="background:#e6f4ea;color:#107c10">Analysis</span></div>
+      <div class="agent-mini"><div class="ico">🎨</div><h4>Demo Designer</h4><p>Demo scripts and narratives</p><span class="role-badge" style="background:#e8f4fd;color:#0078d4">Demo</span></div>
+      <div class="agent-mini"><div class="ico">📚</div><h4>Knowledge Base</h4><p>Searches assets, prevents reinvention</p><span class="role-badge" style="background:#e6f4ea;color:#107c10">Research</span></div>
+      <div class="agent-mini"><div class="ico">✅</div><h4>QA / Tester</h4><p>Quality gates, test cases</p><span class="role-badge" style="background:#f3e9fd;color:#7719aa">Dev</span></div>
+      <div class="agent-mini"><div class="ico">📝</div><h4>SOP Author</h4><p>Documents processes, guides</p><span class="role-badge" style="background:#e6f4ea;color:#107c10">Docs</span></div>
+      <div class="agent-mini"><div class="ico">🔍</div><h4>Intake / Logger</h4><p>Captures ideas, logs decisions</p><span class="role-badge" style="background:#e8f4fd;color:#0078d4">PM</span></div>
+      <div class="agent-mini"><div class="ico">🌐</div><h4>Community</h4><p>Shares insights across teams</p><span class="role-badge" style="background:#fef4e8;color:#d83b01">CoE</span></div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>Agent Team — 14 Specialized Personas</span>
+    <span>Microsoft SE AI Accelerator</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 6 — USE CASES
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-accent"></div>
+  <div class="slide-header">
+    <div class="ms-logo">
+      <span style="background:#f25022"></span><span style="background:#7fba00"></span>
+      <span style="background:#00a4ef"></span><span style="background:#ffb900"></span>
+    </div>
+    <div class="brand">SE AI Accelerator<small>Microsoft · Discrete Manufacturing</small></div>
+    <div class="slide-num">06 / 08</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="slide-tag">📋 Real Examples</div>
+    <div class="slide-title">What SEs Actually Use It For</div>
+    <p class="slide-sub">These are the tasks that eat SE time. Here's how the system handles each one.</p>
+
+    <div style="display:flex;gap:16px;flex:1">
+      <div class="uc-card">
+        <div class="uc-header">
+          <span class="uc-icon">🏭</span>
+          <h3>New Customer D365 Demo</h3>
+          <span class="time-save">Saves ~4 hrs</span>
+        </div>
+        <p>Customer meeting in 2 days. You need a Dynamics 365 demo tailored to their industry, use case, and known pain points.</p>
+        <ul class="uc-steps">
+          <li><div class="step-num-circle">1</div>Fill "D365 Demo Setup" issue template (2 min)</li>
+          <li><div class="step-num-circle">2</div>Agents research company, industry, and fit with existing environments</li>
+          <li><div class="step-num-circle">3</div>D365 Expert + Demo Designer generate a tailored demo script</li>
+          <li><div class="step-num-circle">4</div>You review, provide 1–2 tweaks, go deliver</li>
+        </ul>
+      </div>
+      <div class="uc-card">
+        <div class="uc-header">
+          <span class="uc-icon">🤖</span>
+          <h3>Build a New AI Agent</h3>
+          <span class="time-save">Saves ~8 hrs</span>
+        </div>
+        <p>Customer wants to see a Copilot Studio agent for contract review or field service dispatch. You need working code — fast.</p>
+        <ul class="uc-steps">
+          <li><div class="step-num-circle">1</div>Fill "Build an Agent" template with use case and goals</li>
+          <li><div class="step-num-circle">2</div>Architect designs the approach, selects patterns from library</li>
+          <li><div class="step-num-circle">3</div>GitHub Copilot writes the code and opens a PR</li>
+          <li><div class="step-num-circle">4</div>You review the PR, merge, demo-ready</li>
+        </ul>
+      </div>
+      <div class="uc-card">
+        <div class="uc-header">
+          <span class="uc-icon">📋</span>
+          <h3>Document a Process (SOP)</h3>
+          <span class="time-save">Saves ~3 hrs</span>
+        </div>
+        <p>Team needs a written SOP for how to set up Copilot Studio for manufacturing customers — before knowledge walks out the door.</p>
+        <ul class="uc-steps">
+          <li><div class="step-num-circle">1</div>Fill "SOP / Process" template describing the process</li>
+          <li><div class="step-num-circle">2</div>SOP Author + Mfg SME research and draft the document</li>
+          <li><div class="step-num-circle">3</div>PR opened with the SOP in the shared repo</li>
+          <li><div class="step-num-circle">4</div>Team reviews, it's versioned and searchable forever</li>
+        </ul>
+      </div>
+      <div class="uc-card">
+        <div class="uc-header">
+          <span class="uc-icon">⚡</span>
+          <h3>Rapid Prototype a Use Case</h3>
+          <span class="time-save">Saves ~6 hrs</span>
+        </div>
+        <p>Customer says "can your AI do X?" in a discovery call. You want a working prototype before the next meeting.</p>
+        <ul class="uc-steps">
+          <li><div class="step-num-circle">1</div>Open Command Center chat, use "RAPP Prototype" starter</li>
+          <li><div class="step-num-circle">2</div>Chat with Orchestrator agent to scope the use case</li>
+          <li><div class="step-num-circle">3</div>RAPP pipeline generates agent code + demo assets</li>
+          <li><div class="step-num-circle">4</div>Next meeting: live working prototype on screen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>Use Cases — Real SE Time Savings</span>
+    <span>Microsoft SE AI Accelerator</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 7 — OUTCOMES / SCALE
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-accent"></div>
+  <div class="slide-header">
+    <div class="ms-logo">
+      <span style="background:#f25022"></span><span style="background:#7fba00"></span>
+      <span style="background:#00a4ef"></span><span style="background:#ffb900"></span>
+    </div>
+    <div class="brand">SE AI Accelerator<small>Microsoft · Discrete Manufacturing</small></div>
+    <div class="slide-num">07 / 08</div>
+  </div>
+
+  <div class="slide-body row">
+    <!-- Left: Outcomes -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+      <div>
+        <div class="slide-tag">📈 Impact</div>
+        <div class="slide-title" style="font-size:22px">What Changes for Your Team</div>
+        <p class="slide-sub" style="font-size:12px">Directional based on removing the tasks that take SE time today.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1">
+        <div class="outcome-stat">
+          <div class="out-num">10×</div>
+          <div class="out-unit">faster</div>
+          <div class="out-desc">Demo customization for new customers — from a day to under an hour</div>
+        </div>
+        <div class="outcome-stat">
+          <div class="out-num">0</div>
+          <div class="out-unit">from scratch</div>
+          <div class="out-desc">No more rebuilding agent templates — every use case adds to a shared library</div>
+        </div>
+        <div class="outcome-stat">
+          <div class="out-num">24/7</div>
+          <div class="out-unit">agent uptime</div>
+          <div class="out-desc">Work happens while you're in meetings, traveling, or sleeping</div>
+        </div>
+        <div class="outcome-stat">
+          <div class="out-num">2 min</div>
+          <div class="out-unit">to assign work</div>
+          <div class="out-desc">Fill a template. Agents do the rest. You review the output.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Scale It -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+      <div>
+        <div class="slide-tag">📡 Scalability</div>
+        <div class="slide-title" style="font-size:22px">Scales Across SE Teams</div>
+        <p class="slide-sub" style="font-size:12px">Built for Discrete Manufacturing. The same architecture works for any SE vertical — in days, not months.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex:1">
+        <div class="expand-card">
+          <h3>🚀 What You Need</h3>
+          <p>Runs on resources most teams already have.</p>
+          <ul>
+            <li><span class="check">✓</span>Azure subscription (~$10/mo)</li>
+            <li><span class="check">✓</span>Azure OpenAI (GPT-4o or newer)</li>
+            <li><span class="check">✓</span>GitHub repository (free)</li>
+            <li><span class="check">✓</span>GitHub Copilot license</li>
+            <li><span class="check">✓</span>1 day to configure for your vertical</li>
+          </ul>
+        </div>
+        <div class="expand-card">
+          <h3>📈 The Compounding Effect</h3>
+          <p>The system gets smarter every week.</p>
+          <ul>
+            <li><span class="check">✓</span>Each demo prep adds to the knowledge base</li>
+            <li><span class="check">✓</span>Each agent build adds to the template library</li>
+            <li><span class="check">✓</span>Each SOP reduces onboarding time</li>
+            <li><span class="check">✓</span>Agents learn your team's patterns</li>
+            <li><span class="check">✓</span>Month 6 SE is 3× more effective than Month 1</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>Impact & Scalability</span>
+    <span>Microsoft SE AI Accelerator</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 8 — CTA / CLOSING
+══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-accent"></div>
+  <div class="slide-header">
+    <div class="ms-logo">
+      <span style="background:#f25022"></span><span style="background:#7fba00"></span>
+      <span style="background:#00a4ef"></span><span style="background:#ffb900"></span>
+    </div>
+    <div class="brand">SE AI Accelerator<small>Microsoft · Discrete Manufacturing</small></div>
+    <div class="slide-num">08 / 08</div>
+  </div>
+
+  <div class="cta-body">
+    <div class="hero-badge" style="margin-bottom:16px">🤖 Live · In Production Today</div>
+    <h2>Ready to See It in Action?</h2>
+    <p>The Command Center is live. The agent team is running. Come watch it work — or fork it and stand up your own in a day.</p>
+    <div>
+      <span class="btn-cta">🚀 bots-in-blazers.fun</span>
+      <span class="btn-cta outline">⭐ github.com/billwhalenmsft/CommunityRAPP-BillWhalen</span>
+    </div>
+    <div style="display:flex;gap:28px;justify-content:center;margin-top:28px;flex-wrap:wrap">
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:800;color:var(--ms-accent)">14</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5)">AI Agents</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:800;color:var(--ms-accent)">3,641</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5)">Lines of code (1 HTML file)</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:800;color:var(--ms-accent)">~$10</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5)">Per month to run</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:800;color:var(--ms-accent)">1 day</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5)">To stand up for your team</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>Bill Whalen · Microsoft SE, Discrete Manufacturing</span>
+    <span>Powered by Azure OpenAI · GitHub Copilot · Azure Functions</span>
+  </div>
+</div>
+
+</div><!-- /slides -->
+</body>
+</html>
