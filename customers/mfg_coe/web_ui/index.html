@@ -1266,6 +1266,9 @@
         <div class="card-title" style="margin-top:16px">GitHub PAT (for API calls) <span style="font-size:11px;background:#d29922;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">required</span></div>
         <input id="cfg-pat" class="chat-input" style="max-width:400px;display:block;margin-bottom:8px" type="password" placeholder="ghp_..." />
         <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Stored only in your browser. Never sent anywhere except api.github.com.</p>
+        <div class="card-title" style="margin-top:16px">Azure Function Key <span style="font-size:11px;background:#d29922;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">required for chat</span></div>
+        <input id="cfg-apikey" class="chat-input" style="max-width:500px;display:block;margin-bottom:8px" type="password" placeholder="Paste your Azure Function key…" />
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Sent as <code>x-functions-key</code> header. Get it via: <code>az functionapp keys list --name rapp-ov4bzgynnlvii --resource-group rappdec1020205v1 --query "functionKeys.default" -o tsv</code></p>
         <div class="card-title" style="margin-top:16px">Agent Endpoint <span style="font-size:11px;background:#238636;color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px">locked</span></div>
         <input id="cfg-endpoint" class="chat-input" style="max-width:500px;display:block;margin-bottom:8px;opacity:0.6;cursor:not-allowed" readonly />
         <p style="font-size:12px;color:var(--text2);margin-bottom:16px">The RAPP Function App endpoint for the Chat view.</p>
@@ -1355,7 +1358,7 @@
 <script>
 // ── Config — repo and endpoint are hardcoded; only PAT is user-supplied ───────
 const HARDCODED_REPO = 'billwhalenmsft/CommunityRAPP-BillWhalen';
-const HARDCODED_ENDPOINT = 'https://rapp-kt6i6mlby5wzi.azurewebsites.net/api/businessinsightbot_function';
+const HARDCODED_ENDPOINT = 'https://rapp-ov4bzgynnlvii.azurewebsites.net/api/businessinsightbot_function';
 
 // Migrate: clear any stale localStorage repo/endpoint from old sessions
 if (localStorage.getItem('coe_repo') && localStorage.getItem('coe_repo') !== HARDCODED_REPO) {
@@ -1369,12 +1372,15 @@ let CFG = {
   repo: HARDCODED_REPO,
   pat: localStorage.getItem('coe_pat') || '',
   endpoint: HARDCODED_ENDPOINT,
+  apiKey: localStorage.getItem('coe_apikey') || '',
 };
 
 function saveConfig() {
-  // Repo and endpoint are hardcoded — only PAT is saved
+  // Repo and endpoint are hardcoded — PAT and API key are user-supplied
   CFG.pat = document.getElementById('cfg-pat').value.trim();
+  CFG.apiKey = document.getElementById('cfg-apikey').value.trim();
   localStorage.setItem('coe_pat', CFG.pat);
+  localStorage.setItem('coe_apikey', CFG.apiKey);
   const status = document.getElementById('save-status');
   status.style.display = 'inline';
   setTimeout(() => status.style.display = 'none', 3000);
@@ -2743,7 +2749,7 @@ async function sendChat() {
   try {
     const r = await fetch(CFG.endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(CFG.apiKey ? { 'x-functions-key': CFG.apiKey } : {}) },
       body: JSON.stringify({
         user_input: text,
         conversation_history: CHAT_HISTORY[activeAgent].slice(0, -1),
@@ -3110,6 +3116,7 @@ function renderA365AgentCatalog(tenant, q, installedGrid, availableGrid) {
 // ── Init ───────────────────────────────────────────────────────────────────
 document.getElementById('cfg-repo').value = CFG.repo;
 document.getElementById('cfg-pat').value = CFG.pat;
+document.getElementById('cfg-apikey').value = CFG.apiKey;
 document.getElementById('cfg-endpoint').value = CFG.endpoint;
 updateClock();
 setInterval(updateClock, 1000);
