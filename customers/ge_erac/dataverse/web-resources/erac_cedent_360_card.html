@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>ERAC Cedent 360</title>
+<style>
+  :root {
+    --brand:#0078D4; --brand-dark:#106EBE; --bg:#FAFAFA; --card:#FFFFFF;
+    --border:#EDEBE9; --text:#323130; --text-secondary:#605E5C; --muted:#A19F9D;
+    --high:#107C10; --mid:#935200; --low:#D13438;
+    --shadow:0 1.6px 3.6px rgba(0,0,0,.08), 0 .3px .9px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;font:13px "Segoe UI",-apple-system,system-ui,sans-serif;color:var(--text);background:var(--bg)}
+  .header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;border-bottom:1px solid var(--border);background:#fff}
+  .title{font-size:14px;font-weight:600;letter-spacing:.2px}
+  .title .accent{color:var(--brand)}
+  .meta{font-size:11px;color:var(--text-secondary)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+  .tile{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:11px 13px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:space-between;min-height:84px}
+  .tile-label{font-size:11px;color:var(--text-secondary);font-weight:600;letter-spacing:.4px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+  .icon{width:14px;height:14px;display:inline-block}
+  .tile-value{font-size:24px;font-weight:600;line-height:1.1;margin-top:6px}
+  .tile-sub{font-size:11px;color:var(--text-secondary);margin-top:3px}
+  .tile-strip{height:3px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden}
+  .tile-strip-fill{height:100%;border-radius:2px;transition:width .4s}
+  .high{color:var(--high)} .mid{color:var(--mid)} .low{color:var(--low)}
+  .bg-high{background:var(--high)} .bg-mid{background:var(--mid)} .bg-low{background:var(--low)} .bg-brand{background:var(--brand)}
+  .tile.span2{grid-column:span 2;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px}
+  .tile.span2 .tile-value{font-size:20px}
+  .tile.empty .tile-value{color:var(--muted);font-size:14px;font-weight:400;font-style:italic}
+  .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+  .pill-high{background:#DFF6DD;color:var(--high)}
+  .pill-mid{background:#FFF4CE;color:var(--mid)}
+  .pill-low{background:#FDE7E9;color:var(--low)}
+  .pill-info{background:#DEECF9;color:var(--brand)}
+  .footer{padding:6px 14px 10px;font-size:11px;color:var(--muted);text-align:right}
+  .loading{padding:30px;text-align:center;color:var(--text-secondary);font-style:italic}
+  .err{padding:14px;color:var(--low);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">Cedent <span class="accent">360</span></div>
+  <div class="meta" id="metaInfo">Live from Dataverse</div>
+</div>
+
+<div id="content">
+  <div class="loading">Loading cedent metrics…</div>
+</div>
+
+<div class="footer" id="footer"></div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// CEDENT 360 CARD — embeds in Account form, queries 5 ERAC entities for parent
+// ─────────────────────────────────────────────────────────────────────────────
+
+function statusClass(rating) {
+  if (rating == null) return 'mid';
+  if (rating >= 4.0) return 'high';
+  if (rating >= 3.0) return 'mid';
+  return 'low';
+}
+
+function pctClass(pct) {
+  if (pct == null) return 'mid';
+  if (pct >= 100) return 'high';
+  if (pct >= 90) return 'mid';
+  return 'low';
+}
+
+function pillFor(label, cls) {
+  return `<span class="pill pill-${cls}">${label}</span>`;
+}
+
+function getAccountId() {
+  try {
+    if (typeof parent === 'undefined' || !parent.Xrm) return null;
+    // Form context first
+    if (parent.Xrm.Page && parent.Xrm.Page.data && parent.Xrm.Page.data.entity) {
+      var id = parent.Xrm.Page.data.entity.getId();
+      if (id) return id.replace(/[{}]/g, '');
+    }
+    // URL fallback
+    var search = (parent.location.search || window.location.search || '');
+    var m = search.match(/[?&]id=%7B?([0-9a-f-]{36})%7D?/i)
+         || search.match(/[?&]id=([0-9a-f-]{36})/i);
+    if (m) return m[1];
+  } catch(e) { console.warn('[Cedent360]', e); }
+  return null;
+}
+
+async function fetchAll(accountId) {
+  if (!parent || !parent.Xrm || !parent.Xrm.WebApi) {
+    throw new Error('Xrm.WebApi not available');
+  }
+  var api = parent.Xrm.WebApi;
+  var filter = '_erac_accountid_value eq ' + accountId;
+
+  var promises = [
+    api.retrieveMultipleRecords('erac_treaty',
+      '?$select=erac_name,erac_status,erac_exposurem&$filter=' + filter),
+    api.retrieveMultipleRecords('erac_reserveadequacy',
+      '?$select=erac_name,erac_adequacypct,erac_status&$filter=' + filter + '&$orderby=createdon desc&$top=1'),
+    api.retrieveMultipleRecords('erac_partnershiprating',
+      '?$select=erac_name,erac_overallrating,erac_ratingtrend,erac_status,erac_lastqbrdate&$filter=' + filter + '&$orderby=createdon desc&$top=1'),
+    api.retrieveMultipleRecords('erac_riskassessment',
+      '?$select=erac_name,erac_aggregaterisk,erac_approvalstatus&$filter=' + filter + '&$orderby=createdon desc&$top=1'),
+    api.retrieveMultipleRecords('erac_dispute',
+      '?$select=erac_name,erac_status,erac_exposure&$filter=' + filter)
+  ];
+  var results = await Promise.all(promises);
+  return {
+    treaties:    results[0].entities || [],
+    reserve:     (results[1].entities || [])[0] || null,
+    partnership: (results[2].entities || [])[0] || null,
+    risk:        (results[3].entities || [])[0] || null,
+    disputes:    results[4].entities || []
+  };
+}
+
+function render(data) {
+  // 1. Treaties Active
+  var totalTreaties = data.treaties.length;
+  var activeTreaties = data.treaties.filter(t => (t.erac_status || '').toLowerCase().indexOf('active') > -1).length;
+  var totalExposure = data.treaties.reduce((s,t) => s + (t.erac_exposurem || 0), 0);
+
+  // 2. Reserve Adequacy %
+  var resPct = data.reserve ? data.reserve.erac_adequacypct : null;
+  var resCls = pctClass(resPct);
+
+  // 3. Partnership Rating
+  var rating = data.partnership ? data.partnership.erac_overallrating : null;
+  var ratingCls = statusClass(rating);
+  var qbr = data.partnership && data.partnership.erac_lastqbrdate
+    ? new Date(data.partnership.erac_lastqbrdate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+    : '—';
+
+  // 4. Risk Score (lower is better — 1 best, 5 worst)
+  var risk = data.risk ? data.risk.erac_aggregaterisk : null;
+  var riskCls = risk == null ? 'mid' : (risk <= 2 ? 'high' : risk <= 3.5 ? 'mid' : 'low');
+  var riskLabel = risk == null ? '—' : (risk <= 2 ? 'Low' : risk <= 3.5 ? 'Moderate' : 'High');
+
+  // 5. Open Disputes
+  var openDisputes = data.disputes.filter(d => {
+    var s = (d.erac_status || '').toLowerCase();
+    return s.indexOf('open') > -1 || s.indexOf('active') > -1 || s.indexOf('pending') > -1;
+  });
+  var disputeExposure = openDisputes.reduce((s,d) => s + (d.erac_exposure || 0), 0);
+  var dispCls = openDisputes.length === 0 ? 'high' : openDisputes.length <= 2 ? 'mid' : 'low';
+
+  function tile(label, value, sub, cls, fillPct) {
+    var fillStyle = fillPct != null ? `style="width:${Math.min(100,Math.max(0,fillPct))}%"` : 'style="width:0%"';
+    var stripCls = cls === 'high' ? 'bg-high' : cls === 'low' ? 'bg-low' : cls === 'mid' ? 'bg-mid' : 'bg-brand';
+    return `
+      <div class="tile">
+        <div>
+          <div class="tile-label">${label}</div>
+          <div class="tile-value ${cls||''}">${value}</div>
+          <div class="tile-sub">${sub || '&nbsp;'}</div>
+        </div>
+        <div class="tile-strip"><div class="tile-strip-fill ${stripCls}" ${fillStyle}></div></div>
+      </div>`;
+  }
+
+  var html = '<div class="grid">';
+  html += tile('Treaties',
+    activeTreaties + ' active',
+    totalTreaties + ' total · $' + totalExposure.toFixed(0) + 'M exposure',
+    activeTreaties > 0 ? 'high' : 'mid',
+    totalTreaties ? (activeTreaties/totalTreaties)*100 : 0);
+
+  html += tile('Reserve Adequacy',
+    resPct == null ? '—' : resPct.toFixed(0) + '%',
+    data.reserve ? (data.reserve.erac_status || 'Latest period') : 'No data',
+    resCls,
+    resPct);
+
+  html += tile('Partnership Rating',
+    rating == null ? '—' : rating.toFixed(1) + ' / 5.0',
+    'Last QBR: ' + qbr,
+    ratingCls,
+    rating == null ? 0 : (rating/5)*100);
+
+  html += tile('Risk Score',
+    risk == null ? '—' : risk.toFixed(1),
+    riskLabel + (data.risk && data.risk.erac_approvalstatus ? ' · ' + data.risk.erac_approvalstatus : ''),
+    riskCls,
+    risk == null ? 0 : 100 - ((risk-1)/4)*100);
+
+  html += tile('Open Disputes',
+    openDisputes.length,
+    openDisputes.length === 0 ? 'No active disputes' : '$' + disputeExposure.toFixed(0) + 'M at risk',
+    dispCls,
+    openDisputes.length === 0 ? 100 : Math.max(10, 100 - openDisputes.length*20));
+
+  html += '</div>';
+
+  document.getElementById('content').innerHTML = html;
+
+  document.getElementById('footer').textContent =
+    'Updated ' + new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+}
+
+async function init() {
+  var accountId = getAccountId();
+  if (!accountId) {
+    document.getElementById('content').innerHTML =
+      '<div class="err">Save the Account record to view ERAC 360 metrics.</div>';
+    document.getElementById('metaInfo').textContent = 'No record context';
+    return;
+  }
+  try {
+    var data = await fetchAll(accountId);
+    render(data);
+  } catch (e) {
+    console.error('[Cedent360]', e);
+    document.getElementById('content').innerHTML =
+      '<div class="err">Unable to load ERAC metrics: ' + (e.message || e) + '</div>';
+  }
+}
+
+// Run after parent form is ready
+if (document.readyState === 'complete') init();
+else window.addEventListener('load', init);
+</script>
+
+</body>
+</html>

@@ -335,7 +335,11 @@ function renderTable() {
       return `<td><div class="score-bar-wrap"><span class="score score-${sc}"><span class="score-dot score-dot-${sc}"></span>${v.toFixed(1)}</span>${fillBar(pct, scoreColor(v))}</div></td>`;
     }
     return `<tr class="${cls}" onclick="selectRow(${i})">
-      <td style="font-weight:600">${c.name}</td>
+      <td style="font-weight:600">
+        <a href="javascript:void(0)" onclick="event.stopPropagation(); openCedent(${i})" 
+           style="color:#0078D4;text-decoration:none;cursor:pointer" 
+           title="Open ${c.name} record">${c.name} <span style="font-size:11px;opacity:.7">↗</span></a>
+      </td>
       <td>${tierBadge(c.tier)}</td>
       ${scoreTd(c.rel)}${scoreTd(c.tech)}${scoreTd(c.strat)}${scoreTd(c.ops)}
       ${scoreTd(c.overall)}
@@ -487,6 +491,27 @@ function selectPeriodTab(btn, period) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// DRILLDOWN — open Account form for selected cedent
+// ─────────────────────────────────────────────────────────────────────────────
+function openCedent(idx) {
+  const c = CEDENTS[idx];
+  if (!c) return;
+  const accountId = c.accountid || null;
+
+  if (typeof parent !== 'undefined' && parent.Xrm && parent.Xrm.Navigation) {
+    if (accountId) {
+      parent.Xrm.Navigation.openForm({ entityName: 'account', entityId: accountId });
+    } else {
+      // No live id yet — open account list filtered by name
+      parent.Xrm.Navigation.openForm({ entityName: 'account' });
+    }
+    return;
+  }
+  // Standalone fallback — no Xrm host
+  alert('Open ' + c.name + ' — drilldown only works inside the Model-Driven App.');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // DATA LOAD (Xrm.WebApi when available, else mock)
 // ─────────────────────────────────────────────────────────────────────────────
 async function loadData() {
@@ -494,13 +519,14 @@ async function loadData() {
     if (typeof parent !== 'undefined' && parent.Xrm && parent.Xrm.WebApi) {
       const result = await parent.Xrm.WebApi.retrieveMultipleRecords(
         'account',
-        '?$select=name,erac_tier,erac_overallrating,erac_ratingtrend,erac_portfoliopct&$filter=erac_iscedent eq true&$orderby=erac_overallrating desc'
+        '?$select=accountid,name,erac_tier,erac_overallrating,erac_ratingtrend,erac_portfoliopct&$filter=erac_iscedent eq true&$orderby=erac_overallrating desc'
       );
       if (result.entities && result.entities.length > 0) {
         // Merge live data into CEDENTS array where names match
         result.entities.forEach(e => {
           const match = CEDENTS.find(c => c.name === e.name);
           if (match) {
+            match.accountid = e.accountid;
             if (e.erac_overallrating) match.overall = parseFloat(e.erac_overallrating);
             if (e.erac_ratingtrend) {
               const trendMap = { 200000:'Improving', 200001:'Stable', 200002:'Declining' };

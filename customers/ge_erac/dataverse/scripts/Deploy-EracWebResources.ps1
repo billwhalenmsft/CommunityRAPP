@@ -102,6 +102,14 @@ $WebResources = @(
         webresourcetype = 1   # HTML
         file        = Join-Path $ScriptDir "..\web-resources\erac_portfolio_analytics.html"
         uniqueName  = "erac_/html/portfolio_analytics.html"
+    },
+    @{
+        name        = "erac_cedent_360_card"
+        displayName = "ERAC Cedent 360 Card"
+        description = "Cedent 360 — 5 metric tiles (Treaties, Reserve, Partnership, Risk, Disputes) for embed on Account form"
+        webresourcetype = 1   # HTML
+        file        = Join-Path $ScriptDir "..\web-resources\erac_cedent_360_card.html"
+        uniqueName  = "erac_/html/cedent_360_card.html"
     }
 )
 
