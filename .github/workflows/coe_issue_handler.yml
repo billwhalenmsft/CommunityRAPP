@@ -44,6 +44,7 @@ jobs:
           AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+          AZURE_FILES_SHARE_NAME: ${{ secrets.AZURE_FILES_SHARE_NAME }}
           USE_CLOUD_STORAGE: "true"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
@@ -101,6 +102,7 @@ jobs:
           AzureWebJobsStorage: ${{ secrets.AzureWebJobsStorage }}
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+          AZURE_FILES_SHARE_NAME: ${{ secrets.AZURE_FILES_SHARE_NAME }}
           USE_CLOUD_STORAGE: "true"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COE_REPO: billwhalenmsft/CommunityRAPP-BillWhalen
