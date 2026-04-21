@@ -782,9 +782,14 @@ class Assistant:
         tools = []
         for agent in self.known_agents.values():
             if hasattr(agent, 'metadata'):
+                meta = agent.metadata
+                # gpt-5.1+ requires 'name' to be a non-empty string
+                if not meta or not meta.get('name'):
+                    logging.warning(f"Skipping agent with missing/empty metadata name: {type(agent).__name__}")
+                    continue
                 tool = {
                     "type": "function",
-                    "function": agent.metadata
+                    "function": meta
                 }
                 tools.append(tool)
         return tools
@@ -794,7 +799,10 @@ class Assistant:
         functions = []
         for agent in self.known_agents.values():
             if hasattr(agent, 'metadata'):
-                functions.append(agent.metadata)
+                meta = agent.metadata
+                if not meta or not meta.get('name'):
+                    continue
+                functions.append(meta)
         return functions
 
     def reload_agents(self, agent_objects):
@@ -1177,7 +1185,7 @@ Revenue's up 12 percent and customers are happier - looking good for Q3.
                 else:
                     # Non-retryable error or max retries reached
                     logging.error(f"API call failed: {error}")
-                    error_msg = f"I encountered an error: {error.error_type}"
+                    error_msg = f"I encountered an error: {error.error_type}: {error.message}"
                     if error.error_type == 'rate_limit':
                         error_msg = "I'm experiencing high demand right now. Please try again in a moment."
                     elif error.error_type == 'auth':
