@@ -419,28 +419,37 @@ def action_bill_feedback(issue_number: int, comment: str) -> None:
     coe = _load_orchestrator()
     result_raw = coe.perform(
         action="process_bill_feedback",
-        feedback=comment,
+        feedback_text=comment,  # Fix: was 'feedback', orchestrator expects 'feedback_text'
         issue_number=issue_number,
     )
     result = json.loads(result_raw)
 
+    if "error" in result:
+        log.error("Feedback processing failed: %s", result["error"])
+        _post_issue_comment(issue_number,
+            f"## ⚠️ Could not process feedback\n\n{result['error']}\n\n"
+            f"_Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_")
+        return
+
     log.info("Feedback processed: %s", json.dumps(result, indent=2))
 
-    # Route to the appropriate agent based on feedback
-    routed_action = result.get("routed_action")
-    if routed_action:
-        comment_body = (
-            "## 🔄 Feedback received — resuming work\n\n"
-            f"Understood: _{result.get('interpretation', comment)}_\n\n"
-            f"Routing to **{result.get('routed_persona', 'agent')}** to: {routed_action}\n\n"
-            f"_Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
-        )
-        _post_issue_comment(issue_number, comment_body)
-        _set_issue_label(issue_number, ["agent-task"], ["needs-bill"])
-        # Re-process the issue now with direction
-        action_process_issue(issue_number)
-    else:
-        log.warning("No routed action determined from feedback")
+    # Always acknowledge the feedback
+    routed_persona = result.get("assigned_to") or result.get("routed_persona", "agent")
+    next_action = result.get("next_action", "continue")
+    comment_body = (
+        "## 🔄 Feedback received — resuming work\n\n"
+        f"Understood: _{result.get('feedback_summary', comment[:200])}_\n\n"
+        f"Routing to **{routed_persona}** → `{next_action}`\n\n"
+        f"_Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
+    )
+    _post_issue_comment(issue_number, comment_body)
+
+    # Remove needs-bill; add outcome-defined so the pipeline skips the outcome framer
+    # Do NOT add agent-task here — calling action_process_issue directly avoids double-fire
+    _set_issue_label(issue_number, ["outcome-defined"], ["needs-bill"])
+
+    # Re-process the issue with context from Bill's feedback included
+    action_process_issue(issue_number)
 
 
 def action_health_check() -> None:

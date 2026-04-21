@@ -378,10 +378,10 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         if not issue_number:
             return json.dumps({"error": "issue_number required"})
 
-        # Get issue details
+        # Get issue details including comments for full context
         result = _gh([
             "issue", "view", str(issue_number), "--repo", REPO,
-            "--json", "number,title,body,labels"
+            "--json", "number,title,body,labels,comments"
         ])
 
         if "error" in result:
@@ -390,6 +390,16 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         title = result.get("title", "")
         body = result.get("body", "")
         labels = [l["name"] for l in result.get("labels", [])]
+
+        # Build comment context from Bill's replies (exclude bot comments)
+        bill_comments = [
+            c["body"] for c in result.get("comments", [])
+            if c.get("author", {}).get("login", "") not in ("github-actions", "")
+        ]
+        comment_context = ""
+        if bill_comments:
+            comment_context = "\n\n---\n**Bill's feedback (from issue comments):**\n" + \
+                "\n".join(f"- {c[:500]}" for c in bill_comments)
 
         steps_taken = []
 
@@ -422,7 +432,7 @@ class MfgCoEOrchestratorAgent(BasicAgent):
                 action="frame_outcome",
                 issue_number=issue_number,
                 issue_title=title,
-                issue_body=body,
+                issue_body=body + comment_context,  # Include Bill's comment answers
                 process_area=process_area,
                 customer=customer,
             )
