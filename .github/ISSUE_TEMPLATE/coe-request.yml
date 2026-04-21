@@ -1,0 +1,81 @@
+name: "CoE Request"
+description: "New agent, demo, SOP, or gap fill request for the Discrete Manufacturing CoE"
+title: "🤖 [Type] Name — one-line description"
+labels: ["mfg-coe", "on-deck", "agent-task"]
+body:
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: "Type"
+      description: "What kind of work is this?"
+      options:
+        - "Agent — build or extend an agent"
+        - "Demo — build or polish a demo"
+        - "SOP — document a business process"
+        - "Gap Fill — solve a capability gap"
+        - "CoE Infra — improve CoE tooling/automation"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: "What are we building?"
+      description: "One clear sentence."
+      placeholder: "Build a warranty lookup agent that takes a serial number and returns warranty status from D365."
+    validations:
+      required: true
+
+  - type: textarea
+    id: success
+    attributes:
+      label: "Success Criteria"
+      description: "What does done look like? Be specific and testable."
+      placeholder: "Agent returns warranty status in < 3s for any serial number in Master CE Mfg. Output matches the template in templates/outputs/agent-completion.md."
+    validations:
+      required: true
+
+  - type: textarea
+    id: instructions
+    attributes:
+      label: "Agent Instructions"
+      description: "Step-by-step instructions for the CoE runner agent. Reference output templates where applicable."
+      placeholder: |
+        1. Review knowledge base card: customers/mfg_coe/knowledge_base/master_ce_mfg.md
+        2. Build agent following BasicAgent pattern in agents/basic_agent.py
+        3. Test with python tests/run_tests.py
+        4. Output deliverable using templates/outputs/agent-completion.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: inputs
+    attributes:
+      label: "Inputs & Context"
+      description: "Data, files, URLs, or existing assets the agent needs to do this work."
+      placeholder: "D365 env: Master CE Mfg. Knowledge card: customers/mfg_coe/knowledge_base/master_ce_mfg.md"
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "Dependencies"
+      description: "Issues that must complete before this can start. Write 'none' if no dependencies."
+      placeholder: "Blocked by #21 (environment inventory)"
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "Priority"
+      options:
+        - "p1-critical — needed now"
+        - "p2-high — this sprint"
+        - "p3-medium — backlog"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bill-notes
+    attributes:
+      label: "Bill's Notes"
+      description: "Constraints, decisions, preferences, or context that agents should know."
+      placeholder: "Keep it simple — this is for a 10-minute demo slot. Use existing Navico data."

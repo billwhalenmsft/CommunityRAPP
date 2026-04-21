@@ -164,8 +164,23 @@ An artifact is "done" when:
 - [ ] **The business outcome it enables is clearly stated** (e.g., "reduces warranty handle time by eliminating manual lookup")
 - [ ] **At least one measurable KPI is identified** (cost, time, rate, satisfaction score)
 - [ ] A brief test or validation has been run
-- [ ] A GitHub issue comment documents what was built, how to use it, and the business value
+- [ ] A GitHub issue comment documents what was built using `templates/outputs/agent-completion.md`
 - [ ] The issue is labeled `done` and closed
+
+### Output Standards
+
+All agent outputs MUST use the standard templates in `templates/outputs/`. Never invent your own format.
+
+| Situation | Template to use |
+|---|---|
+| Task complete | `templates/outputs/agent-completion.md` |
+| Blocked / need input | `templates/outputs/needs-bill.md` |
+| Demo built | `templates/outputs/demo-deliverable.md` |
+| SOP created | `templates/outputs/sop-document.md` |
+| Gap analyzed | `templates/outputs/gap-analysis.md` |
+| Daily/weekly digest | `templates/outputs/digest.md` |
+
+**How to use:** Copy the template, fill in the `{placeholders}`, post as a GitHub issue comment.
 
 ---
 
@@ -207,12 +222,13 @@ Use `customers/mfg_coe/agents/mfg_coe_developer_agent.py` as the reference examp
 
 Every issue flows through this sequence:
 ```
-raw-idea → outcome-defined → use-case → tech-solution → agent-task → outcome-validated → done
+on-deck → in-progress → [needs-bill if blocked] → done
 ```
 
-- **outcome-defined** — Outcome Framer agent runs first. Defines: who is affected, what changes for them, what KPI proves success.
-- **outcome-validated** — Outcome Validator runs last. Signs off that the delivered artifact actually solves the stated problem.
-- No issue closes without both gates.
+- **on-deck** — queued and ready for an agent to pick up
+- **in-progress** — agent actively working it
+- **needs-bill** — blocked, waiting for Bill's input (use `templates/outputs/needs-bill.md`)
+- **done** — completed and validated, issue closed
 
 ### Agent Team
 
