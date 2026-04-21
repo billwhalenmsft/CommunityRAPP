@@ -413,8 +413,48 @@ def action_process_issue(issue_number: int) -> None:
         _post_issue_comment(issue_number, comment_body)
 
 
+FORCE_COMMANDS = ("/push", "/advance", "/force")
+
+
+def action_force_advance(issue_number: int, comment: str) -> None:
+    """Force an issue forward regardless of agent confidence or pipeline state."""
+    log.info("=== Force-Advancing Issue #%d ===", issue_number)
+    run_id = os.environ.get("GITHUB_RUN_ID", "local")
+
+    # Strip the command to get any optional direction hint after it
+    direction = comment.strip()
+    for cmd in FORCE_COMMANDS:
+        if direction.lower().startswith(cmd):
+            direction = direction[len(cmd):].strip()
+            break
+
+    # Add all bypass labels, clear blockers
+    _set_issue_label(
+        issue_number,
+        add_labels=["outcome-defined", "in-progress"],
+        remove_labels=["needs-bill", "on-deck"],
+    )
+
+    hint_line = f"\n\n**Direction:** _{direction}_" if direction else ""
+    _post_issue_comment(
+        issue_number,
+        f"## 🚀 Force-Advanced by Bill\n\n"
+        f"All pipeline checks bypassed. Proceeding to execution.{hint_line}\n\n"
+        f"_Run ID: GHA_{run_id}_"
+    )
+
+    # Run the pipeline — outcome-defined label now set, so framer is skipped
+    action_process_issue(issue_number)
+
+
 def action_bill_feedback(issue_number: int, comment: str) -> None:
     """Process Bill's comment and resume work on an issue."""
+    # Intercept force commands — bypass all agent gates
+    comment_stripped = comment.strip()
+    if any(comment_stripped.lower().startswith(cmd) for cmd in FORCE_COMMANDS):
+        action_force_advance(issue_number, comment_stripped)
+        return
+
     log.info("=== Processing Bill's Feedback on Issue #%d ===", issue_number)
     coe = _load_orchestrator()
     result_raw = coe.perform(

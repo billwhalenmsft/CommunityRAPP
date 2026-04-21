@@ -64,15 +64,20 @@ jobs:
             --action assign_copilot \
             --issue ${{ github.event.issue.number }}
 
-  # ── Trigger: Bill comments on a needs-bill issue ─────────────────────────
+  # ── Trigger: Bill comments on a needs-bill issue OR uses /push command ──────
   process-bill-feedback:
     name: Process Bill's feedback
     if: |
       github.event_name == 'issue_comment' &&
       github.event.action == 'created' &&
       github.event.comment.user.login == 'billwhalenmsft' &&
-      contains(toJson(github.event.issue.labels), 'needs-bill') &&
-      contains(toJson(github.event.issue.labels), 'mfg-coe')
+      contains(toJson(github.event.issue.labels), 'mfg-coe') &&
+      (
+        contains(toJson(github.event.issue.labels), 'needs-bill') ||
+        startsWith(github.event.comment.body, '/push') ||
+        startsWith(github.event.comment.body, '/advance') ||
+        startsWith(github.event.comment.body, '/force')
+      )
     runs-on: ubuntu-latest
     permissions:
       issues: write
