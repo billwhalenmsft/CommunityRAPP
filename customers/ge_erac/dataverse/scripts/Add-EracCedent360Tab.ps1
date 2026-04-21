@@ -13,7 +13,8 @@
 param(
     [string]$Org = "https://orgecbce8ef.crm.dynamics.com",
     [string]$SolutionUniqueName = "GEERACLiteCRM",
-    [string]$WebResourceUniqueName = "erac_/html/cedent_360_card.html"
+    [string]$WebResourceUniqueName = "erac_/html/cedent_360_card.html",
+    [string]$FormName = "Account"
 )
 
 Set-StrictMode -Version Latest
@@ -53,13 +54,11 @@ if (-not $wrLookup -or $wrLookup.value.Count -eq 0) {
 }
 Write-Host "  ✓ Found web resource ($($wrLookup.value[0].webresourceid))" -ForegroundColor Green
 
-# ── Get the Account main form ────────────────────────────────────────────────
-Write-Host "[2] Fetching Account main form..."
-$forms = Invoke-Dv GET "systemforms?`$select=formid,name,formxml&`$filter=objecttypecode eq 'account' and type eq 2 and name eq 'Account'"
-if (-not $forms -or $forms.value.Count -eq 0) {
-    $forms = Invoke-Dv GET "systemforms?`$select=formid,name,formxml&`$filter=objecttypecode eq 'account' and type eq 2"
-}
-if (-not $forms -or $forms.value.Count -eq 0) { Write-Error "No Account main form found." }
+# ── Get the requested Account main form ─────────────────────────────────────
+Write-Host "[2] Fetching Account main form '$FormName'..."
+$escName = $FormName.Replace("'","''")
+$forms = Invoke-Dv GET "systemforms?`$select=formid,name,formxml&`$filter=objecttypecode eq 'account' and type eq 2 and name eq '$escName'"
+if (-not $forms -or $forms.value.Count -eq 0) { Write-Error "Form '$FormName' not found." }
 
 $form = $forms.value[0]
 Write-Host "  Using form: '$($form.name)' ($($form.formid))"

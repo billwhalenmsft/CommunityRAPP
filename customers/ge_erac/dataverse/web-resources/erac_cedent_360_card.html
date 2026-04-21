@@ -123,10 +123,19 @@ async function fetchAll(accountId) {
   };
 }
 
+function statusText(rec, field) {
+  if (!rec) return '';
+  field = field || 'erac_status';
+  var fv = rec[field + '@OData.Community.Display.V1.FormattedValue'];
+  if (fv) return String(fv);
+  var raw = rec[field];
+  return (raw === undefined || raw === null) ? '' : String(raw);
+}
+function statusLower(rec, field) { return statusText(rec, field).toLowerCase(); }
+
 function render(data) {
-  // 1. Treaties Active
   var totalTreaties = data.treaties.length;
-  var activeTreaties = data.treaties.filter(t => (t.erac_status || '').toLowerCase().indexOf('active') > -1).length;
+  var activeTreaties = data.treaties.filter(t => statusLower(t).indexOf('active') > -1).length;
   var totalExposure = data.treaties.reduce((s,t) => s + (t.erac_exposurem || 0), 0);
 
   // 2. Reserve Adequacy %
@@ -147,7 +156,7 @@ function render(data) {
 
   // 5. Open Disputes
   var openDisputes = data.disputes.filter(d => {
-    var s = (d.erac_status || '').toLowerCase();
+    var s = statusLower(d);
     return s.indexOf('open') > -1 || s.indexOf('active') > -1 || s.indexOf('pending') > -1;
   });
   var disputeExposure = openDisputes.reduce((s,d) => s + (d.erac_exposure || 0), 0);
@@ -176,7 +185,7 @@ function render(data) {
 
   html += tile('Reserve Adequacy',
     resPct == null ? '—' : resPct.toFixed(0) + '%',
-    data.reserve ? (data.reserve.erac_status || 'Latest period') : 'No data',
+    data.reserve ? (statusText(data.reserve) || 'Latest period') : 'No data',
     resCls,
     resPct);
 
