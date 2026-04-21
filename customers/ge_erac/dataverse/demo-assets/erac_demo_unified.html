@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GE ERAC Lite CRM &mdash; Reinsurance Cedent Workspace Demo</title>
+    <style>
+        :root {
+            --erac-blue: #1B3A5C;
+            --erac-gold: #D4A437;
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-green: #107C10;
+            --accent-orange: #D83B01;
+            --accent-purple: #5C2D91;
+            --accent-teal: #008575;
+            --accent-red: #A4262C;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg, #1B3A5C 0%, #2A5A8F 50%, #D4A437 100%);
+            color: white;
+            padding: 50px 40px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: 'GE ERAC';
+            position: absolute;
+            top: 15px;
+            left: 30px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            opacity: 0.9;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #D4A437, #2A5A8F, #D4A437);
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.92;
+            font-weight: 300;
+            margin-bottom: 16px;
+        }
+
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            font-size: 0.88rem;
+            opacity: 0.88;
+            flex-wrap: wrap;
+        }
+
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--erac-gold);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-top: 14px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* ── Container ── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ── Section label ── */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--erac-blue);
+            margin-top: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* ── Pre-flight checklist ── */
+        .preflight {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F2 100%);
+            border-left: 4px solid var(--accent-green);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+
+        .preflight h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+        }
+
+        .preflight ul {
+            font-size: 0.88rem;
+            color: #2E5A30;
+            line-height: 2;
+            padding-left: 20px;
+        }
+
+        .preflight li { margin-bottom: 2px; }
+
+        .preflight code {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.82rem;
+        }
+
+        /* ── Collapsible sections ── */
+        .exec-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+            border-left: 5px solid var(--erac-blue);
+            transition: box-shadow 0.2s;
+            overflow: hidden;
+        }
+
+        .exec-section:hover { box-shadow: var(--shadow-hover); }
+
+        .exec-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 22px 24px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .exec-header:hover { background: rgba(0, 51, 102, 0.03); }
+
+        .exec-number {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .exec-header-text { flex: 1; }
+
+        .exec-header-text h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .exec-header-text .exec-purpose {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .exec-time {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .exec-expand {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .exec-section.open .exec-expand { transform: rotate(180deg); }
+
+        .exec-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .exec-section.open .exec-body { max-height: 50000px; }
+
+        .exec-content { padding: 0 24px 28px 82px; }
+
+        /* ── Step blocks ── */
+        .step-block {
+            margin: 16px 0;
+            padding: 16px 20px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            border-left: 3px solid var(--erac-blue);
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .step-label.tell    { background: #1B3A5C; }
+        .step-label.show    { background: #D4A437; color: #5D4510; }
+        .step-label.say     { background: #D83B01; }
+        .step-label.click   { background: #0078D4; }
+        .step-label.tip     { background: #FFB900; color: #5D4510; }
+        .step-label.caution { background: #A4262C; }
+        .step-label.copilot { background: #5C2D91; }
+        .step-label.transition { background: #605E5C; }
+        .step-label.email   { background: #0078D4; }
+        .step-label.voice   { background: #107C10; }
+        .step-label.chat    { background: #008575; }
+
+        .step-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .step-text strong { color: var(--text); }
+
+        .step-text em {
+            color: var(--accent-orange);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .step-text .click-path {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            background: rgba(0, 51, 102, 0.1);
+            color: var(--erac-blue);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        /* ── Verbatim talk track ── */
+        .talk-track {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 10px 0;
+            font-style: italic;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: #444;
+            position: relative;
+        }
+
+        .talk-track::before {
+            content: '\201C';
+            font-size: 3rem;
+            color: var(--erac-gold);
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            font-style: normal;
+            opacity: 0.5;
+        }
+
+        .talk-track p { padding-left: 24px; }
+
+        /* ── Tell-Show-Tell wrapper ── */
+        .tst-wrapper {
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .tst-header {
+            background: linear-gradient(135deg, #1B3A5C, #2A5A8F);
+            color: white;
+            padding: 8px 16px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .tst-body { padding: 16px 20px; }
+
+        /* ── Sub-topic headers ── */
+        .sub-header {
+            margin: 28px 0 10px;
+            font-size: 1.02rem;
+            font-weight: 600;
+            color: var(--erac-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-header.show-sub  { color: var(--erac-gold); }
+        .sub-header.email-sub { color: var(--ms-blue); }
+        .sub-header.chat-sub  { color: var(--accent-teal); }
+        .sub-header.rma-sub   { color: var(--accent-orange); }
+
+        /* ── Callout boxes ── */
+        .callout {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .callout.warning  { background: #FFF4CE; border-left: 3px solid #FFB900; color: #5D4510; }
+        .callout.critical { background: #FDE7E9; border-left: 3px solid var(--accent-red); color: #5D1015; }
+        .callout.success  { background: #E8F5E9; border-left: 3px solid var(--accent-green); color: #2E5A30; }
+        .callout.info     { background: var(--ms-blue-light); border-left: 3px solid var(--ms-blue); color: #003A6E; }
+
+        .callout.roi {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            border-left: 4px solid #2E7D32;
+            color: #1B5E20;
+            padding: 14px 18px;
+            font-size: 0.85rem;
+        }
+
+        .callout.roi strong { color: #1B5E20; }
+        .callout strong { font-weight: 700; }
+
+        /* ── Data reference tables ── */
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.82rem;
+        }
+
+        .ref-table th {
+            background: #F3F2F1;
+            font-weight: 600;
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 2px solid #D2D0CE;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .ref-table td {
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: top;
+        }
+
+        .ref-table tr:last-child td { border-bottom: none; }
+        .ref-table tbody tr:hover { background: #F9F9F9; }
+
+        .ref-table code {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.76rem;
+            background: #F0F0F0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #333;
+        }
+
+        .ref-section-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--erac-blue);
+            margin: 20px 0 6px;
+        }
+
+        .ref-note {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin: 6px 0 16px;
+            padding-left: 12px;
+            border-left: 2px solid var(--border);
+        }
+
+        /* ── Tier badges ── */
+        .tier-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tier-pill.t-platinum { background: linear-gradient(135deg, #E8E8E8, #CFD8DC); color: #37474F; }
+        .tier-pill.t-gold     { background: linear-gradient(135deg, #FFD54F, #FFC107); color: #5D4037; }
+        .tier-pill.t-silver   { background: linear-gradient(135deg, #E0E0E0, #BDBDBD); color: #424242; }
+        .tier-pill.t-consumer { background: linear-gradient(135deg, #B3E5FC, #81D4FA); color: #01579B; }
+
+        /* ── Story block ── */
+        .story-block {
+            background: linear-gradient(135deg, #E8EAF6 0%, #E0F7FA 100%);
+            border-left: 4px solid var(--erac-blue);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+
+        .story-block h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--erac-blue);
+            margin-bottom: 12px;
+        }
+
+        .story-block p {
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+
+        .story-block ul {
+            font-size: 0.88rem;
+            padding-left: 22px;
+            margin-bottom: 8px;
+        }
+
+        .story-block li { margin-bottom: 4px; }
+
+        /* ── Timing bar ── */
+        .timing-bar {
+            display: flex;
+            gap: 0;
+            margin: 28px 0 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 8px;
+        }
+
+        .timing-bar .t-seg { height: 100%; }
+
+        /* ── NAV TOGGLE (Hamburger) ── */
+        .nav-toggle {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 9998;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: var(--erac-blue);
+            color: white;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .nav-toggle:hover { background: var(--ms-blue-dark); transform: scale(1.05); }
+        .nav-toggle.open  { background: var(--accent-red); }
+
+        .side-nav-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+        }
+
+        .side-nav-backdrop.visible { display: block; }
+
+        .side-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100vh;
+            background: white;
+            z-index: 10000;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .side-nav.open { transform: translateX(0); }
+
+        .side-nav-header {
+            padding: 18px 20px 14px;
+            background: linear-gradient(135deg, var(--erac-blue), #004488);
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .side-nav-header span { font-size: 1rem; }
+
+        .side-nav-pin {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.68rem;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .side-nav-pin:hover { background: rgba(255, 255, 255, 0.15); }
+
+        .side-nav-pin.pinned {
+            background: var(--erac-gold);
+            border-color: var(--erac-gold);
+            color: white;
+        }
+
+        .side-nav-body { flex: 1; overflow-y: auto; padding: 10px 0; }
+
+        .side-nav-group {
+            padding: 10px 18px 4px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-light);
+        }
+
+        .side-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 18px;
+            font-size: 0.8rem;
+            color: var(--text);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .side-nav-item:hover { background: #F3F2F1; }
+
+        .side-nav-item.active {
+            background: var(--ms-blue-light);
+            border-left-color: var(--erac-blue);
+            font-weight: 600;
+        }
+
+        .side-nav-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.68rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .side-nav-label { line-height: 1.3; }
+
+        /* ── Push content when pinned ── */
+        body.nav-pinned .container { margin-left: 340px; }
+        body.nav-pinned .hero { padding-left: 340px; }
+        body.nav-pinned .side-nav { box-shadow: 1px 0 3px rgba(0, 0, 0, 0.08); }
+        body.nav-pinned .side-nav-backdrop { display: none !important; }
+        body.nav-pinned .nav-toggle { left: 330px; }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+        }
+
+        /* ── Border & bg color helpers ── */
+        .border-voice  { border-left-color: var(--accent-green); }
+        .border-email  { border-left-color: var(--ms-blue); }
+        .border-chat   { border-left-color: var(--accent-teal); }
+        .border-rma    { border-left-color: var(--accent-orange); }
+        .border-close  { border-left-color: var(--erac-blue); }
+        .border-setup  { border-left-color: var(--erac-gold); }
+
+        .bg-voice  { background: var(--accent-green); }
+        .bg-email  { background: var(--ms-blue); }
+        .bg-chat   { background: var(--accent-teal); }
+        .bg-rma    { background: var(--accent-orange); }
+        .bg-close  { background: var(--erac-blue); }
+        .bg-setup  { background: var(--erac-gold); }
+
+        @media (max-width: 900px) {
+            .side-nav { width: 280px; }
+            body.nav-pinned .container { margin-left: 300px; }
+            body.nav-pinned .hero { padding-left: 300px; }
+            body.nav-pinned .nav-toggle { left: 290px; }
+            .exec-content { padding: 0 16px 24px 16px; }
+        }
+
+        @media print {
+            .nav-toggle, .side-nav, .side-nav-backdrop { display: none !important; }
+            body.nav-pinned .container { margin-left: auto; }
+            body.nav-pinned .hero { padding-left: 50px; }
+            .exec-section { break-inside: avoid; }
+            .exec-body { max-height: none !important; overflow: visible !important; }
+            .demo-action-panel { display: none !important; }
+        }
+
+        /* ── Demo Action Buttons ── */
+        .demo-action-panel {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+            border: 1px solid #c8d6e5;
+            border-left: 4px solid #0078D4;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+        .demo-action-title {
+            font-weight: 700;
+            font-size: 13px;
+            color: #0078D4;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .demo-action-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .demo-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid;
+            transition: all 0.2s;
+        }
+        .demo-action-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .demo-action-btn.primary { background: #0078D4; color: #fff; border-color: #0078D4; }
+        .demo-action-btn.primary:hover { background: #106EBE; }
+        .demo-action-btn.secondary { background: #fff; color: #323130; border-color: #c8c6c4; }
+        .demo-action-btn.secondary:hover { background: #f3f2f1; }
+        .demo-action-btn.success { background: #107C10; color: #fff; border-color: #107C10; }
+        .demo-action-btn.success:hover { background: #0B6A0B; }
+        .demo-action-status {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #605e5c;
+            min-height: 18px;
+        }
+        .demo-action-status.ok { color: #107C10; }
+        .demo-action-status.err { color: #A4262C; }
+        .demo-action-preview {
+            display: none;
+            margin-top: 12px;
+            background: #fff;
+            border: 1px solid #e1dfdd;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 12px;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .demo-action-preview.visible { display: block; }
+        .demo-action-preview pre {
+            white-space: pre-wrap;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            color: #323130;
+        }
+        .demo-action-preview .email-field {
+            color: #605e5c;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+        .demo-action-preview .email-subject {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e1dfdd;
+        }
+        /* ── Context Data Panel (Right Side) ── */
+        .context-panel {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            width: 300px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            z-index: 500;
+            font-size: 0.78rem;
+            transition: opacity 0.2s;
+        }
+
+        .context-panel-header {
+            position: sticky;
+            top: 0;
+            background: var(--erac-blue);
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1;
+        }
+
+        .context-panel-body {
+            padding: 12px 16px 16px;
+        }
+
+        .ctx-section {
+            display: none;
+        }
+
+        .ctx-section.active {
+            display: block;
+        }
+
+        .ctx-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin: 12px 0 6px 0;
+        }
+
+        .ctx-label:first-child {
+            margin-top: 0;
+        }
+
+        .ctx-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #f3f2f1;
+        }
+
+        .ctx-item:last-child {
+            border-bottom: none;
+        }
+
+        .ctx-key {
+            color: var(--text-light);
+            font-size: 0.72rem;
+        }
+
+        .ctx-val {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.72rem;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .ctx-val code {
+            background: #f3f2f1;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+        }
+
+        .ctx-pill {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .ctx-pill-plat { background: #E8D5B7; color: #5D4037; }
+        .ctx-pill-gold { background: #FFF3CD; color: #856404; }
+        .ctx-pill-green { background: #D4EDDA; color: #155724; }
+        .ctx-pill-blue { background: #CCE5FF; color: #004085; }
+
+        .context-panel-toggle {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            z-index: 501;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: var(--erac-blue);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        /* Adjust main container to make room for the panel */
+        body.ctx-panel-open .container {
+            max-width: 900px;
+            margin-right: 340px;
+        }
+
+        @media (max-width: 1400px) {
+            .context-panel { width: 260px; right: 10px; font-size: 0.74rem; }
+            body.ctx-panel-open .container { margin-right: 290px; }
+        }
+
+        @media (max-width: 1100px) {
+            .context-panel { display: none; }
+            .context-panel-toggle { display: block; }
+            body.ctx-panel-open .container { margin-right: auto; }
+        }
+
+        @media print {
+            .context-panel, .context-panel-toggle { display: none !important; }
+            body.ctx-panel-open .container { margin-right: auto; max-width: 1100px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV TOGGLE (Hamburger) -->
+    <button class="nav-toggle" id="navToggle" aria-label="Open navigation">&#9776;</button>
+
+    <!-- SIDE NAV -->
+    <div class="side-nav-backdrop" id="navBackdrop"></div>
+    <div class="side-nav" id="sideNav">
+        <div class="side-nav-header">
+            <strong>&#9776; Demo Sections</strong>
+            <button class="side-nav-pin" id="navPin">PIN</button>
+        </div>
+        <div class="side-nav-body" id="navBody"></div>
+    </div>
+
+    <!-- CONTEXT DATA PANEL (Right Side) -->
+    <button class="context-panel-toggle" id="ctxToggle" onclick="document.getElementById('ctxPanel').style.display='block'; this.style.display='none'; document.body.classList.add('ctx-panel-open');">📋</button>
+    <div class="context-panel" id="ctxPanel">
+        <div class="context-panel-header">
+            <span>📋</span>
+            <span id="ctxTitle">Demo Data</span>
+            <span style="margin-left:auto; cursor:pointer; font-size:0.9rem;" onclick="this.closest('.context-panel').style.display='none'; document.getElementById('ctxToggle').style.display='block'; document.body.classList.remove('ctx-panel-open');">✕</span>
+        </div>
+        <div class="context-panel-body">
+
+            <div class="ctx-section active" id="ctx-setup">
+                <div class="ctx-label">Environment</div>
+                <div class="ctx-item"><span class="ctx-key">Org</span><span class="ctx-val"><code>orgecbce8ef</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Solution</span><span class="ctx-val"><code>GEERACLiteCRM</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">App</span><span class="ctx-val">GE ERAC Lite CRM</span></div>
+                <div class="ctx-label">Persona</div>
+                <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Morgan</span></div>
+                <div class="ctx-item"><span class="ctx-key">Role</span><span class="ctx-val">Underwriting Director</span></div>
+                <div class="ctx-label">Hero Cedents</div>
+                <div class="ctx-item"><span class="ctx-key">T1 Strategic</span><span class="ctx-val">Titan Mutual Re · Acme Re</span></div>
+                <div class="ctx-item"><span class="ctx-key">Watchlist</span><span class="ctx-val"><strong style="color:#A4262C;">Summit Life &amp; Casualty</strong></span></div>
+                <div class="ctx-item"><span class="ctx-key">T2 Core</span><span class="ctx-val">Pacific Coastal · Meridian</span></div>
+                <div class="ctx-item"><span class="ctx-key">T3 Std</span><span class="ctx-val">Harbor Group</span></div>
+                <div class="ctx-label">Key Records</div>
+                <div class="ctx-item"><span class="ctx-key">PRR Reviews</span><span class="ctx-val">6 (1 Watchlist · 1 In Review)</span></div>
+                <div class="ctx-item"><span class="ctx-key">Active Treaties</span><span class="ctx-val">~24</span></div>
+                <div class="ctx-item"><span class="ctx-key">Risk Assessments</span><span class="ctx-val">8 open</span></div>
+                <div class="ctx-item"><span class="ctx-key">Disputes</span><span class="ctx-val">3 open</span></div>
+                <div class="ctx-label">Quick Links</div>
+                <div class="ctx-item"><span class="ctx-key">App</span><span class="ctx-val"><a href="https://orgecbce8ef.crm.dynamics.com" target="_blank" style="color:var(--ms-blue);">Open &rarr;</a></span></div>
+                <div class="ctx-item"><span class="ctx-key">Copilot Studio</span><span class="ctx-val"><a href="https://copilotstudio.microsoft.com" target="_blank" style="color:var(--ms-blue);">Open &rarr;</a></span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <header class="hero">
+        <h1>GE ERAC Lite CRM &mdash; Reinsurance Cedent Workspace</h1>
+        <p class="subtitle">Reinsurance Underwriting on Dataverse &nbsp;·&nbsp; Excel/SharePoint &rarr; Model-Driven App &nbsp;·&nbsp; Tell-Show-Tell Flow</p>
+        <div class="meta">
+            <span>🎯 Replacing spreadsheet-driven cedent governance</span>
+            <span>👤 You are <strong>Morgan</strong> (Underwriting Director, GE Verisk Reinsurance)</span>
+            <span>⏱ 45 min</span>
+        </div>
+        <div class="hero-badge">Discovery → MVP Demo · Reinsurance Treaty Governance</div>
+    </header>
+
+    <div class="container">
+
+        <!-- ── TIMING BAR ── -->
+        <p class="section-label">Session Timing (45 min)</p>
+        <div class="timing-bar">
+            <div class="t-seg" style="flex:5;  background:var(--erac-blue);"   title="Setup &amp; Story ~5 min"></div>
+            <div class="t-seg" style="flex:10; background:var(--accent-green);"  title="PRR Dashboard ~10 min"></div>
+            <div class="t-seg" style="flex:10; background:var(--ms-blue);"       title="Cedent 360 ~10 min"></div>
+            <div class="t-seg" style="flex:10; background:linear-gradient(90deg, #6B2FA0, var(--accent-teal));" title="Treaty + Reserve Deep Dive ~10 min"></div>
+            <div class="t-seg" style="flex:5;  background:var(--accent-orange);" title="Risk &amp; Disputes ~5 min"></div>
+            <div class="t-seg" style="flex:5;  background:#1B3A5C;"              title="Close &amp; Value ~5 min"></div>
+        </div>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.72rem; color:var(--text-light); margin-bottom:24px;">
+            <span>🔵 Setup &amp; Story (5m)</span>
+            <span>🟢 PRR Dashboard (10m)</span>
+            <span>🔷 Cedent 360 (10m)</span>
+            <span>🟣💬 Treaty + Reserve Deep Dive (10m)</span>
+            <span>🟠 Risk &amp; Disputes (5m)</span>
+            <span>🔵 Close &amp; Value (5m)</span>
+        </div>
+
+        <!-- ── THE STORY ── -->
+        <div class="story-block">
+            <h3>📖 The Demo Story &mdash; Monday Morning Cedent Review</h3>
+            <p><strong>Setting:</strong> You are <em>Morgan</em>, an Underwriting Director on the GE Verisk Reinsurance team. Every Monday morning your team performs a <strong>Partnership Review &amp; Risk (PRR)</strong> review across the Tier 1 and Tier 2 cedents in your book. Today you have an hour before the leadership stand-up to triage the watchlist, validate reserve adequacy on two cedents flagged last week, and confirm renewal posture for two treaties closing in Q3.</p>
+            <p><strong>The Challenge:</strong> Today, every one of those tasks lives in a different place. Cedent ratings are in <em>Excel</em> on a SharePoint site that 14 people share. Treaty exposure is in a <em>second workbook</em> updated nightly by an analyst. Reserve adequacy lives in a <em>BI report</em> that takes 8 minutes to load. Disputes are tracked in <em>email threads</em>. There is no single Cedent record &mdash; just a name on multiple spreadsheets.</p>
+            <ul>
+                <li>Spot a <strong>watchlist cedent</strong> from the PRR dashboard and drill into their full story in one click</li>
+                <li>Use the <strong>Cedent 360</strong> view to see tier, AM Best rating, GWP, renewal date, reserve adequacy, and open disputes &mdash; all in one frame</li>
+                <li>Pivot to the <strong>Treaties grid</strong> and run live charts of exposure by status &mdash; no BI report needed</li>
+                <li>Validate <strong>Reserve Adequacy</strong> trend on a flagged cedent</li>
+                <li>Open a <strong>Risk Assessment</strong> with approval status and a <strong>Dispute</strong> with live exposure tracking</li>
+            </ul>
+            <p><strong>The Differentiator vs Excel + BI:</strong> Everything you see today is in <em>one Dataverse model-driven app</em>, governed by Microsoft 365 security, ready for Copilot. No data wrangling. No version-of-truth conflict. The cedent record IS the source of truth.</p>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- PRE-DEMO SETUP                                 -->
+        <!-- ============================================== -->
+
+        <p class="section-label">Pre-Demo Setup</p>
+
+        <!-- PRE-FLIGHT CHECKLIST -->
+        <div class="exec-section" id="section-setup" style="border-left-color: var(--accent-green);">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: var(--accent-green);">✓</div>
+                <div class="exec-header-text">
+                    <h3>✅ Pre-Flight Checklist</h3>
+                    <div class="exec-purpose">Complete this 10 minutes before the demo begins</div>
+                </div>
+                <div class="exec-time">Reference</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    <div class="preflight">
+                        <h3>✅ Pre-Flight Checklist (10 min before demo)</h3>
+                        <ul>
+                            <li><strong>Browser tabs open (Edge recommended):</strong></li>
+                            <li>&emsp;Tab 1: <strong>GE ERAC Lite CRM</strong> model-driven app — <code>https://orgecbce8ef.crm.dynamics.com</code></li>
+                            <li>&emsp;Tab 2: A pre-opened <strong>Excel workbook</strong> "Cedent Watchlist v47 (FINAL).xlsx" (the contrast prop)</li>
+                            <li>&emsp;Tab 3: A pre-loaded BI report screenshot (showing 8s spinner — for "before" comparison)</li>
+                            <li><strong>In ERAC Lite CRM verify:</strong></li>
+                            <li>&emsp;Sitemap shows <strong>Cedents · Treaties · PRR Reviews · Risk Assessments · Disputes · Reserve Snapshots</strong></li>
+                            <li>&emsp;App icon and entity icons render (no broken-image marks)</li>
+                            <li>&emsp;Default view on Cedents = <strong>Active Cedents</strong></li>
+                            <li><strong>Hero records pre-loaded — confirm each opens cleanly:</strong></li>
+                            <li>&emsp;<strong>Titan Mutual Re</strong> (T1 Strategic, AM Best A, $1.24B GWP) — Cedent 360 tile renders</li>
+                            <li>&emsp;<strong>Summit Life &amp; Casualty</strong> (Watchlist, B++) — tiles light up red, Reserve Adequacy chart visible</li>
+                            <li>&emsp;<strong>Acme Reinsurance</strong> (T1, A+, $2.1B GWP) — clean / healthy contrast record</li>
+                            <li><strong>Charts working:</strong> Treaty Exposure by Status · Reserve Adequacy Trend · PRR Status Mix</strong></li>
+                            <li><strong>Browser zoom:</strong> 110% (so Cedent 360 tiles read clearly on a 1080p screen)</li>
+                            <li><strong>Notifications:</strong> Focus Assist ON, Teams DND, Outlook notifications OFF</li>
+                            <li><strong>This guide</strong> pinned on second monitor</li>
+                        </ul>
+                    </div>
+                    <div class="callout info">
+                        <strong>Quick Reference</strong><br>
+                        ERAC App URL: <code>https://orgecbce8ef.crm.dynamics.com</code><br>
+                        Solution: <code>GEERACLiteCRM</code> · App: <strong>GE ERAC Lite CRM</strong><br>
+                        Hero Cedents: Titan Mutual Re (T1) · Summit Life &amp; Casualty (Watchlist) · Acme Reinsurance (T1)<br>
+                        <em>All cedents seeded with realistic GWP, AM Best ratings, renewal dates, financial signatory flags, lines of business.</em>
+                    </div>
+
+                    <div class="callout" style="border-left-color:#6B2FA0;">
+                        <strong>📊 The Excel Prop — Why It Matters</strong><br>
+                        Have one Excel file titled <code>Cedent Watchlist v47 (FINAL).xlsx</code> open in Tab 2. You'll switch to it once during the close to make a single point: <em>this is what they're doing today</em>. The file name (v47, FINAL) is the joke that lands. Don't dwell — just flash it.
+                    </div>
+
+                    <div class="callout" style="border-left-color:#0078D4;">
+                        <strong>🧭 Persona Recap</strong><br>
+                        <strong>Morgan</strong> — Underwriting Director · 11 years at GE Verisk · runs the Monday PRR review · accountable for Tier 1 cedent renewal posture · reports to the CUO. Morgan is your audience proxy. Speak as Morgan when you're walking the screens.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HERO RECORDS REFERENCE -->
+        <div class="exec-section" id="section-reference" style="border-left-color: var(--erac-gold);">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: var(--erac-gold);">★</div>
+                <div class="exec-header-text">
+                    <h3>Hero Records — Demo Data Reference</h3>
+                    <div class="exec-purpose">Cedents, treaties, and risk records — keep this open during the demo</div>
+                </div>
+                <div class="exec-time">Reference</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <p class="ref-section-title">🏢 Demo Cedents (6 Accounts)</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Cedent</th><th>Tier</th><th>AM Best</th><th>GWP</th><th>Renewal</th><th>Sig Flag</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Acme Reinsurance</strong></td>
+                                <td><span class="tier-pill t-platinum">T1 Strategic</span></td>
+                                <td>A+</td>
+                                <td>$2.1B</td>
+                                <td>Mar 2026</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Titan Mutual Re</strong></td>
+                                <td><span class="tier-pill t-platinum">T1 Strategic</span></td>
+                                <td>A</td>
+                                <td>$1.24B</td>
+                                <td>Sep 2026</td>
+                                <td><strong style="color:#A4262C;">Yes</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Summit Life &amp; Casualty</strong></td>
+                                <td><span class="tier-pill" style="background:#A4262C;color:#fff;">Watchlist</span></td>
+                                <td>B++</td>
+                                <td>$890M</td>
+                                <td>Dec 2026</td>
+                                <td><strong style="color:#A4262C;">Yes</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pacific Coastal Re</strong></td>
+                                <td><span class="tier-pill t-gold">T2 Core</span></td>
+                                <td>A</td>
+                                <td>$720M</td>
+                                <td>Apr 2026</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Meridian Re Partners</strong></td>
+                                <td><span class="tier-pill t-gold">T2 Core</span></td>
+                                <td>A-</td>
+                                <td>$480M</td>
+                                <td>Jun 2026</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Harbor Group</strong></td>
+                                <td><span class="tier-pill t-consumer">T3 Standard</span></td>
+                                <td>A-</td>
+                                <td>$310M</td>
+                                <td>Aug 2026</td>
+                                <td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">📋 Active PRR Reviews (for the dashboard)</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Cedent</th><th>PRR Status</th><th>Reviewer</th><th>Finding</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Summit Life &amp; Casualty</strong></td><td><span style="color:#A4262C;font-weight:700;">Watchlist</span></td><td>Morgan</td><td>Reserve adequacy decline 3 quarters in a row</td></tr>
+                            <tr><td><strong>Titan Mutual Re</strong></td><td>In Review</td><td>Morgan</td><td>Renewal posture confirmation — Q3 close</td></tr>
+                            <tr><td><strong>Pacific Coastal Re</strong></td><td>Approved</td><td>J. Patel</td><td>No issues — Q1 PRR clean</td></tr>
+                            <tr><td><strong>Acme Reinsurance</strong></td><td>Approved</td><td>J. Patel</td><td>Healthy book — recommended for treaty expansion</td></tr>
+                            <tr><td><strong>Meridian Re Partners</strong></td><td>Pending Submission</td><td>—</td><td>Awaiting Q4 financials</td></tr>
+                            <tr><td><strong>Harbor Group</strong></td><td>Approved</td><td>Morgan</td><td>Standard tier, no findings</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">📜 Treaties &amp; Reserve Snapshots (chart fuel)</p>
+                    <table class="ref-table">
+                        <thead><tr><th>Type</th><th>Count</th><th>Used in Demo For</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Active Treaties</strong></td><td>~24 across the 6 cedents</td><td>Treaty Exposure by Status chart</td></tr>
+                            <tr><td><strong>Reserve Snapshots</strong></td><td>quarterly per cedent</td><td>Reserve Adequacy Trend chart (Summit dip)</td></tr>
+                            <tr><td><strong>Risk Assessments</strong></td><td>1-2 per cedent</td><td>Approval workflow demo</td></tr>
+                            <tr><td><strong>Disputes</strong></td><td>~3 open</td><td>Open Disputes view + exposure rollup</td></tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <p class="section-label">Demo Execution — Tell · Show · Tell</p>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 1: PRR DASHBOARD                      -->
+        <!-- ============================================== -->
+        <div class="exec-section border-voice" id="section-prr" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-voice">1</div>
+                <div class="exec-header-text">
+                    <h3>📊 Scenario 1 — Monday PRR Dashboard</h3>
+                    <div class="exec-purpose">Spot a watchlist cedent in seconds, click once to drill in. The "where do I start?" answer.</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — The Monday Morning Pain</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Today, Monday morning, Morgan's PRR review starts in <em>three browser tabs and a Teams chat</em>. The watchlist is in Excel. The reserve trend is in a Power BI report that takes eight seconds to load. The team huddle is in Teams. There is no single screen that says <strong>"here is who needs your attention this week."</strong></div>
+                            </div>
+                            <div class="talk-track">
+                                <p>Last quarter your team missed a reserve adequacy decline at one cedent for two cycles. Not because anyone was negligent &mdash; because the signal was buried in a workbook and nobody opened that tab on the right Monday.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHOW -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ SHOW — Open the App, See the Watchlist</div>
+                        <div class="tst-body">
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text">Open the <strong>GE ERAC Lite CRM</strong> app from the App Launcher.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"This is one app. One sitemap. Cedents, treaties, PRR reviews, risk, disputes &mdash; all governed by the same security model the rest of GE already uses."</div></div>
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text"><strong>PRR Reviews</strong> in the left nav.</div></div>
+                            <div class="step-block"><span class="step-label show">Show</span><div class="step-text">Default view. Sort by status. Point to <strong>Summit Life &amp; Casualty</strong> with the red Watchlist badge.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"There it is. No spreadsheet, no BI loading spinner. Summit is on the watchlist. I can see it the second I open the app."</div></div>
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text">Switch to the <strong>Charts</strong> pane &mdash; show <strong>PRR Status Mix</strong> donut. Approved / In Review / Watchlist / Pending.</div></div>
+                            <div class="step-block"><span class="step-label tip">Tip</span><div class="step-text">If the customer wants more detail, switch to the <strong>Active Cedents</strong> view and show the same data sliced by tier &mdash; T1 / T2 / T3 / Watchlist counts.</div></div>
+                        </div>
+                    </div>
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Why This Matters</div>
+                        <div class="tst-body">
+                            <div class="callout roi">
+                                <strong>📈 Value:</strong> The Monday PRR meeting goes from <strong>"30 minutes of synthesis from spreadsheets"</strong> to <strong>"10 minutes of decisions"</strong>. The system pre-synthesized for you over the weekend.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 2: CEDENT 360                          -->
+        <!-- ============================================== -->
+        <div class="exec-section border-email" id="section-cedent360" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-email">2</div>
+                <div class="exec-header-text">
+                    <h3>🎯 Scenario 2 — Cedent 360 in Action</h3>
+                    <div class="exec-purpose">One screen, the full cedent story. Tier, rating, GWP, renewal, financial signatory, reserve adequacy.</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Where the Cedent Story Lives Today</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Right now, to know what's going on with Summit, Morgan opens four things: the Excel watchlist, the AM Best PDF the analyst emailed last week, last quarter's PRR memo on SharePoint, and a treaty exposure tab in Power BI. Four sources, four versions of truth. None of them are linked.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHOW -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ SHOW — Open Summit's Cedent Record</div>
+                        <div class="tst-body">
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text">From PRR Reviews, click the <strong>Summit Life &amp; Casualty</strong> row to open the cedent.</div></div>
+                            <div class="step-block"><span class="step-label show">Show</span><div class="step-text">The <strong>ERAC Cedent 360</strong> form opens. Walk slowly across the header strip: <strong>Tier = Watchlist</strong>, <strong>AM Best = B++</strong>, <strong>Renewal = Dec 2026</strong>.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"Header strip = the executive summary. Three numbers. Tier, rating, renewal. If those three are bad, I dig in. If they're good, I move on."</div></div>
+                            <div class="step-block"><span class="step-label show">Show</span><div class="step-text">Scroll to the <strong>Cedent 360 metric tile card</strong> &mdash; reserve adequacy, treaty count, dispute count, PRR status, latest review date.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"This card is a web resource pulling live Dataverse data. The reserve adequacy tile is red because the trend chart below it is declining."</div></div>
+                            <div class="step-block"><span class="step-label show">Show</span><div class="step-text">Show the <strong>Cedent Profile</strong> section: Years as Partner, GWP, Lines of Business multi-select, Financial Signatory flag.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"Financial Signatory is checked &mdash; meaning the senior treaty officer signs personally. That changes our internal escalation path. It used to be tribal knowledge. Now it's a field on the record."</div></div>
+                            <div class="step-block"><span class="step-label tip">Tip</span><div class="step-text">If the customer asks about Copilot &mdash; pivot here: "All of this becomes the grounding context for a Copilot Studio agent that briefs the underwriter every Monday. That's our roadmap step 2."</div></div>
+                        </div>
+                    </div>
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Why This Matters</div>
+                        <div class="tst-body">
+                            <div class="callout roi">
+                                <strong>📈 Value:</strong> Cedent context that took <strong>15 minutes across four tools</strong> is now <strong>one screen, scrollable in 30 seconds</strong>. And the field is the source of truth, not a person's head.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 3: TREATY + RESERVE                    -->
+        <!-- ============================================== -->
+        <div class="exec-section border-chat" id="section-treaty" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-chat">3</div>
+                <div class="exec-header-text">
+                    <h3>📜 Scenario 3 — Treaty Performance &amp; Reserve Trend</h3>
+                    <div class="exec-purpose">Native charts on Dataverse data. No BI report. Live exposure analysis.</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — The BI Tax</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Today the only way Morgan sees treaty exposure by status is a Power BI report owned by the analytics team. It refreshes nightly. It takes 8 seconds to load. And to slice it differently, Morgan files a ticket.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHOW -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ SHOW — Treaties Grid + Native Chart</div>
+                        <div class="tst-body">
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text">Sitemap → <strong>Treaties</strong>. Default view = <strong>Active Treaties</strong>.</div></div>
+                            <div class="step-block"><span class="step-label show">Show</span><div class="step-text">Scroll the grid. Show treaty number, cedent, status, exposure, effective &amp; expiry dates.</div></div>
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text">Open the <strong>Charts</strong> pane on the right. Select <strong>Treaty Exposure by Status</strong>.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"Live, against the grid I'm looking at. If I filter the grid, the chart filters with it. No BI ticket."</div></div>
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text">Filter Cedent = <strong>Summit Life &amp; Casualty</strong>. Watch the chart redraw.</div></div>
+                            <div class="step-block"><span class="step-label show">Show</span><div class="step-text">Now navigate to <strong>Reserve Snapshots</strong>. Switch chart to <strong>Reserve Adequacy Trend</strong>.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"Same Summit cedent. Quarterly snapshots. The trend is down three quarters running &mdash; this is exactly what triggered the watchlist flag."</div></div>
+                            <div class="step-block"><span class="step-label tip">Tip</span><div class="step-text">If the customer presses on chart fidelity vs Power BI &mdash; acknowledge: "These are operational charts in the workspace. Power BI still owns the executive dashboards. We feed Power BI from this same Dataverse."</div></div>
+                        </div>
+                    </div>
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Why This Matters</div>
+                        <div class="tst-body">
+                            <div class="callout roi">
+                                <strong>📈 Value:</strong> Operational analysis without leaving the workspace. <strong>Filter changes are instant.</strong> The underwriter no longer waits on the analytics team for routine slicing.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 4: RISK + DISPUTES                     -->
+        <!-- ============================================== -->
+        <div class="exec-section border-rma" id="section-risk" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-rma">4</div>
+                <div class="exec-header-text">
+                    <h3>⚠ Scenario 4 — Risk Assessments &amp; Disputes</h3>
+                    <div class="exec-purpose">Approval workflow on risk. Live dispute exposure. The audit trail GE has been asked for.</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Email Threads as a System of Record</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Today disputes live in <strong>email threads</strong> with attachments. When auditors ask "what was the exposure at the time you opened that dispute?" the answer is "let me get back to you next week."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHOW -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ SHOW — Risk Assessment + Open Dispute</div>
+                        <div class="tst-body">
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text">Sitemap → <strong>Risk Assessments</strong>. Open the most recent one for <strong>Summit Life &amp; Casualty</strong>.</div></div>
+                            <div class="step-block"><span class="step-label show">Show</span><div class="step-text">Risk type, severity, identified date, mitigating action, <strong>approval status</strong>.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"This is a real record with a real owner. Approval status is not a status email &mdash; it's a field with a workflow behind it."</div></div>
+                            <div class="step-block"><span class="step-label click">Click</span><div class="step-text">Sitemap → <strong>Disputes</strong>. Default view = <strong>Open Disputes</strong>.</div></div>
+                            <div class="step-block"><span class="step-label show">Show</span><div class="step-text">Open one dispute. Show: cedent, opened date, exposure at open, current exposure, status, related treaty.</div></div>
+                            <div class="step-block"><span class="step-label say">Say</span><div class="step-text">"Exposure at open is <em>captured at the moment we open the dispute</em>. Audit-ready, no archeology required."</div></div>
+                        </div>
+                    </div>
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Why This Matters</div>
+                        <div class="tst-body">
+                            <div class="callout roi">
+                                <strong>📈 Value:</strong> Audit response time on cedent disputes goes from <strong>days</strong> to <strong>seconds</strong>. The record IS the evidence.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <p class="section-label">Close &amp; Value Summary</p>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 5: CLOSE                               -->
+        <!-- ============================================== -->
+        <div class="exec-section border-close" id="section-close" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-close">5</div>
+                <div class="exec-header-text">
+                    <h3>🎯 Close — Excel/SharePoint vs ERAC Lite CRM</h3>
+                    <div class="exec-purpose">Competitive table, value summary, the ask</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Bringing It Home</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Switch to Tab 2. Show the <strong>"Cedent Watchlist v47 (FINAL).xlsx"</strong> tab for two seconds. Smile. Switch back.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label say">Say</span>
+                                <div class="step-text">"That's where the watchlist lives today. Forty-seven versions. We can do better &mdash; and we already have most of the building blocks in your tenant."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sub-header">Comparison: Today vs ERAC Lite CRM</div>
+                    <table class="ref-table">
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>Today (Excel + SharePoint + BI)</th>
+                                <th style="background:#E8F5E9;">ERAC Lite CRM (Dataverse)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Source of truth</strong></td>
+                                <td>4+ files, 14 owners, version drift</td>
+                                <td style="background:#F5FFF5;"><strong>One Cedent record, governed</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>PRR review prep</strong></td>
+                                <td>30 min of synthesis from spreadsheets</td>
+                                <td style="background:#F5FFF5;"><strong>10 min of decisions</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cedent context</strong></td>
+                                <td>Open 4 tools, mentally combine</td>
+                                <td style="background:#F5FFF5;"><strong>Cedent 360 form, one screen</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Treaty analytics</strong></td>
+                                <td>Power BI ticket queue</td>
+                                <td style="background:#F5FFF5;"><strong>Native charts on the workspace grid</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reserve adequacy trend</strong></td>
+                                <td>BI report, 8s spinner, nightly refresh</td>
+                                <td style="background:#F5FFF5;"><strong>Live chart on the cedent record</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Disputes</strong></td>
+                                <td>Email threads + attachments</td>
+                                <td style="background:#F5FFF5;"><strong>Records with exposure-at-open captured</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Audit response</strong></td>
+                                <td>Days of archeology</td>
+                                <td style="background:#F5FFF5;"><strong>Seconds — the record IS the evidence</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Copilot-ready</strong></td>
+                                <td>Not possible (data unmodeled)</td>
+                                <td style="background:#F5FFF5;"><strong>✅ Grounded on Dataverse — Copilot Studio next</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>License posture</strong></td>
+                                <td>—</td>
+                                <td style="background:#F5FFF5;"><strong>Power Apps premium — likely already on the GE EA</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="talk-track">
+                        <p>This isn't a rip-and-replace. The spreadsheets don't go away tomorrow. But the <em>watchlist</em>, the <em>cedent profile</em>, the <em>treaty exposure</em>, the <em>disputes</em> &mdash; those move into Dataverse, and the spreadsheets become exports, not sources of truth.</p>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>✅ The Ask:</strong> A <strong>4-week MVP build</strong> on a real GE Verisk subset &mdash; 10 cedents, real treaties, real PRR review cycle. We'll measure Monday-meeting prep time before vs after. If the number isn't materially better, we walk away.
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label tip">Tip</span>
+                        <div class="step-text">If the room asks about <strong>Salesforce</strong> &mdash; reinforce that ERAC isn't a sales-force-automation problem. It's a <strong>governed reinsurance data model + workspace</strong>. Salesforce doesn't ship that out of the box; Dataverse does.</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label tip">Tip</span>
+                        <div class="step-text">If the room asks about <strong>Guidewire / DuckCreek / SAP</strong> &mdash; reinforce that those are policy admin systems. ERAC sits <em>above</em> them and gives the underwriting team the workspace they don't get from a back-office system.</div>
+                    </div>
+
+                    <div class="callout info">
+                        <strong>🔗 Follow-Up Resources:</strong>
+                        <ul style="margin-top:8px; padding-left:20px;">
+                            <li>4-week MVP scope doc (Bill to draft post-demo)</li>
+                            <li>Dataverse + Power Apps licensing under GE EA — confirm with EA team</li>
+                            <li>Copilot Studio "Cedent Risk Briefing" agent &mdash; phase-2 roadmap</li>
+                            <li>Reference: similar reinsurance / FS workload built on Dataverse</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.container -->
+
+
+    <footer>
+        GE ERAC Lite CRM &mdash; Reinsurance Cedent Workspace Demo &nbsp;·&nbsp; Microsoft Dataverse + Power Apps &nbsp;·&nbsp; Built for GE Verisk Reinsurance
+    </footer>
+
+    <script>
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
+        }
+
+        // ── Side Navigation (auto-built from DOM) ──
+        (function () {
+            var toggle   = document.getElementById('navToggle');
+            var nav      = document.getElementById('sideNav');
+            var backdrop = document.getElementById('navBackdrop');
+            var pinBtn   = document.getElementById('navPin');
+            var navBody  = document.getElementById('navBody');
+            var pinned   = false;
+
+            // Build nav from page structure
+            var container = document.querySelector('.container');
+            var kids = container.children;
+            var html = '';
+            var idx  = 0;
+
+            for (var i = 0; i < kids.length; i++) {
+                var el = kids[i];
+
+                // Section labels become group headers
+                if (el.classList.contains('section-label')) {
+                    html += '<div class="side-nav-group">' + el.textContent + '</div>';
+                }
+
+                // Exec sections become nav items
+                if (el.classList.contains('exec-section')) {
+                    var numEl   = el.querySelector('.exec-number');
+                    var titleEl = el.querySelector('.exec-header-text h3');
+                    if (!numEl || !titleEl) continue;
+
+                    var num   = numEl.textContent.trim();
+                    var title = titleEl.textContent.trim();
+                    var id    = 'nav-sec-' + idx;
+                    el.id     = id;
+
+                    // Get computed background/foreground color for the number circle
+                    var bg = window.getComputedStyle(numEl).backgroundColor;
+                    var fg = window.getComputedStyle(numEl).color;
+
+                    html += '<a class="side-nav-item" data-target="' + id + '">';
+                    html += '<span class="side-nav-num" style="background:' + bg + ';color:' + fg + ';">' + num + '</span>';
+                    html += '<span class="side-nav-label">' + title + '</span></a>';
+                    idx++;
+                }
+            }
+
+            navBody.innerHTML = html;
+
+            // Click nav item → scroll to section and open it
+            navBody.addEventListener('click', function (e) {
+                var item = e.target.closest('.side-nav-item');
+                if (!item) return;
+                var target = document.getElementById(item.getAttribute('data-target'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (!target.classList.contains('open')) {
+                        target.classList.add('open');
+                    }
+                    if (!pinned) closeNav();
+                }
+            });
+
+            // Open / Close nav
+            function openNav() {
+                nav.classList.add('open');
+                backdrop.classList.add('visible');
+                toggle.classList.add('open');
+                toggle.innerHTML = '\u2715';
+            }
+            function closeNav() {
+                if (pinned) return;
+                nav.classList.remove('open');
+                backdrop.classList.remove('visible');
+                toggle.classList.remove('open');
+                toggle.innerHTML = '\u2630';
+            }
+
+            toggle.addEventListener('click', function () {
+                if (nav.classList.contains('open') && !pinned) closeNav();
+                else openNav();
+            });
+            backdrop.addEventListener('click', closeNav);
+
+            // Pin nav open
+            pinBtn.addEventListener('click', function () {
+                pinned = !pinned;
+                pinBtn.classList.toggle('pinned', pinned);
+                document.body.classList.toggle('nav-pinned', pinned);
+                pinBtn.textContent = pinned ? 'UNPIN' : 'PIN';
+                if (pinned) {
+                    backdrop.classList.remove('visible');
+                    nav.classList.add('open');
+                    toggle.classList.add('open');
+                    toggle.innerHTML = '\u2715';
+                }
+            });
+
+            // Highlight active section on scroll
+            var sections = document.querySelectorAll('.exec-section[id]');
+            var navItems = navBody.querySelectorAll('.side-nav-item');
+
+            function highlightNav() {
+                var scrollPos = window.scrollY + 150;
+                sections.forEach(function (sec, i) {
+                    var top    = sec.offsetTop;
+                    var bottom = top + sec.offsetHeight;
+                    if (scrollPos >= top && scrollPos < bottom) {
+                        navItems.forEach(function (item) { item.classList.remove('active'); });
+                        if (navItems[i]) navItems[i].classList.add('active');
+                    }
+                });
+            }
+            window.addEventListener('scroll', highlightNav);
+            highlightNav();
+        })();
+
+        // (Email-send helper removed — not used in ERAC reinsurance demo)
+
+        // ── Context Panel: IntersectionObserver + Click Trigger ──
+        (function initContextPanel() {
+            var sectionMap = {
+                'section-setup':     ['ctx-setup', null, '✅ Pre-Flight'],
+                'section-reference': ['ctx-setup', null, '★ Hero Records'],
+                'section-prr':       ['ctx-setup', null, '📊 PRR Dashboard'],
+                'section-cedent360': ['ctx-setup', null, '🎯 Cedent 360'],
+                'section-treaty':    ['ctx-setup', null, '📜 Treaty + Reserve'],
+                'section-risk':      ['ctx-setup', null, '⚠ Risk + Disputes'],
+                'section-close':     ['ctx-setup', null, '🎯 Close']
+            };
+
+            var ctxTitle = document.getElementById('ctxTitle');
+            var allCtx = document.querySelectorAll('.ctx-section');
+            var currentSection = 'section-setup';
+
+            function activateContext(sectionId) {
+                var mapping = sectionMap[sectionId];
+                if (!mapping) return;
+                if (sectionId === currentSection) return;
+                currentSection = sectionId;
+                allCtx.forEach(function(el) { el.classList.remove('active'); });
+                var primary = document.getElementById(mapping[0]);
+                if (primary) primary.classList.add('active');
+                if (mapping[1]) {
+                    var secondary = document.getElementById(mapping[1]);
+                    if (secondary) secondary.classList.add('active');
+                }
+                if (ctxTitle) ctxTitle.textContent = mapping[2] || 'Demo Data';
+            }
+
+            // Method 1: Click on section header triggers context switch
+            document.querySelectorAll('.exec-header').forEach(function(header) {
+                header.addEventListener('click', function() {
+                    var section = header.closest('.exec-section');
+                    if (section && section.id && sectionMap[section.id]) {
+                        activateContext(section.id);
+                    }
+                });
+            });
+
+            // Method 2: IntersectionObserver for scroll-based switching
+            if ('IntersectionObserver' in window) {
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            activateContext(entry.target.id);
+                        }
+                    });
+                }, { rootMargin: '-40px 0px -40% 0px', threshold: [0, 0.05, 0.1] });
+
+                Object.keys(sectionMap).forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) observer.observe(el);
+                });
+            }
+
+            // Show panel by default on wide screens
+            if (window.innerWidth > 1100) {
+                document.body.classList.add('ctx-panel-open');
+            }
+        })();
+    </script>
+
+</body>
+</html>
