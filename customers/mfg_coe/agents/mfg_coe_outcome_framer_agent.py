@@ -73,6 +73,24 @@ KPI_LIBRARY = {
         "On-time delivery rate (%)",
         "Order status self-service rate (%)",
     ],
+    "coe_infrastructure": [
+        "Issues resolved autonomously per week (count)",
+        "Time from issue creation to done (hours)",
+        "% of issues requiring Bill's input (lower = better)",
+        "Agent pipeline success rate (% no errors)",
+    ],
+    "demo_tooling": [
+        "Demo script generation time (seconds)",
+        "Demo accuracy score (% references real environment data)",
+        "SE demo prep time saved per week (hours)",
+        "# of demos produced per sprint (count)",
+    ],
+    "sop_documentation": [
+        "# SOPs documented per sprint",
+        "SOP review cycle time (days)",
+        "% of processes with documented SOP",
+        "Agent adoption of SOP-driven actions (%)",
+    ],
     "default": [
         "Process completion time reduction (%)",
         "User effort score (1-5)",
@@ -180,6 +198,11 @@ def _score_outcome_confidence(issue_title: str, issue_body: str) -> dict:
     if any(c.lower() in combined for c in ["navico", "otis", "zurn", "vermeer", "carrier", "aes"]):
         score += 10
 
+    # CoE/internal tooling issues — structured enough to proceed without D365 customer context
+    if any(kw in combined for kw in ["coe", "agent", "runner", "bootstrap", "pipeline", "demo builder",
+                                      "context card", "sop", "backlog", "bots-in-blazers", "gap analysis"]):
+        score += 20
+
     # Specific numbers or percentages → quantified thinking
     import re
     if re.search(r'\d+\s*%|\$\d+|\d+\s*hour|\d+\s*day|\d+\s*minute', combined):
@@ -188,6 +211,10 @@ def _score_outcome_confidence(issue_title: str, issue_body: str) -> dict:
     # Explicit "outcome" or "goal" language → they thought about it
     if any(phrase in combined for phrase in ["outcome", "goal is", "success looks like", "kpi", "measure"]):
         score += 10
+
+    # Bill's feedback comments included (injected as context) — always enough to proceed
+    if "bill's feedback" in combined or "business problem:" in combined:
+        score = max(score, 65)
 
     # Penalty: body is basically just a URL (no real description)
     if body_len < 50 or body.strip().startswith("http"):
@@ -311,6 +338,20 @@ class MfgCoEOutcomeFramerAgent(BasicAgent):
                 confidence=confidence,
             )
 
+        # Override process_area for CoE/internal tooling issues the orchestrator
+        # couldn't classify (it only maps D365 keywords)
+        title_lower = issue_title.lower()
+        body_lower = (issue_body or "").lower()
+        combined_lower = title_lower + " " + body_lower
+        if any(kw in combined_lower for kw in ["coe", "runner", "bootstrap", "agent team", "pipeline", "context card", "knowledge base"]):
+            process_area = "coe_infrastructure"
+        elif any(kw in combined_lower for kw in ["demo builder", "demo script", "quick demo", "demo in 60"]):
+            process_area = "demo_tooling"
+        elif any(kw in combined_lower for kw in ["sop", "standard operating", "document process", "top 10"]):
+            process_area = "sop_documentation"
+        elif any(kw in combined_lower for kw in ["gap", "missing capability", "solution area", "portal"]):
+            process_area = "default"
+
         # Load environment context
         env_context = ""
         try:
@@ -321,55 +362,52 @@ class MfgCoEOutcomeFramerAgent(BasicAgent):
         kpis = KPI_LIBRARY.get(process_area, KPI_LIBRARY["default"])
         kpi_md = "\n".join(f"- [ ] **{kpi}** — baseline TBD, target TBD" for kpi in kpis)
 
-        # Derive structured outcome from issue content
         area_display = process_area.replace("_", " ").title()
 
-        business_problem = (
-            f"Based on issue: *{issue_title}*\n\n"
-            f"{issue_body[:500] if issue_body else '[Extracted from issue — agent to elaborate]'}"
-        )
+        # Use actual issue content — don't fabricate generic boilerplate
+        # Pull business problem from body (prefer Bill's comment context appended there)
+        body_clean = (issue_body or "").strip()
+        if len(body_clean) > 50:
+            business_problem = body_clean[:800]
+        else:
+            business_problem = f"As described in issue: *{issue_title}*"
 
         before_state = (
-            f"**Current situation for {customer}:**\n"
-            f"- Business users in the {area_display} process rely on manual steps, "
-            f"email-based communication, or disconnected systems\n"
-            f"- No single view of status available to customer or internal team\n"
-            f"- Resolution requires multiple touchpoints and handoffs\n"
-            f"- [Agent: refine this with specific details from issue body]"
+            f"**Current situation:**\n"
+            f"- This process or capability is handled manually or does not yet exist\n"
+            f"- Time and effort required exceeds what is sustainable at SE scale\n"
+            f"- [Refined from: {issue_title}]"
         )
 
         after_state = (
             f"**With the solution in place:**\n"
-            f"- Business users can self-serve or receive AI-assisted resolution for common {area_display} scenarios\n"
-            f"- Single connected flow from intake to resolution via D365 + Copilot Studio\n"
-            f"- Measurable reduction in handle time, escalations, and manual effort\n"
-            f"- Demo story is complete: customer sees their problem solved, not a feature showcase"
+            f"- The described capability is automated or agent-driven\n"
+            f"- Output is measurable and improves over time\n"
+            f"- Bill or the CoE can operate at higher leverage with less manual effort"
         )
 
         acceptance_criteria = (
-            "- [ ] The demo runs end-to-end without manual intervention\n"
-            "- [ ] The business user's problem is visibly solved in the demo flow\n"
-            "- [ ] At least one KPI improvement is quantifiable from the demo story\n"
-            "- [ ] A customer watching the demo could immediately see *their* process reflected\n"
-            "- [ ] Bill can present this to a customer without needing to explain the technology first"
+            "- [ ] The solution works end-to-end without manual intervention\n"
+            "- [ ] At least one KPI from the list above is measurably improved\n"
+            "- [ ] Bill can demo or use the output without needing to explain the tech\n"
+            "- [ ] A follow-on issue can reference this as complete"
         )
 
         in_scope = (
-            f"- Core {area_display} flow (primary happy path)\n"
-            f"- Integration with {customer} demo data in Master CE Mfg\n"
-            f"- Copilot Studio + D365 CE end-to-end story"
+            f"- Core capability described in issue title and body\n"
+            f"- Integration with existing CoE infrastructure (bots-in-blazers.fun, coe_runner)\n"
+            f"- Works with Master CE Mfg / Mfg Gold Template where applicable"
         )
 
         out_of_scope = (
-            "- ERP / back-office system integrations (Phase 2)\n"
-            "- Multi-language / accessibility requirements\n"
-            "- Production deployment to customer tenant"
+            "- Production hardening / enterprise security review\n"
+            "- Multi-tenant or external customer deployment\n"
+            "- Capabilities not described in this issue"
         )
 
         demo_story = (
-            f"A {customer} customer contacts support about a {area_display.lower()} issue, "
-            f"receives instant AI-powered resolution or clear next steps — "
-            f"no hold times, no manual lookups, no dead ends."
+            f"Bill points the CoE at this issue, the agent executes it autonomously, "
+            f"and the output lands in the right place — no manual steps required."
         )
 
         content = OUTCOME_TEMPLATE.format(
@@ -377,9 +415,9 @@ class MfgCoEOutcomeFramerAgent(BasicAgent):
             issue_number=issue_number,
             date=datetime.utcnow().strftime("%Y-%m-%d"),
             business_problem=business_problem,
-            primary_users=f"{customer} customer-facing staff and end customers",
-            secondary_stakeholders="Service managers, IT admin, demo audience (prospects)",
-            current_pain=f"Manual, fragmented {area_display.lower()} process with no AI assistance",
+            primary_users=f"Bill Whalen (SE) and the CoE agent team",
+            secondary_stakeholders="Customers and prospects who benefit from CoE outputs",
+            current_pain=f"Manual effort, inconsistency, or missing capability in the {area_display} area",
             before_state=before_state,
             after_state=after_state,
             kpis=kpi_md,
@@ -401,9 +439,10 @@ class MfgCoEOutcomeFramerAgent(BasicAgent):
             f"## 🎯 Outcome Definition — Issue #{issue_number}\n\n"
             f"**Confidence Level:** {confidence['level'].upper()} ({confidence['score']}/100)\n\n"
             f"**Business Problem:** {issue_title}\n\n"
-            f"**Affected Users:** {customer} customer-facing staff and end customers\n\n"
-            f"**Before State:** Manual, fragmented {area_display.lower()} process\n\n"
-            f"**After State:** AI-assisted, connected flow from intake to resolution\n\n"
+            f"**Process Area:** {area_display}\n\n"
+            f"**Affected Users:** Bill Whalen (SE) + CoE agent team\n\n"
+            f"**Before State:** Manual or missing capability\n\n"
+            f"**After State:** Automated, agent-driven, measurable\n\n"
             f"**Success KPIs:**\n{kpi_md}\n\n"
             f"**Demo Story:** {demo_story}\n\n"
             f"**Acceptance Criteria:**\n{acceptance_criteria}\n\n"

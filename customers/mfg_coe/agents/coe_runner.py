@@ -390,6 +390,8 @@ def action_process_issue(issue_number: int) -> None:
             + footer.lstrip("\n\n")
         )
         _post_issue_comment(issue_number, comment_body)
+        # Remove agent-task so the workflow doesn't re-fire on label changes
+        _set_issue_label(issue_number, [], ["agent-task"])
 
     elif status == "blocked_needs_outcome":
         blocked_reason = result.get("blocked_reason", "Outcome could not be inferred from this issue.")
