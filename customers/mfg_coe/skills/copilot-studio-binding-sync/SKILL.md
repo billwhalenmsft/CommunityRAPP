@@ -105,6 +105,26 @@ After running, ask the human: "Open CS → publish the agent. If it fails, paste
 ## Reference implementation
 See `binding_sync.ps1` in this folder for a working PowerShell reference. Port to Python for the CoE runner.
 
+## Python execution script (Ascend SAP)
+Use `binding_sync.py` in this same folder for the executable patch flow:
+
+```bash
+# Set target explicitly (recommended)
+export COPILOT_STUDIO_ORG_URL="https://org6feab6b5.crm.dynamics.com"
+export COPILOT_STUDIO_BOT_ID="a1aa62dd-a23d-f111-bec6-70a8a59a411e"
+
+# Dry run (default)
+python customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.py
+
+# Apply PATCH operations
+python customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.py --apply
+```
+
+Expected summary fields:
+- `topics_inspected`
+- `topic_patches`
+- `flow_tool_patches`
+
 ## Don't do
 - Don't PATCH `botcomponent.content` (will fail)
 - Don't change `flowId` values (each topic's flowId is the internal Dataverse ID, not the PA flow GUID)

@@ -51,8 +51,21 @@ Copilot Studio agent **"Ascend SAP Procurement Agent"** has 8 topics calling 6 P
 
 - Skill: `customers/mfg_coe/skills/copilot-studio-binding-sync/SKILL.md`
 - Reference impl: `customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.ps1`
-- Original handoff: `customers/ascend/HANDOFF_PUBLISH_FIX.md`
-- Flow recipes: `customers/ascend/FLOW_OUTPUT_RECIPES.md`
+- Executable script: `customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.py`
+- Flow definitions: `customers/ascend/solution/solution_src/Workflows/`
+
+## Execution
+
+```bash
+export COPILOT_STUDIO_ORG_URL="https://org6feab6b5.crm.dynamics.com"
+export COPILOT_STUDIO_BOT_ID="a1aa62dd-a23d-f111-bec6-70a8a59a411e"
+
+# Dry run (default)
+python customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.py
+
+# Apply PATCH operations to Dataverse
+python customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.py --apply
+```
 
 ## Don't
 
