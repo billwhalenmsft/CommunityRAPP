@@ -1,0 +1,15 @@
+{
+  "name": "microsoft-presentation-skill",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Self-contained skill for Microsoft-branded Marp presentations with architecture diagrams",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "validate": "node scripts/validate_slides.mjs",
+    "screenshots:install": "npx playwright install chromium"
+  },
+  "devDependencies": {
+    "@marp-team/marp-cli": ">=4.2.3",
+    "playwright": ">=1.58.2"
+  }
+}

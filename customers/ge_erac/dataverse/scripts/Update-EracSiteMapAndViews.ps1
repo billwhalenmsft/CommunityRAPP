@@ -74,13 +74,24 @@ function Add-ToSolution([string]$ComponentId,[int]$ComponentType) {
 function Invoke-SiteMap {
     Write-Host "`n=== PHASE: SITEMAP ===" -ForegroundColor Cyan
 
-    # Find the ERAC sitemap — use known ID first, fall back to name search
-    # ce9e620c is the sitemap BOUND to the GEERACLiteCRM_App module (confirmed Phase 7)
-    # 0124356c is a standalone sitemap NOT bound to the app — do not use
-    $knownSiteMapId = "ce9e620c-7e3a-f111-88b5-7ced8dceb26a"
-    $mapDetail = Invoke-Dv GET "sitemaps($knownSiteMapId)?`$select=sitemapid,sitemapname,sitemapxml"
+    # Find the ERAC sitemap — read from app-ids.json (written by Build-EracSolution), fall back to filter query
+    $scriptDirLocal = Split-Path -Parent $PSCommandPath
+    $appIdsPath = Join-Path $scriptDirLocal "..\data\app-ids.json"
+    $knownSiteMapId = $null
+    if (Test-Path $appIdsPath) {
+        try { $knownSiteMapId = (Get-Content $appIdsPath -Raw | ConvertFrom-Json).sitemapid } catch {}
+    }
+    $mapDetail = $null
+    if ($knownSiteMapId) {
+        $mapDetail = Invoke-Dv GET "sitemaps($knownSiteMapId)?`$select=sitemapid,sitemapname,sitemapxml"
+    }
     if (-not $mapDetail -or -not $mapDetail.sitemapid) {
-        # Fallback: list all and pick the ERAC one
+        # Fallback: filter by unique name (the all-list query is unreliable due to scope)
+        $byName = Invoke-Dv GET "sitemaps?`$filter=sitemapnameunique eq 'erac_LiteCRM_SiteMap'&`$select=sitemapid,sitemapname,sitemapxml"
+        if ($byName.value.Count -gt 0) { $mapDetail = $byName.value[0] }
+    }
+    if (-not $mapDetail -or -not $mapDetail.sitemapid) {
+        # Final fallback: list all and search by name
         $maps = Invoke-Dv GET "sitemaps?`$select=sitemapid,sitemapname"
         Write-Host "  All sitemaps: $($maps.value.sitemapname -join ', ')"
         $match = $maps.value | Where-Object { $_.sitemapname -like "*erac*" -or $_.sitemapname -like "*ERAC*" }

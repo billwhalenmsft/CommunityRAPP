@@ -1,0 +1,272 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Create Purchase Requisition
+    triggerQueries:
+      - create a purchase requisition
+      - open a purchase request
+      - I want to request a purchase
+      - new PR
+      - I need to buy something
+      - create PR
+      - purchase request
+      - I want to open a purchase request with
+      - submit a purchase requisition
+      - I'd like to order from
+      - I need to procure
+
+  actions:
+    # ---------------------------------------------------------------
+    # Step 1 – Intent confirmation
+    # ---------------------------------------------------------------
+    - kind: SendMessage
+      id: confirmIntent
+      message: "I can help you create a purchase requisition. Let's get started."
+
+    # ---------------------------------------------------------------
+    # Step 2 – Vendor input
+    # ---------------------------------------------------------------
+    - kind: Question
+      id: askVendor
+      interruptionPolicy:
+        allowInterruption: true
+      variable: init:vendorName
+      prompt:
+        text: "Which vendor would you like to use?"
+      entity: StringPrebuiltEntity
+
+    - kind: InvokeFlowAction
+      id: validateVendor
+      input:
+        binding:
+          vendor_name: =System.Activity.Text
+      output:
+        binding:
+          vendorResult: =flow.response
+      flowName: flow_sap_vendor_lookup
+
+    - kind: ConditionGroup
+      id: vendorCondition
+      conditions:
+        - id: vendorMultiple
+          condition: =json(System.ConversationData.vendorResult).status = "multiple_found"
+          actions:
+            - kind: SendMessage
+              id: showVendorList
+              message: =json(System.ConversationData.vendorResult).message
+            - kind: Question
+              id: selectVendor
+              variable: init:vendorSelected
+              prompt:
+                text: "Please type the number of the vendor you'd like to use."
+              entity: StringPrebuiltEntity
+
+        - id: vendorNotFound
+          condition: =json(System.ConversationData.vendorResult).status = "not_found"
+          actions:
+            - kind: SendMessage
+              id: vendorNotFoundMsg
+              message: =json(System.ConversationData.vendorResult).message
+            - kind: GotoAction
+              id: retryVendor
+              actionId: askVendor
+
+        - id: vendorFound
+          condition: =json(System.ConversationData.vendorResult).status = "found"
+          actions:
+            - kind: SetVariable
+              id: setVendorId
+              variable: init:vendorId
+              value: =json(json(System.ConversationData.vendorResult).vendor).id
+            - kind: SetVariable
+              id: setVendorName
+              variable: init:vendorNameConfirmed
+              value: =json(json(System.ConversationData.vendorResult).vendor).name
+
+    # ---------------------------------------------------------------
+    # Step 3 – What are you purchasing?
+    # ---------------------------------------------------------------
+    - kind: Question
+      id: askItem
+      variable: init:itemDescription
+      prompt:
+        text: "What are you purchasing from {System.ConversationData.vendorNameConfirmed}?"
+      entity: StringPrebuiltEntity
+
+    - kind: InvokeFlowAction
+      id: classifyItem
+      input:
+        binding:
+          item_description: =System.ConversationData.itemDescription
+      output:
+        binding:
+          categoryResult: =flow.response
+      flowName: flow_sap_classify_item
+
+    - kind: ConditionGroup
+      id: categoryCondition
+      conditions:
+        - id: categoryUnknown
+          condition: =json(System.ConversationData.categoryResult).status = "category_unknown"
+          actions:
+            - kind: SendMessage
+              id: categoryUnknownMsg
+              message: =json(System.ConversationData.categoryResult).message
+            - kind: GotoAction
+              id: retryItem
+              actionId: askItem
+
+    # ---------------------------------------------------------------
+    # Step 4 – Line structure (cadence, amount, duration)
+    # ---------------------------------------------------------------
+    - kind: Question
+      id: askCadence
+      variable: init:cadence
+      prompt:
+        text: "Is this a one-time payment, or recurring — monthly, quarterly, or yearly?"
+      entity: StringPrebuiltEntity
+
+    - kind: Question
+      id: askAmount
+      variable: init:amountPerPeriod
+      prompt:
+        text: "What is the amount per {System.ConversationData.cadence}?"
+      entity: NumberPrebuiltEntity
+
+    - kind: ConditionGroup
+      id: amountValidation
+      conditions:
+        - id: amountZero
+          condition: =(System.ConversationData.amountPerPeriod) <= 0
+          actions:
+            - kind: SendMessage
+              id: amountZeroMsg
+              message: "The amount must be greater than zero. Please re-enter."
+            - kind: GotoAction
+              id: retryAmount
+              actionId: askAmount
+
+    - kind: Question
+      id: askPeriods
+      variable: init:periods
+      prompt:
+        text: "How many {System.ConversationData.cadence} periods?"
+      entity: NumberPrebuiltEntity
+
+    # ---------------------------------------------------------------
+    # Step 5 – Cost center
+    # ---------------------------------------------------------------
+    - kind: Question
+      id: askCostCenter
+      variable: init:costCenter
+      prompt:
+        text: "What is your cost center number?"
+      entity: StringPrebuiltEntity
+
+    # ---------------------------------------------------------------
+    # Step 6 – Backend: agreement check + GL derivation + DoA
+    # ---------------------------------------------------------------
+    - kind: InvokeFlowAction
+      id: buildAndValidatePR
+      input:
+        binding:
+          vendor_id:          =System.ConversationData.vendorId
+          vendor_name:        =System.ConversationData.vendorNameConfirmed
+          item_description:   =System.ConversationData.itemDescription
+          category_code:      =json(json(System.ConversationData.categoryResult).category).code
+          gl_code:            =json(json(System.ConversationData.categoryResult).category).gl
+          cadence:            =System.ConversationData.cadence
+          amount_per_period:  =System.ConversationData.amountPerPeriod
+          periods:            =System.ConversationData.periods
+          cost_center:        =System.ConversationData.costCenter
+          user_guid:          =System.User.Id
+          user_name:          =System.User.DisplayName
+      output:
+        binding:
+          prPreview: =flow.response
+      flowName: flow_sap_create_pr
+
+    # ---------------------------------------------------------------
+    # Step 7 – Blocking errors before preview
+    # ---------------------------------------------------------------
+    - kind: ConditionGroup
+      id: previewValidation
+      conditions:
+        - id: previewBlocked
+          condition: =json(System.ConversationData.prPreview).status = "incomplete" or json(System.ConversationData.prPreview).severity = "blocking"
+          actions:
+            - kind: SendMessage
+              id: previewBlockedMsg
+              message: =json(System.ConversationData.prPreview).message
+            - kind: EndDialog
+              id: endOnBlock
+
+    # ---------------------------------------------------------------
+    # Step 8 – Show preview, ask for confirmation
+    # ---------------------------------------------------------------
+    - kind: SendMessage
+      id: showPreview
+      message: =json(System.ConversationData.prPreview).message
+
+    - kind: Question
+      id: askConfirm
+      variable: init:userConfirmed
+      prompt:
+        text: "Do you want me to create this purchase requisition in SAP? Say 'create requisition' to confirm or let me know what to change."
+      entity: StringPrebuiltEntity
+
+    - kind: ConditionGroup
+      id: confirmCheck
+      conditions:
+        - id: notConfirmed
+          condition: =not(toLower(System.ConversationData.userConfirmed) contains "create" or toLower(System.ConversationData.userConfirmed) contains "yes" or toLower(System.ConversationData.userConfirmed) contains "confirm")
+          actions:
+            - kind: SendMessage
+              id: notConfirmedMsg
+              message: "OK, I've not submitted the PR. Let me know what you'd like to change, or say 'create requisition' when ready."
+            - kind: EndDialog
+              id: endNoConfirm
+
+    # ---------------------------------------------------------------
+    # Step 9 – Submit to SAP
+    # ---------------------------------------------------------------
+    - kind: InvokeFlowAction
+      id: submitPR
+      input:
+        binding:
+          pr_data:    =json(System.ConversationData.prPreview).pr_data
+          user_guid:  =System.User.Id
+          user_name:  =System.User.DisplayName
+      output:
+        binding:
+          submitResult: =flow.response
+      flowName: flow_sap_create_pr
+
+    - kind: ConditionGroup
+      id: submitCondition
+      conditions:
+        - id: submitFailed
+          condition: =json(System.ConversationData.submitResult).status = "error" or json(System.ConversationData.submitResult).status = "sap_error"
+          actions:
+            - kind: SendMessage
+              id: submitFailedMsg
+              message: "I couldn't create the PR due to a system error. Please try again or contact your procurement team."
+
+        - id: submitDuplicate
+          condition: =json(System.ConversationData.submitResult).status = "duplicate_warning"
+          actions:
+            - kind: SendMessage
+              id: submitDuplicateMsg
+              message: =json(System.ConversationData.submitResult).message
+
+        - id: submitSuccess
+          condition: =json(System.ConversationData.submitResult).status = "created"
+          actions:
+            - kind: SendMessage
+              id: submitSuccessMsg
+              message: =json(System.ConversationData.submitResult).message
+
+    - kind: EndDialog
+      id: endTopic

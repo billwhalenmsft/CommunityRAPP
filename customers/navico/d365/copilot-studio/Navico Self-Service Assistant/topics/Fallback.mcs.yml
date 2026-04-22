@@ -1,0 +1,25 @@
+mcs.metadata:
+  componentName: Fallback
+  description: This system topic triggers when the user's utterance does not match any existing topics.
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnUnknownIntent
+  id: main
+  actions:
+    - kind: ConditionGroup
+      id: conditionGroup_LktzXw
+      conditions:
+        - id: conditionItem_tlGIVo
+          condition: =System.FallbackCount < 3
+          actions:
+            - kind: SendActivity
+              id: sendMessage_QZreqo
+              activity: "I'm not sure I understood that. I can help with:\n\n• **Product troubleshooting** — describe your issue or give me a serial number\n• **Warranty check** — provide your serial number\n• **RMA request** — return, exchange, or repair\n• **Product registration** — register a new product\n• **Certification** — dealer/installer certification status\n• **Talk to a specialist** — connect with a live agent\n\nCould you try rephrasing, or let me know which of these you need?"
+
+      elseActions:
+        - kind: SendActivity
+          id: sendMessage_maxRetries
+          activity: "I'm sorry I haven't been able to help with that. Let me connect you with a Navico support specialist who can assist you directly."
+        - kind: BeginDialog
+          id: 5aXj5M
+          dialog: cra1f_agentLrdu6W.topic.Escalate

@@ -136,10 +136,17 @@ $created = 0
 $existing = 0
 
 foreach ($part in $catalog.parts) {
+    # Support both field name conventions: num/desc/price (legacy) and sku/description/unitPrice (new)
+    $partNum   = if ($part.num)         { $part.num }         else { $part.sku }
+    $partDesc  = if ($part.desc)        { $part.desc }        else { $part.description }
+    $partPrice = if ($null -ne $part.price) { $part.price }   else { $part.unitPrice }
+
+    if (-not $partNum) { Write-Host "  Skipping part with no sku/num: $($part.name)" -ForegroundColor DarkYellow; continue }
+
     $body = @{
         name                              = $part.name
-        productnumber                     = $part.num
-        description                       = $part.desc
+        productnumber                     = $partNum
+        description                       = $partDesc
         quantitydecimal                   = 2
         producttypecode                   = 1  # Sales Inventory
         "defaultuomid@odata.bind"         = "/uoms($eachUnitId)"
@@ -149,15 +156,15 @@ foreach ($part in $catalog.parts) {
 
     $id = Find-OrCreate-Record `
         -EntitySet "products" `
-        -Filter "productnumber eq '$($part.num)'" `
+        -Filter "productnumber eq '$partNum'" `
         -IdField "productid" `
         -Body $body `
-        -DisplayName "$($part.name) [$($part.num)]"
+        -DisplayName "$($part.name) [$partNum]"
 
     if ($id) {
-        $productIds[$part.num] = @{
+        $productIds[$partNum] = @{
             id          = $id
-            price       = $part.price
+            price       = $partPrice
             category    = $part.category
             priceListId = $priceListId
         }

@@ -1,0 +1,54 @@
+{
+    "heroCases": [
+        {
+            "caseRef": "WO-2026-001",
+            "title": "Andersen 400 Casement — Seal Failure / Water Intrusion",
+            "account": "Andersen Exteriors Savage",
+            "contact": "Mike Bergstrom",
+            "homeowner": "Sarah Kowalski",
+            "homeownerPhone": "612-555-0234",
+            "priority": "High",
+            "origin": "Phone",
+            "product": "Window — Casement Standard",
+            "productSerial": "AND-CAS-2024-SAV-0042",
+            "warrantyStatus": "Active — Manufacturer Defect Claim Filed",
+            "kbArticle": "KA-ABC-001",
+            "timeline": [
+                { "date": "2026-03-10", "time": "08:47", "type": "Phone", "actor": "Mike Bergstrom", "note": "Called in — Homeowner reporting water intrusion around casement frame. ABC internal case WO-2026-001 created. Mike notified of intake #, sales rep Larry Sullivan CC'd." },
+                { "date": "2026-03-10", "time": "09:05", "type": "Email", "actor": "D365 Auto", "note": "Intake confirmation email sent to Mike Bergstrom and Larry Sullivan. Case # WO-2026-001 included." },
+                { "date": "2026-03-11", "time": "10:30", "type": "Field Visit", "actor": "Derek Olson", "note": "Tech assessment — drove 22 min to site. Inspection checklist completed. Seal failure confirmed as manufacturer defect. Pre-visit photos captured. Measurement taken for custom seal replacement. Drive time: 44 min. Onsite: 1.5 hrs." },
+                { "date": "2026-03-11", "time": "13:15", "type": "Parts Order", "actor": "Josh Henriksen", "note": "Warranty seal kit ordered from Andersen manufacturer. PO submitted in Agility. ETA: 12-14 business days. SMS sent to Sarah Kowalski: 'Parts ordered. ETA 2 weeks. We'll reach out when parts arrive.'" },
+                { "date": "2026-03-18", "time": "09:00", "type": "Auto-SMS", "actor": "Power Automate", "note": "Automated 1-week check-in SMS to Sarah Kowalski: 'Hi Sarah, this is ABC Supply. Your window parts are on order and on track. We'll contact you to schedule installation as soon as they arrive.'" },
+                { "date": "2026-03-25", "time": "14:30", "type": "Parts Received", "actor": "Aaron Dietz", "note": "Seal kit received at warehouse. Parts verified. Case status updated to 'Ready to Schedule'. SMS to Sarah Kowalski: 'Great news — your parts arrived! We will call tomorrow to schedule your repair.'" },
+                { "date": "2026-03-26", "time": "10:00", "type": "Scheduling", "actor": "Josh Henriksen", "note": "Called Sarah Kowalski. Scheduled for Tuesday March 31 at 9am. Appointment confirmation SMS sent with tech name (Derek Olson) and estimated arrival." },
+                { "date": "2026-03-31", "time": "07:45", "type": "Auto-SMS", "actor": "Power Automate", "note": "'Heads up! Derek from ABC Supply is on his way. ETA ~25 min based on current traffic. Reply STOP to cancel or call 952-894-0100 to reschedule.'" },
+                { "date": "2026-03-31", "time": "08:32", "type": "Field Service", "actor": "Derek Olson", "note": "Arrived on site. Opened work order on Field Service mobile. Logged arrival time. Completed installation checklist. Replaced seal. Window tested — no further water intrusion. Post-install photos captured. Completion report generated." },
+                { "date": "2026-03-31", "time": "11:15", "type": "Case Closed", "actor": "D365 Auto", "note": "Work order closed. Completion report emailed to Mike Bergstrom and Sarah Kowalski with pre/post photos, time log, parts used, and warranty documentation. Case resolved." }
+            ]
+        },
+        {
+            "caseRef": "WO-2026-002",
+            "title": "Pella Impervia Slider — Operator Mechanism Failure",
+            "account": "Pella Pro Contractors MN",
+            "contact": "Tyler Schroeder",
+            "homeowner": "James Paulsen",
+            "homeownerPhone": "952-555-0387",
+            "priority": "Normal",
+            "origin": "Email",
+            "product": "Window — Sliding",
+            "productSerial": "PEL-SLD-2023-BRN-0117",
+            "warrantyStatus": "Active — Parts & Labor",
+            "kbArticle": "KA-ABC-002",
+            "timeline": [
+                { "date": "2026-04-08", "time": "11:22", "type": "Email", "actor": "Tyler Schroeder", "note": "Email received to service@abcsupply.com. Pella slider — operator stripped, can't lock. D365 auto-created case WO-2026-002. Routed to coordinator queue." },
+                { "date": "2026-04-08", "time": "11:25", "type": "Auto-Email", "actor": "D365 Auto", "note": "Confirmation email to Tyler with case # and expected response time (same business day)." },
+                { "date": "2026-04-08", "time": "13:40", "type": "Parts Check", "actor": "Aaron Dietz", "note": "Operator mechanism PART-OPR-MEC confirmed in stock. No parts order needed. Scheduled Derek for Thursday April 10 at 10am." },
+                { "date": "2026-04-09", "time": "09:00", "type": "Auto-SMS", "actor": "Power Automate", "note": "SMS to homeowner James Paulsen: 'ABC Supply scheduled for tomorrow (Thu Apr 10) between 9-11am. Tech: Derek Olson. Reply C to confirm or call 952-894-0100 to reschedule.'" },
+                { "date": "2026-04-09", "time": "09:04", "type": "SMS Reply", "actor": "James Paulsen", "note": "Replied 'C' — appointment confirmed. Auto-reply sent: 'Confirmed! We'll send a heads-up when Derek is on his way.'" },
+                { "date": "2026-04-10", "time": "09:48", "type": "Auto-SMS", "actor": "Power Automate", "note": "Derek en route SMS to James: 'Derek is 18 min away. ETA 10:06am.'" },
+                { "date": "2026-04-10", "time": "10:09", "type": "Field Service", "actor": "Derek Olson", "note": "Arrived. Opened work order mobile. Captured pre-work photo. Replaced operator mechanism. Tested lock and slide operation. Post-work photo captured. Time: drive 31 min, onsite 1.1 hrs." },
+                { "date": "2026-04-10", "time": "11:15", "type": "Case Closed", "actor": "D365 Auto", "note": "Case resolved. Completion report with photos emailed to Tyler Schroeder and James Paulsen. Job costing: 1 part ($89) + 1.5 hrs labor + 1 hr drive." }
+            ]
+        }
+    ]
+}

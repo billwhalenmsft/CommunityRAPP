@@ -30,6 +30,7 @@
   "rapp_pipeline_agent.json",
   "rapp_quality_gate_agent.json",
   "sales_coach_agent.json",
+  "ascend_sap_pr_agent.json",
   "scripted_demo_agent.json",
   "sma4_workbench_orchestrator_agent.json",
   "social_media_manager_agent.json",

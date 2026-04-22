@@ -1,0 +1,90 @@
+CUSTOMER: Ascend
+PROJECT: Phase 6 – Upstream Procurement Agent
+AGENT PRIORITY: purchase_requisition, pr_status, pr_approval
+DATE: 2026-04-20
+
+=== REQUIREMENTS TRANSCRIPT ===
+
+We need to build three AI agents for Copilot Studio that give our procurement team a conversational Purchase Requisition (PR) experience connected to SAP ECC 6.0.
+
+--- AGENT 1: Purchase Requisition Creator (ascend_purchase_requisition_agent) ---
+
+The user starts with natural language like "I want to open a purchase request with Microsoft."
+
+Step 1 - Intent Recognition:
+Parse user input, identify action (create PR), vendor (if provided), item/category (if provided), assign confidence score. If confidence too low ask clarifying question. If request is for a PO instead of PR, confirm it will create a purchase requisition.
+
+Step 2 - Vendor Validation:
+Search SAP LFA1 for vendor name match. Validate against LFB1 (company code) and LFM1 (purchasing org). Filter blocked/inactive vendors. If multiple matches present list for user selection. If no vendor found ask user to refine. Example response: "I found multiple vendors for Microsoft. Please select one: Microsoft Corporation, Microsoft Licensing LLC, Microsoft Ireland Operations."
+
+Step 3 - Item/Category Classification:
+Ask "What are you purchasing from [vendor]?" Match input against MARA/MAKT (material master), T023/T023T (material groups), EINA/EINE (historical purchasing). Assign procurement category. If vague ask for more detail. If category restricted flag it.
+
+Step 4 - Line Structure Logic:
+Ask cadence: one-time, monthly, quarterly, or yearly. Ask amount per period. Ask duration. Calculate lines, total value, PR structure (single vs multi-line vs service). Validate: amount must be numeric and greater than zero, cadence must not conflict with duration, warn if values unusually high/low.
+
+Step 5 - Agreement and Sourcing Validation:
+Check EKKO/EKPO for active agreements. Check EORD for source list. Check EINA/EINE for purchasing info records. Flag non-contracted spend. Notify user of available agreement. Block if policy requires contract usage.
+
+Step 6 - GL and Account Assignment Derivation:
+Map category to GL using T030 rules. Derive cost center (CSKS), internal order (AUFK), or WBS (PRPS/PROJ). Validate all assignments. If invalid or missing cost center block submission.
+
+Step 7 - Approval Determination (DoA Logic):
+Calculate total PR value. Evaluate release strategy from T16FS, T161F, T161G, T161H, T161S. Resolve approver from workflow/DoA tables. Block if no approver found.
+
+Step 8 - Pre-submission Validation:
+Check all required fields complete. Validate data integrity. Validate policy compliance. Classify issues: warning (allow proceed), blocking (must fix), escalation (manual review).
+
+Step 9 - PR Preview Generation:
+Show summary: Vendor, Description, Frequency, Amount, Duration, Total, Agreement status, GL Code, Cost Center, Approver. Confirm totals match line logic.
+
+Step 10 - PR Creation in SAP:
+Write to EBAN (PR line items) and EBKN (account assignment). Capture PR number. If SAP fails inform user clearly. If duplicate detected warn user. Only confirm success when PR number is returned.
+
+Step 11 - Approval Notification:
+Retrieve approver, package PR details, trigger notification via SAP / Email / Agent channel. Inform user: "This request has been sent to [Approver] for approval."
+
+Error handling framework: categorize errors as user_input, master_data, policy_compliance, process_configuration, or technical_system. Severity: warning / blocking / escalation.
+
+SAP table reads: LFA1, LFB1, LFM1, EINA, EINE, EORD, EKKO, EKPO, MARA, MAKT, T023, T023T, T030, SKA1, SKB1, CSKS, AUFK, PRPS, PROJ, T16FS, T161F, T161G, T161H, T161S.
+SAP table writes: EBAN, EBKN, workflow/EBAN (approval decisions).
+
+--- AGENT 2: PR Status Agent (ascend_pr_status_agent) ---
+
+User asks: "What's the status of my PR?", "Show my purchase requests", "Status of PR 10012345."
+
+If PR number provided query EBAN directly and return: PR number, vendor, amount, status (from release fields), approver, submission date.
+If no PR number provided query EBAN by requestor, return top 10 sorted by creation date.
+
+Follow-up actions via natural language:
+- "Remind the approver" → trigger workflow/email reminder notification
+- "Cancel this PR" → validate PR not already approved or locked, update EBAN status to cancelled
+- "Edit this PR" → validate PR not locked, update EBAN/EBKN, re-run validation
+
+Error handling: PR not found, user not authorized, SAP query failure, PR already approved (block cancel), PR locked (block edit).
+
+SAP table reads: EBAN, EBKN, workflow logs.
+SAP table writes: EBAN (cancel/edit), workflow (reminder trigger).
+
+--- AGENT 3: PR Approval Agent (ascend_pr_approval_agent) ---
+
+Approver receives notification and can respond via natural language:
+"Approve PR 10012345" or "Reject PR 10012345 – reason: budget exceeded"
+
+Backend actions:
+Receive approval/rejection input. Validate approver identity against DoA tables. Validate authority (T16FS release strategy). Update SAP EBAN release fields. Trigger BUS2105 workflow. Notify requestor of decision.
+
+Error handling: unauthorized approver (block), PR already approved/rejected (inform status), invalid PR reference (ask clarification), SAP update failure (retry or escalate).
+
+Also handles DoA determination: calculate total PR value, identify org attributes (company code, cost center), evaluate T16FS/T161F/T161G/T161H/T161S release configuration, resolve approver chain.
+
+Backend error framework: unauthorized_approver, already_processed, invalid_reference, sap_update_failure.
+
+SAP table reads: EBAN (release fields), T16FS, T161F, T161G, T161H, T161S, workflow logs.
+SAP table writes: EBAN (release decision), BUS2105 workflow trigger, notification.
+
+=== END TRANSCRIPT ===
+
+DEPLOYMENT TARGET: Copilot Studio native topics + Power Automate flows with SAP ERP connector
+CUSTOMER FOLDER: customers/ascend/
+OUTPUT FOLDER: customers/ascend/agents/

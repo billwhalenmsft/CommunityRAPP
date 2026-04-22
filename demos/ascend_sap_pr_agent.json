@@ -1,0 +1,135 @@
+{
+  "agent": {
+    "id": "ascend_sap_pr_agent",
+    "name": "Ascend SAP PR Agent",
+    "version": "1.0.0",
+    "category": "manufacturing",
+    "icon": "fa-industry",
+    "description": "Conversational SAP ECC 6.0 Purchase Requisition lifecycle agent for Ascend Performance Materials. Supports PR creation, approval, cancellation, status-check, and vendor lookup — powered by Dataverse (demo) or live SAP ERP connector (production).",
+    "tokens": 420,
+    "author": "Microsoft Mfg CoE",
+    "created": "2026-04-21",
+    "updated": "2026-04-21",
+    "customer": "Ascend Performance Materials",
+    "sap_bapis": ["BAPI_PR_CREATE", "BAPI_PR_CHANGE", "BAPI_REQUISITION_GETDETAIL", "RFC_READ_TABLE"],
+    "sap_tables": ["EBAN", "EBKN", "LFA1", "T023", "SKA1", "CSKS", "EKKO", "T16FS"]
+  },
+  "metadata": {
+    "name": "AscendSAPPR",
+    "description": "SAP Purchase Requisition lifecycle management for Ascend Performance Materials.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["create_pr", "approve_pr", "reject_pr", "cancel_pr", "get_pr_status", "list_my_prs", "vendor_lookup", "send_reminder"],
+          "description": "The PR action to perform"
+        },
+        "pr_number": { "type": "string", "description": "SAP PR number (BANFN)" },
+        "vendor_name": { "type": "string" },
+        "amount": { "type": "number" },
+        "description": { "type": "string" }
+      },
+      "required": ["action"]
+    }
+  },
+  "scripted_demo": {
+    "id": "ascend_sap_pr_demo",
+    "name": "Ascend SAP PR Lifecycle Demo",
+    "duration": "8 min",
+    "persona": "Sarah Chen, Procurement Manager at Ascend Performance Materials",
+    "context": "Ascend is a global chemicals manufacturer. Sarah needs to procure a new industrial compressor from a vetted SAP vendor. The demo walks through the full SAP PR lifecycle — vendor lookup, PR creation with DoA approval routing, status check, and approval — all via natural language in Microsoft Teams.",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Introduction",
+        "user_prompt": "Hi, I'm Sarah from Procurement at Ascend. Can you help me raise a purchase requisition for some new equipment?",
+        "agent_response": "**Hello Sarah! 👋 I'm the Ascend SAP Procurement Assistant.**\n\nI can help you with the full Purchase Requisition lifecycle in SAP ECC 6.0:\n\n📋 **What I can do:**\n- 🔍 Look up approved SAP vendors (LFA1/LFB1)\n- ✏️ Create a PR — I'll auto-route to the right approver based on your DoA level\n- ✅ Approve or reject PRs in your queue\n- 📊 Check PR status (EBAN)\n- ❌ Cancel or edit open PRs\n- 🔔 Send reminders to approvers\n\nLet's get started! **What equipment do you need, and roughly what's the budget?**",
+        "talking_points": [
+          "Note the native Teams interface — no SAP GUI needed",
+          "Agent understands SAP terminology (EBAN, LFA1, DoA) automatically",
+          "Available 24/7, responds in seconds vs. navigating SAP ME51N transaction"
+        ]
+      },
+      {
+        "step": 2,
+        "title": "Vendor Lookup",
+        "user_prompt": "I need an industrial compressor for our Texas City plant. Budget is around $85,000. Can you check if Siemens is an approved vendor?",
+        "agent_response": "🔍 **Searching SAP vendor master (LFA1/LFB1/LFM1)...**\n\n✅ **Siemens AG** is an approved vendor:\n\n| Field | Value |\n|-------|-------|\n| **Vendor ID (LIFNR)** | 1000001 |\n| **Name** | Siemens AG |\n| **Company Code** | 1000 (Ascend US) |\n| **Purchasing Org** | 1000 |\n| **Currency** | USD |\n| **Status** | ✅ Active — no purchasing block |\n\n> 📌 *Demo: Data from Dataverse `ascend_sapvendor` table, emulating SAP LFA1/LFB1/LFM1. In production, queries live SAP via RFC_READ_TABLE.*\n\n**Ready to create the PR?** I'll need:\n- Item description\n- Material group / category code\n- GL account\n- Cost center\n- Payment cadence (one-time, monthly, quarterly, yearly)",
+        "talking_points": [
+          "Vendor lookup emulates SAP LFA1/LFB1/LFM1 — same data model as live SAP",
+          "Checks purchasing block (SPERR/SPERM) automatically",
+          "In production: replaces SAP GUI vendor search (ME1M transaction)"
+        ]
+      },
+      {
+        "step": 3,
+        "title": "PR Creation with DoA Routing",
+        "user_prompt": "Great, let's create it. Item: Industrial Air Compressor - 250HP, category code 05 (Machinery), GL account 640010, cost center CC1001, one-time payment of $85,000.",
+        "agent_response": "⚙️ **Creating SAP Purchase Requisition...**\n\nRunning pre-flight checks:\n✅ Cost center CC1001 validated (CSKS)\n✅ GL account 640010 confirmed (SKA1)\n✅ DoA level calculated: **$85,000 → L2 Approval required**\n✅ Contract match found: Framework agreement **4500012345** (Siemens, Machinery)\n\n---\n\n**✅ PR Created Successfully!**\n\n| Field | Value |\n|-------|-------|\n| **PR Number (BANFN)** | 1002604210 |\n| **Item** | Industrial Air Compressor - 250HP |\n| **Vendor** | Siemens AG (1000001) |\n| **Total Value** | $85,000.00 |\n| **Framework Contract** | 4500012345 |\n| **GL Account** | 640010 |\n| **Cost Center** | CC1001 |\n| **Status** | 🟡 Pending Approval |\n| **Assigned Approver** | **Michael Torres** (L2 DoA) |\n\n> 📌 *Demo: Written to Dataverse `ascend_sappurchaserequisition` (EBAN) + `ascend_sappraccountassignment` (EBKN). In production: BAPI_PR_CREATE writes to SAP EBAN + EBKN.*\n\n**Michael Torres has been notified.** Want me to send him a reminder, or check the status later?",
+        "talking_points": [
+          "DoA routing is automatic — no manual approver lookup in SAP T16FS",
+          "Framework contract matching happens in real-time (EKKO)",
+          "Both EBAN and EBKN records created in one conversational turn",
+          "Approver notification built-in — replaces manual email chase"
+        ]
+      },
+      {
+        "step": 4,
+        "title": "Status Check",
+        "user_prompt": "Can you check the status of PR 1002604210?",
+        "agent_response": "📊 **PR Status — SAP EBAN Lookup**\n\n| Field | Value |\n|-------|-------|\n| **PR Number** | 1002604210 |\n| **Description** | Industrial Air Compressor - 250HP |\n| **Vendor** | Siemens AG |\n| **Value** | $85,000.00 |\n| **Created** | April 21, 2026 |\n| **Status** | 🟡 **Pending L2 Approval** |\n| **Approver** | Michael Torres |\n| **Contract** | 4500012345 |\n\n> 📌 *Demo: Real-time read from Dataverse `ascend_sappurchaserequisition`. In production: RFC_READ_TABLE / BAPI_REQUISITION_GETDETAIL on EBAN.*\n\nStill waiting on Michael. Want me to **send him a reminder**?",
+        "talking_points": [
+          "Real-time status — no SAP GUI ME53N transaction needed",
+          "Works from mobile via Teams",
+          "Links to contract and approver in one response"
+        ]
+      },
+      {
+        "step": 5,
+        "title": "Send Approval Reminder",
+        "user_prompt": "Yes, please send Michael a reminder.",
+        "agent_response": "🔔 **Approval Reminder Sent**\n\n| Field | Value |\n|-------|-------|\n| **To** | Michael Torres (michael.torres@ascend.com) |\n| **Subject** | Action Required: PR 1002604210 Awaiting L2 Approval |\n| **PR Value** | $85,000.00 — Industrial Air Compressor |\n| **SLA** | Response required within 48 hours |\n\n> 📌 *Demo: Emulates SAP BUS2105 workflow reminder (SWI_CREATE_VIA_INTERNET). In production: re-triggers SAP workflow work item or sends via Exchange.*\n\n✅ Michael has been notified. I'll track this for you — want me to **escalate to his manager after 48 hours** if still open?",
+        "talking_points": [
+          "Automated reminder replaces manual follow-up emails",
+          "Emulates SAP BUS2105 workflow notification pattern",
+          "Escalation paths configurable — no custom ABAP needed"
+        ]
+      },
+      {
+        "step": 6,
+        "title": "Approval (Approver View)",
+        "user_prompt": "I'm Michael Torres. I've reviewed PR 1002604210 — looks good, I'll approve it.",
+        "agent_response": "✅ **PR Approved — SAP EBAN Updated**\n\n| Field | Value |\n|-------|-------|\n| **PR Number** | 1002604210 |\n| **Action** | ✅ **Approved** by Michael Torres |\n| **Approval Level** | L2 DoA |\n| **Timestamp** | April 21, 2026 18:07 UTC |\n| **New Status** | 🟢 **Approved — Ready for PO** |\n\n> 📌 *Demo: Dataverse `ascend_sappurchaserequisition.ascend_frgst` updated to 100001 (Approved). In production: BAPI_PR_CHANGE updates SAP EBAN release indicator (FRGST).*\n\n**Sarah Chen has been notified** — her PR is approved and ready for PO conversion (ME21N / automatic via output type).\n\n🎉 **Full PR lifecycle complete in under 3 minutes — without opening SAP GUI once.**",
+        "talking_points": [
+          "Approver can act from Teams without SAP access",
+          "FRGST (release indicator) updated in real-time",
+          "Requester auto-notified — closes the loop",
+          "Key value prop: SAP PR lifecycle in natural language, mobile-friendly, 24/7"
+        ]
+      }
+    ],
+    "closing_value_props": [
+      "**Time saved:** PR lifecycle from 45 min (SAP GUI) to under 5 min (Teams chat)",
+      "**No SAP GUI training:** Procurement staff use natural language",
+      "**Mobile-ready:** Full PR management from Teams on any device",
+      "**Auto-compliance:** DoA routing, vendor validation, contract matching — automatic",
+      "**Production path:** Swap Dataverse connector for SAP ERP connector — same flows, same bot",
+      "**Extensible:** Add GR/IR matching, invoice reconciliation, spend analytics in Phase 2"
+    ],
+    "objection_handlers": [
+      {
+        "objection": "We already have SAP Fiori for self-service",
+        "response": "Fiori still requires SAP authentication and training. This runs in Teams where procurement staff already live — no context switch, no VPN, works on mobile."
+      },
+      {
+        "objection": "How do we handle the SAP integration in production?",
+        "response": "The Power Automate flows use the SAP ERP connector with on-premises data gateway. We swap the Dataverse actions for SAP connector actions — same flow structure, same bot, no Copilot Studio changes needed."
+      },
+      {
+        "objection": "What about audit trail?",
+        "response": "Every action writes to Dataverse with timestamp and user GUID. In production, SAP's standard change documents (CDHDR/CDPOS) provide the audit trail. We can surface both in the bot."
+      }
+    ]
+  }
+}

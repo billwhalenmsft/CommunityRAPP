@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ascend_sapreleasestrategy — Emulates SAP T16FS/T161F/T161G/T161H/T161S (DoA / Release Strategy) -->
+<Entity>
+  <Name LocalizedName="SAP Release Strategy / DoA (Demo)" OriginalName="ascend_sapreleasestrategy">ascend_sapreleasestrategy</Name>
+  <EntityInfo>
+    <entity Name="ascend_sapreleasestrategy">
+      <LocalizedNames><LocalizedName description="SAP Release Strategy / DoA (Demo)" languagecode="1033" /></LocalizedNames>
+      <LocalizedCollectionNames><LocalizedCollectionName description="SAP Release Strategies / DoA (Demo)" languagecode="1033" /></LocalizedCollectionNames>
+      <Descriptions><Description description="Emulates SAP ECC 6.0 release strategy tables T16FS, T161F, T161G, T161H, T161S for Delegation of Authority (DoA) logic. DEMO DATA ONLY." languagecode="1033" /></Descriptions>
+      <attributes>
+        <attribute PhysicalName="ascend_sapreleasestrategyid"><Type>primarykey</Type><Name>ascend_sapreleasestrategyid</Name><LogicalName>ascend_sapreleasestrategyid</LogicalName></attribute>
+        <!-- T16FS.FRGGR — Release group -->
+        <attribute PhysicalName="ascend_frggr"><Type>nvarchar</Type><Name>ascend_frggr</Name><MaxLength>2</MaxLength><LocalizedNames><LocalizedName description="Release Group (FRGGR)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- T16FS.FRGST — Release strategy -->
+        <attribute PhysicalName="ascend_frgst"><Type>nvarchar</Type><Name>ascend_frgst</Name><MaxLength>2</MaxLength><LocalizedNames><LocalizedName description="Release Strategy (FRGST)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- DoA level -->
+        <attribute PhysicalName="ascend_doalevel"><Type>nvarchar</Type><Name>ascend_doalevel</Name><MaxLength>5</MaxLength><LocalizedNames><LocalizedName description="DoA Level" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Approver role description -->
+        <attribute PhysicalName="ascend_approverrole"><Type>nvarchar</Type><Name>ascend_approverrole</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Approver Role" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Approver user ID -->
+        <attribute PhysicalName="ascend_approverid"><Type>nvarchar</Type><Name>ascend_approverid</Name><MaxLength>20</MaxLength><LocalizedNames><LocalizedName description="Approver User ID" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Approver name -->
+        <attribute PhysicalName="ascend_approvername"><Type>nvarchar</Type><Name>ascend_approvername</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Approver Name" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Backup approver -->
+        <attribute PhysicalName="ascend_backupapproverid"><Type>nvarchar</Type><Name>ascend_backupapproverid</Name><MaxLength>20</MaxLength><LocalizedNames><LocalizedName description="Backup Approver ID" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Min value threshold -->
+        <attribute PhysicalName="ascend_minthreshold"><Type>money</Type><Name>ascend_minthreshold</Name><LocalizedNames><LocalizedName description="Min Value Threshold" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Max value threshold -->
+        <attribute PhysicalName="ascend_maxthreshold"><Type>money</Type><Name>ascend_maxthreshold</Name><LocalizedNames><LocalizedName description="Max Value Threshold" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Company code -->
+        <attribute PhysicalName="ascend_bukrs"><Type>nvarchar</Type><Name>ascend_bukrs</Name><MaxLength>4</MaxLength><LocalizedNames><LocalizedName description="Company Code (BUKRS)" languagecode="1033" /></LocalizedNames></attribute>
+        <attribute PhysicalName="ascend_datasource"><Type>nvarchar</Type><Name>ascend_datasource</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Data Source" languagecode="1033" /></LocalizedNames><DefaultValue>SAP ECC 6.0 (Demo via Dataverse)</DefaultValue></attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

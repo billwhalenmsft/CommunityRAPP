@@ -1,0 +1,10 @@
+ascend_saknr,ascend_bukrs,ascend_txt20,ascend_txt50,ascend_xspeb,ascend_ktoks,ascend_datasource,ascend_demodisclaimer
+612345,1000,IT Software,IT Software & Subscriptions Expense,false,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP SKA1/SKB1 GL account master. Not connected to production SAP.
+612100,1000,IT Hardware,IT Hardware Capital & Expense,false,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP SKA1/SKB1 GL account master. Not connected to production SAP.
+620000,1000,IT Services,Information Technology Services,false,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP SKA1/SKB1 GL account master. Not connected to production SAP.
+625000,1000,Consulting,Professional & Consulting Services,false,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP SKA1/SKB1 GL account master. Not connected to production SAP.
+630000,1000,Maintenance,Maintenance Repair & Operations,false,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP SKA1/SKB1 GL account master. Not connected to production SAP.
+640000,1000,Marketing,Marketing & Advertising Expense,false,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP SKA1/SKB1 GL account master. Not connected to production SAP.
+650000,1000,Facilities,Facilities & Building Services,false,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP SKA1/SKB1 GL account master. Not connected to production SAP.
+660000,1000,Travel,Travel & Entertainment Expense,false,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP SKA1/SKB1 GL account master. Not connected to production SAP.
+999001,1000,BLOCKED GL,DO NOT USE — Blocked Account,true,KOSTEN,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Deliberately blocked to demonstrate GL validation error handling.

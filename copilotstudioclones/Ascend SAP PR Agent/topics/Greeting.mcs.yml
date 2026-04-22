@@ -1,0 +1,38 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SendActivity
+      id: welcomeMessage
+      activity:
+        text: >-
+          👋 **Welcome to the Ascend SAP Procurement Assistant!**
+
+
+          I manage your full **SAP ECC 6.0 Purchase Requisition** lifecycle —
+          directly from Microsoft Teams. No SAP GUI needed.
+
+
+          Here's what I can do:
+
+          - 📋 **Create a PR** — raise a new purchase requisition in SAP
+
+          - 📊 **Check PR status** — look up any PR by number (BANFN)
+
+          - ✅ **Approve or reject** — act on PRs in your approval queue
+
+          - ❌ **Cancel a PR** — cancel open requisitions
+
+          - 🔍 **Vendor lookup** — check if a supplier is approved in SAP (LFA1)
+
+          - 🔔 **Send reminders** — follow up on pending approvals
+
+
+          **Try saying:**
+
+          *"I need to raise a PR for $50K of industrial equipment"*
+
+          *"Show me my pending approvals"*
+
+          *"What's the status of PR 1002604210?"*

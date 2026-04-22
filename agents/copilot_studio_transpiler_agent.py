@@ -76,6 +76,73 @@ CONNECTOR_MAPPINGS = {
             "send_email": "SendEmail",
             "get_emails": "GetEmails"
         }
+    },
+    "sap_ecc": {
+        "connector_id": "shared_sap",
+        "display_name": "SAP ERP",
+        "note": "SAP ECC 6.0 integration via Power Automate SAP ERP connector. "
+                "Requires SAP on-premises data gateway or SAP BTP connectivity.",
+        "tables": {
+            # Vendor master
+            "LFA1":  "General vendor master data",
+            "LFB1":  "Vendor master (company code)",
+            "LFM1":  "Vendor master (purchasing org)",
+            # Purchasing master data
+            "EINA":  "Purchasing info record (general)",
+            "EINE":  "Purchasing info record (purchasing org)",
+            "EORD":  "Source list",
+            "EKKO":  "Purchasing document header (contracts/agreements)",
+            "EKPO":  "Purchasing document item",
+            # Material/category
+            "MARA":  "General material data",
+            "MAKT":  "Material descriptions",
+            "T023":  "Material groups",
+            "T023T": "Material group descriptions",
+            # PR create/write
+            "EBAN":  "Purchase requisition items (read & write)",
+            "EBKN":  "PR account assignment (read & write)",
+            # GL and accounting
+            "T030":  "Account determination",
+            "SKA1":  "G/L account master (chart of accounts)",
+            "SKB1":  "G/L account master (company code)",
+            "CSKS":  "Cost center master data",
+            "AUFK":  "Order master data (internal orders)",
+            "PRPS":  "WBS element master data",
+            "PROJ":  "Project master data",
+            # Approval / release strategy
+            "T16FS": "Release strategies",
+            "T161F": "Release codes",
+            "T161G": "Release groups",
+            "T161H": "Release indicators",
+            "T161S": "Release strategies (purchasing documents)",
+        },
+        "workflows": {
+            "BUS2105": "Purchase requisition workflow object (approve/reject/notify)",
+        },
+        "operations": {
+            # Reads
+            "search_vendor":       "Read LFA1+LFB1+LFM1 — find and validate vendor",
+            "classify_item":       "Read MARA+MAKT+T023+T023T — map description to material group",
+            "check_agreement":     "Read EKKO+EKPO+EORD — find active contracts/source list",
+            "get_purchasing_info": "Read EINA+EINE — get vendor-material purchasing info",
+            "derive_gl":           "Read T030+SKA1+SKB1 — determine GL account",
+            "validate_cost_center":"Read CSKS — confirm cost center active",
+            "validate_order":      "Read AUFK — confirm internal order valid",
+            "validate_wbs":        "Read PRPS+PROJ — confirm WBS/project valid",
+            "get_release_strategy":"Read T16FS+T161F+T161G+T161H+T161S — DoA evaluation",
+            "get_pr_status":       "Read EBAN+EBKN — fetch PR details and status",
+            "list_prs_by_user":    "Read EBAN — filter by requestor, sort by date",
+            # Writes
+            "create_pr":           "Write EBAN+EBKN — create PR lines and account assignment",
+            "approve_pr":          "Write EBAN release fields + trigger BUS2105",
+            "reject_pr":           "Write EBAN release fields + trigger BUS2105",
+            "cancel_pr":           "Write EBAN — update status to cancelled",
+            "edit_pr":             "Write EBAN+EBKN — modify PR details",
+            "send_reminder":       "Trigger BUS2105 workflow + email notification",
+        },
+        "power_automate_flow_template": "sap_erp_connector",
+        "requires_gateway": True,
+        "auth_type": "basic_or_saml",
     }
 }
 

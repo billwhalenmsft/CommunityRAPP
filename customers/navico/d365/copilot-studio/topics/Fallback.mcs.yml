@@ -1,0 +1,35 @@
+kind: AdaptiveDialog
+modelDescription: Handles requests when the bot cannot understand the customer after multiple attempts.
+beginDialog:
+  kind: OnUnknownIntent
+  id: main
+  actions:
+    - kind: ConditionGroup
+      id: checkRetries
+      conditions:
+        - id: maxRetries
+          condition: =Global.FallbackCount >= 2
+          actions:
+            - kind: SendActivity
+              id: maxRetriesMessage
+              activity:
+                text:
+                  - "I'm sorry I haven't been able to help with that. Let me connect you with a Navico support specialist who can assist you directly."
+            - kind: TransferToAgent
+              id: fallbackTransfer
+              activity:
+                text: "Bot was unable to resolve the customer's request after multiple attempts. Please review the conversation transcript."
+              context:
+                EscalationReason: "Fallback - unable to resolve"
+
+      elseActions:
+        - kind: SetVariable
+          id: incrementRetries
+          variable: Global.FallbackCount
+          value: "=Global.FallbackCount + 1"
+
+        - kind: SendActivity
+          id: retryMessage
+          activity:
+            text:
+              - "I'm not sure I understood that. I can help with:\n\n• **Product troubleshooting** — describe your issue or give me a serial number\n• **Warranty check** — provide your serial number\n• **RMA request** — return, exchange, or repair\n• **Product registration** — register a new product\n• **Certification** — dealer/installer certification status\n\nCould you try rephrasing, or let me know which of these you need?"

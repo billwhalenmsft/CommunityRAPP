@@ -1,0 +1,27 @@
+{
+  "heroCases": [],
+  "activities": [],
+  "quickResponses": [
+    {
+      "id": "165dfec0-9c32-f111-88b4-7ced8dceb26a",
+      "title": "Navico — Platinum Expert Acknowledgment (Chat)"
+    },
+    {
+      "id": "195dfec0-9c32-f111-88b4-7ced8dceb26a",
+      "title": "Navico — Warranty Confirmed, Return Instructions (Email)"
+    },
+    {
+      "id": "6606fec0-9c32-f111-88b4-7c1e52143136",
+      "title": "Navico — Firmware Recovery Steps (Simrad NSX)"
+    },
+    {
+      "id": "a8eda0c1-9c32-f111-88b4-7c1e520a58a1",
+      "title": "Navico — RMA Exchange Approved, Next Steps"
+    },
+    {
+      "id": "1d5dfec0-9c32-f111-88b4-7ced8dceb26a",
+      "title": "Navico — Escalation to Technical Specialist"
+    }
+  ],
+  "knowledgeArticles": []
+}

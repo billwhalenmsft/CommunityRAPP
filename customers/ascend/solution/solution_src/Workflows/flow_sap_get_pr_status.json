@@ -1,0 +1,177 @@
+{
+  "metadata": {
+    "flowDisplayName": "Ascend: SAP Get PR Status (Demo \u2192 Dataverse)",
+    "description": "Reads PR status and list from Dataverse \u2014 emulating SAP EBAN + EBKN reads. In production, replace with SAP RFC_READ_TABLE / BAPI_REQUISITION_GETDETAIL calls.",
+    "sapTablesEmulated": [
+      "EBAN",
+      "EBKN"
+    ],
+    "demoMode": true
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Skills",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "get_by_number",
+                "list_by_user",
+                "get_pending_approvals"
+              ]
+            },
+            "pr_number": {
+              "type": "string"
+            },
+            "user_guid": {
+              "type": "string"
+            },
+            "approver_guid": {
+              "type": "string"
+            },
+            "status_filter": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "RouteByAction": {
+      "type": "Switch",
+      "expression": "@triggerBody()?['action']",
+      "cases": {
+        "get_by_number": {
+          "actions": {
+            "QueryPR_ByNumber_Emulates_EBAN": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "ascend_sappurchaserequisitions",
+                  "$filter": "ascend_banfn eq '@{triggerBody()?['pr_number']}'",
+                  "$select": "ascend_banfn,ascend_txz01,ascend_vendorname,ascend_netvalue,ascend_frgst,ascend_approvername,ascend_badat,ascend_contractnum,ascend_datasource"
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "description": "READ Dataverse (emulates SAP EBAN read by BANFN)"
+            }
+          },
+          "case": "get_by_number"
+        },
+        "list_by_user": {
+          "actions": {
+            "QueryPR_ByUser_Emulates_EBAN": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "ascend_sappurchaserequisitions",
+                  "$filter": "ascend_afnam eq '@{triggerBody()?['user_guid']}'",
+                  "$select": "ascend_banfn,ascend_txz01,ascend_vendorname,ascend_netvalue,ascend_frgst,ascend_approvername,ascend_badat,ascend_datasource",
+                  "$orderby": "ascend_badat desc",
+                  "$top": 10
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "description": "READ Dataverse (emulates SAP EBAN query by AFNAM requestor, sorted by BADAT)"
+            }
+          },
+          "case": "list_by_user"
+        },
+        "get_pending_approvals": {
+          "actions": {
+            "QueryPendingApprovals_Emulates_EBAN": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "ascend_sappurchaserequisitions",
+                  "$filter": "ascend_frgst eq 100000 and ascend_approverid eq '@{triggerBody()?['approver_guid']}'",
+                  "$select": "ascend_banfn,ascend_txz01,ascend_vendorname,ascend_netvalue,ascend_afnam,ascend_badat,ascend_datasource",
+                  "$orderby": "ascend_badat asc"
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "description": "READ Dataverse (emulates SAP EBAN query by release status FRGST=pending and approver)"
+            }
+          },
+          "case": "get_pending_approvals"
+        }
+      }
+    },
+    "RespondToCopilotStudio": {
+      "type": "Response",
+      "inputs": {
+        "statusCode": 200,
+        "body": {
+          "results": "@coalesce(outputs('QueryPR_ByNumber_Emulates_EBAN')?['body/value'], outputs('QueryPR_ByUser_Emulates_EBAN')?['body/value'], outputs('QueryPendingApprovals_Emulates_EBAN')?['body/value'], [])",
+          "sap_tables_emulated": [
+            "EBAN",
+            "EBKN"
+          ],
+          "data_source": "SAP ECC 6.0 (Demo via Dataverse)",
+          "demo_note": "DEMO: In production reads SAP EBAN release fields via RFC_READ_TABLE or BAPI_REQUISITION_GETDETAIL"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "schema": {
+          "type": "object",
+          "properties": {
+            "results": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ascend_banfn":       { "type": "string",  "title": "PR Number (BANFN)" },
+                  "ascend_txz01":       { "type": "string",  "title": "Description (TXZ01)" },
+                  "ascend_lifnr":       { "type": "string",  "title": "Vendor ID (LIFNR)" },
+                  "ascend_vendorname":  { "type": "string",  "title": "Vendor Name" },
+                  "ascend_netvalue":    { "type": "number",  "title": "Net Value" },
+                  "ascend_frgst":       { "type": "integer", "title": "Release Status (FRGST)" },
+                  "ascend_approvername":{ "type": "string",  "title": "Approver Name" },
+                  "ascend_approverid":  { "type": "string",  "title": "Approver ID" },
+                  "ascend_contractnum": { "type": "string",  "title": "Contract Number" },
+                  "ascend_badat":       { "type": "string",  "title": "Created Date (BADAT)" },
+                  "ascend_glaccount":   { "type": "string",  "title": "GL Account" },
+                  "ascend_matkl":       { "type": "string",  "title": "Material Group (MATKL)" }
+                }
+              },
+              "title": "PR Records"
+            },
+            "sap_tables_emulated": {
+              "type": "array",
+              "items": { "type": "string" },
+              "title": "SAP Tables Emulated"
+            },
+            "data_source": { "type": "string", "title": "Data Source" },
+            "demo_note":   { "type": "string", "title": "Demo Note" }
+          }
+        }
+      },
+      "runAfter": {
+        "RouteByAction": [
+          "Succeeded"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+mcs.metadata:
+  componentName: Greeting
+  description: This topic is triggered when the user greets the agent.
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Greeting
+    includeInOnSelectIntent: false
+    triggerQueries:
+      - Good afternoon
+      - Good morning
+      - Hello
+      - Hey
+      - Hi
+
+  actions:
+    - kind: SendActivity
+      id: sendMessage_abmysR
+      activity:
+        text:
+          - "Hello! Welcome to Navico Group Support. I can help with product troubleshooting, warranty checks, RMAs, product registration, and dealer certification. What can I help you with today?"
+        speak:
+          - Hello! Welcome to Navico Group Support. How can I help you today?
+
+    - kind: CancelAllDialogs
+      id: cancelAllDialogs_01At22

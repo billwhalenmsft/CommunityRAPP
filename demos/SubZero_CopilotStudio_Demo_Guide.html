@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copilot Studio Demo Guide — Sub-Zero</title>
+<style>
+  :root {
+    --sz-red: #C8102E;
+    --sz-dark: #1A1A1A;
+    --sz-mid: #2D2D2D;
+    --sz-silver: #E8E8E8;
+    --sz-gold: #C9A84C;
+    --ms-blue: #0078D4;
+    --ms-purple: #7B53C1;
+    --step1: #0078D4;
+    --step2: #00B4D8;
+    --step3: #7B53C1;
+    --step4: #C8102E;
+    --success: #107C10;
+    --warn: #C19C00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #111;
+    color: #f0f0f0;
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT WRAPPER ── */
+  .page-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  /* ── SIDE PANEL ── */
+  #prompt-panel {
+    width: 320px;
+    min-width: 320px;
+    background: #141414;
+    border-right: 1px solid #222;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+  }
+  #prompt-panel::-webkit-scrollbar { width: 5px; }
+  #prompt-panel::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+  .panel-header {
+    background: #1a1a1a;
+    border-bottom: 2px solid var(--sz-gold);
+    padding: 16px 18px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .panel-header h3 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--sz-gold);
+    font-weight: 700;
+  }
+  .panel-header p {
+    font-size: 0.72rem;
+    color: #666;
+    margin-top: 3px;
+  }
+
+  .panel-section {
+    border-bottom: 1px solid #1f1f1f;
+    padding: 14px 16px;
+  }
+  .panel-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .panel-step-dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    font-size: 0.68rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: white;
+  }
+  .dot1 { background: var(--step1); }
+  .dot2 { background: var(--step2); color: #000; }
+  .dot3 { background: var(--step3); }
+  .dot4 { background: var(--step4); }
+
+  .panel-section-title span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .prompt-chip {
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    border-radius: 7px;
+    padding: 9px 12px;
+    margin-bottom: 7px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+  }
+  .prompt-chip:hover { background: #252525; border-color: #444; }
+  .prompt-chip:hover .copy-hint { opacity: 1; }
+  .prompt-chip .chip-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .dot1 ~ .panel-section .chip-label,
+  .panel-section.s1 .chip-label { color: #60aaff; }
+
+  .panel-section.s1 .chip-label { color: #60aaff; }
+  .panel-section.s2 .chip-label { color: #5de0f5; }
+  .panel-section.s3 .chip-label { color: #c9a3f7; }
+  .panel-section.s4 .chip-label { color: #ff8a9a; }
+
+  .prompt-chip .chip-text {
+    font-size: 0.8rem;
+    color: #ddd;
+    line-height: 1.45;
+    font-style: italic;
+  }
+  .copy-hint {
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 0.65rem;
+    color: #555;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .copied-toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #107C10;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 9999;
+  }
+  .copied-toast.show { opacity: 1; }
+
+  .panel-tip {
+    margin: 8px 0 0;
+    font-size: 0.75rem;
+    color: #555;
+    line-height: 1.4;
+    padding: 7px 10px;
+    background: #181818;
+    border-radius: 6px;
+    border-left: 2px solid #2a2a2a;
+  }
+
+  .panel-footer {
+    padding: 14px 16px;
+    font-size: 0.72rem;
+    color: #444;
+    margin-top: auto;
+    border-top: 1px solid #1f1f1f;
+  }
+
+  /* ── MAIN CONTENT AREA ── */
+  .main-content {
+    flex: 1;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--sz-dark) 0%, #2a0a0f 60%, #1a1a1a 100%);
+    border-bottom: 3px solid var(--sz-red);
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .header-left h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+  }
+  .header-left h1 span { color: var(--sz-red); }
+  .header-left .subtitle {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #aaa;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+  .slide-badge {
+    background: var(--sz-red);
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .header-right .tenant {
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: #888;
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 24px 60px;
+  }
+
+  /* ── PRE-DEMO CHECKLIST ── */
+  .checklist-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-left: 4px solid var(--warn);
+    border-radius: 10px;
+    padding: 20px 28px;
+    margin-bottom: 36px;
+  }
+  .checklist-card h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--warn);
+    margin-bottom: 14px;
+  }
+  .check-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+  }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: #ccc;
+  }
+  .check-item::before {
+    content: "□";
+    font-size: 1.1rem;
+    color: var(--warn);
+    flex-shrink: 0;
+  }
+
+  /* ── STEP CARDS ── */
+  .step-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 28px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .step-card:nth-child(1) .step-header { border-left: 5px solid var(--step1); background: linear-gradient(90deg, #0a1929 0%, transparent 100%); }
+  .step-card:nth-child(2) .step-header { border-left: 5px solid var(--step2); background: linear-gradient(90deg, #001f2a 0%, transparent 100%); }
+  .step-card:nth-child(3) .step-header { border-left: 5px solid var(--step3); background: linear-gradient(90deg, #130e22 0%, transparent 100%); }
+  .step-card:nth-child(4) .step-header { border-left: 5px solid var(--step4); background: linear-gradient(90deg, #1f0008 0%, transparent 100%); }
+
+  .step-num {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .step-card:nth-child(1) .step-num { background: var(--step1); color: white; }
+  .step-card:nth-child(2) .step-num { background: var(--step2); color: #000; }
+  .step-card:nth-child(3) .step-num { background: var(--step3); color: white; }
+  .step-card:nth-child(4) .step-num { background: var(--step4); color: white; }
+
+  .step-title-block h2 { font-size: 1.1rem; font-weight: 700; color: #fff; }
+  .step-title-block .step-meta { font-size: 0.78rem; color: #888; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .step-time {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: #666;
+    white-space: nowrap;
+  }
+
+  .step-body { padding: 22px 28px; }
+
+  /* ── ACTION LIST ── */
+  .actions { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .actions li {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .action-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    background: #333;
+    color: #ccc;
+  }
+  .step-card:nth-child(1) .action-num { background: rgba(0,120,212,0.25); color: #60aaff; }
+  .step-card:nth-child(2) .action-num { background: rgba(0,180,216,0.25); color: #5de0f5; }
+  .step-card:nth-child(3) .action-num { background: rgba(123,83,193,0.25); color: #c9a3f7; }
+  .step-card:nth-child(4) .action-num { background: rgba(200,16,46,0.25); color: #ff8a9a; }
+
+  .action-content { flex: 1; }
+  .action-content strong { color: #fff; font-size: 0.95rem; display: block; margin-bottom: 3px; }
+  .action-content p { font-size: 0.85rem; color: #aaa; line-height: 1.5; }
+  .action-content .url {
+    display: inline-block;
+    margin-top: 6px;
+    background: #252525;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    color: #7dd3fc;
+    text-decoration: none;
+  }
+  .action-content .url:hover { background: #2d2d2d; border-color: var(--ms-blue); }
+
+  /* ── TALKING POINT ── */
+  .talking-point {
+    background: #111;
+    border: 1px solid #2d2d2d;
+    border-left: 3px solid var(--sz-gold);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 18px;
+    font-size: 0.85rem;
+    color: #bfa96a;
+    line-height: 1.55;
+  }
+  .talking-point .tp-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--sz-gold);
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  /* ── TIP / WARNING ── */
+  .tip, .warn-box {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border-radius: 8px;
+    padding: 11px 16px;
+    margin-top: 14px;
+    font-size: 0.83rem;
+    line-height: 1.5;
+  }
+  .tip { background: rgba(16,124,16,0.12); border: 1px solid rgba(16,124,16,0.3); color: #6fcf6f; }
+  .warn-box { background: rgba(201,156,0,0.1); border: 1px solid rgba(201,156,0,0.3); color: #e0c060; }
+  .tip .icon, .warn-box .icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── CONFIG TABLE ── */
+  .config-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 0.85rem;
+  }
+  .config-table th {
+    background: #252525;
+    color: #999;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 8px 14px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+  }
+  .config-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #222;
+    color: #ccc;
+    vertical-align: top;
+  }
+  .config-table tr:last-child td { border-bottom: none; }
+  .config-table .key { color: #fff; font-weight: 600; }
+  .config-table .val { font-family: 'Consolas', monospace; color: #7dd3fc; font-size: 0.82rem; }
+
+  /* ── SECTION DIVIDER ── */
+  .section-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #555;
+    margin: 6px 0 14px;
+    padding-left: 2px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 40px;
+    font-size: 0.78rem;
+    color: #444;
+    border-top: 1px solid #222;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 32px;
+  }
+  .prog-seg {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+  }
+  .prog-seg:nth-child(1) { background: var(--step1); }
+  .prog-seg:nth-child(2) { background: var(--step2); }
+  .prog-seg:nth-child(3) { background: var(--step3); }
+  .prog-seg:nth-child(4) { background: var(--step4); }
+
+  /* ── DEMO FLOW BADGES ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .flow-badge {
+    flex: 1;
+    min-width: 140px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #aaa;
+    position: relative;
+  }
+  .flow-badge .fb-num {
+    font-size: 1.2rem;
+    font-weight: 800;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .flow-badge:nth-child(1) .fb-num { color: var(--step1); }
+  .flow-badge:nth-child(2) .fb-num { color: var(--step2); }
+  .flow-badge:nth-child(3) .fb-num { color: var(--step3); }
+  .flow-badge:nth-child(4) .fb-num { color: var(--step4); }
+  .flow-arrow {
+    color: #444;
+    font-size: 1.2rem;
+    padding: 0 4px;
+  }
+
+  @media print {
+    body { background: white; color: black; }
+    header { background: #1a1a1a; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div id="copied-toast" class="copied-toast">Copied to clipboard ✓</div>
+
+<div class="page-layout">
+
+<!-- ══════════════════════════════════════════════
+     SIDE PANEL — PROMPTING GUIDE
+══════════════════════════════════════════════ -->
+<aside id="prompt-panel">
+  <div class="panel-header">
+    <h3>💬 Prompting Guide</h3>
+    <p>Click any prompt to copy it</p>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="panel-section s1">
+    <div class="panel-section-title">
+      <div class="panel-step-dot dot1">1</div>
+      <span>M365 Copilot — New Agent</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Agent Description Prompt</div>
+      <div class="chip-text">"Create an HR Self-Service agent that helps Sub-Zero employees find HR policies, check their PTO balance, and get answers about benefits and onboarding."</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Refine Name &amp; Persona</div>
+      <div class="chip-text">"Name this agent 'HR Assistant'. Make it friendly and professional. Its audience is Sub-Zero corporate employees."</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Conversation Starters</div>
+      <div class="chip-text">"Add these conversation starters: 'What's our PTO policy?', 'How do I enroll in benefits?', 'How do I submit an expense report?'"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="panel-tip">💡 Let Copilot auto-generate first — then refine. Shows the AI doing the work.</div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="panel-section s2">
+    <div class="panel-section-title">
+      <div class="panel-step-dot dot2">2</div>
+      <span>Open in Copilot Studio</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Orient Audience</div>
+      <div class="chip-text">"Notice everything we built in M365 Copilot came right over. Copilot Studio is where we go from prototype to production."</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="panel-tip">💡 No demo prompt needed here — this step is all clicks. Focus on narrating the UI layout.</div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="panel-section s3">
+    <div class="panel-section-title">
+      <div class="panel-step-dot dot3">3</div>
+      <span>Customize — SharePoint KB</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — PTO Policy</div>
+      <div class="chip-text">"How many PTO days do I get after 3 years of service?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — 401k</div>
+      <div class="chip-text">"What is the company 401k match at Sub-Zero?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — Parental Leave</div>
+      <div class="chip-text">"How many weeks of parental leave do we get and when does it start?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — Harassment Reporting</div>
+      <div class="chip-text">"How do I report workplace harassment? Is there an anonymous option?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — New Employee</div>
+      <div class="chip-text">"I'm a new employee starting next week. What do I need to complete before my first day?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — Expense Report</div>
+      <div class="chip-text">"What's the per diem rate for meals when traveling to New York City?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Agent Instructions (paste in Studio)</div>
+      <div class="chip-text">"You are HR Assistant for Sub-Zero. Answer questions using only the provided HR documents. Be concise, friendly, and always cite which policy you're referencing."</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="panel-tip">💡 Use the PTO or 401k question — the answer pulls specific numbers from the docs, which impresses audiences.</div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="panel-section s4">
+    <div class="panel-section-title">
+      <div class="panel-step-dot dot4">4</div>
+      <span>New Agent — Sub-Zero.com</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Agent Description Prompt</div>
+      <div class="chip-text">"Create a customer assistant for Sub-Zero Wolf Group that helps customers explore appliance products, compare models, find specifications, and locate dealers."</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — Product Range</div>
+      <div class="chip-text">"What refrigerator models does Sub-Zero make and what's the difference between the series?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — Designer vs Classic</div>
+      <div class="chip-text">"What's the difference between the Designer and Classic series Sub-Zero refrigerators?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — Wine Storage</div>
+      <div class="chip-text">"Does Sub-Zero make a wine storage unit? What sizes are available?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Test Q — Find Dealer</div>
+      <div class="chip-text">"Where can I find an authorized Sub-Zero dealer or showroom?"</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="prompt-chip" onclick="copyPrompt(this)">
+      <div class="chip-label">Closing Talking Point</div>
+      <div class="chip-text">"Two agents. Two completely different use cases. Zero code written. That's what Microsoft Copilot Studio delivers for Sub-Zero."</div>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <div class="panel-tip">💡 End with the publish screen — show Teams, Website embed, and M365 Copilot channels side-by-side. One agent, everywhere.</div>
+  </div>
+
+  <div class="panel-footer">Click any card to copy prompt text instantly</div>
+</aside>
+
+<div class="main-content">
+
+<!-- ══════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════ -->
+<header>
+  <div class="header-left">
+    <h1>Copilot Studio <span>Live Demo</span></h1>
+    <div class="subtitle">Sub-Zero Wolf Group &nbsp;·&nbsp; Executive Pitch</div>
+  </div>
+  <div class="header-right">
+    <div class="slide-badge">▶ Starts after Slide 41</div>
+    <div class="tenant">Tenant: D365DemoTSCE30330346.onmicrosoft.com</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════════ -->
+<main>
+
+  <!-- Flow overview -->
+  <div class="flow-row">
+    <div class="flow-badge"><span class="fb-num">1</span>M365 Copilot<br>New Agent</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-badge"><span class="fb-num">2</span>Open in<br>Copilot Studio</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-badge"><span class="fb-num">3</span>Customize &<br>SharePoint KB</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-badge"><span class="fb-num">4</span>New Agent<br>from Sub-Zero.com</div>
+  </div>
+
+  <!-- ╔══════════════╗
+       PRE-DEMO CHECK
+       ╚══════════════╝ -->
+  <div class="checklist-card">
+    <h2>⚠ Pre-Demo Checklist — Verify Before You Go Live</h2>
+    <div class="check-grid">
+      <div class="check-item">Signed in to demo tenant in browser</div>
+      <div class="check-item">M365 Copilot tab open &amp; ready</div>
+      <div class="check-item">Copilot Studio tab pre-loaded</div>
+      <div class="check-item">SharePoint HR docs uploaded to library</div>
+      <div class="check-item">www.subzero.com loads in browser</div>
+      <div class="check-item">PPT at Slide 41, presenter view on</div>
+      <div class="check-item">Screen share set to correct monitor</div>
+      <div class="check-item">Notifications silenced / DND on</div>
+    </div>
+  </div>
+
+  <div class="progress-row">
+    <div class="prog-seg"></div>
+    <div class="prog-seg"></div>
+    <div class="prog-seg"></div>
+    <div class="prog-seg"></div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════════╗
+       STEP 1 — M365 Copilot / New Agent
+       ╚══════════════════════════════════════════╝ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div class="step-title-block">
+        <h2>Create HR Self-Service Agent in M365 Copilot</h2>
+        <div class="step-meta">Microsoft 365 Copilot &nbsp;·&nbsp; Agents Tab</div>
+      </div>
+      <div class="step-time">~3 min</div>
+    </div>
+    <div class="step-body">
+      <ul class="actions">
+        <li>
+          <div class="action-num">1</div>
+          <div class="action-content">
+            <strong>Open M365 Copilot</strong>
+            <p>Navigate to Microsoft 365 Copilot in your browser or switch to the pre-loaded tab.</p>
+            <a class="url" href="https://m365.cloud.microsoft/copilot" target="_blank">https://m365.cloud.microsoft/copilot</a>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">2</div>
+          <div class="action-content">
+            <strong>Click "Agents" in the right sidebar</strong>
+            <p>In the Copilot chat interface, find the <strong>Agents</strong> icon or panel on the right side.</p>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">3</div>
+          <div class="action-content">
+            <strong>Click "+ New Agent"</strong>
+            <p>This opens the M365 Copilot agent creation wizard — a lightweight, no-code experience.</p>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">4</div>
+          <div class="action-content">
+            <strong>Describe the agent to Copilot</strong>
+            <p>In the chat prompt, type a description like:</p>
+            <a class="url" style="color:#a8d8a8; cursor:default; text-decoration:none;">"Create an HR Self-Service agent that helps Sub-Zero employees find HR policies, check their PTO balance, and get answers about benefits."</a>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">5</div>
+          <div class="action-content">
+            <strong>Review the auto-generated agent config</strong>
+            <p>Copilot will suggest a name, icon, description, and starter questions. Point out how fast this is — from idea to draft agent in seconds.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="talking-point">
+        <div class="tp-label">💬 Talking Point</div>
+        "What you're seeing is the power of Microsoft 365 Copilot — any employee or IT admin can spin up an agent in minutes, no development skills required. Sub-Zero employees could have a personal HR assistant that knows your exact policies, not generic internet answers."
+      </div>
+
+      <div class="tip">
+        <span class="icon">✅</span>
+        <span>The M365 Copilot wizard is great for the "wow" moment — it shows non-technical executives how approachable agent creation is before you dive into Studio.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════════╗
+       STEP 2 — Open in Copilot Studio
+       ╚══════════════════════════════════════════╝ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div class="step-title-block">
+        <h2>Open in Copilot Studio</h2>
+        <div class="step-meta">Copilot Studio &nbsp;·&nbsp; Agent Editor</div>
+      </div>
+      <div class="step-time">~1 min</div>
+    </div>
+    <div class="step-body">
+      <ul class="actions">
+        <li>
+          <div class="action-num">1</div>
+          <div class="action-content">
+            <strong>Click "Open in Copilot Studio"</strong>
+            <p>In the M365 Copilot agent wizard, find the <strong>"Open in Copilot Studio"</strong> button (typically in the top-right or bottom of the panel). Click it.</p>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">2</div>
+          <div class="action-content">
+            <strong>Agent opens in Copilot Studio editor</strong>
+            <p>The agent you just created is now in Copilot Studio — fully editable. The settings, topics, and knowledge from M365 Copilot carry over automatically.</p>
+            <a class="url" href="https://copilotstudio.microsoft.com" target="_blank">https://copilotstudio.microsoft.com</a>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">3</div>
+          <div class="action-content">
+            <strong>Pause and orient the audience</strong>
+            <p>Point out the key sections of the Studio UI: <strong>Overview</strong>, <strong>Topics</strong>, <strong>Knowledge</strong>, <strong>Actions</strong>, and <strong>Publish</strong>.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="talking-point">
+        <div class="tp-label">💬 Talking Point</div>
+        "Copilot Studio is where the real customization happens. Think of M365 Copilot as the fast-launch experience — and Copilot Studio as the full control panel. One click takes you from 'good enough' to 'enterprise ready.' And everything stays connected."
+      </div>
+
+      <div class="tip">
+        <span class="icon">✅</span>
+        <span>If the browser pop-up is blocked, open Copilot Studio in the pre-loaded tab and navigate to the agent manually via <strong>Agents</strong> list.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════════╗
+       STEP 3 — Customize in Copilot Studio
+       ╚══════════════════════════════════════════╝ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div class="step-title-block">
+        <h2>Customize Agent — SharePoint Knowledge &amp; Settings</h2>
+        <div class="step-meta">Copilot Studio &nbsp;·&nbsp; Knowledge &amp; Topics</div>
+      </div>
+      <div class="step-time">~5 min</div>
+    </div>
+    <div class="step-body">
+
+      <div class="section-label">Knowledge Source — SharePoint</div>
+      <ul class="actions">
+        <li>
+          <div class="action-num">1</div>
+          <div class="action-content">
+            <strong>Go to "Knowledge" tab → "+ Add knowledge"</strong>
+            <p>In the left nav, click <strong>Knowledge</strong>, then <strong>+ Add knowledge source</strong>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">2</div>
+          <div class="action-content">
+            <strong>Choose "SharePoint" as the source</strong>
+            <p>Select SharePoint from the knowledge source options.</p>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">3</div>
+          <div class="action-content">
+            <strong>Paste the SharePoint library URL</strong>
+            <p>Enter the HR Policy library URL and click Add:</p>
+            <a class="url" href="https://d365demotsce30330346.sharepoint.com/sites/HumanResources/HR%20Policy%20and%20Benefit%20Documentation" target="_blank">https://d365demotsce30330346.sharepoint.com/sites/HumanResources/<br>HR Policy and Benefit Documentation</a>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">4</div>
+          <div class="action-content">
+            <strong>Wait for indexing confirmation</strong>
+            <p>Copilot Studio will confirm the source is connected. The 7 HR documents (Employee Handbook, PTO Policy, Benefits Guide, etc.) are now the agent's knowledge base.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="section-label" style="margin-top:20px">Agent Customizations to Demo</div>
+      <table class="config-table">
+        <tr>
+          <th>Setting</th><th>Recommended Value</th><th>Why It Matters</th>
+        </tr>
+        <tr>
+          <td class="key">Agent Name</td>
+          <td class="val">HR Self-Service</td>
+          <td>Visible to end users in Teams / M365 Copilot</td>
+        </tr>
+        <tr>
+          <td class="key">Description</td>
+          <td class="val">Your Sub-Zero HR assistant</td>
+          <td>Helps users understand the agent's purpose</td>
+        </tr>
+        <tr>
+          <td class="key">Instructions</td>
+          <td class="val">Answer HR policy questions using company docs. Be concise and friendly.</td>
+          <td>Grounds the agent on company data, not the internet</td>
+        </tr>
+        <tr>
+          <td class="key">Knowledge — SharePoint</td>
+          <td class="val">HR Policy and Benefit Documentation library</td>
+          <td>The 7 HR docs we uploaded become the source of truth</td>
+        </tr>
+        <tr>
+          <td class="key">Conversation starters</td>
+          <td class="val">"What's our PTO policy?" / "How do I submit an expense?"</td>
+          <td>Onboards users instantly in the chat</td>
+        </tr>
+      </table>
+
+      <div class="section-label" style="margin-top:20px">Test the Agent</div>
+      <ul class="actions">
+        <li>
+          <div class="action-num">5</div>
+          <div class="action-content">
+            <strong>Open the Test panel (right side)</strong>
+            <p>Click <strong>Test</strong> in the top right to open the live chat test panel.</p>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">6</div>
+          <div class="action-content">
+            <strong>Ask a question from the HR docs</strong>
+            <p>Try one of these demo questions for maximum impact:</p>
+            <a class="url" style="color:#a8d8a8; cursor:default;">"How many PTO days do I get after 3 years?"</a><br>
+            <a class="url" style="margin-top:6px; color:#a8d8a8; cursor:default;">"What's the company match on the 401k?"</a><br>
+            <a class="url" style="margin-top:6px; color:#a8d8a8; cursor:default;">"How do I report workplace harassment?"</a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="talking-point">
+        <div class="tp-label">💬 Talking Point</div>
+        "Every answer the agent gives comes directly from Sub-Zero's own HR documents — not the internet, not a generic LLM answer. If you update the policy doc in SharePoint, the agent automatically reflects the change. No retraining, no IT ticket, no delay."
+      </div>
+
+      <div class="warn-box">
+        <span class="icon">⚠</span>
+        <span>If the SharePoint source shows a permissions error during the demo, skip to the test panel and type a pre-tested question. The agent may still work from its base instructions for the demo.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════════╗
+       STEP 4 — New Agent from Sub-Zero.com
+       ╚══════════════════════════════════════════╝ -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div class="step-title-block">
+        <h2>Create a New Agent from Scratch — Sub-Zero.com</h2>
+        <div class="step-meta">Copilot Studio &nbsp;·&nbsp; Website Knowledge Source</div>
+      </div>
+      <div class="step-time">~4 min</div>
+    </div>
+    <div class="step-body">
+      <ul class="actions">
+        <li>
+          <div class="action-num">1</div>
+          <div class="action-content">
+            <strong>Go back to Copilot Studio home → "+ New agent"</strong>
+            <p>Click the <strong>Agents</strong> breadcrumb or home icon, then click <strong>+ New agent</strong> to start fresh.</p>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">2</div>
+          <div class="action-content">
+            <strong>Describe the agent in the wizard</strong>
+            <p>In the description box, type:</p>
+            <a class="url" style="color:#a8d8a8; cursor:default;">"A customer assistant for Sub-Zero Wolf that helps customers explore products, find specifications, and locate dealers."</a>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">3</div>
+          <div class="action-content">
+            <strong>Add www.subzero.com as a knowledge source</strong>
+            <p>Under <strong>Knowledge</strong>, click <strong>+ Add</strong>, choose <strong>Public website</strong>, and enter:</p>
+            <a class="url" href="https://www.subzero.com" target="_blank">https://www.subzero.com</a>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">4</div>
+          <div class="action-content">
+            <strong>Click "Create" and let Studio generate the agent</strong>
+            <p>Studio will scaffold the agent with topics, conversation starters, and the website knowledge source automatically.</p>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">5</div>
+          <div class="action-content">
+            <strong>Test with product-focused questions</strong>
+            <p>Open the test panel and try:</p>
+            <a class="url" style="color:#a8d8a8; cursor:default;">"What refrigerator models does Sub-Zero make?"</a><br>
+            <a class="url" style="margin-top:6px; color:#a8d8a8; cursor:default;">"What's the difference between the Designer and Classic series?"</a><br>
+            <a class="url" style="margin-top:6px; color:#a8d8a8; cursor:default;">"Where can I find a Sub-Zero dealer near me?"</a>
+          </div>
+        </li>
+        <li>
+          <div class="action-num">6</div>
+          <div class="action-content">
+            <strong>Show publish options (don't publish — just show)</strong>
+            <p>Click <strong>Publish</strong> in the nav to show channels: Teams, Website (embed), M365 Copilot, Dynamics 365. Point out how one agent deploys everywhere.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="talking-point">
+        <div class="tp-label">💬 Talking Point</div>
+        "We just built a Sub-Zero product expert in under 5 minutes. Your website is already the knowledge base — Copilot Studio reads it, understands it, and turns it into a conversational experience. You could embed this agent on subzero.com, put it in Teams for your sales team, or make it part of your Dynamics 365 customer service — all from one place, with one click."
+      </div>
+
+      <div class="tip">
+        <span class="icon">✅</span>
+        <span><strong>Closing line:</strong> "Two agents. Two use cases. Zero code. That's what Microsoft Copilot Studio delivers for Sub-Zero."</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════ -->
+<footer>
+  <div>Demo Tenant: <strong style="color:#888">D365DemoTSCE30330346.onmicrosoft.com</strong></div>
+  <div>HR Docs: <strong style="color:#888">demo_hr_docs/docx/</strong> → SharePoint HR Policy Library</div>
+  <div>Microsoft Confidential — Internal Use Only</div>
+</footer>
+
+</div><!-- /.main-content -->
+</div><!-- /.page-layout -->
+
+<script>
+function copyPrompt(el) {
+  const text = el.querySelector('.chip-text').innerText;
+  // Strip surrounding quotes if present
+  const clean = text.replace(/^[""]|[""]$/g, '');
+  navigator.clipboard.writeText(clean).then(() => {
+    const toast = document.getElementById('copied-toast');
+    toast.classList.add('show');
+    el.style.borderColor = '#107C10';
+    setTimeout(() => {
+      toast.classList.remove('show');
+      el.style.borderColor = '';
+    }, 1800);
+  }).catch(() => {
+    // Fallback for non-https
+    const ta = document.createElement('textarea');
+    ta.value = clean;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const toast = document.getElementById('copied-toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  });
+}
+</script>
+
+</body>
+</html>

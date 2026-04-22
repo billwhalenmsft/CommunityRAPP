@@ -1,0 +1,139 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: SAP Create PR
+    triggerQueries:
+      - I need to raise a purchase requisition
+      - create a PR
+      - I need to buy
+      - raise a PR
+      - new purchase req
+      - I want to order
+      - create purchase requisition
+      - I need to procure
+      - raise requisition
+      - submit a PR
+
+  actions:
+    - kind: SendActivity
+      id: ackCreate
+      activity:
+        text: >-
+          I'll help you create a Purchase Requisition in SAP. Let me gather a
+          few details.
+
+    - kind: Question
+      id: askDescription
+      alwaysPrompt: false
+      variable: init:Topic.ItemDescription
+      prompt:
+        text: What item or service do you need? (Be as specific as possible — this becomes the PR line description in SAP EBAN.TXZ01)
+      entity: StringPrebuiltEntity
+
+    - kind: Question
+      id: askVendor
+      alwaysPrompt: false
+      variable: init:Topic.VendorName
+      prompt:
+        text: Which vendor should supply this? I'll verify they're approved in the SAP vendor master (LFA1).
+      entity: StringPrebuiltEntity
+
+    - kind: Question
+      id: askAmount
+      alwaysPrompt: false
+      variable: init:Topic.Amount
+      prompt:
+        text: What's the total value in USD?
+      entity: MoneyPrebuiltEntity
+
+    - kind: Question
+      id: askCostCenter
+      alwaysPrompt: false
+      variable: init:Topic.CostCenter
+      prompt:
+        text: Which cost center should this be charged to? (e.g. CC1001, CC1002)
+      entity: StringPrebuiltEntity
+
+    - kind: Question
+      id: askGLAccount
+      alwaysPrompt: false
+      variable: init:Topic.GLAccount
+      prompt:
+        text: Which GL account? (e.g. 640010 for Machinery, 612345 for IT Software — or I can suggest one based on the item category)
+      entity: StringPrebuiltEntity
+
+    - kind: SendActivity
+      id: confirmSummary
+      activity:
+        text: >-
+          📋 **PR Summary — Please Confirm:**
+
+
+          | Field | Value |
+
+          |-------|-------|
+
+          | **Item (TXZ01)** | ${Topic.ItemDescription} |
+
+          | **Vendor** | ${Topic.VendorName} |
+
+          | **Total Value** | ${Topic.Amount} |
+
+          | **Cost Center (KOSTL)** | ${Topic.CostCenter} |
+
+          | **GL Account (SAKTO)** | ${Topic.GLAccount} |
+
+
+          Shall I submit this PR to SAP?
+
+    - kind: Question
+      id: askConfirm
+      alwaysPrompt: false
+      variable: init:Topic.Confirmed
+      prompt:
+        text: Confirm submission?
+      entity: BooleanPrebuiltEntity
+
+    - kind: ConditionGroup
+      id: checkConfirm
+      conditions:
+        - id: ifConfirmed
+          condition: =Topic.Confirmed = true
+          actions:
+            - kind: InvokeFlowAction
+              id: callCreatePRFlow
+              displayName: SAP Create PR Flow
+              inputs:
+                - name: item_description
+                  value: =Topic.ItemDescription
+                - name: vendor_name
+                  value: =Topic.VendorName
+                - name: amount_per_period
+                  value: =Topic.Amount
+                - name: cost_center
+                  value: =Topic.CostCenter
+                - name: gl_code
+                  value: =Topic.GLAccount
+                - name: periods
+                  value: =1
+                - name: user_guid
+                  value: =System.User.Id
+            - kind: SendActivity
+              id: successMsg
+              activity:
+                text: >-
+                  ✅ **PR submitted to SAP!**
+
+
+                  Your PR has been created and routed to the appropriate approver
+                  based on your Delegation of Authority (DoA) level.
+
+
+                  Want me to send the approver a notification?
+      elseActions:
+        - kind: SendActivity
+          id: cancelMsg
+          activity:
+            text: No problem — PR cancelled. Let me know if you'd like to make changes and try again.

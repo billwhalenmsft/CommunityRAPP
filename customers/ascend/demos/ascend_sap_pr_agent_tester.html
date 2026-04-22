@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ascend SAP PR Agent — Interactive Demo Tester</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --sap-blue:      #0070f2;
+    --sap-dark:      #003d7a;
+    --sap-light:     #e8f2fd;
+    --ms-purple:     #742774;
+    --ms-blue:       #0078d4;
+    --ms-dark:       #002050;
+    --accent-green:  #107c10;
+    --accent-orange: #d83b01;
+    --warning:       #c7a200;
+    --bg:            #f0f4f8;
+    --card-bg:       #ffffff;
+    --text:          #1a1a2e;
+    --text-muted:    #555;
+    --border:        #dde2ea;
+    --radius:        10px;
+    --shadow:        0 2px 12px rgba(0,0,0,.08);
+    --header-h:      60px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+  /* ── Layout ─────────────────────────────────────────── */
+  .app { display: flex; flex-direction: column; height: 100vh; }
+
+  .header {
+    background: linear-gradient(90deg, var(--ms-dark), var(--sap-dark));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 20px;
+    height: var(--header-h);
+    flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,.3);
+  }
+  .header-logo { font-size: 1.3rem; }
+  .header-title { font-size: 1.05rem; font-weight: 700; }
+  .header-sub { font-size: 0.72rem; color: rgba(255,255,255,.65); margin-top: 1px; }
+  .header-badges { display: flex; gap: 6px; margin-left: auto; }
+  .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; }
+  .badge-sap   { background: rgba(0,112,242,.25); color: #7ac4ff; border: 1px solid rgba(0,112,242,.4); }
+  .badge-teams { background: rgba(116,39,116,.3); color: #d0a8e4; border: 1px solid rgba(116,39,116,.5); }
+  .badge-mode  { background: rgba(255,193,7,.2); color: #ffc107; border: 1px solid rgba(255,193,7,.4); cursor: pointer; }
+  .badge-mode:hover { background: rgba(255,193,7,.35); }
+
+  .main { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── Sidebar ─────────────────────────────────────────── */
+  .sidebar {
+    width: 300px;
+    min-width: 260px;
+    background: var(--ms-dark);
+    color: #c8d8f0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-right: 1px solid rgba(255,255,255,.07);
+  }
+
+  .sidebar-section { padding: 14px 16px 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.35); }
+
+  .demo-step {
+    margin: 0 10px 4px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all .2s;
+  }
+  .demo-step:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.12); }
+  .demo-step.active { background: rgba(0,112,242,.2); border-color: rgba(0,112,242,.5); }
+  .demo-step.done .step-num { background: var(--accent-green); }
+
+  .step-header { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+  .step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+    transition: background .3s;
+  }
+  .step-info { flex: 1; min-width: 0; }
+  .step-title { font-size: 0.83rem; font-weight: 600; color: #e8f0ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .step-hint  { font-size: 0.68rem; color: rgba(255,255,255,.4); margin-top: 1px; }
+  .step-arrow { font-size: 0.7rem; color: rgba(255,255,255,.3); }
+  .demo-step.active .step-arrow { color: var(--sap-blue); }
+
+  .sidebar-config { padding: 12px 14px; margin-top: auto; border-top: 1px solid rgba(255,255,255,.08); }
+  .config-label { font-size: 0.68rem; color: rgba(255,255,255,.4); margin-bottom: 4px; }
+  .config-input {
+    width: 100%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+    border-radius: 6px; padding: 7px 10px; color: #fff; font-size: 0.8rem; outline: none;
+    font-family: 'Cascadia Code', monospace;
+  }
+  .config-input:focus { border-color: var(--sap-blue); }
+  .mode-toggle { display: flex; gap: 6px; margin-top: 8px; }
+  .mode-btn {
+    flex: 1; padding: 7px; border: 1px solid rgba(255,255,255,.15); border-radius: 6px;
+    background: rgba(255,255,255,.06); color: rgba(255,255,255,.7); cursor: pointer; font-size: 0.75rem;
+    transition: all .2s; text-align: center;
+  }
+  .mode-btn.active { background: rgba(0,112,242,.3); border-color: var(--sap-blue); color: #fff; }
+  .mode-btn:hover { background: rgba(255,255,255,.12); }
+
+  /* ── Chat pane ─────────────────────────────────────────── */
+  .chat-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .chat-persona {
+    padding: 10px 20px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .persona-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--ms-purple), var(--sap-blue));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .persona-name { font-weight: 600; font-size: 0.88rem; }
+  .persona-role { font-size: 0.72rem; color: var(--text-muted); }
+  .persona-status { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; }
+  .status-dot.online { background: var(--accent-green); }
+  .status-dot.scripted { background: var(--warning); }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .msg { display: flex; gap: 10px; max-width: 820px; }
+  .msg.user { flex-direction: row-reverse; margin-left: auto; }
+  .msg-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .msg.agent .msg-avatar { background: linear-gradient(135deg, var(--ms-purple), var(--sap-blue)); }
+  .msg.user  .msg-avatar { background: linear-gradient(135deg, var(--sap-dark), var(--ms-blue)); }
+
+  .msg-content { display: flex; flex-direction: column; gap: 3px; }
+  .msg-label { font-size: 0.68rem; color: var(--text-muted); }
+  .msg.user .msg-label { text-align: right; }
+
+  .msg-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .msg.agent .msg-bubble {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-top-left-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .msg.user .msg-bubble {
+    background: linear-gradient(135deg, var(--ms-dark), var(--sap-dark));
+    color: #fff;
+    border-top-right-radius: 4px;
+  }
+
+  .msg-bubble table { border-collapse: collapse; margin: 8px 0; width: 100%; }
+  .msg-bubble th, .msg-bubble td { border: 1px solid var(--border); padding: 5px 10px; text-align: left; }
+  .msg-bubble th { background: var(--sap-light); font-weight: 600; }
+  .msg-bubble blockquote { border-left: 3px solid var(--sap-blue); padding-left: 10px; color: var(--text-muted); font-style: italic; margin: 8px 0; font-size: 0.85em; }
+  .msg-bubble strong { font-weight: 700; }
+  .msg-bubble h2, .msg-bubble h3 { margin: 6px 0 4px; }
+
+  .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
+  .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); animation: typing 1.2s infinite; }
+  .typing-dot:nth-child(2) { animation-delay: .2s; }
+  .typing-dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes typing { 0%,60%,100% { transform: translateY(0); opacity:.5; } 30% { transform: translateY(-4px); opacity:1; } }
+
+  /* ── Input bar ─────────────────────────────────────────── */
+  .input-bar {
+    border-top: 1px solid var(--border);
+    background: var(--card-bg);
+    padding: 12px 16px;
+    display: flex; gap: 10px; align-items: flex-end;
+    flex-shrink: 0;
+  }
+  .input-box {
+    flex: 1; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; font-family: inherit; font-size: 0.88rem;
+    resize: none; min-height: 42px; max-height: 120px; outline: none;
+    line-height: 1.5; transition: border-color .2s;
+  }
+  .input-box:focus { border-color: var(--ms-blue); }
+  .send-btn {
+    width: 42px; height: 42px; border-radius: 10px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--ms-blue), var(--sap-blue));
+    color: #fff; font-size: 1rem; display: flex; align-items: center; justify-content: center;
+    transition: opacity .2s;
+  }
+  .send-btn:hover { opacity: .9; }
+  .send-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* scripted quick-send pills */
+  .quick-pills {
+    padding: 8px 16px 0;
+    display: flex; gap: 7px; flex-wrap: wrap;
+  }
+  .pill {
+    padding: 5px 12px; border-radius: 20px; border: 1px solid var(--sap-blue);
+    background: var(--sap-light); color: var(--sap-dark); font-size: 0.75rem; cursor: pointer;
+    transition: all .2s; white-space: nowrap;
+  }
+  .pill:hover { background: var(--sap-blue); color: #fff; }
+
+  /* right pane: talking points */
+  .talking-pane {
+    width: 280px;
+    background: var(--card-bg);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .talking-header {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem; font-weight: 700; color: var(--sap-dark);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .talking-body { overflow-y: auto; padding: 14px; flex: 1; }
+  .tp-card { margin-bottom: 16px; }
+  .tp-title { font-size: 0.75rem; font-weight: 700; color: var(--ms-dark); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .tp-list { list-style: none; }
+  .tp-list li {
+    padding: 6px 10px 6px 28px; position: relative; font-size: 0.78rem; color: var(--text);
+    border-left: 3px solid var(--sap-light); margin-bottom: 4px; line-height: 1.45;
+  }
+  .tp-list li::before { content: "▸"; position: absolute; left: 8px; color: var(--sap-blue); }
+
+  .objection-card { background: #fff8e7; border: 1px solid #ffe082; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+  .obj-q { font-size: 0.75rem; font-weight: 700; color: #7a5000; margin-bottom: 4px; }
+  .obj-a { font-size: 0.75rem; color: var(--text); line-height: 1.5; }
+
+  .value-pill {
+    background: linear-gradient(90deg, var(--sap-light), #f0f4f8);
+    border: 1px solid var(--sap-blue);
+    border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;
+    font-size: 0.77rem; color: var(--sap-dark); line-height: 1.5;
+  }
+  .value-pill strong { display: block; font-weight: 700; margin-bottom: 2px; }
+
+  /* responsive collapse sidebar */
+  @media (max-width: 800px) { .sidebar { display: none; } .talking-pane { display: none; } }
+  @media (max-width: 600px) { .header-badges { display: none; } }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo"><i class="fas fa-industry"></i></div>
+    <div>
+      <div class="header-title">Ascend SAP PR Agent</div>
+      <div class="header-sub">Purchase Requisition Lifecycle · SAP ECC 6.0 via Microsoft Teams</div>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-sap">SAP ECC 6.0</span>
+      <span class="badge badge-teams"><i class="fab fa-microsoft"></i> Teams</span>
+      <span class="badge badge-mode" id="modeBadge" onclick="cycleMode()">🎭 Demo Mode</span>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Sidebar: demo steps -->
+    <div class="sidebar">
+      <div class="sidebar-section">Demo Scenario</div>
+
+      <div id="demoStepNav"></div>
+
+      <div style="padding:10px 14px 4px;margin-top:6px">
+        <div class="sidebar-section" style="padding:0 0 6px">Value Props</div>
+        <div id="valuePropList" style="font-size:.75rem;color:#aac4e4;line-height:1.6;"></div>
+      </div>
+
+      <div class="sidebar-config">
+        <div class="config-label">API Endpoint (live mode)</div>
+        <input class="config-input" type="text" id="apiEndpoint" placeholder="https://your-function.azurewebsites.net/api/businessinsightbot_function?code=..." />
+        <div class="config-label" style="margin-top:8px">User GUID</div>
+        <input class="config-input" type="text" id="userGuid" value="c0p110t0-aaaa-bbbb-cccc-123456789abc" />
+        <div class="mode-toggle">
+          <div class="mode-btn active" id="btnDemo" onclick="setMode('demo')">🎭 Scripted</div>
+          <div class="mode-btn" id="btnLive" onclick="setMode('live')">⚡ Live API</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat pane -->
+    <div class="chat-pane">
+      <div class="chat-persona">
+        <div class="persona-avatar" id="personaInitials">SC</div>
+        <div>
+          <div class="persona-name" id="personaName">Sarah Chen</div>
+          <div class="persona-role" id="personaRole">Procurement Manager, Ascend Performance Materials</div>
+        </div>
+        <div class="persona-status">
+          <div class="status-dot scripted" id="statusDot"></div>
+          <span id="statusLabel">Scripted Demo</span>
+        </div>
+      </div>
+
+      <div class="quick-pills" id="quickPills"></div>
+
+      <div class="messages" id="messages">
+        <div class="msg agent">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-content">
+            <div class="msg-label">Ascend SAP PR Agent</div>
+            <div class="msg-bubble" id="welcomeBubble"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-bar">
+        <textarea class="input-box" id="inputBox" rows="1" placeholder="Type a message or click a demo step…" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+
+    <!-- Talking points pane -->
+    <div class="talking-pane">
+      <div class="talking-header"><i class="fas fa-comment-dots" style="color:var(--sap-blue)"></i> SE Talking Points</div>
+      <div class="talking-body" id="talkingBody">
+        <div style="font-size:.8rem;color:#aaa;padding-top:20px;text-align:center">Click a demo step to see talking points</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Demo data ────────────────────────────────────────────────────────────────
+const DEMO = {
+  name: "Ascend SAP PR Lifecycle",
+  persona: { name: "Sarah Chen", role: "Procurement Manager, Ascend Performance Materials", initials: "SC" },
+  valuePropSummary: [
+    "45 min SAP GUI → under 5 min Teams chat",
+    "No SAP GUI training needed",
+    "Works on mobile via Teams",
+    "Auto DoA routing + vendor validation",
+    "Production: swap DV connector → SAP ERP connector"
+  ],
+  steps: [
+    {
+      title: "Introduction",
+      hint: "Set context, establish persona",
+      prompt: "Hi, I'm Sarah from Procurement at Ascend. Can you help me raise a purchase requisition for some new equipment?",
+      response: `**Hello Sarah! 👋 I'm the Ascend SAP Procurement Assistant.**
+
+I can help you with the full Purchase Requisition lifecycle in SAP ECC 6.0:
+
+📋 **What I can do:**
+- 🔍 Look up approved SAP vendors (LFA1/LFB1)
+- ✏️ Create a PR — I'll auto-route to the right approver based on your DoA level
+- ✅ Approve or reject PRs in your queue
+- 📊 Check PR status in real-time (EBAN)
+- ❌ Cancel or edit open PRs
+- 🔔 Send reminders to approvers
+
+Let's get started! **What equipment do you need, and roughly what's the budget?**`,
+      talkingPoints: [
+        "Native Teams interface — no SAP GUI needed",
+        "Agent understands SAP terminology automatically (EBAN, LFA1, DoA)",
+        "Available 24/7, responds in seconds vs. navigating SAP ME51N transaction",
+        "Works from mobile — procurement on the go"
+      ],
+      persona: "Sarah Chen"
+    },
+    {
+      title: "Vendor Lookup",
+      hint: "SAP LFA1/LFB1/LFM1 query",
+      prompt: "I need an industrial compressor for our Texas City plant. Budget is around $85,000. Can you check if Siemens is an approved vendor?",
+      response: `🔍 **Searching SAP vendor master (LFA1/LFB1/LFM1)...**
+
+✅ **Siemens AG** is an approved vendor:
+
+| Field | Value |
+|-------|-------|
+| **Vendor ID (LIFNR)** | 1000001 |
+| **Name** | Siemens AG |
+| **Company Code** | 1000 (Ascend US) |
+| **Purchasing Org** | 1000 |
+| **Currency** | USD |
+| **Status** | ✅ Active — no purchasing block |
+
+> 📌 *Data from Dataverse \`ascend_sapvendor\` table, emulating SAP LFA1/LFB1/LFM1. In production: queries live SAP via RFC_READ_TABLE.*
+
+**Ready to create the PR?** I'll need:
+- Item description
+- Material group / category code
+- GL account & Cost center
+- Payment cadence (one-time, monthly, etc.)`,
+      talkingPoints: [
+        "Vendor lookup emulates SAP LFA1/LFB1/LFM1 — same data model as live SAP",
+        "Checks purchasing block (SPERR/SPERM) automatically",
+        "In production: replaces SAP GUI vendor search (ME1M transaction)",
+        "Took 2 seconds vs. 5+ minutes in SAP GUI"
+      ],
+      persona: "Sarah Chen"
+    },
+    {
+      title: "Create PR + DoA Routing",
+      hint: "EBAN + EBKN write, DoA auto-routing",
+      prompt: "Great, let's create it. Item: Industrial Air Compressor - 250HP, category code 05 (Machinery), GL account 640010, cost center CC1001, one-time payment of $85,000.",
+      response: `⚙️ **Creating SAP Purchase Requisition...**
+
+Running pre-flight checks:
+✅ Cost center CC1001 validated (CSKS)
+✅ GL account 640010 confirmed (SKA1)
+✅ DoA level calculated: **$85,000 → L2 Approval required**
+✅ Contract match found: Framework agreement **4500012345** (Siemens, Machinery)
+
+---
+
+**✅ PR Created Successfully!**
+
+| Field | Value |
+|-------|-------|
+| **PR Number (BANFN)** | 1002604210 |
+| **Item** | Industrial Air Compressor - 250HP |
+| **Vendor** | Siemens AG (1000001) |
+| **Total Value** | $85,000.00 |
+| **Framework Contract** | 4500012345 |
+| **GL Account** | 640010 |
+| **Cost Center** | CC1001 |
+| **Status** | 🟡 Pending Approval |
+| **Assigned Approver** | **Michael Torres** (L2 DoA) |
+
+> 📌 *Written to Dataverse \`ascend_sappurchaserequisition\` (EBAN) + \`ascend_sappraccountassignment\` (EBKN). In production: BAPI_PR_CREATE writes to SAP EBAN + EBKN.*
+
+**Michael Torres has been notified.** Want me to send him a reminder, or check the status later?`,
+      talkingPoints: [
+        "DoA routing is automatic — no manual approver lookup in SAP T16FS",
+        "Framework contract matching in real-time (EKKO) — prevents off-contract spend",
+        "Both EBAN and EBKN records created in one conversational turn",
+        "Approver notification built-in — replaces manual email chase",
+        "Pause here and ask: 'How long does this take in SAP GUI today?'"
+      ],
+      persona: "Sarah Chen"
+    },
+    {
+      title: "Check PR Status",
+      hint: "EBAN real-time read",
+      prompt: "Can you check the status of PR 1002604210?",
+      response: `📊 **PR Status — SAP EBAN Lookup**
+
+| Field | Value |
+|-------|-------|
+| **PR Number** | 1002604210 |
+| **Description** | Industrial Air Compressor - 250HP |
+| **Vendor** | Siemens AG |
+| **Value** | $85,000.00 |
+| **Created** | April 21, 2026 |
+| **Status** | 🟡 **Pending L2 Approval** |
+| **Approver** | Michael Torres |
+| **Contract** | 4500012345 |
+
+> 📌 *Real-time read from Dataverse \`ascend_sappurchaserequisition\`. In production: RFC_READ_TABLE / BAPI_REQUISITION_GETDETAIL on EBAN.*
+
+Still waiting on Michael. Want me to **send him a reminder**?`,
+      talkingPoints: [
+        "Real-time status — no SAP GUI ME53N transaction needed",
+        "Works from Teams mobile — procurement manager checking status between meetings",
+        "Links to contract and approver in one response",
+        "Same query pattern works for 'show me all my open PRs'"
+      ],
+      persona: "Sarah Chen"
+    },
+    {
+      title: "Send Approval Reminder",
+      hint: "BUS2105 workflow notification",
+      prompt: "Yes, please send Michael a reminder.",
+      response: `🔔 **Approval Reminder Sent**
+
+| Field | Value |
+|-------|-------|
+| **To** | Michael Torres (michael.torres@ascend.com) |
+| **Subject** | Action Required: PR 1002604210 Awaiting L2 Approval |
+| **PR Value** | $85,000.00 — Industrial Air Compressor |
+| **SLA** | Response required within 48 hours |
+
+> 📌 *Emulates SAP BUS2105 workflow reminder. In production: re-triggers SAP workflow work item or sends via Exchange.*
+
+✅ Michael has been notified. I'll track this for you — want me to **escalate to his manager after 48 hours** if still open?`,
+      talkingPoints: [
+        "Automated reminder replaces manual follow-up emails",
+        "Emulates SAP BUS2105 workflow notification pattern",
+        "Escalation paths configurable — no custom ABAP needed",
+        "Audit trail: every action logged with timestamp + user"
+      ],
+      persona: "Sarah Chen"
+    },
+    {
+      title: "Approve PR (Approver View)",
+      hint: "EBAN FRGST update via Approver persona",
+      prompt: "I'm Michael Torres. I've reviewed PR 1002604210 — looks good, I'll approve it.",
+      response: `✅ **PR Approved — SAP EBAN Updated**
+
+| Field | Value |
+|-------|-------|
+| **PR Number** | 1002604210 |
+| **Action** | ✅ **Approved** by Michael Torres |
+| **Approval Level** | L2 DoA |
+| **Timestamp** | April 21, 2026 18:07 UTC |
+| **New Status** | 🟢 **Approved — Ready for PO** |
+
+> 📌 *Dataverse \`ascend_sappurchaserequisition.ascend_frgst\` updated to Approved. In production: BAPI_PR_CHANGE updates SAP EBAN release indicator (FRGST).*
+
+**Sarah Chen has been notified** — her PR is approved and ready for PO conversion.
+
+🎉 **Full PR lifecycle complete — without opening SAP GUI once.**`,
+      talkingPoints: [
+        "Approver can act from Teams — no SAP access, no VPN required",
+        "FRGST (release indicator) updated in real-time",
+        "Requester auto-notified — closes the loop without manual communication",
+        "KEY VALUE PROP: From PR creation to approval in one Teams conversation",
+        "Ask: 'What's your current PR approval SLA? How many PRs miss it each month?'"
+      ],
+      persona: "Michael Torres"
+    }
+  ],
+  objections: [
+    {
+      q: "We already have SAP Fiori for self-service",
+      a: "Fiori still requires SAP authentication and training. This runs in Teams where procurement staff already live — no context switch, no VPN, works on mobile."
+    },
+    {
+      q: "How do we handle the SAP integration in production?",
+      a: "Power Automate flows use the SAP ERP connector with on-premises data gateway. We swap Dataverse actions for SAP connector actions — same flows, same bot, no Copilot Studio changes needed."
+    },
+    {
+      q: "What about audit trail and compliance?",
+      a: "Every action writes to Dataverse with timestamp and user GUID. In production, SAP's standard change documents (CDHDR/CDPOS) provide the audit trail. We can surface both in the bot."
+    }
+  ]
+};
+
+// ── State ────────────────────────────────────────────────────────────────────
+let mode = 'demo'; // 'demo' | 'live'
+let currentStep = -1;
+let convHistory = [];
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+function init() {
+  renderStepNav();
+  renderValueProps();
+  renderWelcome();
+}
+
+function renderStepNav() {
+  const nav = document.getElementById('demoStepNav');
+  nav.innerHTML = DEMO.steps.map((s, i) => `
+    <div class="demo-step" id="step${i}" onclick="selectStep(${i})">
+      <div class="step-header">
+        <div class="step-num">${i+1}</div>
+        <div class="step-info">
+          <div class="step-title">${s.title}</div>
+          <div class="step-hint">${s.hint}</div>
+        </div>
+        <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderValueProps() {
+  const el = document.getElementById('valuePropList');
+  el.innerHTML = DEMO.valuePropSummary.map(v => `<div style="padding:3px 0 3px 14px;position:relative"><span style="position:absolute;left:0;color:#5b9bd5">✓</span>${v}</div>`).join('');
+}
+
+function renderWelcome() {
+  const wb = document.getElementById('welcomeBubble');
+  wb.innerHTML = renderMarkdown(`**Welcome to the Ascend SAP PR Agent Demo!**\n\n👤 **Persona:** ${DEMO.persona.name} — ${DEMO.persona.role}\n\n**Demo Scenario:** Raise and approve an $85K capital equipment PR for Siemens Industrial Compressor — all via Microsoft Teams.\n\n**Pick a step on the left** or type a message. Use 🎭 *Scripted* mode for the guided walkthrough or ⚡ *Live API* mode to connect to your Azure Function.\n\n---\n🔵 *Powered by Dataverse (demo) · In production: SAP ERP Connector via Power Automate*`);
+}
+
+// ── Step selection ────────────────────────────────────────────────────────────
+function selectStep(idx) {
+  document.querySelectorAll('.demo-step').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+  currentStep = idx;
+  const step = DEMO.steps[idx];
+
+  // Update persona
+  if (step.persona === 'Michael Torres') {
+    document.getElementById('personaInitials').textContent = 'MT';
+    document.getElementById('personaName').textContent = 'Michael Torres';
+    document.getElementById('personaRole').textContent = 'VP Operations (Approver) — L2 DoA';
+  } else {
+    document.getElementById('personaInitials').textContent = 'SC';
+    document.getElementById('personaName').textContent = DEMO.persona.name;
+    document.getElementById('personaRole').textContent = DEMO.persona.role;
+  }
+
+  // Pre-fill input
+  document.getElementById('inputBox').value = step.prompt;
+  autoResize(document.getElementById('inputBox'));
+
+  // Show talking points
+  renderTalkingPoints(step);
+
+  // Quick pills: next steps
+  renderQuickPills(idx);
+}
+
+function renderTalkingPoints(step) {
+  const body = document.getElementById('talkingBody');
+  const tpHtml = step.talkingPoints.map(tp => `<li>${tp}</li>`).join('');
+
+  const objHtml = DEMO.objections.map(o => `
+    <div class="objection-card">
+      <div class="obj-q">❓ "${o.q}"</div>
+      <div class="obj-a">${o.a}</div>
+    </div>`).join('');
+
+  body.innerHTML = `
+    <div class="tp-card">
+      <div class="tp-title"><i class="fas fa-lightbulb" style="color:#f0b429"></i> ${step.title}</div>
+      <ul class="tp-list">${tpHtml}</ul>
+    </div>
+    <div class="tp-card" style="margin-top:16px">
+      <div class="tp-title"><i class="fas fa-shield-alt" style="color:#c7a200"></i> Objection Handlers</div>
+      ${objHtml}
+    </div>`;
+}
+
+function renderQuickPills(current) {
+  const container = document.getElementById('quickPills');
+  const pills = [];
+  if (current < DEMO.steps.length - 1) {
+    pills.push({ label: `▶ Step ${current+2}: ${DEMO.steps[current+1].title}`, idx: current+1 });
+  }
+  pills.push({ label: '📊 Check PR Status', promptText: 'Can you check the status of PR 1002604210?' });
+  pills.push({ label: '📋 List My PRs', promptText: 'Show me all my open purchase requisitions.' });
+  pills.push({ label: '❌ Cancel PR', promptText: 'Cancel PR 1002604210 — equipment no longer needed.' });
+
+  container.innerHTML = pills.map(p => {
+    if (p.idx !== undefined) return `<div class="pill" onclick="selectStep(${p.idx})">${p.label}</div>`;
+    return `<div class="pill" onclick="prefill('${p.promptText.replace(/'/g,"\\'")}'')">${p.label}</div>`;
+  }).join('');
+}
+
+function prefill(text) {
+  const box = document.getElementById('inputBox');
+  box.value = text;
+  autoResize(box);
+  box.focus();
+}
+
+// ── Messaging ─────────────────────────────────────────────────────────────────
+async function sendMessage() {
+  const box = document.getElementById('inputBox');
+  const text = box.value.trim();
+  if (!text) return;
+
+  addMessage('user', text);
+  box.value = '';
+  autoResize(box);
+  document.getElementById('sendBtn').disabled = true;
+
+  convHistory.push({ role: 'user', content: text });
+
+  if (mode === 'demo') {
+    await sendScripted(text);
+  } else {
+    await sendLive(text);
+  }
+  document.getElementById('sendBtn').disabled = false;
+}
+
+async function sendScripted(text) {
+  // Match by step prompt or fallback
+  const step = DEMO.steps.find(s => s.prompt.toLowerCase().includes(text.toLowerCase().slice(0, 20)));
+  const response = step ? step.response : getGenericResponse(text);
+
+  showTyping();
+  await sleep(800 + Math.random() * 400);
+  hideTyping();
+  addMessage('agent', response);
+
+  // Mark step done if matched
+  if (step) {
+    const idx = DEMO.steps.indexOf(step);
+    document.getElementById(`step${idx}`)?.classList.add('done');
+    const num = document.querySelector(`#step${idx} .step-num`);
+    if (num) num.innerHTML = '<i class="fas fa-check"></i>';
+  }
+}
+
+function getGenericResponse(text) {
+  const t = text.toLowerCase();
+  if (t.includes('cancel') || t.includes('delete')) {
+    return `❌ **PR Cancellation Request**\n\nChecking eligibility for cancellation...\n✅ PR has no goods receipts\n✅ No invoice posted\n✅ Status allows cancellation\n\n**PR 1002604210 has been cancelled.**\n\n> 📌 *EBAN PSTYP set to Cancelled. In production: BAPI_PR_CHANGE with deletion indicator.*`;
+  }
+  if (t.includes('list') || t.includes('my pr') || t.includes('show me')) {
+    return `📋 **Your Open Purchase Requisitions**\n\n| PR # | Description | Value | Status |\n|------|-------------|-------|--------|\n| 1002604210 | Industrial Air Compressor - 250HP | $85,000 | 🟡 Pending Approval |\n| 1002604189 | Safety Equipment - Texas City | $12,500 | 🟢 Approved |\n| 1002604175 | Lab Chemicals - Q2 Resupply | $8,200 | 🔵 PO Created |\n\n3 open PRs · Total value: **$105,700**`;
+  }
+  if (t.includes('vendor') || t.includes('supplier')) {
+    return `🔍 **Vendor Search Results**\n\nSearching SAP LFA1/LFB1 master data...\n\nFound 3 approved vendors matching your query:\n| Vendor ID | Name | Category | Status |\n|-----------|------|----------|--------|\n| 1000001 | Siemens AG | Machinery | ✅ Active |\n| 1000002 | Honeywell Int'l | Machinery | ✅ Active |\n| 1000015 | Emerson Electric | Machinery | ✅ Active |`;
+  }
+  return `I can help with that! For the full demo walkthrough, click a step on the left panel, or ask me about:\n\n- **Creating a new PR** — "I need to buy equipment for $50K"\n- **Checking PR status** — "What's the status of PR 1002604210?"\n- **Vendor lookup** — "Is Siemens an approved vendor?"\n- **Approvals** — "I'm Michael Torres, approve PR 1002604210"\n- **Cancellation** — "Cancel PR 1002604210"`;
+}
+
+async function sendLive(text) {
+  const endpoint = document.getElementById('apiEndpoint').value.trim();
+  const userGuid = document.getElementById('userGuid').value.trim();
+
+  if (!endpoint) {
+    hideTyping();
+    addMessage('agent', '⚠️ **No API endpoint configured.** Enter your Azure Function URL in the sidebar config, or switch to Scripted mode for the demo walkthrough.');
+    return;
+  }
+
+  showTyping();
+  try {
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_input: text,
+        conversation_history: convHistory.slice(-10),
+        user_guid: userGuid
+      })
+    });
+    const data = await resp.json();
+    hideTyping();
+    const reply = data.assistant_response || data.response || JSON.stringify(data, null, 2);
+    addMessage('agent', reply);
+    convHistory.push({ role: 'assistant', content: reply });
+  } catch (err) {
+    hideTyping();
+    addMessage('agent', `⚠️ **API Error:** ${err.message}\n\nSwitch to 🎭 Scripted mode to continue the demo offline.`);
+  }
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function addMessage(role, text) {
+  const msgs = document.getElementById('messages');
+  const isAgent = role === 'agent';
+  const name = isAgent ? 'Ascend SAP PR Agent' : document.getElementById('personaName').textContent;
+  const initials = isAgent ? '🤖' : document.getElementById('personaInitials').textContent;
+
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `
+    <div class="msg-avatar">${initials}</div>
+    <div class="msg-content">
+      <div class="msg-label">${name}</div>
+      <div class="msg-bubble">${renderMarkdown(text)}</div>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+let typingEl = null;
+function showTyping() {
+  const msgs = document.getElementById('messages');
+  typingEl = document.createElement('div');
+  typingEl.className = 'msg agent';
+  typingEl.id = 'typingMsg';
+  typingEl.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-content"><div class="msg-label">Ascend SAP PR Agent</div><div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>`;
+  msgs.appendChild(typingEl);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function hideTyping() {
+  document.getElementById('typingMsg')?.remove();
+}
+
+function renderMarkdown(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #dde2ea;margin:10px 0">')
+    .replace(/\|(.+)\|/g, (match) => {
+      const cells = match.split('|').filter(Boolean).map(c => c.trim());
+      if (cells.every(c => /^[-:]+$/.test(c))) return '';
+      const tag = cells.every(c => /\*\*/.test(c) || c === cells[0]) ? 'th' : 'td';
+      return '<tr>' + cells.map(c => `<${tag}>${c.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}</${tag}>`).join('') + '</tr>';
+    })
+    .replace(/(<tr>.*<\/tr>\n?)+/g, (match) => `<table>${match}</table>`)
+    .replace(/\n/g, '<br>');
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btnDemo').classList.toggle('active', m === 'demo');
+  document.getElementById('btnLive').classList.toggle('active', m === 'live');
+  document.getElementById('modeBadge').textContent = m === 'demo' ? '🎭 Demo Mode' : '⚡ Live API';
+  document.getElementById('statusDot').className = 'status-dot ' + (m === 'demo' ? 'scripted' : 'online');
+  document.getElementById('statusLabel').textContent = m === 'demo' ? 'Scripted Demo' : 'Live API';
+}
+function cycleMode() { setMode(mode === 'demo' ? 'live' : 'demo'); }
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+init();
+</script>
+</body>
+</html>

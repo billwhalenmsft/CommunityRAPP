@@ -1,0 +1,22 @@
+{
+    "environment": {
+        "name": "Mfg Gold Template",
+        "url": "https://org6feab6b5.crm.dynamics.com",
+        "apiVersion": "v9.2",
+        "type": "Trial (subscription-based)",
+        "releaseCycle": "Early Release",
+        "role": "dev",
+        "notes": "Early Release environment used as innovation sandbox. Based on Demo Hub Sales & Service Template."
+    },
+    "customer": {
+        "name": "Mfg CoE",
+        "project": "Bills Demo Manager",
+        "industry": "Manufacturing (Cross-Industry)",
+        "regions": ["US"]
+    },
+    "demoHub": {
+        "template": "Dynamics-365-Customer-Experience-and-Service-Demo",
+        "catalog": "https://bizappsdemos.microsoft.com/templateDetail?templateName=Dynamics-365-Customer-Experience-and-Service-Demo&category=",
+        "notes": "Base template from Microsoft Demo Hub. Custom work layered on top."
+    }
+}

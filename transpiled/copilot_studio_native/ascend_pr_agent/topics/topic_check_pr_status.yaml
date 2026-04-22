@@ -1,0 +1,139 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Check PR Status
+    triggerQueries:
+      - what's the status of my PR
+      - status of PR
+      - show my purchase requests
+      - check my PR
+      - where is my PR
+      - is my PR approved
+      - show my PRs
+      - list my purchase requisitions
+      - PR status
+      - check requisition status
+      - what happened to my request
+
+  actions:
+    # ---------------------------------------------------------------
+    # Determine query type — PR number provided vs. list request
+    # ---------------------------------------------------------------
+    - kind: SetVariable
+      id: extractPRNumber
+      variable: init:prNumberMentioned
+      value: =if(matchesPattern(System.Activity.Text, "\\d{7,10}"), regexMatch(System.Activity.Text, "\\d{7,10}"), "")
+
+    - kind: ConditionGroup
+      id: queryTypeCheck
+      conditions:
+        # --- PR number was provided in the trigger phrase ---
+        - id: hasPRNumber
+          condition: =length(System.ConversationData.prNumberMentioned) > 0
+          actions:
+            - kind: InvokeFlowAction
+              id: getPRByNumber
+              input:
+                binding:
+                  pr_number:  =System.ConversationData.prNumberMentioned
+                  user_guid:  =System.User.Id
+              output:
+                binding:
+                  statusResult: =flow.response
+              flowName: flow_sap_get_pr_status
+
+            - kind: SendMessage
+              id: showPRStatus
+              message: =json(System.ConversationData.statusResult).message
+
+        # --- No PR number — show list ---
+        - id: noPRNumber
+          condition: =length(System.ConversationData.prNumberMentioned) = 0
+          actions:
+            - kind: InvokeFlowAction
+              id: listPRs
+              input:
+                binding:
+                  user_guid: =System.User.Id
+              output:
+                binding:
+                  listResult: =flow.response
+              flowName: flow_sap_get_pr_status
+
+            - kind: ConditionGroup
+              id: listCondition
+              conditions:
+                - id: noPRsFound
+                  condition: =json(System.ConversationData.listResult).status = "no_results"
+                  actions:
+                    - kind: SendMessage
+                      id: noPRsMsg
+                      message: =json(System.ConversationData.listResult).message
+
+                - id: listFound
+                  condition: =json(System.ConversationData.listResult).status = "found"
+                  actions:
+                    - kind: SendMessage
+                      id: showList
+                      message: =json(System.ConversationData.listResult).message
+
+                    # Ask if they want details on a specific PR
+                    - kind: Question
+                      id: askSpecificPR
+                      variable: init:specificPRInput
+                      prompt:
+                        text: "Would you like details on a specific PR? Provide the PR number or say 'no thanks'."
+                      entity: StringPrebuiltEntity
+
+                    - kind: ConditionGroup
+                      id: specificPRCheck
+                      conditions:
+                        - id: wantsDetails
+                          condition: =not(toLower(System.ConversationData.specificPRInput) contains "no" or toLower(System.ConversationData.specificPRInput) contains "thanks")
+                          actions:
+                            - kind: InvokeFlowAction
+                              id: getPRDetails
+                              input:
+                                binding:
+                                  pr_number: =regexMatch(System.ConversationData.specificPRInput, "\\d{7,10}")
+                                  user_guid: =System.User.Id
+                              output:
+                                binding:
+                                  detailResult: =flow.response
+                              flowName: flow_sap_get_pr_status
+
+                            - kind: SendMessage
+                              id: showDetails
+                              message: =json(System.ConversationData.detailResult).message
+
+    # ---------------------------------------------------------------
+    # Offer follow-up actions
+    # ---------------------------------------------------------------
+    - kind: Question
+      id: askFollowUp
+      variable: init:followUpAction
+      prompt:
+        text: "Is there anything else you'd like to do with this PR? You can say 'Remind the approver', 'Cancel this PR', or 'Edit this PR'."
+      entity: StringPrebuiltEntity
+
+    - kind: ConditionGroup
+      id: followUpCondition
+      conditions:
+        - id: noFollowUp
+          condition: =toLower(System.ConversationData.followUpAction) contains "no" or toLower(System.ConversationData.followUpAction) contains "nothing" or toLower(System.ConversationData.followUpAction) contains "done"
+          actions:
+            - kind: SendMessage
+              id: noFollowUpMsg
+              message: "Got it! Let me know if you need anything else."
+
+        - id: hasFollowUp
+          condition: =not(toLower(System.ConversationData.followUpAction) contains "no")
+          actions:
+            - kind: BeginDialog
+              id: routeFollowUp
+              dialog: topic_pr_followup_actions
+
+    - kind: EndDialog
+      id: endTopic

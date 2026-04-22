@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.2",
+  "name": "ascend_pr_agent",
+  "displayName": "Ascend Procurement Assistant",
+  "description": "Conversational Purchase Requisition (PR) agent for Ascend. Handles the full PR lifecycle via natural language: create, approve, track, and manage purchase requisitions integrated with SAP ECC 6.0.",
+  "icon": "shopping-cart",
+  "primaryLanguage": "en-US",
+  "isGenerativeActionsEnabled": true,
+  "isOrchestrationEnabled": true,
+  "knowledgeSources": [],
+  "instructions": "See instructions.md for full agent instructions.",
+  "capabilities": {
+    "generativeAnswers": true,
+    "powerAutomateFlows": true,
+    "customConnectors": true,
+    "adaptiveCards": true
+  },
+  "connectors": [
+    {
+      "id": "shared_sap",
+      "displayName": "SAP ERP",
+      "note": "Requires SAP on-premises data gateway. Tables: LFA1, LFB1, LFM1, EBAN, EBKN, EKKO, EKPO, EORD, MARA, T023, T030, CSKS, T16FS, BUS2105 workflow."
+    },
+    {
+      "id": "shared_office365",
+      "displayName": "Office 365 Outlook",
+      "note": "Used for approval notification emails."
+    }
+  ],
+  "topics": [
+    "topic_create_purchase_requisition",
+    "topic_check_pr_status",
+    "topic_approve_reject_pr",
+    "topic_pr_followup_actions",
+    "topic_greeting",
+    "topic_fallback"
+  ],
+  "flows": [
+    "flow_sap_vendor_lookup",
+    "flow_sap_create_pr",
+    "flow_sap_get_pr_status",
+    "flow_sap_approve_pr",
+    "flow_sap_cancel_pr",
+    "flow_sap_send_reminder"
+  ],
+  "metadata": {
+    "customer": "Ascend",
+    "phase": "Phase 6 – Upstream Procurement",
+    "source": "RAPP Transpiler",
+    "transpiled_at": "2026-04-20",
+    "backend_agents": [
+      "ascend_purchase_requisition_agent.py",
+      "ascend_pr_status_agent.py",
+      "ascend_pr_approval_agent.py"
+    ],
+    "sap_version": "ECC 6.0"
+  }
+}

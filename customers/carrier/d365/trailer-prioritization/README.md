@@ -99,6 +99,11 @@ npm run dev        # local dev
 npm run deploy     # deploy to Power Apps
 ```
 
+#### Demo Data Profile (Local Dev)
+- The code app currently uses a seeded mock dataset of **16 trailers** in `src/App.tsx`.
+- The sample intentionally mixes statuses (`Scheduled`, `Confirmed`, `Unscheduled`, `Rescheduled`, `Overflow`) so KPI, exceptions, and dock timeline views are populated.
+- If you only see 1-2 trailers, restart the Vite preview/dev server to ensure the latest bundle is loaded.
+
 ### Solution Import
 ```bash
 pac solution import --path solution/CarrierTrailerPrioritization.zip

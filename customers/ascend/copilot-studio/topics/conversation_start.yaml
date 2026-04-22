@@ -1,0 +1,19 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SendActivity
+      id: welcomeMessage
+      activity:
+        text: |
+          👋 **Welcome to Ascend SAP Procurement Assistant!**
+
+          I can help you with:
+          - 📋 **Create a PR** — raise a new purchase requisition
+          - 📊 **Check PR status** — look up any PR in SAP
+          - ✅ **Approve/Reject** — act on PRs in your queue
+          - ❌ **Cancel a PR** — cancel open requisitions
+          - 🔍 **Vendor lookup** — check approved SAP vendors
+
+          **Try saying:** *"I need to raise a PR for $50K of equipment"* or *"Show me my pending approvals"*

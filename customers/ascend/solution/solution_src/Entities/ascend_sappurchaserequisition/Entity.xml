@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ============================================================
+  ascend_sappurchaserequisition  —  Dataverse emulation of SAP ECC 6.0
+  Source tables: EBAN (PR item), includes release/approval status fields
+  Demo label: "SAP ECC 6.0 (Demo via Dataverse)"
+  ============================================================
+-->
+<Entity>
+  <Name LocalizedName="SAP Purchase Requisition (Demo)" OriginalName="ascend_sappurchaserequisition">ascend_sappurchaserequisition</Name>
+  <EntityInfo>
+    <entity Name="ascend_sappurchaserequisition">
+      <LocalizedNames>
+        <LocalizedName description="SAP Purchase Requisition (Demo)" languagecode="1033" />
+      </LocalizedNames>
+      <LocalizedCollectionNames>
+        <LocalizedCollectionName description="SAP Purchase Requisitions (Demo)" languagecode="1033" />
+      </LocalizedCollectionNames>
+      <Descriptions>
+        <Description description="Emulates SAP ECC 6.0 EBAN table (Purchase Requisition items). All records are DEMO data. In production, reads and writes go to SAP ECC 6.0 directly via SAP ERP connector." languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <attribute PhysicalName="ascend_sappurchaserequisitionid">
+          <Type>primarykey</Type><Name>ascend_sappurchaserequisitionid</Name><LogicalName>ascend_sappurchaserequisitionid</LogicalName>
+        </attribute>
+        <!-- EBAN.BANFN — PR number -->
+        <attribute PhysicalName="ascend_banfn">
+          <Type>nvarchar</Type><Name>ascend_banfn</Name><LogicalName>ascend_banfn</LogicalName>
+          <MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="PR Number (BANFN)" languagecode="1033" /></LocalizedNames>
+          <RequiredLevel>required</RequiredLevel>
+        </attribute>
+        <!-- EBAN.BNFPO — PR item number -->
+        <attribute PhysicalName="ascend_bnfpo">
+          <Type>nvarchar</Type><Name>ascend_bnfpo</Name><LogicalName>ascend_bnfpo</LogicalName>
+          <MaxLength>5</MaxLength>
+          <LocalizedNames><LocalizedName description="PR Item (BNFPO)" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>00010</DefaultValue>
+        </attribute>
+        <!-- Short text (EBAN.TXZ01) -->
+        <attribute PhysicalName="ascend_txz01">
+          <Type>nvarchar</Type><Name>ascend_txz01</Name><LogicalName>ascend_txz01</LogicalName>
+          <MaxLength>40</MaxLength>
+          <LocalizedNames><LocalizedName description="Short Text (TXZ01)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Vendor (EBAN.LIFNR) -->
+        <attribute PhysicalName="ascend_lifnr">
+          <Type>nvarchar</Type><Name>ascend_lifnr</Name><LogicalName>ascend_lifnr</LogicalName>
+          <MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="Vendor (LIFNR)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Vendor name (display) -->
+        <attribute PhysicalName="ascend_vendorname">
+          <Type>nvarchar</Type><Name>ascend_vendorname</Name><LogicalName>ascend_vendorname</LogicalName>
+          <MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Vendor Name" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Material group (EBAN.MATKL) -->
+        <attribute PhysicalName="ascend_matkl">
+          <Type>nvarchar</Type><Name>ascend_matkl</Name><LogicalName>ascend_matkl</LogicalName>
+          <MaxLength>9</MaxLength>
+          <LocalizedNames><LocalizedName description="Material Group (MATKL)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Net value (EBAN.PREIS × MENGE) -->
+        <attribute PhysicalName="ascend_netvalue">
+          <Type>money</Type><Name>ascend_netvalue</Name><LogicalName>ascend_netvalue</LogicalName>
+          <LocalizedNames><LocalizedName description="Net Value" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Amount per period -->
+        <attribute PhysicalName="ascend_amountperperiod">
+          <Type>money</Type><Name>ascend_amountperperiod</Name><LogicalName>ascend_amountperperiod</LogicalName>
+          <LocalizedNames><LocalizedName description="Amount Per Period" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Number of periods -->
+        <attribute PhysicalName="ascend_periods">
+          <Type>integer</Type><Name>ascend_periods</Name><LogicalName>ascend_periods</LogicalName>
+          <LocalizedNames><LocalizedName description="Number of Periods" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>1</DefaultValue>
+        </attribute>
+        <!-- Cadence -->
+        <attribute PhysicalName="ascend_cadence">
+          <Type>picklist</Type><Name>ascend_cadence</Name><LogicalName>ascend_cadence</LogicalName>
+          <LocalizedNames><LocalizedName description="Billing Cadence" languagecode="1033" /></LocalizedNames>
+          <OptionSetName>ascend_cadenceoptions</OptionSetName>
+          <!-- 100000=One-Time, 100001=Monthly, 100002=Quarterly, 100003=Yearly -->
+        </attribute>
+        <!-- GL account -->
+        <attribute PhysicalName="ascend_glaccount">
+          <Type>nvarchar</Type><Name>ascend_glaccount</Name><LogicalName>ascend_glaccount</LogicalName>
+          <MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="GL Account" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Release/approval status (EBAN.FRGST) -->
+        <attribute PhysicalName="ascend_frgst">
+          <Type>picklist</Type><Name>ascend_frgst</Name><LogicalName>ascend_frgst</LogicalName>
+          <LocalizedNames><LocalizedName description="Release Status (FRGST)" languagecode="1033" /></LocalizedNames>
+          <OptionSetName>ascend_prstatus</OptionSetName>
+          <!-- 100000=Pending Approval, 100001=Approved, 100002=Rejected, 100003=Cancelled -->
+        </attribute>
+        <!-- Approver ID -->
+        <attribute PhysicalName="ascend_approverid">
+          <Type>nvarchar</Type><Name>ascend_approverid</Name><LogicalName>ascend_approverid</LogicalName>
+          <MaxLength>20</MaxLength>
+          <LocalizedNames><LocalizedName description="Approver ID (DoA)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Approver name -->
+        <attribute PhysicalName="ascend_approvername">
+          <Type>nvarchar</Type><Name>ascend_approvername</Name><LogicalName>ascend_approvername</LogicalName>
+          <MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Approver Name" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Requestor (EBAN.AFNAM) -->
+        <attribute PhysicalName="ascend_afnam">
+          <Type>nvarchar</Type><Name>ascend_afnam</Name><LogicalName>ascend_afnam</LogicalName>
+          <MaxLength>12</MaxLength>
+          <LocalizedNames><LocalizedName description="Requestor (AFNAM)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Creation date (EBAN.BADAT) -->
+        <attribute PhysicalName="ascend_badat">
+          <Type>datetime</Type><Name>ascend_badat</Name><LogicalName>ascend_badat</LogicalName>
+          <LocalizedNames><LocalizedName description="Creation Date (BADAT)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Contract number (reference to EKKO) -->
+        <attribute PhysicalName="ascend_contractnum">
+          <Type>nvarchar</Type><Name>ascend_contractnum</Name><LogicalName>ascend_contractnum</LogicalName>
+          <MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="Contract Reference (EKKO)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Rejection reason -->
+        <attribute PhysicalName="ascend_rejectionreason">
+          <Type>nvarchar</Type><Name>ascend_rejectionreason</Name><LogicalName>ascend_rejectionreason</LogicalName>
+          <MaxLength>255</MaxLength>
+          <LocalizedNames><LocalizedName description="Rejection Reason" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Locked flag (processing in SAP) -->
+        <attribute PhysicalName="ascend_locked">
+          <Type>bit</Type><Name>ascend_locked</Name><LogicalName>ascend_locked</LogicalName>
+          <LocalizedNames><LocalizedName description="Locked in SAP" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>0</DefaultValue>
+        </attribute>
+        <!-- Demo label -->
+        <attribute PhysicalName="ascend_datasource">
+          <Type>nvarchar</Type><Name>ascend_datasource</Name><LogicalName>ascend_datasource</LogicalName>
+          <MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Data Source" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>SAP ECC 6.0 (Demo via Dataverse)</DefaultValue>
+        </attribute>
+        <!-- Demo disclaimer -->
+        <attribute PhysicalName="ascend_demodisclaimer">
+          <Type>nvarchar</Type><Name>ascend_demodisclaimer</Name><LogicalName>ascend_demodisclaimer</LogicalName>
+          <MaxLength>500</MaxLength>
+          <LocalizedNames><LocalizedName description="Demo Disclaimer" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>DEMO DATA ONLY — This record emulates SAP ECC 6.0 EBAN table data. In production, this record would be read from and written to SAP ECC 6.0 via the SAP ERP connector and on-premises data gateway. No real SAP data is stored in Dataverse.</DefaultValue>
+        </attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

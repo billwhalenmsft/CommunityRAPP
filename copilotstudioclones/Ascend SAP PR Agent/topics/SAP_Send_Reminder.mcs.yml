@@ -1,0 +1,53 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: SAP Send Reminder
+    triggerQueries:
+      - send reminder
+      - remind approver
+      - follow up on PR
+      - chase the approver
+      - nudge approver
+      - send a chase
+      - PR hasn't been approved yet
+      - escalate PR
+      - reminder for PR
+
+  actions:
+    - kind: Question
+      id: askPRNumber
+      alwaysPrompt: false
+      variable: init:Topic.PRNumber
+      prompt:
+        text: Which PR number (BANFN) needs a reminder sent to the approver?
+      entity: StringPrebuiltEntity
+
+    - kind: SendActivity
+      id: confirmReminder
+      activity:
+        text: >-
+          I'll send an approval reminder for PR **${Topic.PRNumber}** to the
+          assigned approver. This emulates re-triggering a SAP BUS2105 workflow
+          notification.
+
+    - kind: InvokeFlowAction
+      id: callReminderFlow
+      displayName: SAP Send Reminder Flow
+      inputs:
+        - name: pr_number
+          value: =Topic.PRNumber
+        - name: user_guid
+          value: =System.User.Id
+
+    - kind: SendActivity
+      id: reminderSent
+      activity:
+        text: >-
+          🔔 **Reminder sent!**
+
+
+          The approver for PR **${Topic.PRNumber}** has been notified. If they
+          haven't responded within 48 hours, let me know and I can escalate to
+          their manager.

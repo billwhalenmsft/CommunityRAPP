@@ -1,0 +1,43 @@
+{
+  "cases": [
+    {
+      "id": "fa6603ae-9932-f111-88b4-7c1e52143136",
+      "priority": "High",
+      "title": "Simrad NSX 3007 — Touchscreen Unresponsive After Firmware Update",
+      "account": "Atlantic Marine Supply Co."
+    },
+    {
+      "id": "835fe7dd-9932-f111-88b4-7ced8dceb433",
+      "priority": "High",
+      "title": "B&G Triton2 — Wind Instrument Reading Incorrect Before Race Season",
+      "account": "Euro Marine Distributors"
+    },
+    {
+      "id": "c295ebb2-9932-f111-88b4-7c1e520a58a1",
+      "priority": "Normal",
+      "title": "Lowrance HDS-9 Live — Unit Not Powering On (Consumer Warranty Claim)",
+      "account": "Freshwater Fishing Depot"
+    },
+    {
+      "id": "15230ab9-9932-f111-88b4-7c1e520a58a1",
+      "priority": "High",
+      "title": "Simrad NSX 3009 — RMA Exchange Request (4 Units, Fleet Order)",
+      "account": "Atlantic Marine Supply Co."
+    },
+    {
+      "id": "4f230ab9-9932-f111-88b4-7c1e520a58a1",
+      "priority": "Normal",
+      "title": "Lowrance HDS-12 Live — Sonar Module Failure (Repair RMA)",
+      "account": "Gulf Coast Marine Depot"
+    },
+    {
+      "id": "17e7f4b9-9932-f111-88b4-7ced8d18c8d7",
+      "priority": "Normal",
+      "title": "C-MAP DISCOVER Chart Card — Charts Out of Date, No Update Access",
+      "account": "Pacific Coast Marine Group"
+    }
+  ],
+  "contacts": [],
+  "products": [],
+  "accounts": []
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ascend_sapglaccount — Emulates SAP SKA1/SKB1 (GL Account Master) -->
+<Entity>
+  <Name LocalizedName="SAP GL Account (Demo)" OriginalName="ascend_sapglaccount">ascend_sapglaccount</Name>
+  <EntityInfo>
+    <entity Name="ascend_sapglaccount">
+      <LocalizedNames><LocalizedName description="SAP GL Account (Demo)" languagecode="1033" /></LocalizedNames>
+      <LocalizedCollectionNames><LocalizedCollectionName description="SAP GL Accounts (Demo)" languagecode="1033" /></LocalizedCollectionNames>
+      <Descriptions><Description description="Emulates SAP ECC 6.0 SKA1 (chart of accounts) and SKB1 (company code) GL account master tables. DEMO DATA ONLY." languagecode="1033" /></Descriptions>
+      <attributes>
+        <attribute PhysicalName="ascend_sapglaccountid"><Type>primarykey</Type><Name>ascend_sapglaccountid</Name><LogicalName>ascend_sapglaccountid</LogicalName></attribute>
+        <!-- SKA1.SAKNR — GL account number -->
+        <attribute PhysicalName="ascend_saknr"><Type>nvarchar</Type><Name>ascend_saknr</Name><MaxLength>10</MaxLength><LocalizedNames><LocalizedName description="GL Account Number (SAKNR)" languagecode="1033" /></LocalizedNames><RequiredLevel>required</RequiredLevel></attribute>
+        <!-- Company code (SKB1.BUKRS) -->
+        <attribute PhysicalName="ascend_bukrs"><Type>nvarchar</Type><Name>ascend_bukrs</Name><MaxLength>4</MaxLength><LocalizedNames><LocalizedName description="Company Code (BUKRS)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Description (SKA1.TXT20) -->
+        <attribute PhysicalName="ascend_txt20"><Type>nvarchar</Type><Name>ascend_txt20</Name><MaxLength>20</MaxLength><LocalizedNames><LocalizedName description="Short Description (TXT20)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Long description (SKA1.TXT50) -->
+        <attribute PhysicalName="ascend_txt50"><Type>nvarchar</Type><Name>ascend_txt50</Name><MaxLength>50</MaxLength><LocalizedNames><LocalizedName description="Long Description (TXT50)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Blocked flag (SKB1.XSPEB) -->
+        <attribute PhysicalName="ascend_xspeb"><Type>bit</Type><Name>ascend_xspeb</Name><LocalizedNames><LocalizedName description="GL Blocked (XSPEB)" languagecode="1033" /></LocalizedNames><DefaultValue>0</DefaultValue></attribute>
+        <!-- Account type (SKA1.KTOKS) -->
+        <attribute PhysicalName="ascend_ktoks"><Type>nvarchar</Type><Name>ascend_ktoks</Name><MaxLength>4</MaxLength><LocalizedNames><LocalizedName description="Account Type (KTOKS)" languagecode="1033" /></LocalizedNames></attribute>
+        <attribute PhysicalName="ascend_datasource"><Type>nvarchar</Type><Name>ascend_datasource</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Data Source" languagecode="1033" /></LocalizedNames><DefaultValue>SAP ECC 6.0 (Demo via Dataverse)</DefaultValue></attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

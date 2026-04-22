@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navico Group — D365 CS Competitive Demo</title>
+    <style>
+        :root {
+            --navico-blue: #003366;
+            --navico-teal: #00A99D;
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-green: #107C10;
+            --accent-orange: #D83B01;
+            --accent-purple: #5C2D91;
+            --accent-teal: #008575;
+            --accent-red: #A4262C;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg, #003366 0%, #004488 50%, #00A99D 100%);
+            color: white;
+            padding: 50px 40px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: 'NAVICO';
+            position: absolute;
+            top: 15px;
+            left: 30px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            opacity: 0.9;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00A99D, #004488, #00A99D);
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.92;
+            font-weight: 300;
+            margin-bottom: 16px;
+        }
+
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            font-size: 0.88rem;
+            opacity: 0.88;
+            flex-wrap: wrap;
+        }
+
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--navico-teal);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-top: 14px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* ── Container ── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ── Section label ── */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--navico-blue);
+            margin-top: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* ── Pre-flight checklist ── */
+        .preflight {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F2 100%);
+            border-left: 4px solid var(--accent-green);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+
+        .preflight h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+        }
+
+        .preflight ul {
+            font-size: 0.88rem;
+            color: #2E5A30;
+            line-height: 2;
+            padding-left: 20px;
+        }
+
+        .preflight li { margin-bottom: 2px; }
+
+        .preflight code {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.82rem;
+        }
+
+        /* ── Collapsible sections ── */
+        .exec-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+            border-left: 5px solid var(--navico-blue);
+            transition: box-shadow 0.2s;
+            overflow: hidden;
+        }
+
+        .exec-section:hover { box-shadow: var(--shadow-hover); }
+
+        .exec-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 22px 24px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .exec-header:hover { background: rgba(0, 51, 102, 0.03); }
+
+        .exec-number {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .exec-header-text { flex: 1; }
+
+        .exec-header-text h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .exec-header-text .exec-purpose {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .exec-time {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .exec-expand {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .exec-section.open .exec-expand { transform: rotate(180deg); }
+
+        .exec-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .exec-section.open .exec-body { max-height: 50000px; }
+
+        .exec-content { padding: 0 24px 28px 82px; }
+
+        /* ── Step blocks ── */
+        .step-block {
+            margin: 16px 0;
+            padding: 16px 20px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            border-left: 3px solid var(--navico-blue);
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .step-label.tell    { background: #003366; }
+        .step-label.show    { background: #00A99D; }
+        .step-label.say     { background: #D83B01; }
+        .step-label.click   { background: #0078D4; }
+        .step-label.tip     { background: #FFB900; color: #5D4510; }
+        .step-label.caution { background: #A4262C; }
+        .step-label.copilot { background: #5C2D91; }
+        .step-label.transition { background: #605E5C; }
+        .step-label.email   { background: #0078D4; }
+        .step-label.voice   { background: #107C10; }
+        .step-label.chat    { background: #008575; }
+
+        .step-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .step-text strong { color: var(--text); }
+
+        .step-text em {
+            color: var(--accent-orange);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .step-text .click-path {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            background: rgba(0, 51, 102, 0.1);
+            color: var(--navico-blue);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        /* ── Verbatim talk track ── */
+        .talk-track {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 10px 0;
+            font-style: italic;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: #444;
+            position: relative;
+        }
+
+        .talk-track::before {
+            content: '\201C';
+            font-size: 3rem;
+            color: var(--navico-teal);
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            font-style: normal;
+            opacity: 0.5;
+        }
+
+        .talk-track p { padding-left: 24px; }
+
+        /* ── Tell-Show-Tell wrapper ── */
+        .tst-wrapper {
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .tst-header {
+            background: linear-gradient(135deg, #003366, #004488);
+            color: white;
+            padding: 8px 16px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .tst-body { padding: 16px 20px; }
+
+        /* ── Sub-topic headers ── */
+        .sub-header {
+            margin: 28px 0 10px;
+            font-size: 1.02rem;
+            font-weight: 600;
+            color: var(--navico-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-header.show-sub  { color: var(--navico-teal); }
+        .sub-header.email-sub { color: var(--ms-blue); }
+        .sub-header.chat-sub  { color: var(--accent-teal); }
+        .sub-header.rma-sub   { color: var(--accent-orange); }
+
+        /* ── Callout boxes ── */
+        .callout {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .callout.warning  { background: #FFF4CE; border-left: 3px solid #FFB900; color: #5D4510; }
+        .callout.critical { background: #FDE7E9; border-left: 3px solid var(--accent-red); color: #5D1015; }
+        .callout.success  { background: #E8F5E9; border-left: 3px solid var(--accent-green); color: #2E5A30; }
+        .callout.info     { background: var(--ms-blue-light); border-left: 3px solid var(--ms-blue); color: #003A6E; }
+
+        .callout.roi {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            border-left: 4px solid #2E7D32;
+            color: #1B5E20;
+            padding: 14px 18px;
+            font-size: 0.85rem;
+        }
+
+        .callout.roi strong { color: #1B5E20; }
+        .callout strong { font-weight: 700; }
+
+        /* ── Data reference tables ── */
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.82rem;
+        }
+
+        .ref-table th {
+            background: #F3F2F1;
+            font-weight: 600;
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 2px solid #D2D0CE;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .ref-table td {
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: top;
+        }
+
+        .ref-table tr:last-child td { border-bottom: none; }
+        .ref-table tbody tr:hover { background: #F9F9F9; }
+
+        .ref-table code {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.76rem;
+            background: #F0F0F0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #333;
+        }
+
+        .ref-section-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--navico-blue);
+            margin: 20px 0 6px;
+        }
+
+        .ref-note {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin: 6px 0 16px;
+            padding-left: 12px;
+            border-left: 2px solid var(--border);
+        }
+
+        /* ── Tier badges ── */
+        .tier-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tier-pill.t-platinum { background: linear-gradient(135deg, #E8E8E8, #CFD8DC); color: #37474F; }
+        .tier-pill.t-gold     { background: linear-gradient(135deg, #FFD54F, #FFC107); color: #5D4037; }
+        .tier-pill.t-silver   { background: linear-gradient(135deg, #E0E0E0, #BDBDBD); color: #424242; }
+        .tier-pill.t-consumer { background: linear-gradient(135deg, #B3E5FC, #81D4FA); color: #01579B; }
+
+        /* ── Story block ── */
+        .story-block {
+            background: linear-gradient(135deg, #E8EAF6 0%, #E0F7FA 100%);
+            border-left: 4px solid var(--navico-blue);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+
+        .story-block h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navico-blue);
+            margin-bottom: 12px;
+        }
+
+        .story-block p {
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+
+        .story-block ul {
+            font-size: 0.88rem;
+            padding-left: 22px;
+            margin-bottom: 8px;
+        }
+
+        .story-block li { margin-bottom: 4px; }
+
+        /* ── Timing bar ── */
+        .timing-bar {
+            display: flex;
+            gap: 0;
+            margin: 28px 0 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 8px;
+        }
+
+        .timing-bar .t-seg { height: 100%; }
+
+        /* ── NAV TOGGLE (Hamburger) ── */
+        .nav-toggle {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 9998;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: var(--navico-blue);
+            color: white;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .nav-toggle:hover { background: var(--ms-blue-dark); transform: scale(1.05); }
+        .nav-toggle.open  { background: var(--accent-red); }
+
+        .side-nav-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+        }
+
+        .side-nav-backdrop.visible { display: block; }
+
+        .side-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100vh;
+            background: white;
+            z-index: 10000;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .side-nav.open { transform: translateX(0); }
+
+        .side-nav-header {
+            padding: 18px 20px 14px;
+            background: linear-gradient(135deg, var(--navico-blue), #004488);
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .side-nav-header span { font-size: 1rem; }
+
+        .side-nav-pin {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.68rem;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .side-nav-pin:hover { background: rgba(255, 255, 255, 0.15); }
+
+        .side-nav-pin.pinned {
+            background: var(--navico-teal);
+            border-color: var(--navico-teal);
+            color: white;
+        }
+
+        .side-nav-body { flex: 1; overflow-y: auto; padding: 10px 0; }
+
+        .side-nav-group {
+            padding: 10px 18px 4px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-light);
+        }
+
+        .side-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 18px;
+            font-size: 0.8rem;
+            color: var(--text);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .side-nav-item:hover { background: #F3F2F1; }
+
+        .side-nav-item.active {
+            background: var(--ms-blue-light);
+            border-left-color: var(--navico-blue);
+            font-weight: 600;
+        }
+
+        .side-nav-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.68rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .side-nav-label { line-height: 1.3; }
+
+        /* ── Push content when pinned ── */
+        body.nav-pinned .container { margin-left: 340px; }
+        body.nav-pinned .hero { padding-left: 340px; }
+        body.nav-pinned .side-nav { box-shadow: 1px 0 3px rgba(0, 0, 0, 0.08); }
+        body.nav-pinned .side-nav-backdrop { display: none !important; }
+        body.nav-pinned .nav-toggle { left: 330px; }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+        }
+
+        /* ── Border & bg color helpers ── */
+        .border-voice  { border-left-color: var(--accent-green); }
+        .border-email  { border-left-color: var(--ms-blue); }
+        .border-chat   { border-left-color: var(--accent-teal); }
+        .border-rma    { border-left-color: var(--accent-orange); }
+        .border-close  { border-left-color: var(--navico-blue); }
+        .border-setup  { border-left-color: var(--navico-teal); }
+
+        .bg-voice  { background: var(--accent-green); }
+        .bg-email  { background: var(--ms-blue); }
+        .bg-chat   { background: var(--accent-teal); }
+        .bg-rma    { background: var(--accent-orange); }
+        .bg-close  { background: var(--navico-blue); }
+        .bg-setup  { background: var(--navico-teal); }
+
+        @media (max-width: 900px) {
+            .side-nav { width: 280px; }
+            body.nav-pinned .container { margin-left: 300px; }
+            body.nav-pinned .hero { padding-left: 300px; }
+            body.nav-pinned .nav-toggle { left: 290px; }
+            .exec-content { padding: 0 16px 24px 16px; }
+        }
+
+        @media print {
+            .nav-toggle, .side-nav, .side-nav-backdrop { display: none !important; }
+            body.nav-pinned .container { margin-left: auto; }
+            body.nav-pinned .hero { padding-left: 50px; }
+            .exec-section { break-inside: avoid; }
+            .exec-body { max-height: none !important; overflow: visible !important; }
+            .demo-action-panel { display: none !important; }
+        }
+
+        /* ── Demo Action Buttons ── */
+        .demo-action-panel {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+            border: 1px solid #c8d6e5;
+            border-left: 4px solid #0078D4;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+        .demo-action-title {
+            font-weight: 700;
+            font-size: 13px;
+            color: #0078D4;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .demo-action-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .demo-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid;
+            transition: all 0.2s;
+        }
+        .demo-action-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .demo-action-btn.primary { background: #0078D4; color: #fff; border-color: #0078D4; }
+        .demo-action-btn.primary:hover { background: #106EBE; }
+        .demo-action-btn.secondary { background: #fff; color: #323130; border-color: #c8c6c4; }
+        .demo-action-btn.secondary:hover { background: #f3f2f1; }
+        .demo-action-btn.success { background: #107C10; color: #fff; border-color: #107C10; }
+        .demo-action-btn.success:hover { background: #0B6A0B; }
+        .demo-action-status {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #605e5c;
+            min-height: 18px;
+        }
+        .demo-action-status.ok { color: #107C10; }
+        .demo-action-status.err { color: #A4262C; }
+        .demo-action-preview {
+            display: none;
+            margin-top: 12px;
+            background: #fff;
+            border: 1px solid #e1dfdd;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 12px;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .demo-action-preview.visible { display: block; }
+        .demo-action-preview pre {
+            white-space: pre-wrap;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            color: #323130;
+        }
+        .demo-action-preview .email-field {
+            color: #605e5c;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+        .demo-action-preview .email-subject {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e1dfdd;
+        }
+        /* ── Context Data Panel (Right Side) ── */
+        .context-panel {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            width: 300px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            z-index: 500;
+            font-size: 0.78rem;
+            transition: opacity 0.2s;
+        }
+
+        .context-panel-header {
+            position: sticky;
+            top: 0;
+            background: var(--navico-blue);
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1;
+        }
+
+        .context-panel-body {
+            padding: 12px 16px 16px;
+        }
+
+        .ctx-section {
+            display: none;
+        }
+
+        .ctx-section.active {
+            display: block;
+        }
+
+        .ctx-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin: 12px 0 6px 0;
+        }
+
+        .ctx-label:first-child {
+            margin-top: 0;
+        }
+
+        .ctx-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #f3f2f1;
+        }
+
+        .ctx-item:last-child {
+            border-bottom: none;
+        }
+
+        .ctx-key {
+            color: var(--text-light);
+            font-size: 0.72rem;
+        }
+
+        .ctx-val {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.72rem;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .ctx-val code {
+            background: #f3f2f1;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+        }
+
+        .ctx-pill {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .ctx-pill-plat { background: #E8D5B7; color: #5D4037; }
+        .ctx-pill-gold { background: #FFF3CD; color: #856404; }
+        .ctx-pill-green { background: #D4EDDA; color: #155724; }
+        .ctx-pill-blue { background: #CCE5FF; color: #004085; }
+
+        .context-panel-toggle {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            z-index: 501;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: var(--navico-blue);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        /* Adjust main container to make room for the panel */
+        body.ctx-panel-open .container {
+            max-width: 900px;
+            margin-right: 340px;
+        }
+
+        @media (max-width: 1400px) {
+            .context-panel { width: 260px; right: 10px; font-size: 0.74rem; }
+            body.ctx-panel-open .container { margin-right: 290px; }
+        }
+
+        @media (max-width: 1100px) {
+            .context-panel { display: none; }
+            .context-panel-toggle { display: block; }
+            body.ctx-panel-open .container { margin-right: auto; }
+        }
+
+        @media print {
+            .context-panel, .context-panel-toggle { display: none !important; }
+            body.ctx-panel-open .container { margin-right: auto; max-width: 1100px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV TOGGLE (Hamburger) -->
+    <button class="nav-toggle" id="navToggle" aria-label="Open navigation">&#9776;</button>
+
+    <!-- SIDE NAV -->
+    <div class="side-nav-backdrop" id="navBackdrop"></div>
+    <div class="side-nav" id="sideNav">
+        <div class="side-nav-header">
+            <strong>&#9776; Demo Sections</strong>
+            <button class="side-nav-pin" id="navPin">PIN</button>
+        </div>
+        <div class="side-nav-body" id="navBody"></div>
+    </div>
+
+    <!-- CONTEXT DATA PANEL (Right Side) -->
+    <button class="context-panel-toggle" id="ctxToggle" onclick="document.getElementById('ctxPanel').style.display='block'; this.style.display='none'; document.body.classList.add('ctx-panel-open');">📋</button>
+    <div class="context-panel" id="ctxPanel">
+        <div class="context-panel-header">
+            <span>📋</span>
+            <span id="ctxTitle">Demo Data</span>
+            <span style="margin-left:auto; cursor:pointer; font-size:0.9rem;" onclick="this.closest('.context-panel').style.display='none'; document.getElementById('ctxToggle').style.display='block'; document.body.classList.remove('ctx-panel-open');">✕</span>
+        </div>
+        <div class="context-panel-body">
+
+            <!-- SETUP / DEFAULT -->
+            <div class="ctx-section active" id="ctx-setup">
+                <div class="ctx-label">Environment</div>
+                <div class="ctx-item"><span class="ctx-key">D365 Org</span><span class="ctx-val"><code>orgecbce8ef</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Queue Email</span><span class="ctx-val"><code style="font-size:0.6rem;">customerservice@d365demo...</code></span></div>
+                <div class="ctx-label">Demo Caller</div>
+                <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Jake Harrington</span></div>
+                <div class="ctx-item"><span class="ctx-key">Phone</span><span class="ctx-val"><code>+1 651-226-3398</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Account</span><span class="ctx-val">Atlantic Marine Supply</span></div>
+                <div class="ctx-item"><span class="ctx-key">Tier</span><span class="ctx-val"><span class="ctx-pill ctx-pill-plat">Platinum Expert</span></span></div>
+            </div>
+
+            <!-- VOICE SCENARIO -->
+            <div class="ctx-section" id="ctx-voice">
+                <div class="ctx-label">Caller</div>
+                <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Jake Harrington</span></div>
+                <div class="ctx-item"><span class="ctx-key">Phone</span><span class="ctx-val"><code>+1 651-226-3398</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Account</span><span class="ctx-val">Atlantic Marine Supply</span></div>
+                <div class="ctx-item"><span class="ctx-key">Tier</span><span class="ctx-val"><span class="ctx-pill ctx-pill-plat">Platinum Expert</span></span></div>
+                <div class="ctx-label">Case</div>
+                <div class="ctx-item"><span class="ctx-key">Title</span><span class="ctx-val">Simrad NSX 3007 — Touchscreen Unresponsive</span></div>
+                <div class="ctx-item"><span class="ctx-key">Serial</span><span class="ctx-val"><code>SIM-2024-NSX-10042</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Brand</span><span class="ctx-val">Simrad</span></div>
+                <div class="ctx-item"><span class="ctx-key">Priority</span><span class="ctx-val" style="color:var(--accent-red); font-weight:700;">High</span></div>
+                <div class="ctx-label">KB Article</div>
+                <div class="ctx-item"><span class="ctx-key">Article</span><span class="ctx-val"><code>KA-01262</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Title</span><span class="ctx-val" style="font-size:0.65rem;">Simrad NSX Touchscreen Recovery</span></div>
+            </div>
+
+            <!-- EMAIL SCENARIO -->
+            <div class="ctx-section" id="ctx-email">
+                <div class="ctx-label">Sender</div>
+                <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Christine Delacroix</span></div>
+                <div class="ctx-item"><span class="ctx-key">Email</span><span class="ctx-val" style="font-size:0.6rem;"><code>christine.delacroix@D365Demo...</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Account</span><span class="ctx-val">Euro Marine Distributors</span></div>
+                <div class="ctx-item"><span class="ctx-key">Tier</span><span class="ctx-val"><span class="ctx-pill ctx-pill-plat">Platinum Expert</span></span></div>
+                <div class="ctx-label">Case</div>
+                <div class="ctx-item"><span class="ctx-key">Title</span><span class="ctx-val">B&amp;G Triton2 — Wind Angle Erratic</span></div>
+                <div class="ctx-item"><span class="ctx-key">Serials</span><span class="ctx-val"><code>BG-2024-TRI2-20011</code><br><code>...-20013, ...-20015</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Brand</span><span class="ctx-val">B&amp;G</span></div>
+                <div class="ctx-label">KB Article</div>
+                <div class="ctx-item"><span class="ctx-key">Article</span><span class="ctx-val"><code>KA-01263</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Title</span><span class="ctx-val" style="font-size:0.65rem;">B&amp;G Triton2 Wind Calibration</span></div>
+            </div>
+
+            <!-- CHAT SCENARIO -->
+            <div class="ctx-section" id="ctx-chat">
+                <div class="ctx-label">Customer</div>
+                <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Christine Delacroix</span></div>
+                <div class="ctx-item"><span class="ctx-key">Account</span><span class="ctx-val">Euro Marine Distributors</span></div>
+                <div class="ctx-item"><span class="ctx-key">Tier</span><span class="ctx-val"><span class="ctx-pill ctx-pill-plat">Platinum Expert</span></span></div>
+                <div class="ctx-label">Case</div>
+                <div class="ctx-item"><span class="ctx-key">Title</span><span class="ctx-val">B&amp;G Triton2 — Wind Instrument Erratic Before Race Season</span></div>
+                <div class="ctx-item"><span class="ctx-key">Serial</span><span class="ctx-val"><code>BG-2024-TRI2-20011</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Brand</span><span class="ctx-val">B&amp;G</span></div>
+                <div class="ctx-label">Copilot Assist</div>
+                <div class="ctx-item"><span class="ctx-key">KB</span><span class="ctx-val"><code>KA-01263</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Feature</span><span class="ctx-val">Suggested Replies</span></div>
+            </div>
+
+            <!-- RMA SCENARIO -->
+            <div class="ctx-section" id="ctx-rma">
+                <div class="ctx-label">Customer</div>
+                <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Mike Torres</span></div>
+                <div class="ctx-item"><span class="ctx-key">Account</span><span class="ctx-val">Freshwater Fishing Depot</span></div>
+                <div class="ctx-item"><span class="ctx-key">Tier</span><span class="ctx-val"><span class="ctx-pill ctx-pill-gold">Standard</span></span></div>
+                <div class="ctx-label">Case</div>
+                <div class="ctx-item"><span class="ctx-key">Title</span><span class="ctx-val">Lowrance HDS-9 — Not Powering On</span></div>
+                <div class="ctx-item"><span class="ctx-key">Serial</span><span class="ctx-val"><code>LWR-2024-HDS-88821</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Brand</span><span class="ctx-val">Lowrance</span></div>
+                <div class="ctx-label">RMA Details</div>
+                <div class="ctx-item"><span class="ctx-key">Type</span><span class="ctx-val">Exchange</span></div>
+                <div class="ctx-item"><span class="ctx-key">Warranty</span><span class="ctx-val"><span class="ctx-pill ctx-pill-green">Active → 2027</span></span></div>
+                <div class="ctx-item"><span class="ctx-key">KB</span><span class="ctx-val"><code>KA-01264</code> / <code>KA-01265</code></span></div>
+            </div>
+
+            <!-- PORTAL AGENT SCENARIO -->
+            <div class="ctx-section" id="ctx-portal">
+                <div class="ctx-label">Agent</div>
+                <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Navico Self-Service Assistant</span></div>
+                <div class="ctx-item"><span class="ctx-key">Platform</span><span class="ctx-val">Copilot Studio</span></div>
+                <div class="ctx-item"><span class="ctx-key">Portal</span><span class="ctx-val"><a href="https://customerselfservice-bw.powerappsportals.com" target="_blank" style="color:var(--ms-blue); font-size:0.6rem;">Open Portal →</a></span></div>
+                <div class="ctx-label">Portal Login (Christine)</div>
+                <div class="ctx-item"><span class="ctx-key">User</span><span class="ctx-val">christine.delacroix</span></div>
+                <div class="ctx-item"><span class="ctx-key">Email</span><span class="ctx-val" style="font-size:0.58rem;"><code>christine.delacroix@D365Demo...</code></span></div>
+                <div class="ctx-label">Test Prompts</div>
+                <div class="ctx-item"><span class="ctx-key">Troubleshoot</span><span class="ctx-val" style="font-size:0.65rem;">My Simrad screen won't turn on</span></div>
+                <div class="ctx-item"><span class="ctx-key">Serial</span><span class="ctx-val"><code>SIM-2024-NSX-10042</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Warranty</span><span class="ctx-val" style="font-size:0.65rem;">Is my product under warranty?</span></div>
+                <div class="ctx-item"><span class="ctx-key">Certify</span><span class="ctx-val" style="font-size:0.65rem;">What's my certification status?</span></div>
+                <div class="ctx-item"><span class="ctx-key">Safety</span><span class="ctx-val" style="font-size:0.65rem;">Navigation failed at sea</span></div>
+                <div class="ctx-label">Topics</div>
+                <div class="ctx-item"><span class="ctx-key">Custom</span><span class="ctx-val">4 (Troubleshoot, Warranty, Registration, Cert)</span></div>
+                <div class="ctx-item"><span class="ctx-key">KB Articles</span><span class="ctx-val">14 linked</span></div>
+            </div>
+
+            <!-- CLOSE SCENARIO -->
+            <div class="ctx-section" id="ctx-close">
+                <div class="ctx-label">Key Numbers</div>
+                <div class="ctx-item"><span class="ctx-key">CSRs</span><span class="ctx-val">37</span></div>
+                <div class="ctx-item"><span class="ctx-key">Brands</span><span class="ctx-val">17 (5 core)</span></div>
+                <div class="ctx-item"><span class="ctx-key">Tech Support</span><span class="ctx-val">52%</span></div>
+                <div class="ctx-item"><span class="ctx-key">Warranty/RMA</span><span class="ctx-val">48%</span></div>
+                <div class="ctx-item"><span class="ctx-key">Self-Service Target</span><span class="ctx-val">60% deflection</span></div>
+                <div class="ctx-label">Competitive</div>
+                <div class="ctx-item"><span class="ctx-key">Current CRM</span><span class="ctx-val">Salesforce (Sales)</span></div>
+                <div class="ctx-item"><span class="ctx-key">Current CS</span><span class="ctx-val">D365 (basic case mgmt)</span></div>
+                <div class="ctx-item"><span class="ctx-key">Advantage</span><span class="ctx-val"><span class="ctx-pill ctx-pill-blue">Already Licensed</span></span></div>
+            </div>
+
+            <!-- REFERENCE (shown with setup/reference section) -->
+            <div class="ctx-section" id="ctx-reference">
+                <div class="ctx-label">Hero Serials</div>
+                <div class="ctx-item"><span class="ctx-key">Simrad NSX</span><span class="ctx-val"><code>SIM-2024-NSX-10042</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">B&amp;G Triton2</span><span class="ctx-val"><code>BG-2024-TRI2-20011</code></span></div>
+                <div class="ctx-item"><span class="ctx-key">Lowrance HDS-9</span><span class="ctx-val"><code>LWR-2024-HDS-88821</code></span></div>
+                <div class="ctx-label">Key Contacts</div>
+                <div class="ctx-item"><span class="ctx-key">Jake H.</span><span class="ctx-val">Atlantic Marine (Plat Expert)</span></div>
+                <div class="ctx-item"><span class="ctx-key">Christine D.</span><span class="ctx-val">Euro Marine (Plat Expert)</span></div>
+                <div class="ctx-item"><span class="ctx-key">Mike T.</span><span class="ctx-val">Freshwater Fishing (B2C)</span></div>
+                <div class="ctx-label">Quick Links</div>
+                <div class="ctx-item"><span class="ctx-key">D365</span><span class="ctx-val"><a href="https://orgecbce8ef.crm.dynamics.com" target="_blank" style="color:var(--ms-blue);">Open →</a></span></div>
+                <div class="ctx-item"><span class="ctx-key">Copilot Studio</span><span class="ctx-val"><a href="https://copilotstudio.microsoft.com" target="_blank" style="color:var(--ms-blue);">Open →</a></span></div>
+                <div class="ctx-item"><span class="ctx-key">Portal</span><span class="ctx-val"><a href="https://customerselfservice-bw.powerappsportals.com" target="_blank" style="color:var(--ms-blue);">Open →</a></span></div>
+                <div class="ctx-item"><span class="ctx-key">Outlook Web</span><span class="ctx-val"><a href="https://outlook.office.com" target="_blank" style="color:var(--ms-blue);">Open →</a></span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <header class="hero">
+        <h1>Navico Group — D365 CS Competitive Demo</h1>
+        <p class="subtitle">Customer Service Expansion &nbsp;·&nbsp; Salesforce → D365 &nbsp;·&nbsp; Tell-Show-Tell Flow</p>
+        <div class="meta">
+            <span>🎯 Competitive vs Salesforce</span>
+            <span>👤 You are <strong>Alex</strong> (CSR, Navico Customer Care)</span>
+            <span>⏱ 60 min</span>
+        </div>
+        <div class="hero-badge">Bake-Off Demo — Marine Electronics Industry</div>
+    </header>
+
+    <div class="container">
+
+        <!-- ── TIMING BAR ── -->
+        <p class="section-label">Session Timing (60 min)</p>
+        <div class="timing-bar">
+            <div class="t-seg" style="flex:5;  background:var(--navico-blue);"   title="Setup &amp; Story ~5 min"></div>
+            <div class="t-seg" style="flex:15; background:var(--accent-green);"  title="Inbound Voice ~15 min"></div>
+            <div class="t-seg" style="flex:12; background:var(--ms-blue);"       title="Email Triage ~12 min"></div>
+            <div class="t-seg" style="flex:15; background:linear-gradient(90deg, #6B2FA0, var(--accent-teal));" title="Portal: Self-Service + Live Chat ~15 min"></div>
+            <div class="t-seg" style="flex:8;  background:var(--accent-orange);" title="RMA Workflow ~8 min"></div>
+            <div class="t-seg" style="flex:5;  background:#002244;"              title="Close &amp; Value ~5 min"></div>
+        </div>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.72rem; color:var(--text-light); margin-bottom:24px;">
+            <span>🔵 Setup &amp; Story (5m)</span>
+            <span>🟢 Inbound Voice (15m)</span>
+            <span>🔷 Email Triage (12m)</span>
+            <span>🟣💬 Portal: Self-Service + Live Chat (15m)</span>
+            <span>🟠 RMA Workflow (8m)</span>
+            <span>🔵 Close &amp; Value (5m)</span>
+        </div>
+
+        <!-- ── THE STORY ── -->
+        <div class="story-block">
+            <h3>📖 The Demo Story — A Day at Navico Customer Care</h3>
+            <p><strong>Setting:</strong> You are <em>Alex</em>, a Customer Service Representative on the Simrad brand team at Navico's global support center. Navico currently uses Salesforce for Sales — today, you're showing how D365 Customer Service can serve as the expansion for Customer Service, replacing the basic case management they already do in D365 while adding omnichannel, intelligent routing, and Copilot.</p>
+            <p><strong>The Challenge:</strong> Navico has 37 CSRs, 17 brands, and a customer base split between B2B distributors (Tier 1) and B2C end users. Today you'll handle five types of interactions:</p>
+            <ul>
+                <li>A high-priority inbound call from a Platinum Expert B2B distributor</li>
+                <li>An inbound email about a technical product issue — intelligent routing + Copilot Agent Assist</li>
+                <li>A live web chat from a Platinum Expert B2B distributor via the dealer portal (a channel Navico doesn't have today)</li>
+                <li>An RMA warranty case that needs serial lookup and processing</li>
+                <li>A self-service AI agent on the portal — handling troubleshooting, warranty, registration, and certification without a human</li>
+            </ul>
+            <p><strong>The Differentiator vs Salesforce:</strong> Navico already owns the D365 license. What they're missing is configuration — channels, intelligent routing, Copilot Agent Assist, and the full omnichannel workspace. Everything you'll see today is available to them TODAY without additional license cost.</p>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- PRE-DEMO SETUP                                 -->
+        <!-- ============================================== -->
+
+        <p class="section-label">Pre-Demo Setup</p>
+
+        <!-- PRE-FLIGHT CHECKLIST -->
+        <div class="exec-section" id="section-setup" style="border-left-color: var(--accent-green);">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: var(--accent-green);">✓</div>
+                <div class="exec-header-text">
+                    <h3>✅ Pre-Flight Checklist</h3>
+                    <div class="exec-purpose">Complete this 15 minutes before the demo begins</div>
+                </div>
+                <div class="exec-time">Reference</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+                    <div class="preflight">
+                        <h3>✅ Pre-Flight Checklist (15 min before demo)</h3>
+                        <ul>
+                            <li><strong>Browser tabs open (Edge recommended):</strong></li>
+                            <li>&emsp;Tab 1: D365 CS Workspace — <code>https://orgecbce8ef.crm.dynamics.com</code></li>
+                            <li>&emsp;Tab 2: Omnichannel Real-Time Analytics (open but stay on Tab 1)</li>
+                            <li><strong>In D365 Workspace verify:</strong></li>
+                            <li>&emsp;Presence status set to <strong>"Available"</strong> (green dot, bottom-left)</li>
+                            <li>&emsp;Omnichannel panel showing Email, Chat, and Voice channels</li>
+                            <li><strong>Test contacts open — confirm each record loads:</strong></li>
+                            <li>&emsp;Jake Harrington (Atlantic Marine Supply Co.) — confirm <strong>2 open cases</strong> visible</li>
+                            <li>&emsp;Christine Delacroix (Euro Marine Distributors) — confirm B&G Triton2 case visible</li>
+                            <li>&emsp;Mike Torres (Freshwater Fishing Depot) — confirm HDS-9 warranty case visible</li>
+                            <li>&emsp;Dana Broussard (Gulf Coast Marine Depot) — confirm HDS-12 Repair RMA visible</li>
+                            <li><strong>Hero case timelines pre-loaded:</strong> Each case has 8 activities (calls, emails, notes) showing a complete resolution arc. These will display in the timeline during the live demo.</li>
+                            <li><strong>Second phone for voice demo:</strong> <code>+1 651-226-3398</code> (Jake Harrington's number)</li>
+                            <li><strong>Screen sharing:</strong> Share Edge browser window — not full desktop</li>
+                            <li><strong>This guide</strong> pinned on second monitor or side panel</li>
+                            <li><strong>Notifications:</strong> Focus Assist ON, Teams DND, Outlook notifications OFF</li>
+                        </ul>
+                    </div>
+                    <div class="callout info">
+                        <strong>Quick Reference</strong><br>
+                        D365 Org: <code>https://orgecbce8ef.crm.dynamics.com</code><br>
+                        Voice Demo Caller — Jake Harrington: <code>+1 651-226-3398</code><br>
+                        Demo Accounts: Atlantic Marine Supply Co., Euro Marine Distributors, Gulf Coast Marine Depot, Freshwater Fishing Depot<br>
+                        <em>All hero cases seeded with 8-activity timelines (phone → email thread → resolution). Brand logos active on Equipment/Warranty screen.</em>
+                    </div>
+
+                    <div class="callout" style="border-left-color:#6B2FA0;">
+                        <strong>📧 Email Demo Setup</strong><br>
+                        <strong>Send FROM:</strong> <code>christine.delacroix@D365DemoTSCE30330346.onmicrosoft.com</code> (shared mailbox — open in Outlook Web incognito window)<br>
+                        <strong>Send TO:</strong> <code>customerservice@d365demotsce30330346.onmicrosoft.com</code> (D365 queue)<br>
+                        <strong>How:</strong> Use the "Send via Outlook Web" button below, or open <a href="https://outlook.office.com" target="_blank">outlook.office.com</a> and sign in as Christine's mailbox<br>
+                        <em>D365 will auto-match Christine → Euro Marine Distributors → Platinum Expert → B&amp;G queue</em>
+                    </div>
+
+                    <div class="callout" style="border-left-color:#6B2FA0;">
+                        <strong>🤖 Portal Agent Setup</strong><br>
+                        <strong>Agent:</strong> Navico Self-Service Assistant (Copilot Studio)<br>
+                        <strong>Test URL:</strong> <a href="https://copilotstudio.microsoft.com" target="_blank">copilotstudio.microsoft.com</a> → Select agent → Test your agent (bottom-left panel)<br>
+                        <strong>Topics:</strong> Product Troubleshoot, Warranty Check, Product Registration, Certification Inquiry + system topics<br>
+                        <strong>Knowledge:</strong> 14 Navico KB articles (KA-01262 through KA-01280) linked as Dataverse knowledge source<br>
+                        <em>See Scenario 5 below for the full demo script with exact prompts to type</em>
+                    </div>
+
+                    <div class="callout" style="border-left-color:#0078D4;">
+                        <strong>🧠 Customer Intent Agent (Manual Setup Required)</strong><br>
+                        <strong>Setup guide:</strong> <code>customers/navico/d365/copilot-studio/Navico_Customer_Intent_Agent_Setup.md</code><br>
+                        <strong>4 intent groups:</strong> Technical Support, Warranty &amp; RMA, Product Information, Certification &amp; Training<br>
+                        <strong>10 intents mapped to KB articles</strong> — surfaces next-best-action in the Agent Assist panel<br>
+                        <em>Intents must be created through D365 Admin Center UI (not API). See setup guide for detailed instructions.</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HERO RECORDS REFERENCE -->
+        <div class="exec-section" id="section-reference" style="border-left-color: var(--navico-teal);">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number" style="background: var(--navico-teal);">★</div>
+                <div class="exec-header-text">
+                    <h3>Hero Records — Demo Data Reference</h3>
+                    <div class="exec-purpose">Accounts, active cases, and KB articles — have this open during the demo</div>
+                </div>
+                <div class="exec-time">Reference</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <p class="ref-section-title">🏢 Demo Accounts</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Account</th><th>Type</th><th>Tier</th><th>Contact</th><th>Phone</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Atlantic Marine Supply Co.</strong></td>
+                                <td>B2B Distributor (Tier 1)</td>
+                                <td><span class="tier-pill t-platinum">Platinum Expert</span></td>
+                                <td>Jake Harrington</td>
+                                <td><code>+1 (651) 226-3398</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Euro Marine Distributors</strong></td>
+                                <td>B2B Distributor (Tier 1)</td>
+                                <td><span class="tier-pill t-platinum">Platinum Expert</span></td>
+                                <td>Christine Delacroix</td>
+                                <td><code>+44 20 7845 3321</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pacific Coast Marine Group</strong></td>
+                                <td>B2B Distributor (Tier 1)</td>
+                                <td><span class="tier-pill t-platinum">Platinum</span></td>
+                                <td>Ryan Kowalski</td>
+                                <td><code>+1 (206) 555-0389</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nordic Marine Supply</strong></td>
+                                <td>B2B Distributor (Tier 1)</td>
+                                <td><span class="tier-pill t-platinum">Platinum</span></td>
+                                <td>Lars Eriksson</td>
+                                <td><code>+47 22 55 0101</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gulf Coast Marine Depot</strong></td>
+                                <td>B2B Dealer (Tier 2)</td>
+                                <td><span class="tier-pill t-gold">Gold</span></td>
+                                <td>Dana Broussard</td>
+                                <td><code>+1 (281) 555-0173</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Great Lakes Boating Supply</strong></td>
+                                <td>B2B Dealer (Tier 2)</td>
+                                <td><span class="tier-pill t-gold">Gold</span></td>
+                                <td>Tom Wickfield</td>
+                                <td><code>+1 (312) 555-0244</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Freshwater Fishing Depot</strong></td>
+                                <td>B2B Dealer (Tier 2)</td>
+                                <td><span class="tier-pill t-consumer">Standard</span></td>
+                                <td>Mike Torres</td>
+                                <td><code>+1 (713) 555-0287</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Navico Group</strong></td>
+                                <td>Manufacturer (Internal)</td>
+                                <td><span class="tier-pill" style="background:#6e6e6e;color:#fff;">Internal</span></td>
+                                <td>Sarah Nguyen</td>
+                                <td><code>+1 (918) 437-6881</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">🎫 Active Demo Cases</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Case</th><th>Account</th><th>Channel</th><th>Brand</th><th>Priority</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Simrad NSX 3007 — Touchscreen Unresponsive After Firmware Update</strong></td><td>Atlantic Marine Supply Co.</td><td>Voice</td><td>Simrad</td><td><span style="color:#A4262C;font-weight:700;">High</span></td></tr>
+                            <tr><td><strong>B&amp;G Triton2 — Wind Instrument Reading Incorrect Before Race Season</strong></td><td>Euro Marine Distributors</td><td>Chat</td><td>B&amp;G</td><td><span style="color:#A4262C;font-weight:700;">High</span></td></tr>
+                            <tr><td><strong>Simrad NSX 3009 — RMA Exchange Request (4 Units, Fleet Order)</strong></td><td>Atlantic Marine Supply Co.</td><td>Email</td><td>Simrad</td><td><span style="color:#A4262C;font-weight:700;">High</span></td></tr>
+                            <tr><td><strong>Lowrance HDS-12 Live — Sonar Module Failure (Repair RMA)</strong></td><td>Gulf Coast Marine Depot</td><td>Web</td><td>Lowrance</td><td>Normal</td></tr>
+                            <tr><td><strong>C-MAP DISCOVER Chart Card — Charts Out of Date, No Update Access</strong></td><td>Pacific Coast Marine Group</td><td>Email</td><td>C-MAP</td><td>Normal</td></tr>
+                            <tr><td><strong>Lowrance HDS-9 Live — Unit Not Powering On (Consumer Warranty Claim)</strong></td><td>Freshwater Fishing Depot</td><td>Email</td><td>Lowrance</td><td>Normal</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">📚 KB Articles Ready for Demo</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Article</th><th>Brand</th><th>For Demo</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>KA-01262</code>: Simrad NSX Touchscreen Unresponsive After Firmware Update</td><td>Simrad</td><td>Scenario 1 — Voice</td></tr>
+                            <tr><td><code>KA-01263</code>: B&amp;G Triton2 Wind Instrument — Calibrating AWA</td><td>B&amp;G</td><td>Scenario 2 — Email/Chat</td></tr>
+                            <tr><td><code>KA-01264</code>: Lowrance HDS Live — Unit Not Powering On</td><td>Lowrance</td><td>Scenario 3 — Email</td></tr>
+                            <tr><td><code>KA-01265</code>: RMA Process Overview — Exchange, Credit, Repair, OBS</td><td>All Brands</td><td>Scenario 4 — RMA</td></tr>
+                            <tr><td><code>KA-01268</code>: SOP: Navico Product Fault Diagnosis Procedure</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01270</code>: SOP: NMEA 2000 and Ethernet Troubleshooting</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01271</code>: SOP: Product Compatibility and Specification Lookup</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01272</code>: SOP: Warranty Status Validation Process</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01273</code>: SOP: Firmware Update Recovery Steps</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01274</code>: SOP: RMA Exchange Processing (Warranty)</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01276</code>: SOP: Credit and Refund Request Processing</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01277</code>: SOP: Product Registration and Warranty Activation</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01278</code>: SOP: Dealer Certification Program Guide</td><td>B2B</td><td>Portal Agent / Intent Agent</td></tr>
+                            <tr><td><code>KA-01280</code>: SOP: RMA Repair Center Processing</td><td>All Brands</td><td>Portal Agent / Intent Agent</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p class="ref-section-title">📦 Key Product Serials (for Warranty Lookup Demo)</p>
+                    <table class="ref-table">
+                        <thead>
+                            <tr><th>Serial Number</th><th>Product</th><th>Account</th><th>Warranty Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>SIM-2024-NSX-10042</code></td><td>Simrad NSX 3007 Chartplotter</td><td>Atlantic Marine Supply Co.</td><td><span style="color:#107C10;font-weight:700;">Active (to 2027-04-15)</span></td></tr>
+                            <tr><td><code>SIM-2024-NSX-10044</code></td><td>Simrad NSX 3009 Chartplotter</td><td>Atlantic Marine Supply Co.</td><td><span style="color:#107C10;font-weight:700;">Active (to 2027-05-01)</span></td></tr>
+                            <tr><td><code>BG-2024-TRI2-20011</code></td><td>B&amp;G Triton2 Instrument Display</td><td>Euro Marine Distributors</td><td><span style="color:#107C10;font-weight:700;">Active (to 2027-06-20)</span></td></tr>
+                            <tr><td><code>LWR-2024-HDS-88821</code></td><td>Lowrance HDS-9 Live Fishfinder</td><td>Freshwater Fishing Depot</td><td><span style="color:#107C10;font-weight:700;">Active (to 2027-02-14)</span></td></tr>
+                            <tr><td><code>LWR-2024-HDS-88500</code></td><td>Lowrance HDS-12 Live Fishfinder</td><td>Gulf Coast Marine Depot</td><td><span style="color:#107C10;font-weight:700;">Active (to 2027-03-10)</span></td></tr>
+                            <tr><td><code>LWR-2021-HDS-11001</code></td><td>Lowrance HDS Carbon 9</td><td>Freshwater Fishing Depot</td><td><span style="color:#A4262C;font-weight:700;">EXPIRED (2024-04-01)</span></td></tr>
+                            <tr><td><code>SIM-2022-GO-90001</code></td><td>Simrad GO7 XSE</td><td>Atlantic Marine Supply Co.</td><td><span style="color:#A4262C;font-weight:700;">EXPIRED (2025-06-01)</span></td></tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <p class="section-label">Demo Execution — Tell · Show · Tell</p>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 1: INBOUND VOICE                      -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-voice" id="section-voice" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-voice">1</div>
+                <div class="exec-header-text">
+                    <h3>📞 Inbound Voice Call — "The Screen Pop"</h3>
+                    <div class="exec-purpose">Inbound voice — Jake Harrington calls, screen pop shows who it is before you answer</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Set the Before State</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Today at Navico, when Jake calls in, the agent answers RingCentral and has <strong>NO idea who's calling</strong>. They ask "Can I get your account number?" and manually look up the record in their basic D365. Sound familiar? Watch what happens now.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHOW -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header" style="background: linear-gradient(135deg, #107C10, #0E6B0E);">▶ SHOW — Live Demonstration</div>
+                        <div class="tst-body">
+
+                            <div class="sub-header show-sub">Step 1: Set Up the Workspace</div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Navigate to D365 Customer Service Workspace → confirm the Omnichannel panel is visible on the left.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Set presence to <strong>"Available"</strong> — green dot bottom-left of the workspace.</div>
+                            </div>
+
+                            <div class="sub-header show-sub">Step 2: Trigger the Inbound Call</div>
+                            <div class="step-block">
+                                <span class="step-label voice">Voice</span>
+                                <div class="step-text">Using your second phone, dial the D365 voice number. The caller ID will show: <strong>+1 651-226-3398</strong> (Jake Harrington — Atlantic Marine Supply).</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">
+                                    <strong>BEFORE accepting the call</strong> — point to the incoming call notification panel:<br><br>
+                                    <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                        <li>📞 <strong>Caller:</strong> Jake Harrington</li>
+                                        <li>🏢 <strong>Account:</strong> Atlantic Marine Supply Co.</li>
+                                        <li>⭐ <strong>Tier:</strong> Platinum Expert</li>
+                                        <li>🎫 <strong>Open Cases:</strong> 2 (NSX 3007 Touchscreen + NSX 3009 RMA Exchange)</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>Before I've even said hello, D365 already knows who's calling. Jake's number matched his contact record — I can see he's a Platinum Expert tier distributor at Atlantic Marine Supply Co., and he has 2 open cases. No searching, no asking for account numbers.</p>
+                            </div>
+
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Accept the call. Notice the full customer record opens <strong>automatically</strong> as the workspace tab.</div>
+                            </div>
+
+                            <div class="sub-header show-sub">Step 3: Case Timeline — History at a Glance</div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">The case timeline for the NSX 3007 touchscreen issue — scroll through to show the full resolution arc:
+                                    <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                        <li>📞 <strong>Jake called in</strong> — touchscreen unresponsive after firmware v3.8.1 (24 hrs ago)</li>
+                                        <li>📝 <strong>Tech pre-screening note</strong> — known v3.8.1 issue confirmed, escalating to Tier 4 (20 hrs ago)</li>
+                                        <li>📧 <strong>Outbound email</strong> — recovery steps sent to Jake (18 hrs ago)</li>
+                                        <li>📧 <strong>Jake replied</strong> — steps failed, fleet leaves at 0500, needs overnight replacement (16 hrs ago)</li>
+                                        <li>📝 <strong>Tier 4 note</strong> — RMA Exchange approved, overnight shipping authorized (14 hrs ago)</li>
+                                        <li>📧 <strong>Outbound email</strong> — tracking number, overnight FedEx confirmed (12 hrs ago)</li>
+                                        <li>📧 <strong>Jake confirmed</strong> — unit arrived, installed, fleet departed on schedule (2 hrs ago)</li>
+                                        <li>📝 <strong>Resolution note</strong> — case resolved, NPS survey queued (1 hr ago)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Open the auto-created case from the voice conversation.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label copilot">Copilot</span>
+                                <div class="step-text">Point to the <strong>Copilot Case Summary</strong> card on the right panel — read it aloud to the audience.</div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>Copilot just read Jake's entire case history and gave me a two-sentence summary. I know what he's probably calling about before he's finished his first sentence.</p>
+                            </div>
+
+                            <div class="sub-header show-sub">Step 4: Equipment &amp; Warranty Screen</div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Click the <strong>"Equipment &amp; Warranty"</strong> tab in the case form — the Canvas App opens and <strong>automatically loads the Simrad NSX 3007</strong> from the serial number already on the case record.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">
+                                    Point out the product card:
+                                    <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                        <li>🔵 <strong>Simrad brand logo</strong> — pulled dynamically from the asset record</li>
+                                        <li>📋 <strong>Serial:</strong> SIM-2024-NSX-10042 — auto-matched from the case</li>
+                                        <li>✅ <strong>Warranty:</strong> Active — expires 2027-04-15</li>
+                                        <li>📦 <strong>Product:</strong> Simrad NSX 3007 Chartplotter</li>
+                                        <li>🏢 <strong>Account:</strong> Atlantic Marine Supply Co.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="talk-track">
+                                <p>The moment I opened the Equipment screen, it pulled the serial number from the case and surfaced the full product record — brand, warranty status, account — no lookups. For a commercial fishing fleet managing dozens of units, this is the difference between 30 seconds of context vs. 3 minutes of system switching.</p>
+                            </div>
+
+                            <div class="sub-header show-sub">Step 5: Tier &amp; SLA</div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Point to the customer tier badge — <strong>"Platinum Expert"</strong> — on the account section of the workspace.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">SLA timer — it started automatically at Tier 1 priority the moment the call connected (4-hour response clock).</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- TELL (close) -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Close the Loop</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">What you just saw: D365 matched the inbound phone number to the account record and surfaced everything — account tier, open cases, contact history — in the moment the call connected. The Equipment &amp; Warranty screen auto-loaded the Simrad product from the serial number on the case — brand logo, warranty status, product details — no lookup needed. In Salesforce, the screen pop requires a custom CTI integration costing <strong>$15–25K to set up</strong>. In D365, it's native.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout roi">
+                        <strong>💰 ROI Point:</strong> Platinum Expert customers like Atlantic Marine represent Navico's highest-value distributors. Faster resolution = fewer escalations = protected renewal revenue. Screen pop alone reduces Average Handle Time by 15–30 seconds per call — multiplied by 37 agents × 50 calls/day, that's meaningful capacity recovered.
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label transition">Transition</span>
+                        <div class="step-text">Now let's look at what happens when Jake's email comes in after the call is resolved — and how the morning inbox triage changes...</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 2: EMAIL TRIAGE                       -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-email" id="section-email" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-email">2</div>
+                <div class="exec-header-text">
+                    <h3>📧 Email — Intelligent Triage &amp; Agent Assist</h3>
+                    <div class="exec-purpose">Christine's B&amp;G email routes to the right queue; Copilot Agent Assist surfaces the KB article automatically</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Set the Before State</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Navico today gets emails through a shared inbox. An agent manually reads each one, decides what brand it's about, what tier the customer is, and assigns it to the right person. <strong>37 CSRs, 17 brands</strong> — imagine the morning inbox triage. Today it's a manual pick-and-assign process.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHOW -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header" style="background: linear-gradient(135deg, #005A9E, #0078D4);">▶ SHOW — Live Demonstration</div>
+                        <div class="tst-body">
+
+                            <!-- DEMO ACTION: Send Seed Email -->
+                            <div class="demo-action-panel" id="emailActionPanel">
+                                <div class="demo-action-title">⚡ Demo Action — Send Seed Email</div>
+                                <div class="demo-action-btns">
+                                    <button class="demo-action-btn primary" onclick="demoSendEmail('graph')">📤 Send via Outlook Web</button>
+                                    <button class="demo-action-btn secondary" onclick="demoSendEmail('mailto')">📧 Open in Outlook</button>
+                                    <button class="demo-action-btn secondary" onclick="demoSendEmail('copy')">📋 Copy Email</button>
+                                    <button class="demo-action-btn secondary" onclick="demoSendEmail('preview')">👁 Preview</button>
+                                </div>
+                                <div class="demo-action-status" id="emailActionStatus"></div>
+                                <div class="demo-action-preview" id="emailPreview">
+                                    <div class="email-field">To: <span id="emailPreviewTo">(set queue address below)</span></div>
+                                    <div class="email-subject" id="emailPreviewSubject"></div>
+                                    <pre id="emailPreviewBody"></pre>
+                                </div>
+                            </div>
+
+                            <div class="sub-header email-sub">Step 1: Email Arrives in Queue</div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">Email arrives in the Omnichannel work queue — subject: <strong>"B&amp;G Triton2 Wind Angle Issue"</strong> from Christine Delacroix.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Open the email conversation — point out it <strong>auto-routed to the B&amp;G queue</strong> based on keyword matching in the subject and body.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Note the customer card pulled up automatically — <strong>Christine Delacroix, Euro Marine Distributors, Platinum Expert</strong>.</div>
+                            </div>
+
+                            <div class="sub-header email-sub">Step 2: Copilot Agent Assist</div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">Copilot Agent Assist panel on the right side — it has already surfaced <code>KB-BG-0117</code>: B&amp;G Triton2 AWA Calibration.</div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>The moment Christine's email arrived, the system read it, matched her account, and routed it to the B&amp;G team. The Copilot panel on the right has already found the relevant KB article about Triton2 wind angle calibration — the same article our best technician would look up manually.</p>
+                            </div>
+
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Open <code>KB-BG-0117</code> in the Agent Assist panel — show the resolution steps to the audience.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Click <strong>"Insert into email reply"</strong> — Copilot pre-drafts the response using the KB content.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">The draft email — <em>"Hi Christine, I've reviewed your report about the Triton2 AWA reading..."</em> — review the draft to the audience.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Lightly edit 1–2 words to show personalization is easy, then click Send (or show the Send button).</div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>I reviewed, lightly edited, and sent that response in about 90 seconds. Without Copilot, this would take 5–7 minutes of KB searching, drafting, and formatting.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- TELL (close) -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Close the Loop</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">What you just saw: Intelligent routing using keywords + account lookup directed this email to the right agent. Copilot Agent Assist read the email and surfaced the most relevant KB article <strong>automatically</strong>. Then it drafted the reply. This is the difference between <strong>90 seconds and 7 minutes</strong>, multiplied by 37 CSRs, every day.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout roi">
+                        <strong>💰 ROI Point:</strong> If each agent saves 5 minutes per email and handles 20 emails/day, that's 100 min/day × 37 agents = <strong>62 hours/day recovered</strong>. That's meaningful headcount capacity — without adding headcount.
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label transition">Transition</span>
+                        <div class="step-text">Let's jump to a live chat scenario — same Copilot power, different channel. And this is a channel Navico doesn't have at all today...</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 3: LIVE CHAT                          -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-chat" id="section-chat" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-chat">3</div>
+                <div class="exec-header-text">
+                    <h3>💬 Portal Experience — Self-Service Agent &amp; Live Chat Escalation</h3>
+                    <div class="exec-purpose">The full portal journey: AI agent handles self-service, then escalates to live chat with Copilot Suggested Replies</div>
+                </div>
+                <div class="exec-time">~15 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Set the Before State</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Navico has <strong>zero digital self-service today</strong> — no chat, no AI agent, no portal widget. Their Optimizely portal has a Contact Us form and a dated ServiceTarget Q&amp;A. For their 37 CSRs handling 17 brands, <strong>Natalia estimated 60% of issues could be resolved without a human</strong>. Let's show what that looks like — first the self-service agent, then what happens when it escalates to a live agent.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PART A: SELF-SERVICE AGENT -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header" style="background: linear-gradient(135deg, #5C2D91, #6B2FA0);">▶ PART A — Self-Service Agent (Copilot Studio)</div>
+                        <div class="tst-body">
+
+                            <div class="sub-header" style="color:#6B2FA0;">Step 1: Open the Portal Agent</div>
+                            <div class="step-block">
+                                <span class="step-label" style="background:#6B2FA0;">SHOW</span>
+                                <div class="step-text">Open the Copilot Studio test panel (or the portal chat widget). The agent greets with: <em>"Welcome to Navico Group Support!"</em> and shows 6 capability options: Troubleshoot, Warranty, RMA, Registration, Certification, Specialist.</div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>This is what a customer sees when they visit the Navico portal. Instead of a static FAQ or a Contact Us form, they get an AI-powered assistant that can actually help them.</p>
+                            </div>
+
+                            <div class="sub-header" style="color:#6B2FA0;">Step 2: Product Troubleshooting Flow</div>
+                            <div class="step-block">
+                                <span class="step-label" style="background:#6B2FA0;">TYPE</span>
+                                <div class="step-text"><strong>Type:</strong> <code>My Simrad screen won't turn on</code></div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label" style="background:#6B2FA0;">SHOW</span>
+                                <div class="step-text">Agent asks for serial number. <strong>Type:</strong> <code>SIM-2024-NSX-10042</code></div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label" style="background:#6B2FA0;">SHOW</span>
+                                <div class="step-text">Agent provides <strong>5-step power diagnostic</strong>: check power supply → inspect wiring → check fuses → hard reset → disconnect peripherals. Point out: <em>"This is step-by-step guided troubleshooting from the same KB articles your CSRs use — not a static FAQ."</em></div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label" style="background:#6B2FA0;">TYPE</span>
+                                <div class="step-text"><strong>Type:</strong> <code>That didn't help</code> — Agent offers to connect with a specialist.</div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>The bot tried to resolve it with the same diagnostic steps a Tier 1 CSR would use. When that didn't work, it escalates. But here's the key — let's see what the live agent gets...</p>
+                            </div>
+
+                            <div class="sub-header" style="color:#6B2FA0;">Step 3: Quick Hits (Optional — Choose 1-2)</div>
+                            <div class="step-block">
+                                <span class="step-label" style="background:#6B2FA0;">TYPE</span>
+                                <div class="step-text"><strong>Warranty:</strong> <code>Is my product still under warranty?</code> → Agent asks for serial, shows coverage info, offers next steps</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label" style="background:#6B2FA0;">TYPE</span>
+                                <div class="step-text"><strong>Certification (B2B):</strong> <code>What's my dealer certification status?</code> → Shows 3 levels (Basic/Advanced/Expert) with benefits. <em>"Same agent handles B2C consumers and B2B dealers."</em></div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label" style="background:#6B2FA0;">TYPE</span>
+                                <div class="step-text"><strong>Safety override:</strong> <code>My navigation system failed while I'm at sea</code> → <strong>IMMEDIATE escalation</strong>, no troubleshooting. <em>"The bot knows not to troubleshoot when lives could be at risk."</em></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PART B: LIVE CHAT ESCALATION -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header" style="background: linear-gradient(135deg, #006B5F, #008575);">▶ PART B — Live Chat Escalation (What the CSR Sees)</div>
+                        <div class="tst-body">
+
+                            <div class="talk-track">
+                                <p>Now let's flip to the agent's perspective. When the bot escalates, what does the CSR see?</p>
+                            </div>
+
+                            <div class="sub-header chat-sub">Step 4: Chat Notification Arrives</div>
+                            <div class="step-block">
+                                <span class="step-label chat">Chat</span>
+                                <div class="step-text">Chat notification arrives — <strong>Christine Delacroix from Euro Marine Distributors</strong> initiating a chat from the Navico dealer portal about B&amp;G Triton2 wind instrument erratic readings.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Accept the chat — Omnichannel workspace opens with the chat conversation on the left and customer context on the right.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">
+                                    Customer card for Christine Delacroix — Euro Marine Distributors, Platinum Expert, product registered:
+                                    <ul style="margin:8px 0 0 16px; font-size:0.86rem;">
+                                        <li><strong>Product Serial:</strong> BG-2024-TRI2-20011</li>
+                                        <li><strong>Product:</strong> B&amp;G Triton2 Instrument Display — Active warranty (to 2027-06-20)</li>
+                                        <li><strong>Open Cases:</strong> B&amp;G Triton2 Wind Instrument Erratic (URGENT)</li>
+                                        <li><strong>Bot transcript:</strong> Full conversation from the self-service agent visible in the timeline</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>Christine is a Platinum Expert distributor — our highest-value tier in EMEA. Notice the agent has the <strong>full bot transcript</strong> — the serial number, the issue, and every step the bot already tried. Christine doesn't repeat anything.</p>
+                            </div>
+
+                            <div class="sub-header chat-sub">Step 5: Copilot Suggested Replies</div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">Christine types: <em>"Our Triton2 is showing completely wrong wind angles — AWA is off by 30+ degrees. Race season starts in 3 weeks."</em></div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label copilot">Copilot</span>
+                                <div class="step-text">Copilot Suggested Replies panel shows <strong>3 response options</strong> based on <code>KA-01263</code> (B&amp;G Triton2 AWA Calibration) — each tailored to the message context.</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Select the most relevant suggestion (the AWA calibration steps option).</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">Response sent instantly — Christine confirms she can follow the calibration steps and the case moves toward resolution.</div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>Copilot read Christine's message and KA-01263 simultaneously, then gave me 3 response options. I picked one and sent it in one click. The full journey: customer tried self-service → bot couldn't resolve → escalated with context → CSR resolved in under 2 minutes. Through a channel Navico doesn't have today.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TELL (close) -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Close the Loop</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">
+                                    <strong>The complete portal story:</strong>
+                                    <ul style="margin:8px 0;">
+                                        <li>🤖 <strong>Self-service first</strong> — 60% of issues resolved without a human (troubleshooting, warranty, registration)</li>
+                                        <li>🔄 <strong>Seamless escalation</strong> — when the bot can't resolve, it transfers to a live agent with full context</li>
+                                        <li>⚡ <strong>Copilot-assisted resolution</strong> — the CSR gets suggested replies from KB articles in one click</li>
+                                        <li>👥 <strong>B2B + B2C unified</strong> — same agent handles dealers checking certification and consumers troubleshooting</li>
+                                        <li>🚨 <strong>Safety override</strong> — immediate escalation on marine distress keywords</li>
+                                        <li>🔌 <strong>Replaces ServiceTarget</strong> — their current Q&amp;A is static; this is AI-powered and conversational</li>
+                                    </ul>
+                                    This is what happens when self-service, live chat, Copilot, and your CRM are all connected on one platform.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout roi">
+                        <strong>💰 ROI Point:</strong> Navico's Contact Us form generates unknown volume of customers who give up and call a competitor. The self-service agent captures those customers 24/7. Live chat catches the rest. First-contact resolution on chat is typically <strong>20–30% higher</strong> than email. Combined with 60% bot deflection, this is a dramatic reduction in agent workload.
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label transition">Transition</span>
+                        <div class="step-text">Now let's look at the use case that drives 48% of Navico's case volume — warranty and RMA. This is where D365 can dramatically simplify a multi-system, manual process...</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SCENARIO 4: RMA WORKFLOW                       -->
+        <!-- ============================================== -->
+
+        <div class="exec-section border-rma" id="section-rma" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-rma">4</div>
+                <div class="exec-header-text">
+                    <h3>🔄 RMA Warranty Case — Serial Lookup &amp; Processing</h3>
+                    <div class="exec-purpose">Full RMA workflow — serial validation, warranty check, RMA type selection, ERP handoff</div>
+                </div>
+                <div class="exec-time">~10 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Set the Before State</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text"><strong>48% of Navico's cases are warranty and claims management.</strong> Today their process is: agent looks up the serial number in one system, checks warranty status in ERP, manually creates the RMA record in D365, then emails the customer instructions. Multiple systems, manual steps, and it's prone to error — especially when the same product has different warranty windows by region and brand.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout info">
+                        <strong>📋 Navico Support Tier Entitlements (Active in D365)</strong><br><br>
+                        <table class="ref-table" style="margin:0;">
+                            <thead><tr><th>Tier</th><th>Annual Cases</th><th>Channels</th><th>SLA Target</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="tier-pill t-platinum">Platinum Expert</span></td><td>500</td><td>Phone + Email + Web</td><td>2 hours</td></tr>
+                                <tr><td><span class="tier-pill t-gold" style="background:#B08800;">Platinum</span></td><td>250</td><td>Phone + Email + Web</td><td>4 hours</td></tr>
+                                <tr><td><span class="tier-pill t-silver">Gold</span></td><td>100</td><td>Phone + Email + Web</td><td>8 hours</td></tr>
+                                <tr><td><span class="tier-pill t-consumer">Standard</span></td><td>50</td><td>Email + Web</td><td>1 business day</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- SHOW -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header" style="background: linear-gradient(135deg, #B83000, #D83B01);">▶ SHOW — Live Demonstration</div>
+                        <div class="tst-body">
+
+                            <div class="sub-header rma-sub">Step 1: Open the RMA Case</div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Navigate to <strong>Cases</strong> → open the existing <strong>"Lowrance HDS-12 Live — Sonar Module Failure (Repair RMA)"</strong> case for Dana Broussard (Gulf Coast Marine Depot).</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Open the case — note it came in via the <strong>Web</strong> channel (Contact Us form).</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">Serial number field: <code>LWR-2024-HDS-88500</code> — click <strong>Warranty Check</strong>. Also open the <strong>Equipment &amp; Warranty</strong> tab to show the Lowrance logo and warranty status card.</div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>Dana submitted this through the Contact Us form. Here I can see her serial number — the Equipment screen already confirms it's within the 3-year warranty. Let me do a warranty check — in the real integration this calls back to Oracle/Dynamics AX. For today's demo, watch what comes back.</p>
+                            </div>
+
+                            <div class="sub-header rma-sub">Step 2: Warranty Result &amp; RMA Type</div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">Warranty status returns: <strong style="color:var(--accent-green);">✅ Valid — 14 months in, 22 months remaining — Exchange eligible</strong></div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">In the case form, click the <strong>"RMA Type"</strong> dropdown — show the 4 options: Exchange, Credit, Repair, OBS (Obsolete).</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Select <strong>"Exchange"</strong> — notice the form updates to show the required fields specific to exchange RMAs (shipping address, return label, replacement model).</div>
+                            </div>
+
+                            <div class="talk-track">
+                                <p>The form adapts based on the RMA type — just like their current process where each case type has different required fields. Exchange shows shipping fields. Credit shows finance fields. Each type is its own workflow.</p>
+                            </div>
+
+                            <div class="sub-header rma-sub">Step 3: Routing &amp; ERP Handoff</div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Populate the exchange details — show the <strong>ERP Notification</strong> field: "Submit to Oracle" (conceptual integration point).</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label show">Show</span>
+                                <div class="step-text">Note the escalation path — <strong>Technical Specialist review is required</strong> for Exchange RMAs over $500 (business rule).</div>
+                            </div>
+                            <div class="step-block">
+                                <span class="step-label click">Click</span>
+                                <div class="step-text">Assign to Specialist queue — the case routes <strong>automatically</strong> based on the business rule. No manual team assignment.</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- TELL (close) -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Close the Loop</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">What you just saw: A single unified case workflow handled the warranty lookup, RMA type selection, form adaptation, specialist routing, and ERP notification prep — <strong>all in one place</strong>. Today this requires 3–4 system switches. Tomorrow it's one screen.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="callout roi">
+                        <strong>💰 ROI Point:</strong> Navico's TS team spends time validating cases manually. Automated warranty lookup + smart form routing means the TS only reviews cases that actually need review — not every case that arrives. If 30% of RMAs can be auto-resolved at Tier 1, the TS team capacity more than doubles for complex cases.
+                    </div>
+
+                    <div class="callout warning">
+                        <strong>⚠️ Demo Note:</strong> The actual ERP write-back (Oracle / Dynamics AX) is shown as a conceptual step here. The live integration would require a Power Automate flow to the ERP API — this is scoped as part of the implementation sprint, not available out of the box.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- CLOSE & VALUE SUMMARY                          -->
+        <!-- ============================================== -->
+
+        <p class="section-label">Close &amp; Value Summary</p>
+
+        <!-- SCENARIO 5: CLOSE -->
+        <div class="exec-section border-close" id="section-close" style="border-left-width: 6px;">
+            <div class="exec-header" onclick="toggleSection(this)">
+                <div class="exec-number bg-close">5</div>
+                <div class="exec-header-text">
+                    <h3>🎯 Close — Competitive Positioning &amp; Next Steps</h3>
+                    <div class="exec-purpose">Competitive table, value summary, and the ask for a next step</div>
+                </div>
+                <div class="exec-time">~5 min</div>
+                <div class="exec-expand">▼</div>
+            </div>
+            <div class="exec-body">
+                <div class="exec-content">
+
+                    <!-- TELL (opening) -->
+                    <div class="tst-wrapper">
+                        <div class="tst-header">▶ TELL — Opening the Close</div>
+                        <div class="tst-body">
+                            <div class="step-block">
+                                <span class="step-label tell">Tell</span>
+                                <div class="step-text">Before we opened D365 today, let's remember where Navico started: basic case management, RingCentral with no screen pop, manual email triage, zero digital channels, no intelligent routing. They already <strong>OWN the D365 license</strong>. What we showed today is configuration, not new software.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sub-header">Competitive Comparison</div>
+                    <table class="ref-table">
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>Navico Today</th>
+                                <th>Salesforce Service Cloud</th>
+                                <th style="background:#E8F5E9;">D365 Customer Service</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Channels</strong></td>
+                                <td>Email + Phone (no OC)</td>
+                                <td>Email, Chat, Phone</td>
+                                <td style="background:#F5FFF5;"><strong>Email, Chat, Voice, SMS, Portal</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Screen Pop</strong></td>
+                                <td>No</td>
+                                <td>Yes (CTI add-on, $15–25K setup)</td>
+                                <td style="background:#F5FFF5;"><strong>✅ Native — included</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>AI / Copilot</strong></td>
+                                <td>None</td>
+                                <td>Einstein (extra cost)</td>
+                                <td style="background:#F5FFF5;"><strong>✅ Copilot — included in CS license</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Routing</strong></td>
+                                <td>Manual / 1 queue</td>
+                                <td>Rules-based</td>
+                                <td style="background:#F5FFF5;"><strong>AI-driven, tier + brand + skill routing</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>KB Integration</strong></td>
+                                <td>ServiceTarget (separate)</td>
+                                <td>Integrated</td>
+                                <td style="background:#F5FFF5;"><strong>Native + surfaces in Agent Assist</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>License Cost</strong></td>
+                                <td>Already owned</td>
+                                <td>New license + implementation</td>
+                                <td style="background:#F5FFF5;"><strong>✅ Configuration only — already licensed</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Implementation</strong></td>
+                                <td>—</td>
+                                <td>6–9 months typical</td>
+                                <td style="background:#F5FFF5;"><strong>8–12 weeks for full channel config</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="talk-track">
+                        <p>Navico already has D365. The question isn't "should we buy D365 Customer Service" — you already did. The question is "should we configure it properly or buy a second platform." What you saw today is what proper configuration looks like.</p>
+                    </div>
+
+                    <div class="callout success">
+                        <strong>✅ The Ask:</strong> We'd like to propose a <strong>90-day implementation sprint</strong> — configure omnichannel channels, intelligent routing, Copilot features, and deliver a fully operational CS center. Would you be open to a scoping call this week?
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label tip">Tip</span>
+                        <div class="step-text">If they push back on timeline, offer to start with just <strong>one channel (email)</strong> as a quick win proof point — 3 weeks to production-ready email omnichannel. Let them see value before committing to the full 90-day sprint.</div>
+                    </div>
+
+                    <div class="step-block">
+                        <span class="step-label tip">Tip</span>
+                        <div class="step-text">If they ask about Salesforce advantages, acknowledge <strong>Sales Cloud is strong for Sales</strong> — reinforce that D365 Customer Service for their CS team is the better fit, and Sales (John's track) can show how D365 Sales integrates seamlessly with D365 CS to give Navico a single unified Microsoft platform.</div>
+                    </div>
+
+                    <div class="callout info">
+                        <strong>🔗 Follow-Up Resources to Send After Demo:</strong>
+                        <ul style="margin-top:8px; padding-left:20px;">
+                            <li>D365 CS vs. Salesforce Service Cloud — Microsoft Competitive Brief</li>
+                            <li>Navico 90-Day Implementation Scope (Bill to prepare post-demo)</li>
+                            <li>Omnichannel for Customer Service licensing overview</li>
+                            <li>Customer Story: Marine / industrial vertical D365 reference customer</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.container -->
+
+    <footer>
+        Navico Group — D365 Customer Service Competitive Demo &nbsp;·&nbsp; Microsoft Dynamics 365 &nbsp;·&nbsp; Built for Navico Group bake-off vs Salesforce Service Cloud &nbsp;·&nbsp; Updated April 2026
+    </footer>
+
+    <script>
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
+        }
+
+        // ── Side Navigation (auto-built from DOM) ──
+        (function () {
+            var toggle   = document.getElementById('navToggle');
+            var nav      = document.getElementById('sideNav');
+            var backdrop = document.getElementById('navBackdrop');
+            var pinBtn   = document.getElementById('navPin');
+            var navBody  = document.getElementById('navBody');
+            var pinned   = false;
+
+            // Build nav from page structure
+            var container = document.querySelector('.container');
+            var kids = container.children;
+            var html = '';
+            var idx  = 0;
+
+            for (var i = 0; i < kids.length; i++) {
+                var el = kids[i];
+
+                // Section labels become group headers
+                if (el.classList.contains('section-label')) {
+                    html += '<div class="side-nav-group">' + el.textContent + '</div>';
+                }
+
+                // Exec sections become nav items
+                if (el.classList.contains('exec-section')) {
+                    var numEl   = el.querySelector('.exec-number');
+                    var titleEl = el.querySelector('.exec-header-text h3');
+                    if (!numEl || !titleEl) continue;
+
+                    var num   = numEl.textContent.trim();
+                    var title = titleEl.textContent.trim();
+                    var id    = 'nav-sec-' + idx;
+                    el.id     = id;
+
+                    // Get computed background/foreground color for the number circle
+                    var bg = window.getComputedStyle(numEl).backgroundColor;
+                    var fg = window.getComputedStyle(numEl).color;
+
+                    html += '<a class="side-nav-item" data-target="' + id + '">';
+                    html += '<span class="side-nav-num" style="background:' + bg + ';color:' + fg + ';">' + num + '</span>';
+                    html += '<span class="side-nav-label">' + title + '</span></a>';
+                    idx++;
+                }
+            }
+
+            navBody.innerHTML = html;
+
+            // Click nav item → scroll to section and open it
+            navBody.addEventListener('click', function (e) {
+                var item = e.target.closest('.side-nav-item');
+                if (!item) return;
+                var target = document.getElementById(item.getAttribute('data-target'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (!target.classList.contains('open')) {
+                        target.classList.add('open');
+                    }
+                    if (!pinned) closeNav();
+                }
+            });
+
+            // Open / Close nav
+            function openNav() {
+                nav.classList.add('open');
+                backdrop.classList.add('visible');
+                toggle.classList.add('open');
+                toggle.innerHTML = '\u2715';
+            }
+            function closeNav() {
+                if (pinned) return;
+                nav.classList.remove('open');
+                backdrop.classList.remove('visible');
+                toggle.classList.remove('open');
+                toggle.innerHTML = '\u2630';
+            }
+
+            toggle.addEventListener('click', function () {
+                if (nav.classList.contains('open') && !pinned) closeNav();
+                else openNav();
+            });
+            backdrop.addEventListener('click', closeNav);
+
+            // Pin nav open
+            pinBtn.addEventListener('click', function () {
+                pinned = !pinned;
+                pinBtn.classList.toggle('pinned', pinned);
+                document.body.classList.toggle('nav-pinned', pinned);
+                pinBtn.textContent = pinned ? 'UNPIN' : 'PIN';
+                if (pinned) {
+                    backdrop.classList.remove('visible');
+                    nav.classList.add('open');
+                    toggle.classList.add('open');
+                    toggle.innerHTML = '\u2715';
+                }
+            });
+
+            // Highlight active section on scroll
+            var sections = document.querySelectorAll('.exec-section[id]');
+            var navItems = navBody.querySelectorAll('.side-nav-item');
+
+            function highlightNav() {
+                var scrollPos = window.scrollY + 150;
+                sections.forEach(function (sec, i) {
+                    var top    = sec.offsetTop;
+                    var bottom = top + sec.offsetHeight;
+                    if (scrollPos >= top && scrollPos < bottom) {
+                        navItems.forEach(function (item) { item.classList.remove('active'); });
+                        if (navItems[i]) navItems[i].classList.add('active');
+                    }
+                });
+            }
+            window.addEventListener('scroll', highlightNav);
+            highlightNav();
+        })();
+
+        // ── Demo Action: Seed Email ──
+        var SEED_EMAILS = {
+            'bg-email': {
+                to: '',  // Set via config below
+                subject: 'B&G Triton2 Wind Angle Issue — 3 units affected, race season approaching',
+                body: 'Hi Navico Support,\n\nI\'m Christine Delacroix, Service Manager at Euro Marine Distributors (Account: EMEA-001).\n\nWe have an urgent situation. Three of our B&G Triton2 Instrument Displays are showing erratic Apparent Wind Angle (AWA) readings. The wind angle values are jumping ±15-20 degrees randomly, making them unusable for competitive sailing.\n\nAffected units:\n- Serial BG-2024-TRI2-20011 (flagship demo vessel)\n- Serial BG-2024-TRI2-20013 (customer fleet unit)\n- Serial BG-2024-TRI2-20015 (customer fleet unit)\n\nAll three units were running firmware v2.4.1 and the issue started after last week\'s calibration session. We\'ve already tried:\n1. Factory reset on all three displays\n2. Re-running the AWA calibration wizard\n3. Checking the masthead wind sensor connections\n\nNone of these resolved the issue. Our spring racing season starts in 3 weeks and we have 4 vessels that depend on these instruments.\n\nAs a Platinum Expert partner, I\'d like to escalate this to your B&G sailing instrument specialists. We may need RMA replacements if this can\'t be resolved via firmware.\n\nCan someone from your B&G team get back to me urgently?\n\nBest regards,\nChristine Delacroix\nService Manager | Euro Marine Distributors\nchristine.delacroix@D365DemoTSCE30330346.onmicrosoft.com\n+44 20 7946 0123',
+                senderName: 'Christine Delacroix'
+            },
+            'lwr-email': {
+                to: '',
+                subject: 'My Lowrance HDS wont turn on',
+                body: 'Hi,\n\nI bought my HDS 9 Live about a year ago and this morning it just won\'t turn on at all. I tried pressing the power button many times and checked the fuse but nothing works. Serial is on the back of the unit - LWR-2024-HDS-88821. Please help!\n\nI really need this fixed before my fishing trip next weekend.\n\nThanks,\nMike Torres\nmjtorres87@gmail.com',
+                senderName: 'Mike Torres'
+            }
+        };
+
+        // ── CONFIG: Inline values (from demo-config.local.json) ──
+        var DEMO_QUEUE_EMAIL = 'customerservice@d365demotsce30330346.onmicrosoft.com';
+        var GRAPH_CLIENT_ID = '78d0d6e2-5428-4920-bebd-e942f3dce758';
+        var GRAPH_TENANT_ID = 'daa9e2eb-aaf1-46a8-a37e-3fd2e5821cb6';
+
+        // Also try loading from config file (overrides above if found)
+        (function loadDemoConfig() {
+            fetch('../../demo-config.local.json').then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(cfg) {
+                if (!cfg) return;
+                if (cfg.DEMO_QUEUE_EMAIL) DEMO_QUEUE_EMAIL = cfg.DEMO_QUEUE_EMAIL;
+                if (cfg.GRAPH_CLIENT_ID)  GRAPH_CLIENT_ID  = cfg.GRAPH_CLIENT_ID;
+                if (cfg.GRAPH_TENANT_ID)  GRAPH_TENANT_ID  = cfg.GRAPH_TENANT_ID;
+                SEED_EMAILS['bg-email'].to  = DEMO_QUEUE_EMAIL;
+                SEED_EMAILS['lwr-email'].to = DEMO_QUEUE_EMAIL;
+            }).catch(function() { /* config file not found — inline defaults used */ });
+        })();
+
+        var activeEmail = SEED_EMAILS['bg-email'];  // default
+
+        function setStatus(msg, cls) {
+            var el = document.getElementById('emailActionStatus');
+            el.textContent = msg;
+            el.className = 'demo-action-status' + (cls ? ' ' + cls : '');
+        }
+
+        function demoSendEmail(mode) {
+            var email = activeEmail;
+
+            if (mode === 'preview') {
+                var panel = document.getElementById('emailPreview');
+                panel.classList.toggle('visible');
+                document.getElementById('emailPreviewTo').textContent = email.to || '(not configured)';
+                document.getElementById('emailPreviewSubject').textContent = email.subject;
+                document.getElementById('emailPreviewBody').textContent = email.body;
+                return;
+            }
+
+            if (mode === 'copy') {
+                var text = 'To: ' + email.to + '\nSubject: ' + email.subject + '\n\n' + email.body;
+                navigator.clipboard.writeText(text).then(function() {
+                    setStatus('✓ Email copied to clipboard — paste into Outlook and send', 'ok');
+                }).catch(function() {
+                    // Fallback for older browsers
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    setStatus('✓ Email copied to clipboard', 'ok');
+                });
+                return;
+            }
+
+            if (mode === 'mailto') {
+                var mailto = 'mailto:' + encodeURIComponent(email.to)
+                    + '?subject=' + encodeURIComponent(email.subject)
+                    + '&body=' + encodeURIComponent(email.body);
+                window.open(mailto);
+                setStatus('✓ Opened in email client — review and hit Send', 'ok');
+                return;
+            }
+
+            if (mode === 'graph') {
+                // Open Outlook Web App with pre-filled email (no auth required)
+                var owaUrl = 'https://outlook.office.com/mail/deeplink/compose?to=' + encodeURIComponent(email.to)
+                    + '&subject=' + encodeURIComponent(email.subject)
+                    + '&body=' + encodeURIComponent(email.body);
+                window.open(owaUrl, '_blank');
+                setStatus('✓ Opened in Outlook Web — sign in as Christine, review and hit Send', 'ok');
+            }
+        }
+
+        async function sendViaGraph(email) {
+            setStatus('Authenticating with Microsoft Graph...');
+            try {
+                // Dynamic MSAL import
+                if (typeof msal === 'undefined') {
+                    var script = document.createElement('script');
+                    script.src = 'https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js';
+                    document.head.appendChild(script);
+                    await new Promise(function(resolve) { script.onload = resolve; });
+                }
+
+                var msalConfig = {
+                    auth: {
+                        clientId: GRAPH_CLIENT_ID,
+                        authority: 'https://login.microsoftonline.com/' + (GRAPH_TENANT_ID || 'common'),
+                        redirectUri: window.location.href.split('?')[0]
+                    }
+                };
+
+                var msalApp = new msal.PublicClientApplication(msalConfig);
+                await msalApp.initialize();
+
+                var loginResp = await msalApp.loginPopup({
+                    scopes: ['Mail.Send']
+                });
+
+                var tokenResp = await msalApp.acquireTokenSilent({
+                    scopes: ['Mail.Send'],
+                    account: loginResp.account
+                });
+
+                setStatus('Sending email via Microsoft Graph...');
+
+                var resp = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + tokenResp.accessToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: {
+                            subject: email.subject,
+                            body: { contentType: 'Text', content: email.body },
+                            toRecipients: [{ emailAddress: { address: email.to } }]
+                        },
+                        saveToSentItems: true
+                    })
+                });
+
+                if (resp.ok || resp.status === 202) {
+                    setStatus('✓ Email sent! It should appear in the D365 queue within 1-2 minutes.', 'ok');
+                } else {
+                    var err = await resp.json();
+                    setStatus('Send failed: ' + (err.error ? err.error.message : resp.statusText), 'err');
+                }
+            } catch (e) {
+                setStatus('Graph error: ' + e.message + ' — try "Open in Outlook" instead.', 'err');
+            }
+        }
+
+        // ── Context Panel: IntersectionObserver + Click Trigger ──
+        (function initContextPanel() {
+            var sectionMap = {
+                'section-setup': ['ctx-setup', 'ctx-reference', '✅ Pre-Flight Setup'],
+                'section-reference': ['ctx-reference', 'ctx-setup', '📦 Hero Records'],
+                'section-voice': ['ctx-voice', null, '📞 Voice — Jake Harrington'],
+                'section-email': ['ctx-email', null, '📧 Email — Christine Delacroix'],
+                'section-chat': ['ctx-portal', 'ctx-chat', '🟣💬 Portal — Self-Service + Live Chat'],
+                'section-rma': ['ctx-rma', null, '🔄 RMA — Mike Torres'],
+                'section-close': ['ctx-close', null, '🎯 Close & Value']
+            };
+
+            var ctxTitle = document.getElementById('ctxTitle');
+            var allCtx = document.querySelectorAll('.ctx-section');
+            var currentSection = 'section-setup';
+
+            function activateContext(sectionId) {
+                var mapping = sectionMap[sectionId];
+                if (!mapping) return;
+                if (sectionId === currentSection) return;
+                currentSection = sectionId;
+                allCtx.forEach(function(el) { el.classList.remove('active'); });
+                var primary = document.getElementById(mapping[0]);
+                if (primary) primary.classList.add('active');
+                if (mapping[1]) {
+                    var secondary = document.getElementById(mapping[1]);
+                    if (secondary) secondary.classList.add('active');
+                }
+                if (ctxTitle) ctxTitle.textContent = mapping[2] || 'Demo Data';
+            }
+
+            // Method 1: Click on section header triggers context switch
+            document.querySelectorAll('.exec-header').forEach(function(header) {
+                header.addEventListener('click', function() {
+                    var section = header.closest('.exec-section');
+                    if (section && section.id && sectionMap[section.id]) {
+                        activateContext(section.id);
+                    }
+                });
+            });
+
+            // Method 2: IntersectionObserver for scroll-based switching
+            if ('IntersectionObserver' in window) {
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            activateContext(entry.target.id);
+                        }
+                    });
+                }, { rootMargin: '-40px 0px -40% 0px', threshold: [0, 0.05, 0.1] });
+
+                Object.keys(sectionMap).forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) observer.observe(el);
+                });
+            }
+
+            // Show panel by default on wide screens
+            if (window.innerWidth > 1100) {
+                document.body.classList.add('ctx-panel-open');
+            }
+        })();
+    </script>
+
+</body>
+</html>

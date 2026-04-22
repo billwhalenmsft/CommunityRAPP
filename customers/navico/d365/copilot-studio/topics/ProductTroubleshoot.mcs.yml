@@ -1,0 +1,169 @@
+kind: AdaptiveDialog
+modelDescription: Guides customers through product troubleshooting for Navico marine electronics using KB articles and diagnostic steps.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - troubleshoot
+      - not working
+      - broken
+      - my product isn't working
+      - won't turn on
+      - screen is black
+      - firmware issue
+      - update failed
+      - NMEA not connecting
+      - devices not talking
+      - radar not showing
+      - connectivity problem
+      - error message
+      - product fault
+      - bricked
+      - unresponsive
+
+  actions:
+    - kind: SendActivity
+      id: intro
+      activity:
+        text:
+          - "I'd be happy to help troubleshoot your Navico product. First, could you provide me with the **serial number**? You can find it on the product label or in **Settings > About** on your device."
+
+    - kind: Question
+      id: askSerial
+      property: Topic.SerialNumber
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What is the serial number?"
+
+    - kind: SendActivity
+      id: identifyBrand
+      activity:
+        text:
+          - "Thanks! Based on the serial number, let me look up your product details.\n\nWhile I check, can you describe the issue you're experiencing? For example:\n\n🔌 **Power issue** — unit won't turn on, screen black\n📱 **Firmware problem** — update failed, touchscreen unresponsive after update\n📡 **Connectivity** — NMEA 2000, Ethernet, WiFi, or Bluetooth not working\n❓ **Other** — describe what's happening"
+
+    - kind: Question
+      id: askIssueType
+      property: Topic.IssueType
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Which best describes your issue?"
+      entity:
+        displayName: Issue Type
+      choices:
+        - value: power
+          synonyms:
+            - power
+            - won't turn on
+            - screen black
+            - dead
+            - not powering
+        - value: firmware
+          synonyms:
+            - firmware
+            - update
+            - bricked
+            - touchscreen unresponsive
+        - value: connectivity
+          synonyms:
+            - connectivity
+            - NMEA
+            - ethernet
+            - wifi
+            - network
+            - devices not showing
+            - radar not found
+        - value: other
+          synonyms:
+            - other
+            - something else
+
+    - kind: ConditionGroup
+      id: routeByIssue
+      conditions:
+        - id: powerIssue
+          condition: =Topic.IssueType = "power"
+          actions:
+            - kind: SendActivity
+              id: powerDiag
+              activity:
+                text:
+                  - "Let's walk through the power diagnostic steps:\n\n1️⃣ **Check power supply** — verify input voltage matches spec (10-35V DC for most MFDs). Check battery voltage under load.\n2️⃣ **Inspect wiring** — look at the power cable, fuse, and connectors for corrosion (common in marine environments)\n3️⃣ **Hard reset** — press and hold the power button for 15 seconds\n4️⃣ **Check the fuse** — a blown inline fuse is the most common cause of no-power\n\nDid any of these steps help?"
+
+        - id: firmwareIssue
+          condition: =Topic.IssueType = "firmware"
+          actions:
+            - kind: SendActivity
+              id: firmwareDiag
+              activity:
+                text:
+                  - "For firmware issues, try these recovery steps in order:\n\n1️⃣ **Hard reset** — hold power button 15 seconds until unit shuts off, wait 10 seconds, power on\n2️⃣ **Use physical buttons** — if touchscreen is dead, use the rotary dial to navigate to Settings > System > Software Update\n3️⃣ **SD card recovery** — remove SD card, delete old update files, download latest firmware from the brand website, copy to SD card root, re-insert and power on\n4️⃣ **Factory reset** — Settings > System > Factory Reset (⚠️ this erases all waypoints and settings)\n\nWhich step are you on, or would you like more detail on any of these?"
+
+        - id: connectivityIssue
+          condition: =Topic.IssueType = "connectivity"
+          actions:
+            - kind: SendActivity
+              id: connectDiag
+              activity:
+                text:
+                  - "For connectivity issues, the fix depends on the connection type:\n\n**NMEA 2000 (instrument data):**\n• Check backbone has 12V power\n• Verify exactly 2 terminators (one at each end)\n• Inspect T-connectors for corrosion\n• Check the 3A fuse\n\n**Ethernet (radar/sonar/screen sharing):**\n• Check cable integrity at both ends\n• Verify all devices are on the same firmware generation\n• Note: MFD screen sharing is same-brand only (Simrad↔Simrad, etc.)\n\n**WiFi (mobile app):**\n• Ensure WiFi is enabled in Settings\n• Range is ~30ft / 10m\n• Only 1 device can connect at a time\n\nWhich connection type is the issue?"
+
+      elseActions:
+        - kind: SendActivity
+          id: otherIssue
+          activity:
+            text:
+              - "Let me search our knowledge base for information about your issue. Can you describe what's happening in a bit more detail?"
+
+    - kind: Question
+      id: askResolved
+      property: Topic.Resolved
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Did that help resolve the issue?"
+      entity:
+        displayName: Resolution
+      choices:
+        - value: yes
+          synonyms:
+            - yes
+            - that worked
+            - fixed it
+            - all good
+            - resolved
+        - value: no
+          synonyms:
+            - no
+            - still broken
+            - didn't help
+            - not working
+            - same issue
+
+    - kind: ConditionGroup
+      id: checkResolution
+      conditions:
+        - id: resolved
+          condition: =Topic.Resolved = "yes"
+          actions:
+            - kind: SendActivity
+              id: resolvedMsg
+              activity:
+                text:
+                  - "Great, glad I could help! 🎉 Is there anything else I can assist you with today?"
+
+      elseActions:
+        - kind: SendActivity
+          id: notResolvedMsg
+          activity:
+            text:
+              - "I'm sorry the troubleshooting steps didn't resolve the issue. Let me connect you with a Navico support specialist who can dig deeper. They'll have our full conversation so you won't need to repeat anything."
+        - kind: TransferToAgent
+          id: troubleshootEscalate
+          activity:
+            text: "Customer has a {Topic.IssueType} issue with serial number {Topic.SerialNumber}. Troubleshooting steps attempted via self-service bot did not resolve. Please continue diagnostics."
+          context:
+            EscalationReason: "Unresolved troubleshooting - {Topic.IssueType}"
+            SerialNumber: "{Topic.SerialNumber}"

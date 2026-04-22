@@ -1,0 +1,202 @@
+{
+    "accounts": [
+        {
+            "name": "Andersen Exteriors Savage",
+            "accountnumber": "AES-001",
+            "telephone1": "952-441-8823",
+            "emailaddress1": "service@andersen-exteriors-savage.com",
+            "address1_city": "Savage",
+            "address1_stateorprovince": "MN",
+            "address1_postalcode": "55378",
+            "industrycode": 7,
+            "_abc_tier": "Tier 1 — Premier Contractor",
+            "_abc_annualWOs": 85,
+            "_abc_primarySalesRep": "Larry Sullivan",
+            "_abc_notes": "Highest-volume contractor. Does mostly Andersen window installs and replacements. Calls in 2-3x per week."
+        },
+        {
+            "name": "Pella Pro Contractors MN",
+            "accountnumber": "PPC-002",
+            "telephone1": "952-890-4410",
+            "emailaddress1": "dispatch@pellprocontractors.com",
+            "address1_city": "Burnsville",
+            "address1_stateorprovince": "MN",
+            "address1_postalcode": "55337",
+            "industrycode": 7,
+            "_abc_tier": "Tier 2 — Active Contractor",
+            "_abc_annualWOs": 42,
+            "_abc_primarySalesRep": "Dana Krebs",
+            "_abc_notes": "Specializes in Pella product installations. Good relationship, regular service requests."
+        },
+        {
+            "name": "Prairie Windows & Doors",
+            "accountnumber": "PWD-003",
+            "telephone1": "952-226-5551",
+            "emailaddress1": "info@prairiewindows.com",
+            "address1_city": "Shakopee",
+            "address1_stateorprovince": "MN",
+            "address1_postalcode": "55379",
+            "industrycode": 7,
+            "_abc_tier": "Tier 3 — Standard Contractor",
+            "_abc_annualWOs": 28,
+            "_abc_primarySalesRep": "Larry Sullivan",
+            "_abc_notes": "Smaller contractor. Mostly screen replacements and minor repairs. Price-sensitive."
+        },
+        {
+            "name": "Bergstrom Home Services",
+            "accountnumber": "BHS-004",
+            "telephone1": "952-555-0192",
+            "emailaddress1": "mike@bergstromhomeservices.com",
+            "address1_city": "Eden Prairie",
+            "address1_stateorprovince": "MN",
+            "address1_postalcode": "55344",
+            "industrycode": 7,
+            "_abc_tier": "Tier 3 — Standard Contractor",
+            "_abc_annualWOs": 15,
+            "_abc_primarySalesRep": "Dana Krebs",
+            "_abc_notes": "Handyman / general contractor. Occasional window/door work."
+        }
+    ],
+    "contacts": [
+        {
+            "firstname": "Mike",
+            "lastname": "Bergstrom",
+            "parentaccount": "Andersen Exteriors Savage",
+            "telephone1": "952-441-8823",
+            "mobilephone": "952-441-8823",
+            "emailaddress1": "mike.bergstrom@andersen-exteriors-savage.com",
+            "jobtitle": "Service Manager",
+            "_abc_isPrimaryContact": true,
+            "_abc_notes": "Hero caller. Call him first for voice demo. Has 2 open work orders."
+        },
+        {
+            "firstname": "Tyler",
+            "lastname": "Schroeder",
+            "parentaccount": "Pella Pro Contractors MN",
+            "telephone1": "952-890-4410",
+            "emailaddress1": "tyler.schroeder@pellaprocontractors.com",
+            "jobtitle": "Field Operations Lead",
+            "_abc_isPrimaryContact": true
+        },
+        {
+            "firstname": "Debra",
+            "lastname": "Haugen",
+            "parentaccount": "Prairie Windows & Doors",
+            "telephone1": "952-226-5551",
+            "emailaddress1": "debra.haugen@prairiewindows.com",
+            "jobtitle": "Owner",
+            "_abc_isPrimaryContact": true
+        },
+        {
+            "firstname": "Sarah",
+            "lastname": "Kowalski",
+            "parentaccount": "Andersen Exteriors Savage",
+            "_abc_role": "Homeowner",
+            "mobilephone": "612-555-0234",
+            "emailaddress1": "sarah.kowalski@gmail.com",
+            "address1_city": "Prior Lake",
+            "address1_stateorprovince": "MN",
+            "_abc_notes": "Homeowner where Andersen Exteriors is doing the Casement window replacement. Receives SMS updates."
+        },
+        {
+            "firstname": "Josh",
+            "lastname": "Henriksen",
+            "parentaccount": "ABC Supply Savage",
+            "emailaddress1": "josh.henriksen@abcsupply.com",
+            "telephone1": "952-894-0100",
+            "jobtitle": "Service Coordinator",
+            "_abc_isInternalUser": true
+        },
+        {
+            "firstname": "Aaron",
+            "lastname": "Dietz",
+            "parentaccount": "ABC Supply Savage",
+            "emailaddress1": "aaron.dietz@abcsupply.com",
+            "telephone1": "952-894-0101",
+            "jobtitle": "Service Coordinator",
+            "_abc_isInternalUser": true
+        },
+        {
+            "firstname": "Nick",
+            "lastname": "Super",
+            "parentaccount": "ABC Supply Savage",
+            "emailaddress1": "nick.super@abcsupply.com",
+            "telephone1": "952-894-0102",
+            "jobtitle": "Service Manager",
+            "_abc_isInternalUser": true
+        },
+        {
+            "firstname": "Derek",
+            "lastname": "Olson",
+            "parentaccount": "ABC Supply Savage",
+            "emailaddress1": "derek.olson@abcsupply.com",
+            "mobilephone": "612-555-0301",
+            "jobtitle": "Senior Service Technician",
+            "_abc_isFieldTech": true,
+            "_abc_certifications": ["Window Installation", "Door Systems", "Weatherproofing"]
+        }
+    ],
+    "products": [
+        { "name": "Window — Casement Standard",     "productnumber": "WIN-CAS-STD",   "price": 485.00,  "type": "Window" },
+        { "name": "Window — Double-Hung Standard",  "productnumber": "WIN-DH-STD",    "price": 420.00,  "type": "Window" },
+        { "name": "Window — Sliding",               "productnumber": "WIN-SLD-STD",   "price": 395.00,  "type": "Window" },
+        { "name": "Patio Door — Sliding",           "productnumber": "DOOR-PAT-SLD",  "price": 1250.00, "type": "Door" },
+        { "name": "Entry Door — Standard",          "productnumber": "DOOR-ENT-STD",  "price": 890.00,  "type": "Door" },
+        { "name": "Screen — Window Standard",       "productnumber": "SCR-WIN-STD",   "price": 68.00,   "type": "Part" },
+        { "name": "Screen — Door Standard",         "productnumber": "SCR-DOOR-STD",  "price": 145.00,  "type": "Part" },
+        { "name": "Seal / Weatherstrip Kit",        "productnumber": "PART-SEAL-KIT", "price": 42.00,   "type": "Part" },
+        { "name": "Window Operator Mechanism",      "productnumber": "PART-OPR-MEC",  "price": 89.00,   "type": "Part" },
+        { "name": "Balance Replacement Kit",        "productnumber": "PART-BAL-KIT",  "price": 55.00,   "type": "Part" },
+        { "name": "Glass Pane — Custom (per unit)", "productnumber": "PART-GLASS-CUS","price": 0.00,    "type": "Part", "note": "Price varies by size — quote required" },
+        { "name": "Service Visit — Assessment",     "productnumber": "SVC-ASSESS",    "price": 125.00,  "type": "Service", "durationHours": 2 },
+        { "name": "Service Visit — Window Repair",  "productnumber": "SVC-WIN-RPR",   "price": 185.00,  "type": "Service", "durationHours": 3 },
+        { "name": "Service Visit — Measurement",    "productnumber": "SVC-MEASURE",   "price": 75.00,   "type": "Service", "durationHours": 1 },
+        { "name": "Drive Time — Per Hour",          "productnumber": "SVC-DRIVE-HR",  "price": 65.00,   "type": "Service" }
+    ],
+    "demoCases": [
+        {
+            "title": "Andersen 400 Casement — Seal Failure / Water Intrusion",
+            "caseRef": "WO-2026-001",
+            "account": "Andersen Exteriors Savage",
+            "contact": "Mike Bergstrom",
+            "caseOrigin": 1,
+            "priority": 1,
+            "status": "In Progress — Parts on Order",
+            "_abc_heroCase": true,
+            "_abc_description": "Homeowner (Sarah Kowalski, Prior Lake) reporting water coming in around casement window frame. Andersen Exteriors installed 14 months ago. Seal failure appears to be manufacturer defect. Replacement seal kit ordered from Andersen — ETA 12-14 business days. Tech assessment completed. Warranty claim submitted to manufacturer."
+        },
+        {
+            "title": "Pella Impervia Slider — Operator Mechanism Failure",
+            "caseRef": "WO-2026-002",
+            "account": "Pella Pro Contractors MN",
+            "contact": "Tyler Schroeder",
+            "caseOrigin": 2,
+            "priority": 2,
+            "status": "Scheduled — Tech Dispatched Thursday",
+            "_abc_heroCase": true,
+            "_abc_description": "Pella sliding window operator mechanism stripped. Unable to lock window. Part in stock at warehouse. Derek Olson scheduled Thursday 10am. Homeowner notified via SMS."
+        },
+        {
+            "title": "Screen Replacement — 12-Unit Prairie Windows Project",
+            "caseRef": "WO-2026-003",
+            "account": "Prairie Windows & Doors",
+            "contact": "Debra Haugen",
+            "caseOrigin": 3,
+            "priority": 3,
+            "status": "Resolved — Pending Sign-Off",
+            "_abc_heroCase": false,
+            "_abc_description": "12 window screen replacements completed. Frames measured, screens cut and installed. Pre/post photos captured. Completion report sent to Debra. Awaiting customer sign-off email."
+        },
+        {
+            "title": "Casement Window — Broken Balance / Won't Stay Open",
+            "caseRef": "WO-2026-004",
+            "account": "Andersen Exteriors Savage",
+            "contact": "Mike Bergstrom",
+            "caseOrigin": 1,
+            "priority": 2,
+            "status": "New — Pending Assignment",
+            "_abc_heroCase": false,
+            "_abc_description": "Second open work order for Andersen Exteriors. Balance spring broken on casement window in master bedroom. Part in stock. Quick repair, same-day dispatch possible."
+        }
+    ]
+}

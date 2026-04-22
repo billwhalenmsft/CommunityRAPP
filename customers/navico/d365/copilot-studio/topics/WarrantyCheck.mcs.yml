@@ -1,0 +1,111 @@
+kind: AdaptiveDialog
+modelDescription: Helps customers check warranty status by serial number lookup and explains coverage options.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - check warranty
+      - warranty status
+      - is my product under warranty
+      - warranty expired
+      - coverage
+      - still covered
+      - when does warranty end
+
+  actions:
+    - kind: SendActivity
+      id: intro
+      activity:
+        text:
+          - "I can help you check your warranty status. I'll need your **product serial number** to look that up. You can find it on the product label or in **Settings > About** on your device."
+
+    - kind: Question
+      id: askSerial
+      property: Topic.SerialNumber
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What is the serial number?"
+
+    - kind: SendActivity
+      id: lookupResult
+      activity:
+        text:
+          - "Let me look up serial number **{Topic.SerialNumber}** in our system...\n\nHere's what I found:\n\n📋 **Warranty Information**\n• **Status:** I'll check the Customer Asset record for your warranty dates and coverage type\n• **Standard Warranty:** 2 years from purchase/registration date\n• **Coverage includes:** Manufacturing defects and component failure\n• **Not covered:** Physical damage, water intrusion from improper installation, or misuse\n\nFor the most accurate warranty dates, I recommend connecting with a support specialist who can pull up your exact asset record. Would you like me to:\n\n1️⃣ **Connect you with a specialist** to confirm exact dates and coverage\n2️⃣ **Learn about extended warranty options**\n3️⃣ **Start an RMA request** if your product needs repair or replacement"
+
+    - kind: Question
+      id: askNext
+      property: Topic.NextStep
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What would you like to do next?"
+      entity:
+        displayName: Next Step
+      choices:
+        - value: specialist
+          synonyms:
+            - connect
+            - specialist
+            - agent
+            - confirm dates
+            - "1"
+        - value: extended
+          synonyms:
+            - extended warranty
+            - options
+            - upgrade
+            - "2"
+        - value: rma
+          synonyms:
+            - RMA
+            - repair
+            - replace
+            - return
+            - "3"
+
+    - kind: ConditionGroup
+      id: routeNext
+      conditions:
+        - id: toSpecialist
+          condition: =Topic.NextStep = "specialist"
+          actions:
+            - kind: TransferToAgent
+              id: warrantyTransfer
+              activity:
+                text: "Customer wants warranty status confirmation for serial {Topic.SerialNumber}. Please look up the Customer Asset record and confirm warranty dates and coverage."
+              context:
+                EscalationReason: "Warranty status inquiry"
+                SerialNumber: "{Topic.SerialNumber}"
+
+        - id: toExtended
+          condition: =Topic.NextStep = "extended"
+          actions:
+            - kind: SendActivity
+              id: extendedInfo
+              activity:
+                text:
+                  - "Navico offers several warranty extension options:\n\n📦 **Extended Warranty** — extends coverage up to 5 years, includes accidental damage for select products\n⭐ **Premium Service** — annual plan with priority support, advanced exchange, and firmware priority access\n🏢 **Fleet Coverage** (B2B) — blanket warranty for all registered units under your account\n\nTo purchase or discuss options, I'll connect you with a specialist."
+            - kind: TransferToAgent
+              id: extendedTransfer
+              activity:
+                text: "Customer interested in extended warranty options for serial {Topic.SerialNumber}."
+              context:
+                EscalationReason: "Extended warranty inquiry"
+
+        - id: toRMA
+          condition: =Topic.NextStep = "rma"
+          actions:
+            - kind: SendActivity
+              id: rmaInfo
+              activity:
+                text:
+                  - "Navico offers 4 types of RMA:\n\n🔄 **Exchange** — swap your defective unit for a replacement\n💰 **Credit** — receive a refund to your account\n🔧 **Repair** — ship to a Navico repair center and get it back fixed\n🚢 **OBS (Onboard Support)** — on-site support request\n\nTo process an RMA, I'll need to connect you with a support specialist who can validate the warranty and create the return. Let me transfer you now."
+            - kind: TransferToAgent
+              id: rmaTransfer
+              activity:
+                text: "Customer wants to initiate an RMA for serial {Topic.SerialNumber}. Warranty validation needed before processing."
+              context:
+                EscalationReason: "RMA request"
+                SerialNumber: "{Topic.SerialNumber}"

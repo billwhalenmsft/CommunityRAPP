@@ -1,0 +1,27 @@
+kind: BotDefinition
+entity:
+  language: 1033
+  accessControlPolicy: None
+  authenticationMode: None
+  authenticationTrigger: AsNeeded
+  configuration: {}
+  template: kickStartTemplate-1.0.0
+
+components:
+  - kind: DialogComponent
+    managedProperties:
+      isCustomizable: false
+    displayName: Fallback
+    description: Triggers when no topic matches.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: template-content.topic.Fallback
+    dialog:
+      beginDialog:
+        kind: OnUnknownIntent
+        id: main
+        actions:
+          - kind: SendActivity
+            id: fallbackMsg
+            activity: I did not quite understand. Try asking me to create a PR, check PR status, or approve a PR.

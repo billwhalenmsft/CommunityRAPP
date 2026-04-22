@@ -70,9 +70,14 @@ function Invoke-Dv {
 function Post-Record([string]$Entity, [hashtable]$Body, [string]$Label) {
     $r = Invoke-Dv -Method POST -Path $Entity -Body $Body
     if ($r) {
-        $id = if ($r.activityid) { $r.activityid } `
-              elseif ($r.taskid)  { $r.taskid }  `
-              else { $r.PSObject.Properties | Where-Object { $_.Name -match "id$" } | Select-Object -First 1 -ExpandProperty Value }
+        $props = $r.PSObject.Properties
+        $id = $null
+        if ($props.Name -contains 'activityid') { $id = $r.activityid }
+        elseif ($props.Name -contains 'taskid') { $id = $r.taskid }
+        else {
+            $idProp = $props | Where-Object { $_.Name -match "id$" } | Select-Object -First 1
+            if ($idProp) { $id = $idProp.Value }
+        }
         Write-Host "  ✓ $Label" -ForegroundColor Green
         return $id
     }
@@ -262,7 +267,7 @@ function Invoke-CustomData {
     Write-Host "`n[Reserve Adequacy]"
     $reserves = @(
         @{ name="Acme Re — Property CAT Q1 2026";        acct=$C.c1; lob="Property Catastrophe"; period="Q1 2026"; curr=420.0; rec=415.0; pct=101.2; status=200000; notes="Slightly over-reserved. Within tolerance." },
-        @{ name="Acme Re — Workers Comp Q1 2026";        acct=$C.c1; lob="Workers Compensation"; period="Q1 2026"; curr=180.0; rec=195.0; pct=92.3;  status=200001; notes="Under-reserved by approx $15M. Actuarial team notified." },
+        @{ name="Acme Re — Workers Comp Q1 2026";        acct=$C.c1; lob="Workers Compensation"; period="Q1 2026"; curr=180.0; rec=195.0; pct=92.3;  status=200001; notes='Under-reserved by approx $15M. Actuarial team notified.' },
         @{ name="Titan Re — General Liability Q1 2026";  acct=$C.c2; lob="General Liability";    period="Q1 2026"; curr=290.0; rec=285.0; pct=101.8; status=200000; notes="Adequate. Minor revision from prior quarter." },
         @{ name="Harbor Group — Multi-Line Q1 2026";     acct=$C.c3; lob="Multi-Line";            period="Q1 2026"; curr=310.0; rec=340.0; pct=91.2;  status=200001; notes="Under-reserved. Litigation exposure not fully captured." },
         @{ name="Pacific Coastal — Property Q1 2026";    acct=$C.c4; lob="Property";              period="Q1 2026"; curr=255.0; rec=248.0; pct=102.8; status=200000; notes="Adequate. CAT season model within bounds." },
@@ -270,7 +275,7 @@ function Invoke-CustomData {
         @{ name="Summit Life — Life & Disability Q1 2026";acct=$C.c6; lob="Life & Disability";   period="Q1 2026"; curr=98.0;  rec=96.0;  pct=102.1; status=200000; notes="Adequate. Annual review completed." }
     )
     foreach ($r in $reserves) {
-        $body = @{ erac_name=$r.name; erac_lob=$r.lob; erac_period=$r.period; erac_currentreserve=$r.curr; erac_recreserve=$r.rec; erac_adequacypct=$r.pct; erac_status=$r.status; erac_notes=$r.notes }
+        $body = @{ erac_name=$r.name; erac_lob=$r.lob; erac_period=$r.period; erac_currentreserve=$r.curr; erac_recreserve=$r.rec; erac_adequacypct=$r.pct; erac_status=$r.status }
         $body["erac_AccountId@odata.bind"] = "/accounts($($r.acct))"
         Post-Record "erac_reserveadequacies" $body $r.name | Out-Null
         Start-Sleep -Seconds 1

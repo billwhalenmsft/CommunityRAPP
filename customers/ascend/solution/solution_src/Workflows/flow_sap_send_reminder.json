@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "flowDisplayName": "Ascend: SAP Send Approval Reminder (Demo \u2192 Email)",
+    "description": "Sends an approval reminder email \u2014 emulating SAP BUS2105 workflow reminder trigger. In production, use SWI_CREATE_VIA_INTERNET or custom Z-program to re-trigger SAP workflow work item.",
+    "sapTablesEmulated": [
+      "EBAN_read",
+      "BUS2105_workflow_reminder"
+    ],
+    "demoMode": true,
+    "productionMethod": "SWI_CREATE_VIA_INTERNET / Z_TRIGGER_WF_REMINDER"
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Skills",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "pr_number": {
+              "type": "string"
+            },
+            "user_guid": {
+              "type": "string"
+            },
+            "approver_email": {
+              "type": "string"
+            },
+            "approver_name": {
+              "type": "string"
+            },
+            "vendor_name": {
+              "type": "string"
+            },
+            "total_value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "pr_number",
+            "approver_email",
+            "approver_name"
+          ]
+        }
+      }
+    }
+  },
+  "actions": {
+    "ValidatePRStatus_Emulates_EBAN_Read": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "ListRecords",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sappurchaserequisitions",
+          "$filter": "ascend_banfn eq '@{triggerBody()?['pr_number']}' and ascend_frgst eq 100000",
+          "$select": "ascend_banfn,ascend_frgst"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "description": "READ Dataverse (emulates SAP EBAN read to confirm PR is still pending before sending reminder)"
+    },
+    "SendReminderEmail_Emulates_BUS2105_Reminder": {
+      "type": "Compose",
+      "inputs": {
+        "demo_mode": "DEMO: In production this sends a real email via SAP BUS2105/SWI_CREATE_VIA_INTERNET",
+        "notification_to": "@triggerBody()?['approver_email']",
+        "notification_subject": "@concat('[ACTION REQUIRED \u2013 DEMO SAP ECC 6.0] Reminder: PR ', triggerBody()?['pr_number'], ' awaits your approval')",
+        "notification_body_preview": "Email notification logged (no connector needed for demo)"
+      }
+    },
+    "RespondToCopilotStudio": {
+      "type": "Response",
+      "inputs": {
+        "statusCode": 200,
+        "body": {
+          "status": "reminder_sent",
+          "pr_number": "@triggerBody()?['pr_number']",
+          "approver_name": "@triggerBody()?['approver_name']",
+          "notification_channels": [
+            "Email (Office 365)",
+            "SAP BUS2105 workflow (production only)"
+          ],
+          "data_source": "SAP ECC 6.0 (Demo via Dataverse)",
+          "demo_note": "DEMO: In production, reminder is triggered via SAP SWI_CREATE_VIA_INTERNET or custom Z-program"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "runAfter": {
+        "SendReminderEmail_Emulates_BUS2105_Reminder": [
+          "Succeeded",
+          "Failed"
+        ]
+      }
+    }
+  }
+}

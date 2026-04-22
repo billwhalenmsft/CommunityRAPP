@@ -1,0 +1,987 @@
+{
+  "_metadata": {
+    "description": "Navico Demo Data — Marine Electronics Competitive Demo (D365 CS vs Salesforce)",
+    "customer": "Navico",
+    "project": "D365 Customer Service Competitive Bake-Off",
+    "brands": [
+      "Lowrance",
+      "Simrad",
+      "B&G",
+      "C-MAP",
+      "Northstar"
+    ],
+    "demoFocus": "Omnichannel (Email, Chat, Voice), Intelligent Routing, Copilot Assist, RMA/Warranty Workflows",
+    "caseContext": "52% Technical Support / 48% Warranty & Claims. B2B tier-driven routing + B2C consumer email/chat."
+  },
+  "serviceAccounts": {
+    "_note": "Brand-level manufacturer accounts (Navico group companies) + distributor/dealer accounts by tier.",
+    "accounts": [
+      {
+        "accountNumber": "NAV-MFG-001",
+        "name": "Navico Group",
+        "type": "Manufacturer",
+        "tier": "Internal",
+        "contract": "N/A",
+        "totalUnits": 0,
+        "phone": "+1 (918) 437-6881",
+        "address": {
+          "line1": "4030 W Boy Scout Blvd Ste 700",
+          "city": "Tulsa",
+          "stateOrProvince": "OK",
+          "postalCode": "74107",
+          "country": "United States"
+        },
+        "description": "Navico Group parent account — marine electronics portfolio including Lowrance, Simrad, B&G, C-MAP, Northstar."
+      },
+      {
+        "phone": "+1 (651) 226-3398",
+        "address": {
+          "line1": "1200 Harbor View Blvd",
+          "city": "Jacksonville",
+          "stateOrProvince": "FL",
+          "postalCode": "32202",
+          "country": "United States"
+        },
+        "description": "Platinum Expert — largest east coast marine electronics distributor. High-volume Simrad + Lowrance. Key demo account for B2B voice scenario.",
+        "lastServiceDate": "2026-01-15",
+        "equipment": [
+          {
+            "serial": "SIM-AMS-NSX-001",
+            "count": 8,
+            "model": "Simrad NSX 3007 Chartplotter",
+            "type": "Chartplotter/MFD"
+          },
+          {
+            "serial": "SIM-AMS-NSX-002",
+            "count": 4,
+            "model": "Simrad NSX 3009 Chartplotter",
+            "type": "Chartplotter/MFD"
+          },
+          {
+            "serial": "SIM-AMS-GO9-001",
+            "count": 6,
+            "model": "Simrad GO9 XSE",
+            "type": "Entry Chartplotter"
+          },
+          {
+            "serial": "LWR-AMS-HDS-001",
+            "count": 5,
+            "model": "Lowrance HDS Live 9 Fishfinder",
+            "type": "Fishfinder/MFD"
+          }
+        ]
+      },
+      {
+        "accountNumber": "NAV-B2B-PE-002",
+        "name": "Euro Marine Distributors",
+        "type": "Tier 1 Distributor",
+        "tier": "Platinum Expert",
+        "contract": "Premium Support SLA — 2hr response",
+        "region": "EMEA",
+        "phone": "+44 20 7845 3321",
+        "address": {
+          "line1": "14 Maritime Quarter",
+          "city": "London",
+          "stateOrProvince": "",
+          "postalCode": "SE1 9RT",
+          "country": "United Kingdom"
+        },
+        "description": "Platinum Expert EMEA — primary B&G and Simrad distributor serving UK and Northern Europe. Key demo account for live chat escalation scenario.",
+        "lastServiceDate": "2026-02-20",
+        "equipment": [
+          {
+            "serial": "BG-EMD-ZEU-001",
+            "count": 6,
+            "model": "B&G Zeus S 9 Chartplotter",
+            "type": "Sailing Chartplotter"
+          },
+          {
+            "serial": "BG-EMD-TRI-001",
+            "count": 10,
+            "model": "B&G Triton2 Instrument Display",
+            "type": "Instrument Display"
+          },
+          {
+            "serial": "BG-EMD-H50-001",
+            "count": 3,
+            "model": "B&G H5000 Pilot Controller",
+            "type": "Performance Sailing"
+          },
+          {
+            "serial": "SIM-EMD-NSS-001",
+            "count": 4,
+            "model": "Simrad NSS evo3S 9 MFD",
+            "type": "Chartplotter/MFD"
+          }
+        ]
+      },
+      {
+        "accountNumber": "NAV-B2B-PL-001",
+        "name": "Pacific Coast Marine Group",
+        "type": "Tier 1 Distributor",
+        "tier": "Platinum",
+        "contract": "Standard SLA — 4hr response",
+        "region": "Americas",
+        "phone": "+1 (206) 555-0388",
+        "address": {
+          "line1": "800 Salmon Bay Rd",
+          "city": "Seattle",
+          "stateOrProvince": "WA",
+          "postalCode": "98107",
+          "country": "United States"
+        },
+        "description": "Platinum — Pacific Northwest multi-brand distributor. Primary Lowrance volume for recreational fishing market.",
+        "lastServiceDate": "2026-01-08",
+        "equipment": [
+          {
+            "serial": "LWR-PCM-HDS-001",
+            "count": 10,
+            "model": "Lowrance HDS Live 9 Fishfinder",
+            "type": "Fishfinder/MFD"
+          },
+          {
+            "serial": "LWR-PCM-EFS-001",
+            "count": 8,
+            "model": "Lowrance Elite FS 7 Fishfinder",
+            "type": "Mid-Range Fishfinder"
+          },
+          {
+            "serial": "LWR-PCM-ATG-001",
+            "count": 4,
+            "model": "Lowrance ActiveTarget 2 Live Sonar",
+            "type": "Live Sonar"
+          },
+          {
+            "serial": "LWR-PCM-GHO-001",
+            "count": 3,
+            "model": "Lowrance Ghost Trolling Motor 97lb",
+            "type": "Trolling Motor"
+          }
+        ]
+      },
+      {
+        "accountNumber": "NAV-B2B-PL-002",
+        "name": "Nordic Marine Supply",
+        "type": "Tier 1 Distributor",
+        "tier": "Platinum",
+        "contract": "Standard SLA — 4hr response",
+        "region": "EMEA",
+        "phone": "+47 22 55 0100",
+        "address": {
+          "line1": "Strandveien 50",
+          "city": "Oslo",
+          "stateOrProvince": "",
+          "postalCode": "0286",
+          "country": "Norway"
+        },
+        "description": "Platinum EMEA — Scandinavian distributor for Simrad and B&G. Strong sailing and commercial marine segment.",
+        "lastServiceDate": "2025-12-15",
+        "equipment": [
+          {
+            "serial": "SIM-NMS-AP4-001",
+            "count": 5,
+            "model": "Simrad AP44 Autopilot",
+            "type": "Autopilot"
+          },
+          {
+            "serial": "BG-NMS-VUL-001",
+            "count": 6,
+            "model": "B&G Vulcan 9R Chartplotter",
+            "type": "Sailing Chartplotter"
+          },
+          {
+            "serial": "SIM-NMS-HAL-001",
+            "count": 3,
+            "model": "Simrad Halo 20 Radar",
+            "type": "Radar"
+          },
+          {
+            "serial": "SIM-NMS-RS9-001",
+            "count": 8,
+            "model": "Simrad RS90S VHF Radio",
+            "type": "VHF Radio"
+          }
+        ]
+      },
+      {
+        "accountNumber": "NAV-B2B-GD-001",
+        "name": "Gulf Coast Marine Depot",
+        "type": "Tier 2 Dealer",
+        "tier": "Gold",
+        "contract": "Business Hours — 8hr response",
+        "region": "Americas",
+        "phone": "+1 (713) 555-0775",
+        "address": {
+          "line1": "500 Ship Channel Dr",
+          "city": "Houston",
+          "stateOrProvince": "TX",
+          "postalCode": "77020",
+          "country": "United States"
+        },
+        "description": "Gold dealer — strong in recreational fishing and offshore boating. High Lowrance HDS volume.",
+        "lastServiceDate": "2026-02-28",
+        "equipment": [
+          {
+            "serial": "LWR-GCM-HDS-001",
+            "count": 8,
+            "model": "Lowrance HDS Live 9 Fishfinder",
+            "type": "Fishfinder/MFD"
+          },
+          {
+            "serial": "LWR-GCM-HRV-001",
+            "count": 12,
+            "model": "Lowrance Hook Reveal 7 Fishfinder",
+            "type": "Entry Fishfinder"
+          },
+          {
+            "serial": "LWR-GCM-ATG-001",
+            "count": 3,
+            "model": "Lowrance ActiveTarget 2 Live Sonar",
+            "type": "Live Sonar"
+          }
+        ]
+      },
+      {
+        "accountNumber": "NAV-B2B-GD-002",
+        "name": "Great Lakes Boating Supply",
+        "type": "Tier 2 Dealer",
+        "tier": "Gold",
+        "contract": "Business Hours — 8hr response",
+        "region": "Americas",
+        "phone": "+1 (312) 555-0244",
+        "address": {
+          "line1": "2200 Lakeshore Marina Blvd",
+          "city": "Chicago",
+          "stateOrProvince": "IL",
+          "postalCode": "60611",
+          "country": "United States"
+        },
+        "description": "Gold dealer — recreational freshwater and sailing market. Lowrance + B&G mix.",
+        "lastServiceDate": "2025-11-10",
+        "equipment": [
+          {
+            "serial": "LWR-GLB-HDS-001",
+            "count": 6,
+            "model": "Lowrance HDS Live 9 Fishfinder",
+            "type": "Fishfinder/MFD"
+          },
+          {
+            "serial": "LWR-GLB-GHO-001",
+            "count": 4,
+            "model": "Lowrance Ghost Trolling Motor 97lb",
+            "type": "Trolling Motor"
+          },
+          {
+            "serial": "BG-GLB-TRI-001",
+            "count": 5,
+            "model": "B&G Triton2 Instrument Display",
+            "type": "Instrument Display"
+          }
+        ]
+      },
+      {
+        "accountNumber": "NAV-B2B-STD-001",
+        "name": "Freshwater Fishing Depot",
+        "type": "Tier 2 Dealer",
+        "tier": "Standard",
+        "contract": "Standard — 1 business day response",
+        "region": "Americas",
+        "phone": "+1 (515) 555-0190",
+        "address": {
+          "line1": "700 Fishing Hole Rd",
+          "city": "Des Moines",
+          "stateOrProvince": "IA",
+          "postalCode": "50309",
+          "country": "United States"
+        },
+        "description": "Standard dealer — recreational fishing focus. Lowrance entry-level units.",
+        "lastServiceDate": "2026-03-01",
+        "equipment": [
+          {
+            "serial": "LWR-FFD-HRV-001",
+            "count": 15,
+            "model": "Lowrance Hook Reveal 7 Fishfinder",
+            "type": "Entry Fishfinder"
+          },
+          {
+            "serial": "LWR-FFD-EFS-001",
+            "count": 8,
+            "model": "Lowrance Elite FS 7 Fishfinder",
+            "type": "Mid-Range Fishfinder"
+          }
+        ]
+      }
+    ]
+  },
+  "contacts": {
+    "_note": "Key contacts tied to demo accounts. Used for case creation, screen pop, and Copilot 360 view.",
+    "contacts": [
+      {
+        "firstName": "Jake",
+        "lastName": "Harrington",
+        "title": "Purchasing Manager",
+        "account": "Atlantic Marine Supply Co.",
+        "phone": "+1 (651) 226-3398",
+        "mobile": "+1 (651) 226-3398",
+        "email": "jake.harrington@atlanticmarinesupply.com",
+        "demoRole": "PRIMARY — B2B voice/phone scenario. Calls in about Simrad NSX fleet RMA. Screen pop demo."
+      },
+      {
+        "firstName": "Christine",
+        "lastName": "Delacroix",
+        "title": "Service Manager",
+        "account": "Euro Marine Distributors",
+        "phone": "+44 20 7845 3321",
+        "mobile": "+44 7700 900321",
+        "email": "c.delacroix@euromarinedist.com",
+        "demoRole": "PRIMARY — B2B chat scenario. Platinum Expert EMEA. B&G Triton2 urgent issue during sailing race prep."
+      },
+      {
+        "firstName": "Mike",
+        "lastName": "Torres",
+        "title": "Customer",
+        "account": "Freshwater Fishing Depot",
+        "phone": "+1 (713) 555-0287",
+        "mobile": "+1 (713) 555-0288",
+        "email": "mjtorres87@gmail.com",
+        "demoRole": "PRIMARY — B2C email scenario. Consumer warranty claim, Lowrance HDS Live 9 not powering on."
+      },
+      {
+        "firstName": "Ryan",
+        "lastName": "Kowalski",
+        "title": "Fleet Manager",
+        "account": "Pacific Coast Marine Group",
+        "phone": "+1 (206) 555-0389",
+        "mobile": "+1 (206) 555-0390",
+        "email": "r.kowalski@pacificcoastmarine.com",
+        "demoRole": "SECONDARY — B2B Platinum distributor contact. Lowrance HDS fleet order and tech support."
+      },
+      {
+        "firstName": "Lars",
+        "lastName": "Eriksson",
+        "title": "Technical Support Lead",
+        "account": "Nordic Marine Supply",
+        "phone": "+47 22 55 0101",
+        "mobile": "+47 915 00101",
+        "email": "l.eriksson@nordicmarine.no",
+        "demoRole": "SECONDARY — EMEA Platinum contact. Simrad VHF/AIS technical inquiry."
+      },
+      {
+        "firstName": "Dana",
+        "lastName": "Broussard",
+        "title": "Service Coordinator",
+        "account": "Gulf Coast Marine Depot",
+        "accountNumber": "NAV-B2B-GD-001",
+        "phone": "+1 (281) 555-0173",
+        "mobile": "+1 (281) 555-0174",
+        "email": "d.broussard@gulfcoastmarinedepot.com",
+        "demoRole": "SECONDARY — Gold dealer contact. Lowrance HDS repair RMA request. Web portal submission."
+      },
+      {
+        "firstName": "Tom",
+        "lastName": "Wickfield",
+        "title": "Purchasing Manager",
+        "account": "Great Lakes Boating Supply",
+        "accountNumber": "NAV-B2B-GD-002",
+        "phone": "+1 (312) 555-0244",
+        "mobile": "+1 (312) 555-0245",
+        "email": "t.wickfield@greatlakesboating.com",
+        "demoRole": "SECONDARY — Gold dealer contact. Mixed Lowrance + B&G recreational fleet."
+      },
+      {
+        "firstName": "Sarah",
+        "lastName": "Nguyen",
+        "title": "Global Customer Service Director",
+        "account": "Navico Group",
+        "accountNumber": "NAV-MFG-001",
+        "phone": "+1 (918) 437-6882",
+        "mobile": "+1 (918) 437-6883",
+        "email": "s.nguyen@navico.com",
+        "demoRole": "INTERNAL — Navico Group executive sponsor. Used for supervisor/manager view and escalation scenarios."
+      }
+    ]
+  },
+  "productSerials": {
+    "_note": "Serial numbers for warranty lookup demo. Pattern: [BRAND]-[YEAR]-[MODEL]-[SEQ]. Used in case serial lookup flow.",
+    "serials": [
+      {
+        "_comment": "--- ATLANTIC MARINE SUPPLY CO. (Platinum Expert, B2B) ---",
+        "customer": "Atlantic Marine Supply Co.",
+        "items": [
+          {
+            "serialNumber": "SIM-2024-NSX-10042",
+            "productName": "Simrad NSX 3007 Chartplotter",
+            "warrantyStart": "2024-04-15",
+            "warrantyEnd": "2027-04-15",
+            "orderNumber": "PO-AMS-8812"
+          },
+          {
+            "serialNumber": "SIM-2024-NSX-10043",
+            "productName": "Simrad NSX 3007 Chartplotter",
+            "warrantyStart": "2024-04-15",
+            "warrantyEnd": "2027-04-15",
+            "orderNumber": "PO-AMS-8812"
+          },
+          {
+            "serialNumber": "SIM-2024-NSX-10044",
+            "productName": "Simrad NSX 3009 Chartplotter",
+            "warrantyStart": "2024-05-01",
+            "warrantyEnd": "2027-05-01",
+            "orderNumber": "PO-AMS-8813"
+          },
+          {
+            "serialNumber": "SIM-2024-NSX-10045",
+            "productName": "Simrad NSX 3009 Chartplotter",
+            "warrantyStart": "2024-05-01",
+            "warrantyEnd": "2027-05-01",
+            "orderNumber": "PO-AMS-8813"
+          },
+          {
+            "serialNumber": "SIM-2025-GO-20100",
+            "productName": "Simrad GO9 XSE Chartplotter/Fishfinder",
+            "warrantyStart": "2025-01-10",
+            "warrantyEnd": "2028-01-10",
+            "orderNumber": "PO-AMS-9001"
+          }
+        ]
+      },
+      {
+        "_comment": "--- EURO MARINE DISTRIBUTORS (Platinum Expert, EMEA) ---",
+        "customer": "Euro Marine Distributors",
+        "items": [
+          {
+            "serialNumber": "BG-2024-TRI2-20011",
+            "productName": "B&G Triton2 Instrument Display",
+            "warrantyStart": "2024-06-20",
+            "warrantyEnd": "2027-06-20",
+            "orderNumber": "PO-EMD-EU4421"
+          },
+          {
+            "serialNumber": "BG-2024-TRI2-20012",
+            "productName": "B&G Triton2 Instrument Display",
+            "warrantyStart": "2024-06-20",
+            "warrantyEnd": "2027-06-20",
+            "orderNumber": "PO-EMD-EU4421"
+          },
+          {
+            "serialNumber": "BG-2025-ZC2-30100",
+            "productName": "B&G Zeus3S Chartplotter",
+            "warrantyStart": "2025-02-15",
+            "warrantyEnd": "2028-02-15",
+            "orderNumber": "PO-EMD-EU4422"
+          },
+          {
+            "serialNumber": "SIM-2024-NSX-10090",
+            "productName": "Simrad NSX 3009 Chartplotter",
+            "warrantyStart": "2024-09-01",
+            "warrantyEnd": "2027-09-01",
+            "orderNumber": "PO-EMD-EU4500"
+          }
+        ]
+      },
+      {
+        "_comment": "--- GULF COAST MARINE DEPOT (Gold, B2B) ---",
+        "customer": "Gulf Coast Marine Depot",
+        "items": [
+          {
+            "serialNumber": "LWR-2024-HDS-88500",
+            "productName": "Lowrance HDS-12 Live Fishfinder/Chartplotter",
+            "warrantyStart": "2024-03-10",
+            "warrantyEnd": "2027-03-10",
+            "orderNumber": "PO-GCM-3310"
+          },
+          {
+            "serialNumber": "LWR-2024-HDS-88501",
+            "productName": "Lowrance HDS-12 Live Fishfinder/Chartplotter",
+            "warrantyStart": "2024-03-10",
+            "warrantyEnd": "2027-03-10",
+            "orderNumber": "PO-GCM-3310"
+          },
+          {
+            "serialNumber": "LWR-2025-ELT-90100",
+            "productName": "Lowrance Elite FS 9 Fishfinder",
+            "warrantyStart": "2025-01-20",
+            "warrantyEnd": "2028-01-20",
+            "orderNumber": "PO-GCM-3311"
+          }
+        ]
+      },
+      {
+        "_comment": "--- B2C CONSUMER — Mike Torres (registered end user) ---",
+        "customer": "Freshwater Fishing Depot",
+        "items": [
+          {
+            "serialNumber": "LWR-2024-HDS-88821",
+            "productName": "Lowrance HDS-9 Live Fishfinder/Chartplotter",
+            "warrantyStart": "2024-02-14",
+            "warrantyEnd": "2027-02-14",
+            "orderNumber": "ORD-B2C-221089",
+            "registeredConsumer": "Mike Torres",
+            "consumerEmail": "mjtorres87@gmail.com"
+          }
+        ]
+      },
+      {
+        "_comment": "--- EXPIRED WARRANTIES (for demo contrast — tech validates, warranty expired) ---",
+        "customer": "Freshwater Fishing Depot",
+        "items": [
+          {
+            "serialNumber": "LWR-2021-HDS-11001",
+            "productName": "Lowrance HDS Carbon 9",
+            "warrantyStart": "2021-04-01",
+            "warrantyEnd": "2024-04-01",
+            "orderNumber": "PO-GCM-OLD-001"
+          },
+          {
+            "serialNumber": "SIM-2022-GO-90001",
+            "productName": "Simrad GO7 XSE",
+            "warrantyStart": "2022-06-01",
+            "warrantyEnd": "2025-06-01",
+            "orderNumber": "PO-AMS-OLD-002"
+          }
+        ]
+      },
+      {
+        "_comment": "--- EXPIRING SOON (creates demo urgency for service renewal discussion) ---",
+        "customer": "Great Lakes Boating Supply",
+        "items": [
+          {
+            "serialNumber": "BG-2023-TRI2-10500",
+            "productName": "B&G Triton2 Instrument Display",
+            "warrantyStart": "2023-05-01",
+            "warrantyEnd": "2026-05-01",
+            "orderNumber": "PO-GLB-5530"
+          },
+          {
+            "serialNumber": "LWR-2023-HDS-77300",
+            "productName": "Lowrance HDS-9 Live Fishfinder/Chartplotter",
+            "warrantyStart": "2023-06-15",
+            "warrantyEnd": "2026-06-15",
+            "orderNumber": "PO-GLB-5531"
+          }
+        ]
+      }
+    ]
+  },
+  "demoCases": {
+    "_note": "Pre-seeded cases for demo environment. Mix of open/in-progress cases across channels and brands.",
+    "cases": [
+      {
+        "title": "Simrad NSX 3007 — Touchscreen Unresponsive After Firmware Update",
+        "account": "Atlantic Marine Supply Co.",
+        "contact": "Jake Harrington",
+        "priority": "High",
+        "caseType": "Technical Support",
+        "channel": "Phone",
+        "brand": "Simrad",
+        "productSku": "SIM-NSX-3007",
+        "serialNumber": "SIM-2024-NSX-10042",
+        "description": "Jake Harrington reporting that Simrad NSX 3007 chartplotter (serial SIM-2024-NSX-10042) touchscreen became unresponsive following firmware update to v3.8.1. Unit was installed on commercial fishing vessel. Currently blocking navigation operations.",
+        "demoUse": "HERO — Voice screen pop demo. Shows B2B customer 360: account tier, open cases, serial history. Copilot suggests KB article for touchscreen recovery. Tech routes to Simrad Tier 4 specialist for RMA Exchange validation.",
+        "equipment": "Simrad NSX 3007 Chartplotter",
+        "activities": [
+          {
+            "type": "phonecall",
+            "direction": "Inbound",
+            "subject": "Inbound call — Jake Harrington re: NSX 3007 touchscreen failure",
+            "description": "Jake called in reporting touchscreen unresponsive after updating firmware to v3.8.1. Vessel is commercial fishing, unit is primary navigation. Urgent resolution needed. Serial SIM-2024-NSX-10042 confirmed. Case opened.",
+            "createdRelativeHours": -24
+          },
+          {
+            "type": "note",
+            "subject": "Tech pre-screening — firmware v3.8.1 known touchscreen issue",
+            "description": "Confirmed v3.8.1 has a known touchscreen freeze issue on NSX 3007 (internal ref: SIM-KB-2024-88). Recovery procedure: hold power 15s + factory reset via menu. If unsuccessful, RMA Exchange is the path. Escalating to Simrad Tier 4.",
+            "createdRelativeHours": -20
+          },
+          {
+            "type": "email",
+            "direction": "Outbound",
+            "subject": "RE: Simrad NSX 3007 Touchscreen Issue — Case Reference NAV-2026-4412",
+            "description": "Hi Jake,\n\nThank you for reaching out. We've reviewed your case and confirmed that firmware v3.8.1 has a known touchscreen freeze issue on the NSX 3007 series.\n\nPlease attempt the following recovery steps:\n1. Hold the power button for 15 seconds to force a hard reset.\n2. If the unit reboots and touchscreen remains unresponsive, navigate via the physical encoder knob to Settings > Factory Reset.\n\nIf these steps don't resolve the issue, we'll proceed with an RMA Exchange. Our Simrad Tier 4 specialist will follow up within 4 business hours.\n\nCase: NAV-2026-4412 | Serial: SIM-2024-NSX-10042\n\nBest regards,\nNavico Technical Support",
+            "createdRelativeHours": -18
+          },
+          {
+            "type": "email",
+            "direction": "Inbound",
+            "subject": "RE: Simrad NSX 3007 Touchscreen Issue — Case Reference NAV-2026-4412",
+            "description": "Hi,\n\nI tried both steps — the 15-second power hold rebooted the unit but the touchscreen is still completely unresponsive. I can use the encoder knob but the fishing fleet leaves port tomorrow at 0500. This unit is the primary navigation on the vessel and we can't operate without it.\n\nI need an RMA Exchange as fast as possible. Can you send a replacement unit overnight?\n\nThanks,\nJake Harrington | Atlantic Marine Supply",
+            "createdRelativeHours": -16
+          },
+          {
+            "type": "note",
+            "subject": "Simrad Tier 4 — RMA Exchange approved, escalating to ERP",
+            "description": "Marco Rossi (Simrad Tier 4): Self-repair steps failed. Factory reset attempted, touchscreen still unresponsive. RMA Exchange approved under warranty. Replacement SIM-NSX-3007 unit reserved at Tulsa DC. ERP order submitted — overnight shipping authorized given commercial fleet urgency. Tracking to be provided to customer.",
+            "createdRelativeHours": -14
+          },
+          {
+            "type": "email",
+            "direction": "Outbound",
+            "subject": "RMA Exchange Approved — Overnight Replacement Shipping | NAV-2026-4412",
+            "description": "Hi Jake,\n\nI have great news — your RMA Exchange has been approved and a replacement Simrad NSX 3007 is shipping to you overnight via FedEx Priority.\n\nRMA Details:\n- Case: NAV-2026-4412\n- Serial Returned: SIM-2024-NSX-10042\n- Replacement Serial: SIM-2024-NSX-10099\n- Carrier: FedEx Priority Overnight\n- Tracking: 7489234561829 (active by 6pm ET today)\n\nPlease print the prepaid return label attached and drop off the defective unit within 10 business days.\n\nWe apologize for the disruption to your fleet — our team has expedited this shipment given your operational timeline.\n\nBest regards,\nMarco Rossi | Navico Simrad Tier 4 Support",
+            "createdRelativeHours": -12
+          },
+          {
+            "type": "email",
+            "direction": "Inbound",
+            "subject": "RE: RMA Exchange Approved — Overnight Replacement Shipping | NAV-2026-4412",
+            "description": "Marco,\n\nUnit arrived this morning — installed and operational before the fleet departed. Touchscreen fully functional. Crew is back underway.\n\nGreat support turnaround. Really appreciate the urgency you showed on this one.\n\nJake",
+            "createdRelativeHours": -2
+          },
+          {
+            "type": "note",
+            "subject": "Case resolved — replacement unit confirmed operational, ready to close",
+            "description": "Customer confirmed replacement SIM-2024-NSX-10099 installed and operational on vessel. Fleet departed on schedule. Defective unit SIM-2024-NSX-10042 return label sent — awaiting inbound. Case status: Resolved. NPS survey queued.",
+            "createdRelativeHours": -1
+          }
+        ]
+      },
+      {
+        "title": "B&G Triton2 — Wind Instrument Reading Incorrect Before Race Season",
+        "account": "Euro Marine Distributors",
+        "contact": "Christine Delacroix",
+        "priority": "High",
+        "caseType": "Technical Support",
+        "channel": "Chat",
+        "brand": "B&G",
+        "productSku": "BG-TRITON2",
+        "serialNumber": "BG-2024-TRI2-20011",
+        "description": "Christine Delacroix (Euro Marine Distributors, Platinum Expert EMEA) reporting that B&G Triton2 wind instrument display (serial BG-2024-TRI2-20011) showing erratic apparent wind angle readings. Customer fleet is preparing for spring racing season — urgent resolution needed within 48 hours.",
+        "demoUse": "HERO — Live chat demo. Platinum Expert auto-escalates queue priority. Copilot surfaces B&G Triton2 calibration KB article instantly. Agent uses suggested reply. Case summary generated for escalation handoff to Marco.",
+        "equipment": "B&G Triton2 Instrument Display",
+        "activities": [
+          {
+            "type": "note",
+            "subject": "Chat session context — customer portal initiated",
+            "description": "Customer initiated chat from Euro Marine distributor portal. Reported erratic apparent wind angle. Serial BG-2024-TRI2-20011 verified — fleet prep for spring regatta season. Platinum Expert priority auto-applied. Routing to B&G sailing specialist.",
+            "createdRelativeHours": -48
+          },
+          {
+            "type": "email",
+            "direction": "Outbound",
+            "subject": "B&G Triton2 Wind Calibration — Service Case BG-2026-0211",
+            "description": "Dear Christine,\n\nThank you for contacting Navico B&G Support. We've reviewed serial BG-2024-TRI2-20011 and have a calibration procedure that should resolve the apparent wind angle issue before your race season.\n\nPlease follow KB Article BG-KB-2024-44: B&G Triton2 Masthead Calibration Procedure. Key steps include verifying the masthead unit cable connections and running the auto-calibration sequence from the instrument menu.\n\nGiven the urgency ahead of your regatta schedule, our B&G sailing specialist will call you directly within 2 hours if the KB procedure doesn't fully resolve the issue.\n\nCase Reference: BG-2026-0211\n\nBest regards,\nNavico B&G Support",
+            "createdRelativeHours": -46
+          },
+          {
+            "type": "email",
+            "direction": "Inbound",
+            "subject": "RE: B&G Triton2 Wind Calibration — Service Case BG-2026-0211",
+            "description": "Hello,\n\nI followed the KB procedure and the calibration sequence ran successfully. Wind readings have improved significantly in light conditions but we're still seeing erratic values when apparent wind exceeds 15 knots — which is exactly the racing range we need to be accurate in.\n\nThe fleet begins regatta training in 3 days. Can your specialist take a look? Serial BG-2024-TRI2-20011.\n\nThank you,\nChristine Delacroix | Euro Marine Distributors",
+            "createdRelativeHours": -36
+          },
+          {
+            "type": "note",
+            "subject": "Specialist escalation — masthead unit suspected, high-wind erratic reading",
+            "description": "Sophie Laurent (B&G Sailing Specialist): Reviewed calibration logs. Erratic reading above 15kts is consistent with a loose or partially failed masthead wind vane bearing — not a software issue. Likely needs masthead unit inspection or replacement. Arranged remote video call with Christine's rigger for tomorrow morning.",
+            "createdRelativeHours": -30
+          },
+          {
+            "type": "phonecall",
+            "direction": "Outbound",
+            "subject": "Outbound call — Sophie Laurent to Christine re: masthead video inspection",
+            "description": "Called Christine to walk through masthead unit inspection via video. Identified that wind vane bearing shows visible wear on starboard pivot. Confirmed masthead unit BG-MAST-VHF-20011 needs replacement. Coordinating with Euro Marine rigger for pre-regatta swap. Replacement unit shipping from Amsterdam depot.",
+            "createdRelativeHours": -24
+          },
+          {
+            "type": "email",
+            "direction": "Outbound",
+            "subject": "B&G Masthead Unit Replacement Arranged — Case BG-2026-0211",
+            "description": "Dear Christine,\n\nFollowing our video inspection call, we've confirmed the masthead wind vane bearing requires replacement. We've arranged the following:\n\n- Replacement masthead unit BG-MHU-ELITE ships from our Amsterdam depot today (tracking: DHL-98234-EU)\n- Expected delivery: tomorrow before 10:00 AM\n- Our technical document for rigger installation is attached\n\nThis should give your team a full day for installation and re-calibration ahead of regatta training. Sophie will be available by phone during the installation if your rigger has any questions.\n\nCase Reference: BG-2026-0211\n\nBest regards,\nSophie Laurent | Navico B&G Sailing Support",
+            "createdRelativeHours": -22
+          },
+          {
+            "type": "email",
+            "direction": "Inbound",
+            "subject": "RE: B&G Masthead Unit Replacement Arranged — Case BG-2026-0211",
+            "description": "Sophie,\n\nMasthead unit delivered and installed this morning. Calibration sequence completed — wind readings are perfect across the full wind range including the 15-25 knot band that was causing problems.\n\nFleet training started this afternoon. Excellent support — your team really understood the urgency of a racing fleet's schedule. We'll be renewing our Platinum Expert agreement without question.\n\nMany thanks,\nChristine Delacroix",
+            "createdRelativeHours": -6
+          },
+          {
+            "type": "note",
+            "subject": "Case resolved — masthead unit replaced, fleet ready for regatta season",
+            "description": "Customer confirmed masthead replacement successful. Wind readings validated across full wind range. Fleet commenced regatta training on schedule. Customer expressed strong satisfaction and confirmed Platinum Expert renewal intent. NPS survey sent. Case: Resolved.",
+            "createdRelativeHours": -5
+          }
+        ]
+      },
+      {
+        "title": "Lowrance HDS-9 Live — Unit Not Powering On (Consumer Warranty Claim)",
+        "account": "Freshwater Fishing Depot",
+        "contact": "Mike Torres",
+        "priority": "Normal",
+        "caseType": "Warranty Claim",
+        "channel": "Email",
+        "brand": "Lowrance",
+        "productSku": "LWR-HDS9-LIVE",
+        "serialNumber": "LWR-2024-HDS-88821",
+        "description": "Mike Torres (registered consumer) reporting that Lowrance HDS-9 Live fish finder/chartplotter (serial LWR-2024-HDS-88821) will not power on. Unit purchased 14 months ago and is within 3-year warranty. Attempted power cycle and checked fuse — no result.",
+        "demoUse": "HERO — Email AI triage demo. Intent = warranty claim, AI creates case, serial LWR-2024-HDS-88821 validated (warranty active). Copilot drafts consumer response with next steps. NPS survey queued on close.",
+        "equipment": "Lowrance HDS-9 Live Fishfinder/Chartplotter",
+        "activities": [
+          {
+            "type": "email",
+            "direction": "Inbound",
+            "subject": "My Lowrance HDS-9 won't turn on",
+            "description": "Hi, I bought a Lowrance HDS-9 Live about a year ago from Freshwater Fishing Depot. It completely stopped turning on this morning. I checked the fuse and it looks fine. I tried a power cycle but nothing happens. The unit is still under warranty I think. Can you help? Serial number is LWR-2024-HDS-88821. Thanks, Mike",
+            "createdRelativeHours": -96
+          },
+          {
+            "type": "email",
+            "direction": "Outbound",
+            "subject": "RE: Your Navico Support Case — Warranty Claim #NAV-2026-4415",
+            "description": "Hi Mike,\n\nThank you for contacting Navico Support. I've verified your product (Serial: LWR-2024-HDS-88821) is within the 3-year limited warranty (purchased Feb 2024, expires Feb 2027).\n\nTo proceed with your warranty claim:\n1. A prepaid return shipping label will be emailed to you within 1 business hour.\n2. Please pack the unit securely using the original packaging if available, and drop off at any UPS location.\n3. You'll receive email tracking updates as your unit is received, diagnosed, and returned.\n\nTarget turnaround: 10 business days from receipt.\n\nCase Reference: NAV-2026-4415\n\nBest regards,\nNavico Consumer Support",
+            "createdRelativeHours": -94
+          },
+          {
+            "type": "email",
+            "direction": "Inbound",
+            "subject": "RE: Your Navico Support Case — Warranty Claim #NAV-2026-4415",
+            "description": "Hi,\n\nThank you for the quick reply. I dropped the unit off at UPS this morning with the prepaid label. The UPS receipt shows tracking number 1Z999AA10123456784.\n\nAbout how long until I hear something? I'm heading on a fishing trip in two weeks and was hoping to have it back by then.\n\nThanks,\nMike Torres",
+            "createdRelativeHours": -72
+          },
+          {
+            "type": "email",
+            "direction": "Outbound",
+            "subject": "RE: Your Navico Support Case — Warranty Claim #NAV-2026-4415",
+            "description": "Hi Mike,\n\nWe can see your shipment is in transit and expect to receive it tomorrow. Once received, our repair team typically completes diagnostics within 2 business days.\n\nGiven your two-week fishing trip timeline, you should be well within the window to have your unit back in time.\n\nI'll send you an update email as soon as we receive the unit and begin diagnostics.\n\nCase Reference: NAV-2026-4415\n\nBest regards,\nNavico Consumer Support",
+            "createdRelativeHours": -70
+          },
+          {
+            "type": "note",
+            "subject": "Unit received — diagnostics: failed internal power regulator, warranty replacement approved",
+            "description": "Repair center received LWR-2024-HDS-88821. Diagnostics: internal power regulation circuit failure (component failure, not user damage). Unit is within 3-year warranty. Replacement unit LWR-HDS9-LIVE approved. New unit pulled from stock and shipping today via UPS Ground. Estimated delivery: 3 business days.",
+            "createdRelativeHours": -48
+          },
+          {
+            "type": "email",
+            "direction": "Outbound",
+            "subject": "Warranty Replacement Shipping — Navico Case #NAV-2026-4415",
+            "description": "Hi Mike,\n\nGreat news! Our technicians completed diagnostics on your Lowrance HDS-9 Live and identified a failed internal power regulator — this is covered under your 3-year limited warranty.\n\nWe are shipping a brand new replacement unit to you today:\n- Carrier: UPS Ground\n- Tracking: 1Z999AA10987654321\n- Estimated Delivery: 3 business days\n\nThe replacement unit ships with all original accessories. No action needed on the defective unit — we'll handle it on our end.\n\nYou should be all set well before your fishing trip!\n\nCase Reference: NAV-2026-4415\n\nBest regards,\nNavico Consumer Support",
+            "createdRelativeHours": -47
+          },
+          {
+            "type": "email",
+            "direction": "Inbound",
+            "subject": "RE: Warranty Replacement Shipping — Navico Case #NAV-2026-4415",
+            "description": "Just got the new unit in the mail today — set it up and it's working perfectly. Really impressed with how smooth this whole process was. The prepaid label, the fast turnaround, the heads-up emails... made a frustrating situation really easy to deal with.\n\nThanks for the great service. I'll definitely be buying Lowrance again.\n\nMike",
+            "createdRelativeHours": -24
+          },
+          {
+            "type": "note",
+            "subject": "Case resolved — customer confirmed replacement working, NPS survey sent",
+            "description": "Customer confirmed replacement LWR-HDS9-LIVE received and operational. Expressed strong satisfaction with warranty process. Case closed — Resolved. NPS survey sent. Customer retention note: expressed brand loyalty and intent to repurchase.",
+            "createdRelativeHours": -23
+          }
+        ]
+      },
+      {
+        "title": "Simrad NSX 3009 — RMA Exchange Request (4 Units, Fleet Order)",
+        "account": "Atlantic Marine Supply Co.",
+        "contact": "Jake Harrington",
+        "priority": "High",
+        "caseType": "RMA - Exchange",
+        "channel": "Email",
+        "brand": "Simrad",
+        "productSku": "SIM-NSX-3009",
+        "serialNumber": "SIM-2024-NSX-10044",
+        "description": "Atlantic Marine Supply requesting RMA Exchange on 4x Simrad NSX 3009 units from fleet order PO-AMS-8813. Units exhibit GPS lock failure in NMEA 2000 network configuration. Tech specialist Marco Rossi to validate before ERP submission.",
+        "demoUse": "SECONDARY — Shows RMA Exchange workflow. Tech validation gate, ERP submission note, multi-unit tracking.",
+        "equipment": "Simrad NSX 3009 Chartplotter (x4)",
+        "activities": [
+          {
+            "type": "email",
+            "direction": "Inbound",
+            "subject": "RMA Exchange Request — 4x Simrad NSX 3009 (PO-AMS-8813)",
+            "description": "Hi Navico Support,\n\nWe have 4 Simrad NSX 3009 units from fleet order PO-AMS-8813 that are all exhibiting GPS lock failure when connected to our NMEA 2000 network. Serial numbers: SIM-2024-NSX-10044, SIM-2024-NSX-10045, SIM-2024-NSX-10046, SIM-2024-NSX-10047.\n\nWe need to initiate an RMA Exchange. These are installed on commercial vessels — downtime is costly. Please advise on the exchange process and ETA for replacements.\n\nRegards, Jake Harrington | Atlantic Marine Supply",
+            "createdRelativeHours": -72
+          },
+          {
+            "type": "note",
+            "subject": "Tech validation — GPS lock failure NMEA 2000 config issue confirmed",
+            "description": "Marco Rossi (Simrad Tier 4): Reviewed serial SIM-2024-NSX-10044 logs. GPS lock failure in NMEA 2000 network config is a known issue with firmware < v4.1. All 4 units confirmed affected. RMA Exchange approved — ERP submission prepared. Replacement units shipping from Tulsa DC.",
+            "createdRelativeHours": -60
+          }
+        ]
+      },
+      {
+        "title": "Lowrance HDS-12 Live — Sonar Module Failure (Repair RMA)",
+        "account": "Gulf Coast Marine Depot",
+        "contact": "Dana Broussard",
+        "priority": "Normal",
+        "caseType": "RMA - Repair",
+        "channel": "Web",
+        "brand": "Lowrance",
+        "productSku": "LWR-HDS12-LIVE",
+        "serialNumber": "LWR-2024-HDS-88500",
+        "description": "Gulf Coast Marine Depot submitting repair RMA for Lowrance HDS-12 Live (serial LWR-2024-HDS-88500). Sonar module not detecting transducer signal. Unit within warranty. Customer requesting ship-to-repair-center option.",
+        "demoUse": "SECONDARY — Shows Repair RMA flow. Tracks inbound/repair/return stages. Connects to ERP for logistics.",
+        "equipment": "Lowrance HDS-12 Live Fishfinder/Chartplotter",
+        "activities": [
+          {
+            "type": "note",
+            "subject": "Web form submission — Repair RMA initiated",
+            "description": "Dana Broussard submitted Repair RMA via web contact form. Sonar module not detecting transducer on Lowrance HDS-12 Live, serial LWR-2024-HDS-88500. Unit within 3yr warranty. Customer prefers ship-to-repair option over exchange. Case auto-created from web channel.",
+            "createdRelativeHours": -36
+          },
+          {
+            "type": "email",
+            "direction": "Outbound",
+            "subject": "RE: Lowrance HDS-12 Live Repair RMA — Case #NAV-2026-4420",
+            "description": "Hi Dana,\n\nThank you for submitting your repair request for the Lowrance HDS-12 Live (Serial: LWR-2024-HDS-88500). We've confirmed the unit is within warranty and have approved a Repair RMA.\n\nNext steps:\n1. A prepaid inbound shipping label is attached to this email.\n2. Please ship the unit to our repair center in Tulsa, OK.\n3. Once received, our technicians will diagnose and repair within 5 business days.\n4. You'll receive tracking confirmation when your repaired unit ships back.\n\nRMA Reference: NAV-2026-4420\n\nBest regards,\nNavico Repair Center",
+            "createdRelativeHours": -32
+          }
+        ]
+      },
+      {
+        "title": "C-MAP DISCOVER Chart Card — Charts Out of Date, No Update Access",
+        "account": "Pacific Coast Marine Group",
+        "contact": "Ryan Kowalski",
+        "priority": "Normal",
+        "caseType": "Technical Support",
+        "channel": "Email",
+        "brand": "C-MAP",
+        "serialNumber": null,
+        "description": "Ryan Kowalski at Pacific Coast Marine reporting that C-MAP DISCOVER chart cards purchased 6 months ago are not updating via the C-MAP app. 12 units affected across dealer fleet. Error: 'Subscription validation failed'.",
+        "demoUse": "QUEUE — Shows case backlog in supervisor view. Demonstrates intelligent routing to C-MAP specialist.",
+        "equipment": "C-MAP DISCOVER Chart Cards (x12)"
+      }
+    ]
+  },
+
+  "salesOrders": {
+    "_note": "Sales Orders seeded for CS Productivity Tools sidebar — Order Management, Shipment Tracker, Quick Quote. Each order linked to a demo account with realistic Navico product line items.",
+    "priceListName": "Navico Marine Electronics Price List",
+    "orders": [
+      {
+        "_comment": "HERO ORDER — Atlantic Marine Supply. Used in Scenario 1 voice demo. Agent sees this order when Jake calls in.",
+        "orderNumber": "PO-AMS-8813",
+        "name": "Atlantic Marine Supply — Simrad NSX Fleet Order Q1",
+        "account": "Atlantic Marine Supply Co.",
+        "contact": "Jake Harrington",
+        "description": "Q1 2026 fleet order for 6x Simrad NSX 3009 chartplotters + accessories for Atlantic Marine dealer network resale. Includes GPS antenna kits and NMEA 2000 cabling.",
+        "status": "Active",
+        "requestDeliveryBy": "2026-04-30",
+        "shipTo": {
+          "name": "Atlantic Marine Supply Co. — Jacksonville Warehouse",
+          "line1": "1200 Harbor View Blvd",
+          "city": "Jacksonville",
+          "state": "FL",
+          "postalCode": "32202",
+          "country": "US",
+          "contact": "Jake Harrington",
+          "phone": "+16512263398"
+        },
+        "tracking": {
+          "carrier": "FedEx Freight",
+          "carrierCode": "fedex",
+          "trackingNumber": "774899172137",
+          "status": "In Transit",
+          "estimatedDelivery": "2026-04-28"
+        },
+        "lineItems": [
+          { "sku": "SIM-NSX-3009", "description": "Simrad NSX 3009 Chartplotter/Fishfinder MFD", "quantity": 6, "unitPrice": 1299.99 },
+          { "sku": "LWR-PART-ANT-001", "description": "Lowrance Point-1 GPS/GLONASS Antenna", "quantity": 6, "unitPrice": 149.99 },
+          { "sku": "SIM-PART-CBL-001", "description": "Simrad SimNet to NMEA 2000 Adapter Cable", "quantity": 12, "unitPrice": 34.99 },
+          { "sku": "NAV-PART-FUS-002", "description": "Navico NMEA 2000 Power Cable with Fuse", "quantity": 6, "unitPrice": 18.99 }
+        ]
+      },
+      {
+        "_comment": "HERO ORDER 2 — Euro Marine Distributors. Christine's account. Shows EMEA high-value order in sidebar during chat scenario.",
+        "orderNumber": "PO-EMD-2026-Q1",
+        "name": "Euro Marine Distributors — B&G Sailing Instruments Q1",
+        "account": "Euro Marine Distributors",
+        "contact": "Christine Delacroix",
+        "description": "Q1 2026 sailing instrument order for EMEA dealer network. B&G H5000 systems and Triton2 display packs for spring racing season. Expedited shipping — racing season deadline.",
+        "status": "Active",
+        "requestDeliveryBy": "2026-04-15",
+        "shipTo": {
+          "name": "Euro Marine Distributors — Amsterdam DC",
+          "line1": "Haparandadam 6",
+          "city": "Amsterdam",
+          "state": "",
+          "postalCode": "1013 AK",
+          "country": "NL",
+          "contact": "Christine Delacroix",
+          "phone": "+31 20 555 0100"
+        },
+        "tracking": {
+          "carrier": "DHL Express",
+          "carrierCode": "dhl_express",
+          "trackingNumber": "2174822782",
+          "status": "Out for Delivery",
+          "estimatedDelivery": "2026-04-12"
+        },
+        "lineItems": [
+          { "sku": "BNG-H5000-SYS", "description": "B&G H5000 Performance Sailing Instrument System", "quantity": 4, "unitPrice": 2499.99 },
+          { "sku": "BNG-TRI2-DSP", "description": "B&G Triton2 Instrument Display", "quantity": 20, "unitPrice": 299.99 },
+          { "sku": "BNG-PART-WND-001", "description": "B&G Masthead Unit Wind Sensor", "quantity": 4, "unitPrice": 699.99 },
+          { "sku": "BNG-PART-CBL-001", "description": "B&G H5000 Processor Power Cable", "quantity": 8, "unitPrice": 44.99 }
+        ]
+      },
+      {
+        "_comment": "CONTEXT ORDER — Pacific Coast Marine. Shows order history on mid-tier dealer account.",
+        "orderNumber": "PO-PCM-2025-Q4",
+        "name": "Pacific Coast Marine Group — Lowrance Season Stocking",
+        "account": "Pacific Coast Marine Group",
+        "contact": "Ryan Kowalski",
+        "description": "Q4 2025 stocking order for Lowrance HDS and Elite FS units ahead of Pacific NW fishing season. Chart card bundle included.",
+        "status": "Fulfilled",
+        "requestDeliveryBy": "2025-12-15",
+        "shipTo": {
+          "name": "Pacific Coast Marine Group — Seattle Warehouse",
+          "line1": "2500 Harbor Ave SW",
+          "city": "Seattle",
+          "state": "WA",
+          "postalCode": "98126",
+          "country": "US",
+          "contact": "Ryan Kowalski",
+          "phone": "+1 (206) 555-0211"
+        },
+        "tracking": {
+          "carrier": "UPS Freight",
+          "carrierCode": "ups",
+          "trackingNumber": "1Z999AA10123456784",
+          "status": "Delivered",
+          "estimatedDelivery": "2025-12-14"
+        },
+        "lineItems": [
+          { "sku": "LWR-HDSLIVE-12", "description": "Lowrance HDS-12 Live Fishfinder/Chartplotter", "quantity": 10, "unitPrice": 1499.99 },
+          { "sku": "LWR-ELITEFS-9", "description": "Lowrance Elite FS 9 Fishfinder/Chartplotter", "quantity": 15, "unitPrice": 699.99 },
+          { "sku": "CMAP-PART-CHT-001", "description": "C-MAP REVEAL Coastal Chart Card East US", "quantity": 25, "unitPrice": 149.99 }
+        ]
+      },
+      {
+        "_comment": "CONTEXT ORDER — Great Lakes Boating. Shows recently shipped order to mid-tier account.",
+        "orderNumber": "PO-GLB-5530",
+        "name": "Great Lakes Boating Supply — B&G Triton2 Pack",
+        "account": "Great Lakes Boating Supply",
+        "contact": "Tom Wickfield",
+        "description": "Spring sailing season stocking order. B&G Triton2 display packs and accessories for Great Lakes dealer network.",
+        "status": "Active",
+        "requestDeliveryBy": "2026-05-01",
+        "shipTo": {
+          "name": "Great Lakes Boating Supply — Chicago",
+          "line1": "800 S Michigan Ave",
+          "city": "Chicago",
+          "state": "IL",
+          "postalCode": "60605",
+          "country": "US",
+          "contact": "Tom Wickfield",
+          "phone": "+1 (312) 555-0244"
+        },
+        "tracking": {
+          "carrier": "UPS Ground",
+          "carrierCode": "ups",
+          "trackingNumber": "1Z999AA10987654321",
+          "status": "Shipped",
+          "estimatedDelivery": "2026-04-25"
+        },
+        "lineItems": [
+          { "sku": "BNG-TRI2-DSP", "description": "B&G Triton2 Instrument Display", "quantity": 12, "unitPrice": 299.99 },
+          { "sku": "BNG-PART-MNT-001", "description": "B&G Zeus S 12 Flush Mount Kit", "quantity": 6, "unitPrice": 64.99 },
+          { "sku": "CMAP-PART-CHT-002", "description": "C-MAP DISCOVER Inland Lakes Chart Card", "quantity": 12, "unitPrice": 129.99 }
+        ]
+      }
+    ]
+  }
+}

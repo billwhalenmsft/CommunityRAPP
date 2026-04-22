@@ -1,0 +1,218 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: PR Follow-Up Actions
+    triggerQueries:
+      - remind the approver
+      - send a reminder for my PR
+      - nudge the approver
+      - cancel my PR
+      - cancel this PR
+      - cancel PR
+      - I want to cancel a purchase requisition
+      - edit my PR
+      - edit this PR
+      - change my PR
+      - modify my PR
+      - update my purchase requisition
+      - I need to make a change to my PR
+
+  actions:
+    # ---------------------------------------------------------------
+    # Detect action type from trigger
+    # ---------------------------------------------------------------
+    - kind: SetVariable
+      id: detectFollowUpAction
+      variable: init:followUpType
+      value: =if(toLower(System.Activity.Text) contains "cancel", "cancel", if(toLower(System.Activity.Text) contains "edit" or toLower(System.Activity.Text) contains "change" or toLower(System.Activity.Text) contains "modify" or toLower(System.Activity.Text) contains "update", "edit", "remind"))
+
+    - kind: SetVariable
+      id: extractPRNumber
+      variable: init:prNumberMentioned
+      value: =if(matchesPattern(System.Activity.Text, "\\d{7,10}"), regexMatch(System.Activity.Text, "\\d{7,10}"), "")
+
+    # ---------------------------------------------------------------
+    # Ask for PR number if not provided
+    # ---------------------------------------------------------------
+    - kind: ConditionGroup
+      id: prNumberCheck
+      conditions:
+        - id: noPRNumber
+          condition: =length(System.ConversationData.prNumberMentioned) = 0
+          actions:
+            - kind: Question
+              id: askPRNumber
+              variable: init:prNumberInput
+              prompt:
+                text: "Which PR would you like to {System.ConversationData.followUpType}? Please provide the PR number."
+              entity: StringPrebuiltEntity
+            - kind: SetVariable
+              id: setPRNumber
+              variable: init:prNumberMentioned
+              value: =regexMatch(System.ConversationData.prNumberInput, "\\d{7,10}")
+
+    # ---------------------------------------------------------------
+    # Route to appropriate action
+    # ---------------------------------------------------------------
+    - kind: ConditionGroup
+      id: actionRouter
+      conditions:
+
+        # --- Remind approver ---
+        - id: doRemind
+          condition: =System.ConversationData.followUpType = "remind"
+          actions:
+            - kind: InvokeFlowAction
+              id: sendReminderFlow
+              input:
+                binding:
+                  pr_number:  =System.ConversationData.prNumberMentioned
+                  user_guid:  =System.User.Id
+              output:
+                binding:
+                  reminderResult: =flow.response
+              flowName: flow_sap_send_reminder
+
+            - kind: ConditionGroup
+              id: reminderResultCheck
+              conditions:
+                - id: reminderBlocked
+                  condition: =json(System.ConversationData.reminderResult).status = "action_blocked"
+                  actions:
+                    - kind: SendMessage
+                      id: reminderBlockedMsg
+                      message: =json(System.ConversationData.reminderResult).message
+
+                - id: reminderSent
+                  condition: =json(System.ConversationData.reminderResult).status = "reminder_sent"
+                  actions:
+                    - kind: SendMessage
+                      id: reminderSentMsg
+                      message: =json(System.ConversationData.reminderResult).message
+
+                - id: reminderNotFound
+                  condition: =json(System.ConversationData.reminderResult).status = "not_found"
+                  actions:
+                    - kind: SendMessage
+                      id: reminderNotFoundMsg
+                      message: =json(System.ConversationData.reminderResult).message
+
+        # --- Cancel PR ---
+        - id: doCancel
+          condition: =System.ConversationData.followUpType = "cancel"
+          actions:
+            # Confirm before cancelling
+            - kind: Question
+              id: confirmCancel
+              variable: init:cancelConfirmed
+              prompt:
+                text: "Are you sure you want to cancel PR {System.ConversationData.prNumberMentioned}? This action cannot be undone. Say 'yes, cancel it' to confirm."
+              entity: StringPrebuiltEntity
+
+            - kind: ConditionGroup
+              id: cancelConfirmCheck
+              conditions:
+                - id: cancelNotConfirmed
+                  condition: =not(toLower(System.ConversationData.cancelConfirmed) contains "yes" or toLower(System.ConversationData.cancelConfirmed) contains "cancel it" or toLower(System.ConversationData.cancelConfirmed) contains "confirm")
+                  actions:
+                    - kind: SendMessage
+                      id: cancelAbortedMsg
+                      message: "OK, I've left PR {System.ConversationData.prNumberMentioned} as-is."
+                    - kind: EndDialog
+                      id: endCancelAborted
+
+                - id: cancelConfirmedYes
+                  condition: =toLower(System.ConversationData.cancelConfirmed) contains "yes" or toLower(System.ConversationData.cancelConfirmed) contains "cancel it"
+                  actions:
+                    - kind: InvokeFlowAction
+                      id: cancelPRFlow
+                      input:
+                        binding:
+                          pr_number:  =System.ConversationData.prNumberMentioned
+                          user_guid:  =System.User.Id
+                      output:
+                        binding:
+                          cancelResult: =flow.response
+                      flowName: flow_sap_cancel_pr
+
+                    - kind: ConditionGroup
+                      id: cancelResultCheck
+                      conditions:
+                        - id: cancelBlocked
+                          condition: =json(System.ConversationData.cancelResult).status = "action_blocked"
+                          actions:
+                            - kind: SendMessage
+                              id: cancelBlockedMsg
+                              message: =json(System.ConversationData.cancelResult).message
+
+                        - id: cancelSuccess
+                          condition: =json(System.ConversationData.cancelResult).status = "cancelled"
+                          actions:
+                            - kind: SendMessage
+                              id: cancelSuccessMsg
+                              message: =json(System.ConversationData.cancelResult).message
+
+                        - id: cancelFailed
+                          condition: =json(System.ConversationData.cancelResult).status = "not_found"
+                          actions:
+                            - kind: SendMessage
+                              id: cancelFailedMsg
+                              message: =json(System.ConversationData.cancelResult).message
+
+        # --- Edit PR ---
+        - id: doEdit
+          condition: =System.ConversationData.followUpType = "edit"
+          actions:
+            - kind: Question
+              id: askWhatToChange
+              variable: init:editDescription
+              prompt:
+                text: "What would you like to change on PR {System.ConversationData.prNumberMentioned}? For example: 'Change the amount to $3,000' or 'Update the cost center to 100300'."
+              entity: StringPrebuiltEntity
+
+            # Parse edit intent with generative AI (Copilot Studio native AI)
+            - kind: SetVariable
+              id: buildEditPayload
+              variable: init:editPayload
+              value: =System.ConversationData.editDescription
+
+            - kind: InvokeFlowAction
+              id: editPRFlow
+              input:
+                binding:
+                  pr_number:    =System.ConversationData.prNumberMentioned
+                  user_guid:    =System.User.Id
+                  edit_request: =System.ConversationData.editPayload
+              output:
+                binding:
+                  editResult: =flow.response
+              flowName: flow_sap_cancel_pr
+
+            - kind: ConditionGroup
+              id: editResultCheck
+              conditions:
+                - id: editBlocked
+                  condition: =json(System.ConversationData.editResult).status = "action_blocked"
+                  actions:
+                    - kind: SendMessage
+                      id: editBlockedMsg
+                      message: =json(System.ConversationData.editResult).message
+
+                - id: editSuccess
+                  condition: =json(System.ConversationData.editResult).status = "updated"
+                  actions:
+                    - kind: SendMessage
+                      id: editSuccessMsg
+                      message: =json(System.ConversationData.editResult).message
+
+                - id: editFailed
+                  condition: =json(System.ConversationData.editResult).status = "not_found" or json(System.ConversationData.editResult).severity = "blocking"
+                  actions:
+                    - kind: SendMessage
+                      id: editFailedMsg
+                      message: =json(System.ConversationData.editResult).message
+
+    - kind: EndDialog
+      id: endTopic

@@ -1,0 +1,121 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: SAP Get PR Status
+    triggerQueries:
+      - check PR status
+      - what's the status of PR
+      - status of my PR
+      - show my PRs
+      - list my purchase requisitions
+      - pending approvals
+      - what PRs are waiting for my approval
+      - show me open PRs
+      - PR number
+      - where is my PR
+
+  actions:
+    - kind: Question
+      id: askAction
+      alwaysPrompt: false
+      variable: init:Topic.StatusAction
+      prompt: What would you like to check?
+      entity:
+        kind: EmbeddedEntity
+        definition:
+          kind: ClosedListEntity
+          smartMatchingEnabled: true
+          items:
+            - id: ByNumber
+              displayName: Look up a specific PR by number
+              synonyms:
+                - specific PR
+                - PR number
+                - by number
+            - id: ListMine
+              displayName: Show all my open PRs
+              synonyms:
+                - my PRs
+                - list PRs
+                - all open
+            - id: Approvals
+              displayName: Show PRs waiting for my approval
+              synonyms:
+                - pending approvals
+                - my approval queue
+                - needs my approval
+
+    - kind: ConditionGroup
+      id: routeAction
+      conditions:
+        - id: ifByNumber
+          condition: =Topic.StatusAction = "Look up a specific PR by number"
+          actions:
+            - kind: Question
+              id: askPRNumber
+              alwaysPrompt: false
+              variable: init:Topic.PRNumber
+              prompt:
+                text: What's the PR number (BANFN)?
+              entity: StringPrebuiltEntity
+            - kind: InvokeFlowAction
+              id: callGetStatusFlow
+              displayName: SAP Get PR Status Flow
+              inputs:
+                - name: action
+                  value: =get_by_number
+                - name: pr_number
+                  value: =Topic.PRNumber
+                - name: user_guid
+                  value: =System.User.Id
+            - kind: SendActivity
+              id: showPRResult
+              activity:
+                text: >-
+                  📊 **PR Status from SAP EBAN:**
+
+
+                  Here are the details for PR **${Topic.PRNumber}**. Let me know
+                  if you need to approve, cancel, or send a reminder.
+
+        - id: ifListByUser
+          condition: =Topic.StatusAction = "Show all my open PRs"
+          actions:
+            - kind: InvokeFlowAction
+              id: callListPRsFlow
+              displayName: SAP Get PR Status Flow
+              inputs:
+                - name: action
+                  value: =list_by_user
+                - name: user_guid
+                  value: =System.User.Id
+            - kind: SendActivity
+              id: showListResult
+              activity:
+                text: >-
+                  📋 **Your Open Purchase Requisitions** (SAP EBAN):
+
+
+                  These are all PRs you've created that are still active.
+
+        - id: ifPendingApprovals
+          condition: =Topic.StatusAction = "Show PRs waiting for my approval"
+          actions:
+            - kind: InvokeFlowAction
+              id: callApprovalsFlow
+              displayName: SAP Get PR Status Flow
+              inputs:
+                - name: action
+                  value: =get_pending_approvals
+                - name: approver_guid
+                  value: =System.User.Id
+            - kind: SendActivity
+              id: showApprovalsResult
+              activity:
+                text: >-
+                  ✅ **PRs Awaiting Your Approval** (SAP T16FS/EBAN):
+
+
+                  Say "approve PR [number]" or "reject PR [number]" to act on any of these.

@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.24.10827"
+  SolutionPackageVersion="9.2"
+  languagecode="1033"
+  generatedBy="CRMExport"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <Entities>
+
+    <Entity>
+      <Name>ascend_sapvendor</Name>
+      <ObjectTypeCode>10200</ObjectTypeCode>
+      <OriginalName>ascend_sapvendor</OriginalName>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <EntityInfo>
+        <entity Name="ascend_sapvendor" OriginalName="ascend_sapvendor"
+                OwnershipType="UserOwned" CollectionName="ascend_sapvendors"
+                PrimaryIdAttribute="ascend_sapvendorid"
+                PrimaryNameAttribute="ascend_name"
+                IntroducedVersion="1.0.0.0" IsCustomEntity="1">
+          <LocalizedNames><LocalizedName description="SAP Vendor" languagecode="1033"/></LocalizedNames>
+          <LocalizedCollectionNames><LocalizedCollectionName description="SAP Vendors" languagecode="1033"/></LocalizedCollectionNames>
+          <LocalizedDescriptions><LocalizedDescription description="" languagecode="1033"/></LocalizedDescriptions>
+        </entity>
+      </EntityInfo>
+      <Attributes>
+        <Attribute PhysicalName="ascend_sapvendorid">
+          <Type>primarykey</Type><Name>ascend_sapvendorid</Name><LogicalName>ascend_sapvendorid</LogicalName>
+          <RequiredLevel>SystemRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <LocalizedNames><LocalizedName description="SAP Vendor" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_name">
+          <Type>nvarchar</Type><Name>ascend_name</Name><LogicalName>ascend_name</LogicalName>
+          <RequiredLevel>ApplicationRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <MaxLength>100</MaxLength><Format>Text</Format><ImeMode>auto</ImeMode>
+          <IsLocalizable>0</IsLocalizable><IsPrimaryName>1</IsPrimaryName>
+          <LocalizedNames><LocalizedName description="Vendor Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_lifnr">
+          <Type>nvarchar</Type><Name>ascend_lifnr</Name><LogicalName>ascend_lifnr</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>12</MaxLength>
+          <LocalizedNames><LocalizedName description="Vendor Number (LIFNR)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_bukrs">
+          <Type>nvarchar</Type><Name>ascend_bukrs</Name><LogicalName>ascend_bukrs</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>4</MaxLength>
+          <LocalizedNames><LocalizedName description="Company Code (BUKRS)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_ekorg">
+          <Type>nvarchar</Type><Name>ascend_ekorg</Name><LogicalName>ascend_ekorg</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>4</MaxLength>
+          <LocalizedNames><LocalizedName description="Purchasing Org (EKORG)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_land1">
+          <Type>nvarchar</Type><Name>ascend_land1</Name><LogicalName>ascend_land1</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>3</MaxLength>
+          <LocalizedNames><LocalizedName description="Country (LAND1)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_waers">
+          <Type>nvarchar</Type><Name>ascend_waers</Name><LogicalName>ascend_waers</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>5</MaxLength>
+          <LocalizedNames><LocalizedName description="Currency (WAERS)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_datasource">
+          <Type>nvarchar</Type><Name>ascend_datasource</Name><LogicalName>ascend_datasource</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Data Source" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+      </Attributes>
+    </Entity>
+
+    <Entity>
+      <Name>ascend_sappurchaserequisition</Name>
+      <ObjectTypeCode>10201</ObjectTypeCode>
+      <OriginalName>ascend_sappurchaserequisition</OriginalName>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <EntityInfo>
+        <entity Name="ascend_sappurchaserequisition" OriginalName="ascend_sappurchaserequisition"
+                OwnershipType="UserOwned" CollectionName="ascend_sappurchaserequisitions"
+                PrimaryIdAttribute="ascend_sappurchaserequisitionid"
+                PrimaryNameAttribute="ascend_name"
+                IntroducedVersion="1.0.0.0" IsCustomEntity="1">
+          <LocalizedNames><LocalizedName description="SAP Purchase Requisition" languagecode="1033"/></LocalizedNames>
+          <LocalizedCollectionNames><LocalizedCollectionName description="SAP Purchase Requisitions" languagecode="1033"/></LocalizedCollectionNames>
+          <LocalizedDescriptions><LocalizedDescription description="" languagecode="1033"/></LocalizedDescriptions>
+        </entity>
+      </EntityInfo>
+      <Attributes>
+        <Attribute PhysicalName="ascend_sappurchaserequisitionid">
+          <Type>primarykey</Type><Name>ascend_sappurchaserequisitionid</Name><LogicalName>ascend_sappurchaserequisitionid</LogicalName>
+          <RequiredLevel>SystemRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <LocalizedNames><LocalizedName description="SAP Purchase Requisition" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_name">
+          <Type>nvarchar</Type><Name>ascend_name</Name><LogicalName>ascend_name</LogicalName>
+          <RequiredLevel>ApplicationRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <MaxLength>200</MaxLength><Format>Text</Format><ImeMode>auto</ImeMode>
+          <IsLocalizable>0</IsLocalizable><IsPrimaryName>1</IsPrimaryName>
+          <LocalizedNames><LocalizedName description="PR Description" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_banfn">
+          <Type>nvarchar</Type><Name>ascend_banfn</Name><LogicalName>ascend_banfn</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="PR Number (BANFN)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_txz01">
+          <Type>nvarchar</Type><Name>ascend_txz01</Name><LogicalName>ascend_txz01</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>250</MaxLength>
+          <LocalizedNames><LocalizedName description="Short Text (TXZ01)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_lifnr">
+          <Type>nvarchar</Type><Name>ascend_lifnr</Name><LogicalName>ascend_lifnr</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>12</MaxLength>
+          <LocalizedNames><LocalizedName description="Vendor ID (LIFNR)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_vendorname">
+          <Type>nvarchar</Type><Name>ascend_vendorname</Name><LogicalName>ascend_vendorname</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Vendor Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_matkl">
+          <Type>nvarchar</Type><Name>ascend_matkl</Name><LogicalName>ascend_matkl</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>9</MaxLength>
+          <LocalizedNames><LocalizedName description="Material Group (MATKL)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_netvalue">
+          <Type>money</Type><Name>ascend_netvalue</Name><LogicalName>ascend_netvalue</LogicalName>
+          <RequiredLevel>None</RequiredLevel>
+          <LocalizedNames><LocalizedName description="Net Value" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_frgst">
+          <Type>nvarchar</Type><Name>ascend_frgst</Name><LogicalName>ascend_frgst</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>50</MaxLength>
+          <LocalizedNames><LocalizedName description="Release Status (FRGST)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_approvername">
+          <Type>nvarchar</Type><Name>ascend_approvername</Name><LogicalName>ascend_approvername</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Approver Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_afnam">
+          <Type>nvarchar</Type><Name>ascend_afnam</Name><LogicalName>ascend_afnam</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Requestor (AFNAM)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_badat">
+          <Type>datetime</Type><Name>ascend_badat</Name><LogicalName>ascend_badat</LogicalName>
+          <RequiredLevel>None</RequiredLevel>
+          <LocalizedNames><LocalizedName description="PR Date (BADAT)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_datasource">
+          <Type>nvarchar</Type><Name>ascend_datasource</Name><LogicalName>ascend_datasource</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Data Source" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+      </Attributes>
+    </Entity>
+
+    <Entity>
+      <Name>ascend_sappraccountassignment</Name>
+      <ObjectTypeCode>10202</ObjectTypeCode>
+      <OriginalName>ascend_sappraccountassignment</OriginalName>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <EntityInfo>
+        <entity Name="ascend_sappraccountassignment" OriginalName="ascend_sappraccountassignment"
+                OwnershipType="UserOwned" CollectionName="ascend_sappraccountassignments"
+                PrimaryIdAttribute="ascend_sappraccountassignmentid"
+                PrimaryNameAttribute="ascend_name"
+                IntroducedVersion="1.0.0.0" IsCustomEntity="1">
+          <LocalizedNames><LocalizedName description="SAP PR Account Assignment" languagecode="1033"/></LocalizedNames>
+          <LocalizedCollectionNames><LocalizedCollectionName description="SAP PR Account Assignments" languagecode="1033"/></LocalizedCollectionNames>
+          <LocalizedDescriptions><LocalizedDescription description="" languagecode="1033"/></LocalizedDescriptions>
+        </entity>
+      </EntityInfo>
+      <Attributes>
+        <Attribute PhysicalName="ascend_sappraccountassignmentid">
+          <Type>primarykey</Type><Name>ascend_sappraccountassignmentid</Name><LogicalName>ascend_sappraccountassignmentid</LogicalName>
+          <RequiredLevel>SystemRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <LocalizedNames><LocalizedName description="SAP PR Account Assignment" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_name">
+          <Type>nvarchar</Type><Name>ascend_name</Name><LogicalName>ascend_name</LogicalName>
+          <RequiredLevel>ApplicationRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <MaxLength>100</MaxLength><Format>Text</Format><ImeMode>auto</ImeMode>
+          <IsLocalizable>0</IsLocalizable><IsPrimaryName>1</IsPrimaryName>
+          <LocalizedNames><LocalizedName description="Assignment Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_banfn">
+          <Type>nvarchar</Type><Name>ascend_banfn</Name><LogicalName>ascend_banfn</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="PR Number (BANFN)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_kostl">
+          <Type>nvarchar</Type><Name>ascend_kostl</Name><LogicalName>ascend_kostl</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="Cost Center (KOSTL)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_sakto">
+          <Type>nvarchar</Type><Name>ascend_sakto</Name><LogicalName>ascend_sakto</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="GL Account (SAKTO)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_netwr">
+          <Type>money</Type><Name>ascend_netwr</Name><LogicalName>ascend_netwr</LogicalName>
+          <RequiredLevel>None</RequiredLevel>
+          <LocalizedNames><LocalizedName description="Net Amount (NETWR)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+      </Attributes>
+    </Entity>
+
+    <Entity>
+      <Name>ascend_sapmaterialgroup</Name>
+      <ObjectTypeCode>10203</ObjectTypeCode>
+      <OriginalName>ascend_sapmaterialgroup</OriginalName>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <EntityInfo>
+        <entity Name="ascend_sapmaterialgroup" OriginalName="ascend_sapmaterialgroup"
+                OwnershipType="UserOwned" CollectionName="ascend_sapmaterialgroups"
+                PrimaryIdAttribute="ascend_sapmaterialgroupid"
+                PrimaryNameAttribute="ascend_name"
+                IntroducedVersion="1.0.0.0" IsCustomEntity="1">
+          <LocalizedNames><LocalizedName description="SAP Material Group" languagecode="1033"/></LocalizedNames>
+          <LocalizedCollectionNames><LocalizedCollectionName description="SAP Material Groups" languagecode="1033"/></LocalizedCollectionNames>
+          <LocalizedDescriptions><LocalizedDescription description="" languagecode="1033"/></LocalizedDescriptions>
+        </entity>
+      </EntityInfo>
+      <Attributes>
+        <Attribute PhysicalName="ascend_sapmaterialgroupid">
+          <Type>primarykey</Type><Name>ascend_sapmaterialgroupid</Name><LogicalName>ascend_sapmaterialgroupid</LogicalName>
+          <RequiredLevel>SystemRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <LocalizedNames><LocalizedName description="SAP Material Group" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_name">
+          <Type>nvarchar</Type><Name>ascend_name</Name><LogicalName>ascend_name</LogicalName>
+          <RequiredLevel>ApplicationRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <MaxLength>100</MaxLength><Format>Text</Format><ImeMode>auto</ImeMode>
+          <IsLocalizable>0</IsLocalizable><IsPrimaryName>1</IsPrimaryName>
+          <LocalizedNames><LocalizedName description="Material Group Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_matkl">
+          <Type>nvarchar</Type><Name>ascend_matkl</Name><LogicalName>ascend_matkl</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>9</MaxLength>
+          <LocalizedNames><LocalizedName description="Material Group Code (MATKL)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_wgbez">
+          <Type>nvarchar</Type><Name>ascend_wgbez</Name><LogicalName>ascend_wgbez</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>50</MaxLength>
+          <LocalizedNames><LocalizedName description="Description (WGBEZ)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+      </Attributes>
+    </Entity>
+
+    <Entity>
+      <Name>ascend_sapcostcenter</Name>
+      <ObjectTypeCode>10204</ObjectTypeCode>
+      <OriginalName>ascend_sapcostcenter</OriginalName>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <EntityInfo>
+        <entity Name="ascend_sapcostcenter" OriginalName="ascend_sapcostcenter"
+                OwnershipType="UserOwned" CollectionName="ascend_sapcostcenters"
+                PrimaryIdAttribute="ascend_sapcostcenterid"
+                PrimaryNameAttribute="ascend_name"
+                IntroducedVersion="1.0.0.0" IsCustomEntity="1">
+          <LocalizedNames><LocalizedName description="SAP Cost Center" languagecode="1033"/></LocalizedNames>
+          <LocalizedCollectionNames><LocalizedCollectionName description="SAP Cost Centers" languagecode="1033"/></LocalizedCollectionNames>
+          <LocalizedDescriptions><LocalizedDescription description="" languagecode="1033"/></LocalizedDescriptions>
+        </entity>
+      </EntityInfo>
+      <Attributes>
+        <Attribute PhysicalName="ascend_sapcostcenterid">
+          <Type>primarykey</Type><Name>ascend_sapcostcenterid</Name><LogicalName>ascend_sapcostcenterid</LogicalName>
+          <RequiredLevel>SystemRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <LocalizedNames><LocalizedName description="SAP Cost Center" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_name">
+          <Type>nvarchar</Type><Name>ascend_name</Name><LogicalName>ascend_name</LogicalName>
+          <RequiredLevel>ApplicationRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <MaxLength>100</MaxLength><Format>Text</Format><ImeMode>auto</ImeMode>
+          <IsLocalizable>0</IsLocalizable><IsPrimaryName>1</IsPrimaryName>
+          <LocalizedNames><LocalizedName description="Cost Center Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_kostl">
+          <Type>nvarchar</Type><Name>ascend_kostl</Name><LogicalName>ascend_kostl</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="Cost Center Code (KOSTL)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_ktext">
+          <Type>nvarchar</Type><Name>ascend_ktext</Name><LogicalName>ascend_ktext</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>50</MaxLength>
+          <LocalizedNames><LocalizedName description="Short Description (KTEXT)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_bukrs">
+          <Type>nvarchar</Type><Name>ascend_bukrs</Name><LogicalName>ascend_bukrs</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>4</MaxLength>
+          <LocalizedNames><LocalizedName description="Company Code (BUKRS)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+      </Attributes>
+    </Entity>
+
+    <Entity>
+      <Name>ascend_sapglaccount</Name>
+      <ObjectTypeCode>10205</ObjectTypeCode>
+      <OriginalName>ascend_sapglaccount</OriginalName>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <EntityInfo>
+        <entity Name="ascend_sapglaccount" OriginalName="ascend_sapglaccount"
+                OwnershipType="UserOwned" CollectionName="ascend_sapglaccounts"
+                PrimaryIdAttribute="ascend_sapglaccountid"
+                PrimaryNameAttribute="ascend_name"
+                IntroducedVersion="1.0.0.0" IsCustomEntity="1">
+          <LocalizedNames><LocalizedName description="SAP GL Account" languagecode="1033"/></LocalizedNames>
+          <LocalizedCollectionNames><LocalizedCollectionName description="SAP GL Accounts" languagecode="1033"/></LocalizedCollectionNames>
+          <LocalizedDescriptions><LocalizedDescription description="" languagecode="1033"/></LocalizedDescriptions>
+        </entity>
+      </EntityInfo>
+      <Attributes>
+        <Attribute PhysicalName="ascend_sapglaccountid">
+          <Type>primarykey</Type><Name>ascend_sapglaccountid</Name><LogicalName>ascend_sapglaccountid</LogicalName>
+          <RequiredLevel>SystemRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <LocalizedNames><LocalizedName description="SAP GL Account" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_name">
+          <Type>nvarchar</Type><Name>ascend_name</Name><LogicalName>ascend_name</LogicalName>
+          <RequiredLevel>ApplicationRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <MaxLength>100</MaxLength><Format>Text</Format><ImeMode>auto</ImeMode>
+          <IsLocalizable>0</IsLocalizable><IsPrimaryName>1</IsPrimaryName>
+          <LocalizedNames><LocalizedName description="GL Account Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_sakto">
+          <Type>nvarchar</Type><Name>ascend_sakto</Name><LogicalName>ascend_sakto</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="GL Account Code (SAKTO)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_txt50">
+          <Type>nvarchar</Type><Name>ascend_txt50</Name><LogicalName>ascend_txt50</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>50</MaxLength>
+          <LocalizedNames><LocalizedName description="Description (TXT50)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_bukrs">
+          <Type>nvarchar</Type><Name>ascend_bukrs</Name><LogicalName>ascend_bukrs</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>4</MaxLength>
+          <LocalizedNames><LocalizedName description="Company Code (BUKRS)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+      </Attributes>
+    </Entity>
+
+    <Entity>
+      <Name>ascend_sapcontract</Name>
+      <ObjectTypeCode>10206</ObjectTypeCode>
+      <OriginalName>ascend_sapcontract</OriginalName>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <EntityInfo>
+        <entity Name="ascend_sapcontract" OriginalName="ascend_sapcontract"
+                OwnershipType="UserOwned" CollectionName="ascend_sapcontracts"
+                PrimaryIdAttribute="ascend_sapcontractid"
+                PrimaryNameAttribute="ascend_name"
+                IntroducedVersion="1.0.0.0" IsCustomEntity="1">
+          <LocalizedNames><LocalizedName description="SAP Contract" languagecode="1033"/></LocalizedNames>
+          <LocalizedCollectionNames><LocalizedCollectionName description="SAP Contracts" languagecode="1033"/></LocalizedCollectionNames>
+          <LocalizedDescriptions><LocalizedDescription description="" languagecode="1033"/></LocalizedDescriptions>
+        </entity>
+      </EntityInfo>
+      <Attributes>
+        <Attribute PhysicalName="ascend_sapcontractid">
+          <Type>primarykey</Type><Name>ascend_sapcontractid</Name><LogicalName>ascend_sapcontractid</LogicalName>
+          <RequiredLevel>SystemRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <LocalizedNames><LocalizedName description="SAP Contract" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_name">
+          <Type>nvarchar</Type><Name>ascend_name</Name><LogicalName>ascend_name</LogicalName>
+          <RequiredLevel>ApplicationRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <MaxLength>100</MaxLength><Format>Text</Format><ImeMode>auto</ImeMode>
+          <IsLocalizable>0</IsLocalizable><IsPrimaryName>1</IsPrimaryName>
+          <LocalizedNames><LocalizedName description="Contract Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_ebeln">
+          <Type>nvarchar</Type><Name>ascend_ebeln</Name><LogicalName>ascend_ebeln</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="Contract Number (EBELN)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_lifnr">
+          <Type>nvarchar</Type><Name>ascend_lifnr</Name><LogicalName>ascend_lifnr</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>12</MaxLength>
+          <LocalizedNames><LocalizedName description="Vendor ID (LIFNR)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_kdatb">
+          <Type>datetime</Type><Name>ascend_kdatb</Name><LogicalName>ascend_kdatb</LogicalName>
+          <RequiredLevel>None</RequiredLevel>
+          <LocalizedNames><LocalizedName description="Start Date (KDATB)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_kdate">
+          <Type>datetime</Type><Name>ascend_kdate</Name><LogicalName>ascend_kdate</LogicalName>
+          <RequiredLevel>None</RequiredLevel>
+          <LocalizedNames><LocalizedName description="End Date (KDATE)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_ktmng">
+          <Type>money</Type><Name>ascend_ktmng</Name><LogicalName>ascend_ktmng</LogicalName>
+          <RequiredLevel>None</RequiredLevel>
+          <LocalizedNames><LocalizedName description="Contract Value (KTMNG)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+      </Attributes>
+    </Entity>
+
+    <Entity>
+      <Name>ascend_sapreleasestrategy</Name>
+      <ObjectTypeCode>10207</ObjectTypeCode>
+      <OriginalName>ascend_sapreleasestrategy</OriginalName>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <EntityInfo>
+        <entity Name="ascend_sapreleasestrategy" OriginalName="ascend_sapreleasestrategy"
+                OwnershipType="UserOwned" CollectionName="ascend_sapreleasestrategyies"
+                PrimaryIdAttribute="ascend_sapreleasestrategyid"
+                PrimaryNameAttribute="ascend_name"
+                IntroducedVersion="1.0.0.0" IsCustomEntity="1">
+          <LocalizedNames><LocalizedName description="SAP Release Strategy" languagecode="1033"/></LocalizedNames>
+          <LocalizedCollectionNames><LocalizedCollectionName description="SAP Release Strategies" languagecode="1033"/></LocalizedCollectionNames>
+          <LocalizedDescriptions><LocalizedDescription description="" languagecode="1033"/></LocalizedDescriptions>
+        </entity>
+      </EntityInfo>
+      <Attributes>
+        <Attribute PhysicalName="ascend_sapreleasestrategyid">
+          <Type>primarykey</Type><Name>ascend_sapreleasestrategyid</Name><LogicalName>ascend_sapreleasestrategyid</LogicalName>
+          <RequiredLevel>SystemRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <LocalizedNames><LocalizedName description="SAP Release Strategy" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_name">
+          <Type>nvarchar</Type><Name>ascend_name</Name><LogicalName>ascend_name</LogicalName>
+          <RequiredLevel>ApplicationRequired</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMask>
+          <MaxLength>100</MaxLength><Format>Text</Format><ImeMode>auto</ImeMode>
+          <IsLocalizable>0</IsLocalizable><IsPrimaryName>1</IsPrimaryName>
+          <LocalizedNames><LocalizedName description="Strategy Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_frggr">
+          <Type>nvarchar</Type><Name>ascend_frggr</Name><LogicalName>ascend_frggr</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>4</MaxLength>
+          <LocalizedNames><LocalizedName description="Release Group (FRGGR)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_frgsx">
+          <Type>nvarchar</Type><Name>ascend_frgsx</Name><LogicalName>ascend_frgsx</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>4</MaxLength>
+          <LocalizedNames><LocalizedName description="Release Strategy (FRGSX)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_approvername">
+          <Type>nvarchar</Type><Name>ascend_approvername</Name><LogicalName>ascend_approvername</LogicalName>
+          <RequiredLevel>None</RequiredLevel><MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Approver Name" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+        <Attribute PhysicalName="ascend_frwrt">
+          <Type>money</Type><Name>ascend_frwrt</Name><LogicalName>ascend_frwrt</LogicalName>
+          <RequiredLevel>None</RequiredLevel>
+          <LocalizedNames><LocalizedName description="Release Amount Threshold (FRWRT)" languagecode="1033"/></LocalizedNames>
+        </Attribute>
+      </Attributes>
+    </Entity>
+
+  </Entities>
+
+  <Roles/>
+  <FieldSecurityProfiles/>
+  <Workflows/>
+  <EntityMaps/>
+  <EntityRelationships/>
+  <OrganizationSettings/>
+  <optionsets/>
+  <CustomControls/>
+  <EntityDataProviders/>
+  <CanvasApps/>
+  <Connectors/>
+
+</ImportExportXml>

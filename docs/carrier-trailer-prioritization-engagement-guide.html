@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrier Corporation — Trailer Prioritization | SE Engagement Guide</title>
+  <style>
+    :root {
+      --blue: #0078d4;
+      --blue-dark: #005a9e;
+      --blue-light: #eff6fc;
+      --green: #107c10;
+      --green-light: #dff6dd;
+      --orange: #ca5010;
+      --orange-light: #fff4ce;
+      --red: #a4262c;
+      --red-light: #fde7e9;
+      --gray: #605e5c;
+      --gray-light: #f3f2f1;
+      --gray-border: #d2d0ce;
+      --white: #ffffff;
+      --text: #201f1e;
+      --radius: 8px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #faf9f8;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+      color: white;
+      padding: 36px 48px 28px;
+    }
+    .header-eyebrow {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+    .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+    .header-sub { font-size: 15px; opacity: 0.85; margin-bottom: 20px; }
+    .header-meta {
+      display: flex; flex-wrap: wrap; gap: 16px;
+    }
+    .meta-chip {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 13px;
+    }
+    .meta-chip span { opacity: 0.75; margin-right: 4px; }
+
+    /* ── Nav ── */
+    .nav {
+      background: white;
+      border-bottom: 1px solid var(--gray-border);
+      padding: 0 48px;
+      display: flex; gap: 0;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .nav a {
+      display: block; padding: 14px 18px;
+      font-size: 13px; font-weight: 500;
+      color: var(--gray);
+      text-decoration: none;
+      border-bottom: 3px solid transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .nav a:hover { color: var(--blue); border-bottom-color: var(--blue); }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 32px 48px 64px; }
+
+    /* ── Section ── */
+    .section { margin-bottom: 48px; }
+    .section-title {
+      font-size: 20px; font-weight: 600; color: var(--blue-dark);
+      margin-bottom: 20px; padding-bottom: 10px;
+      border-bottom: 2px solid var(--blue-light);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .icon { font-size: 22px; }
+
+    /* ── Brief banner ── */
+    .brief-banner {
+      background: var(--blue-light);
+      border-left: 4px solid var(--blue);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+    .brief-banner p { margin-bottom: 10px; }
+    .brief-banner p:last-child { margin-bottom: 0; }
+    .brief-banner strong { color: var(--blue-dark); }
+
+    /* ── KPI cards ── */
+    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .kpi-card {
+      background: white;
+      border: 1px solid var(--gray-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .kpi-card .kpi-value { font-size: 32px; font-weight: 700; color: var(--blue); }
+    .kpi-card .kpi-label { font-size: 12px; color: var(--gray); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .kpi-card .kpi-sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+    /* ── Persona cards ── */
+    .persona-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .persona-card {
+      background: white;
+      border: 1px solid var(--gray-border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    .persona-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--blue); color: white;
+      font-size: 18px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+    }
+    .persona-name { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+    .persona-role { font-size: 12px; color: var(--gray); margin-bottom: 10px; }
+    .persona-cares {
+      font-size: 12px;
+      background: var(--blue-light);
+      border-radius: 4px;
+      padding: 6px 10px;
+      color: var(--blue-dark);
+    }
+    .persona-cares::before { content: "💡 "; }
+
+    /* ── Quotes ── */
+    .quote-block {
+      background: var(--gray-light);
+      border-left: 4px solid var(--gray);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+    .quote-block .quote-attr {
+      font-style: normal; font-size: 12px; color: var(--gray); margin-top: 8px;
+    }
+
+    /* ── Term cards ── */
+    .term-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+    .term-card {
+      background: white;
+      border: 1px solid var(--gray-border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+    .term-name { font-weight: 700; font-size: 14px; color: var(--blue-dark); margin-bottom: 6px; }
+    .term-def { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+    /* ── What's built ── */
+    .built-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .built-card {
+      background: white;
+      border: 1px solid var(--gray-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .built-card-header {
+      background: var(--blue);
+      color: white;
+      padding: 12px 18px;
+      font-weight: 600; font-size: 14px;
+    }
+    .built-card table { width: 100%; border-collapse: collapse; }
+    .built-card td { padding: 10px 18px; font-size: 13px; border-bottom: 1px solid var(--gray-light); vertical-align: top; }
+    .built-card tr:last-child td { border-bottom: none; }
+    .built-card td:first-child { font-family: 'Consolas', monospace; font-size: 12px; color: var(--blue-dark); width: 40%; }
+
+    /* ── Demo steps ── */
+    .demo-steps { display: flex; flex-direction: column; gap: 14px; }
+    .demo-step {
+      background: white;
+      border: 1px solid var(--gray-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .demo-step-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 18px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .demo-step-header:hover { background: var(--gray-light); }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--blue); color: white;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-title { font-weight: 600; font-size: 15px; flex: 1; }
+    .step-time { font-size: 12px; color: var(--gray); }
+    .step-chevron { color: var(--gray); font-size: 12px; transition: transform 0.2s; }
+    .demo-step.open .step-chevron { transform: rotate(180deg); }
+    .demo-step-body { display: none; padding: 0 18px 18px; border-top: 1px solid var(--gray-light); }
+    .demo-step.open .demo-step-body { display: block; }
+
+    .you-say {
+      background: var(--blue-light);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 13px;
+      margin: 14px 0 10px;
+    }
+    .you-say::before { content: "🗣️ You say: "; font-weight: 700; display: block; margin-bottom: 4px; color: var(--blue-dark); }
+    .prompt-box {
+      background: #1e1e1e; color: #4ec9b0;
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'Consolas', monospace; font-size: 13px;
+      margin: 8px 0;
+    }
+    .prompt-box::before { content: "▶ "; color: #569cd6; }
+    .response-box {
+      background: var(--green-light);
+      border-left: 3px solid var(--green);
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 12px;
+      margin: 4px 0 12px;
+      color: var(--green);
+    }
+    .response-box::before { content: "✅ Expected: "; font-weight: 700; }
+    .talking-points { margin: 10px 0; }
+    .talking-points li { font-size: 13px; margin-bottom: 6px; padding-left: 4px; list-style: disc; margin-left: 18px; }
+
+    /* ── Objection handler ── */
+    .objection-block {
+      background: var(--orange-light);
+      border: 1px solid #f7d6ba;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+    .obj-q { font-weight: 700; font-size: 14px; color: var(--orange); margin-bottom: 8px; }
+    .obj-q::before { content: "❓ "; }
+    .obj-a { font-size: 13px; line-height: 1.5; }
+    .obj-a::before { content: "✅ "; }
+
+    /* ── Follow-up table ── */
+    .followup-table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .followup-table th { background: var(--blue); color: white; padding: 12px 16px; text-align: left; font-size: 13px; }
+    .followup-table td { padding: 11px 16px; font-size: 13px; border-bottom: 1px solid var(--gray-light); vertical-align: top; }
+    .followup-table tr:last-child td { border-bottom: none; }
+    .status-pending {
+      display: inline-block;
+      background: var(--orange-light);
+      color: var(--orange);
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 11px; font-weight: 600;
+    }
+    .status-done {
+      display: inline-block;
+      background: var(--green-light);
+      color: var(--green);
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 11px; font-weight: 600;
+    }
+
+    /* ── Files table ── */
+    .files-table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .files-table th { background: var(--gray); color: white; padding: 12px 16px; text-align: left; font-size: 13px; }
+    .files-table td { padding: 11px 16px; font-size: 13px; border-bottom: 1px solid var(--gray-light); }
+    .files-table tr:last-child td { border-bottom: none; }
+    .files-table td:first-child { font-family: 'Consolas', monospace; font-size: 12px; color: var(--blue-dark); }
+
+    /* ── Code block ── */
+    .code-block {
+      background: #1e1e1e; color: #d4d4d4;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .code-comment { color: #6a9955; }
+
+    /* ── Process flow ── */
+    .flow-row {
+      display: flex; align-items: center; gap: 0;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .flow-step {
+      background: white;
+      border: 2px solid var(--blue);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px; font-weight: 600;
+      color: var(--blue-dark);
+      text-align: center;
+      min-width: 130px;
+    }
+    .flow-step.before { border-color: var(--red); color: var(--red); background: var(--red-light); }
+    .flow-step.after { border-color: var(--green); color: var(--green); background: var(--green-light); }
+    .flow-arrow { font-size: 20px; color: var(--gray); padding: 0 8px; }
+
+    /* ── Print ── */
+    @media print {
+      .nav, .demo-step-chevron { display: none !important; }
+      .demo-step-body { display: block !important; }
+      body { background: white; }
+      .container { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-eyebrow">Microsoft Power Platform · SE Engagement Guide</div>
+  <h1>Carrier Corporation — Inbound Trailer Prioritization</h1>
+  <div class="header-sub">Start Here If You Know Nothing About This Use Case</div>
+  <div class="header-meta">
+    <div class="meta-chip"><span>Customer:</span> Carrier Corporation</div>
+    <div class="meta-chip"><span>Industry:</span> Manufacturing / HVAC</div>
+    <div class="meta-chip"><span>Platform:</span> Canvas App + Dataverse + Power Automate</div>
+    <div class="meta-chip"><span>Env:</span> Mfg Gold Template</div>
+    <div class="meta-chip"><span>Solution:</span> CarrierTrailerPrioritization ✅ Deployed</div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <a href="#brief">Brief</a>
+  <a href="#personas">Personas</a>
+  <a href="#terms">Key Terms</a>
+  <a href="#built">What's Built</a>
+  <a href="#demo">Demo Flow</a>
+  <a href="#objections">Objections</a>
+  <a href="#followups">Follow-ups</a>
+  <a href="#files">Files</a>
+</nav>
+
+<div class="container">
+
+  <!-- ── KPIs ── -->
+  <div class="kpi-row" style="margin-top: 32px;">
+    <div class="kpi-card">
+      <div class="kpi-value">190</div>
+      <div class="kpi-label">Inbound Trailers/Week</div>
+      <div class="kpi-sub">Scored automatically</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">20</div>
+      <div class="kpi-label">Dock Slots/Day</div>
+      <div class="kpi-sub">Dock 1 (5) + Dock 2 (15) + Overflow (3)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" style="color: var(--red);">6 hrs</div>
+      <div class="kpi-label">Saved Every Monday</div>
+      <div class="kpi-sub">Manual spreadsheet process eliminated</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value" style="color: var(--green);">$2.4M</div>
+      <div class="kpi-label">Weekly Revenue Prioritized</div>
+      <div class="kpi-sub">Backlog clearance value</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">8 min</div>
+      <div class="kpi-label">Demo Duration</div>
+      <div class="kpi-sub">Vs. 6 hrs manual</div>
+    </div>
+  </div>
+
+  <!-- ── BRIEF ── -->
+  <div class="section" id="brief">
+    <div class="section-title"><span class="icon">⚡</span> The 60-Second Brief</div>
+
+    <div class="brief-banner">
+      <p>Carrier's aftermarket warehouse in <strong>Chattanooga, TN</strong> (operated by 3PL <strong>Kenco</strong>) receives <strong>~190 inbound trailers per week</strong> — but only has <strong>dock space for 20 trailers per day</strong>.</p>
+      <p>That means <strong>someone has to decide which 20 trucks get in first, every day, every week.</strong></p>
+      <p>Today, that "someone" is <strong>Sonali Horan</strong> — the RC Materials Planning Manager. Every Monday she spends <strong>~6 hours</strong> doing this manually in spreadsheets. One person. No automation. Not sustainable.</p>
+      <p><strong>What we built:</strong> A Power Platform app that does it automatically. SAP data flows in → scoring engine ranks every trailer by OTIF + revenue → Canvas App lets Sonali review → one button sends the schedule to Kenco.</p>
+    </div>
+
+    <div style="font-weight: 600; margin-bottom: 10px; color: var(--gray);">BEFORE → AFTER</div>
+    <div class="flow-row">
+      <div class="flow-step before">SAP Pull<br/><span style="font-size:11px;font-weight:400">Manual export</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step before">Spreadsheet<br/><span style="font-size:11px;font-weight:400">Cross-reference backlog</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step before">Sort & Rank<br/><span style="font-size:11px;font-weight:400">By gut feel</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step before">Email Kenco<br/><span style="font-size:11px;font-weight:400">Manually typed</span></div>
+      <div class="flow-arrow" style="color: var(--red); font-size: 24px;">⏱️ 6 hrs</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step after">Auto Ingest<br/><span style="font-size:11px;font-weight:400">SAP + SharePoint</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step after">Auto Score<br/><span style="font-size:11px;font-weight:400">OTIF + Revenue</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step after">Canvas App<br/><span style="font-size:11px;font-weight:400">Review + override</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step after">1-Click Send<br/><span style="font-size:11px;font-weight:400">Email to Kenco</span></div>
+      <div class="flow-arrow" style="color: var(--green); font-size: 24px;">⚡ 8 min</div>
+    </div>
+  </div>
+
+  <!-- ── PERSONAS ── -->
+  <div class="section" id="personas">
+    <div class="section-title"><span class="icon">👥</span> Who You'll Be Talking To</div>
+    <div class="persona-grid">
+      <div class="persona-card">
+        <div class="persona-avatar">SH</div>
+        <div class="persona-name">Sonali Horan</div>
+        <div class="persona-role">RC Materials Planning Manager — Primary User</div>
+        <div class="persona-cares">Time savings, OTIF improvement, getting strategic work back</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-avatar" style="background: var(--orange);">KG</div>
+        <div class="persona-name">Kevin Gollmer</div>
+        <div class="persona-role">Materials Director — SME</div>
+        <div class="persona-cares">Revenue clearance speed, strategic vs. tactical split</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-avatar" style="background: var(--green);">SJ</div>
+        <div class="persona-name">Samyak Jain</div>
+        <div class="persona-role">IT Lead — Technical Owner</div>
+        <div class="persona-cares">Maintainability, Power Platform skills, SAP integration</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-avatar" style="background: var(--green);">LS</div>
+        <div class="persona-name">Lucas Skaf</div>
+        <div class="persona-role">IT Lead — Technical Support</div>
+        <div class="persona-cares">Technical feasibility, E2Open integration path</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-avatar" style="background: #8a2be2;">SK</div>
+        <div class="persona-name">Sumit Katyal</div>
+        <div class="persona-role">Sponsor (Exec)</div>
+        <div class="persona-cares">ROI, org impact, resourcing</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <div class="section-title" style="font-size: 16px; border: none; padding-bottom: 0; margin-bottom: 14px;">In Their Own Words</div>
+      <div class="quote-block">
+        "Challenge: time consuming. It's very tactical. Too much data mining. Not a sustainable process for one person. It takes away time from strategic work."
+        <div class="quote-attr">— Sonali Horan, discovery call · March 20, 2026</div>
+      </div>
+      <div class="quote-block">
+        "Automation would save time, improve alignment with business opportunities, increase OTIF, accelerate revenue clearance, and enhance customer satisfaction."
+        <div class="quote-attr">— Kanika Ramji, Microsoft PM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── KEY TERMS ── -->
+  <div class="section" id="terms">
+    <div class="section-title"><span class="icon">📖</span> Key Terminology You Need to Know</div>
+    <div class="term-grid">
+      <div class="term-card">
+        <div class="term-name">OTIF — On Time In Full</div>
+        <div class="term-def">Carrier's #1 supply chain metric. Did the customer's order arrive complete and on time? A trailer with 47 parts on backorder means 47 customers are waiting. Getting that trailer in first directly improves OTIF.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Backlog</div>
+        <div class="term-def">Customer orders that can't ship because the warehouse doesn't have the inventory. Backlog count and revenue value are the primary scoring inputs for trailer prioritization.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Composite Score</div>
+        <div class="term-def">Every trailer gets a score: <code style="background: var(--gray-light); padding: 1px 4px; border-radius: 3px;">(OTIF weight × OTIF score) + (Revenue weight × Revenue score)</code>. Default: 50% OTIF, 40% revenue, 10% detention. Fully configurable in Dataverse.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Dock 1 / Dock 2 / Overflow</div>
+        <div class="term-def">Three receiving areas at Kenco's Chattanooga facility.<br/>• <strong>Dock 1:</strong> 5 trailers/day (highest priority)<br/>• <strong>Dock 2:</strong> 15 trailers/day (bulk)<br/>• <strong>Overflow:</strong> 3 trailers/day (low backlog)</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">TSP — Transportation Service Provider</div>
+        <div class="term-def">The ~30 trucking companies moving Carrier's trailers. They email the Kenco inbound scheduler to reschedule when mechanical issues or weather cause delays.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Kenco IB Scheduler</div>
+        <div class="term-def">The person at 3PL Kenco who books actual dock appointments. Sonali sends them the weekly priority schedule; they coordinate timing with TSPs. This is who receives the auto-generated email.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Detention / Demurrage</div>
+        <div class="term-def">Fees Carrier pays when a trailer sits in a yard without being unloaded on time. Adds cost pressure for certain trailers. Phase 2 scoring input — data currently comes via email from logistics.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">E2Open</div>
+        <div class="term-def">External logistics scheduling platform Carrier uses for some supplier coordination. Not integrated yet — identified as a Phase 2/3 target. Sonali is getting API details from their E2Open contact.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">TMS ID</div>
+        <div class="term-def">Transport Management System ID — the unique identifier for each trailer (e.g., "TMS-4821"). Used across all data sources to track a specific truck.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WHAT'S BUILT ── -->
+  <div class="section" id="built">
+    <div class="section-title"><span class="icon">🏗️</span> What's Actually Built (Live in Mfg Gold Template)</div>
+    <div class="built-section">
+      <div class="built-card">
+        <div class="built-card-header">📊 Dataverse Tables (6)</div>
+        <table>
+          <tr><td>carr_Trailer</td><td>One row per inbound trailer: OTIF score, revenue, dock assignment, schedule status</td></tr>
+          <tr><td>carr_ManifestLine</td><td>Parts on each trailer: part #, qty, backorder status</td></tr>
+          <tr><td>carr_Dock</td><td>Dock capacities (seeded: 5/15/3)</td></tr>
+          <tr><td>carr_Supplier</td><td>Factory/supplier contacts and data source format</td></tr>
+          <tr><td>carr_FieldMapping</td><td>Maps supplier-specific column names to standard fields</td></tr>
+          <tr><td>carr_ScoringConfig</td><td>Scoring weights (OTIF 50%, Revenue 40%, Detention 10%)</td></tr>
+        </table>
+      </div>
+      <div class="built-card">
+        <div class="built-card-header">📱 Canvas App Screens (3)</div>
+        <table>
+          <tr><td>Trailer Dashboard</td><td>KPI cards + ranked gallery of all 190 trailers with composite scores</td></tr>
+          <tr><td>Schedule Builder</td><td>Dock capacity view + assign/auto-schedule interface with overrides</td></tr>
+          <tr><td>Communications</td><td>Auto-draft email to Kenco, TSP contact list, reschedule log</td></tr>
+        </table>
+      </div>
+      <div class="built-card">
+        <div class="built-card-header">⚡ Power Automate Flows (4)</div>
+        <table>
+          <tr><td>Ingestion</td><td>Every Monday 6 AM — pulls SAP + SharePoint Excel data</td></tr>
+          <tr><td>Scoring</td><td>After ingestion — calculates OTIF + revenue, ranks all trailers</td></tr>
+          <tr><td>Notification</td><td>On demand — sends confirmed schedule email to Kenco</td></tr>
+          <tr><td>Reschedule Watcher</td><td>Phase 2 — AI Builder reads TSP email, auto-updates schedule</td></tr>
+        </table>
+      </div>
+      <div class="built-card">
+        <div class="built-card-header">🗂️ Solution Details</div>
+        <table>
+          <tr><td>Solution Name</td><td>CarrierTrailerPrioritization</td></tr>
+          <tr><td>Publisher</td><td>CarrierDemo (prefix: carr)</td></tr>
+          <tr><td>Environment</td><td>Mfg Gold Template (org6feab6b5)</td></tr>
+          <tr><td>Status</td><td>Deployed, unmanaged</td></tr>
+          <tr><td>Export</td><td>CarrierTrailerPrioritization.zip ✅</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DEMO FLOW ── -->
+  <div class="section" id="demo">
+    <div class="section-title"><span class="icon">🎬</span> Demo Flow (8 Minutes)</div>
+    <div style="background: var(--blue-light); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 20px; font-size: 13px;">
+      Full step-by-step script in <code>customers/carrier/demos/carrier_trailer_prioritization_demo.json</code> — click steps below to expand talking points.
+    </div>
+    <div class="demo-steps">
+
+      <div class="demo-step open" onclick="toggleStep(this)">
+        <div class="demo-step-header">
+          <div class="step-num">1</div>
+          <div class="step-title">Set the Scene</div>
+          <div class="step-time">~1 min</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="demo-step-body">
+          <div class="you-say">Sonali, I want to show you what we built based on our discovery conversation. You told us your team spends every Monday doing this manually in spreadsheets — matching 190 truck manifests against your backlog report. What I'm about to show you eliminates that entirely.</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray); margin: 12px 0 6px;">SHOW: Trailer Dashboard → KPI cards</div>
+          <ul class="talking-points">
+            <li>Point to the KPI cards: "190 trailers scored, $2.4M in potential revenue clearance"</li>
+            <li>That $2.4M is the revenue impact of backlog orders sitting in trucks waiting to get in</li>
+            <li>Previously this was a spreadsheet. Now it refreshes every Monday automatically from SAP</li>
+          </ul>
+          <div class="prompt-box">"Show me this week's trailer schedule."</div>
+          <div class="response-box">Full ranked table: 190 trailers with OTIF scores, revenue, dock assignments</div>
+        </div>
+      </div>
+
+      <div class="demo-step" onclick="toggleStep(this)">
+        <div class="demo-step-header">
+          <div class="step-num">2</div>
+          <div class="step-title">Explain the Scoring Logic</div>
+          <div class="step-time">~2 min</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="demo-step-body">
+          <div class="you-say">Every truck gets a composite score. Let me show you why trailer TMS-4821 is #1 this week.</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray); margin: 12px 0 6px;">SHOW: Click Trailer #1 or ask the agent to explain</div>
+          <ul class="talking-points">
+            <li>OTIF Score: 47 part numbers in this truck are on customer backorder right now</li>
+            <li>Revenue Impact: $128,000 of backlog clears the moment this truck unloads</li>
+            <li>We weight OTIF at 50%, revenue at 40% — your team can adjust these anytime in Scoring Config</li>
+            <li>Phase 2 adds detention cost — the fee you're paying for trailers sitting in the yard</li>
+          </ul>
+          <div class="prompt-box">"Why is TMS-4821 ranked number 1?"</div>
+          <div class="response-box">Scoring breakdown: 47 OTIF parts, $128K revenue, composite score 88.2/100</div>
+        </div>
+      </div>
+
+      <div class="demo-step" onclick="toggleStep(this)">
+        <div class="demo-step-header">
+          <div class="step-num">3</div>
+          <div class="step-title">Show the Schedule Builder</div>
+          <div class="step-time">~2 min</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="demo-step-body">
+          <div class="you-say">Now here's where the magic happens — the Schedule Builder. This is what replaces the spreadsheet.</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray); margin: 12px 0 6px;">NAVIGATE: Screen 2 → Schedule Builder</div>
+          <ul class="talking-points">
+            <li>Left: unscheduled queue, ranked by priority</li>
+            <li>Right: what's already scheduled this week</li>
+            <li>Top cards: dock capacity — Dock 1 (5/day), Dock 2 (15/day), Overflow (3/day)</li>
+            <li>Auto-Schedule button assigns all 190 trailers in priority order in one click</li>
+            <li>Manual override always available — drag any trailer to a different dock or date</li>
+          </ul>
+          <div class="prompt-box">"Go ahead and assign it to Dock 2."</div>
+          <div class="response-box">TMS-4821 assigned to Dock 2, Monday 08:00–10:00, notification queued</div>
+          <div class="prompt-box">"Yes, auto-schedule everything."</div>
+          <div class="response-box">190 trailers auto-assigned across 3 weeks by priority rank</div>
+        </div>
+      </div>
+
+      <div class="demo-step" onclick="toggleStep(this)">
+        <div class="demo-step-header">
+          <div class="step-num">4</div>
+          <div class="step-title">Send to Kenco</div>
+          <div class="step-time">~1 min</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="demo-step-body">
+          <div class="you-say">Last step — the app drafts the email to your Kenco inbound scheduler automatically. One button.</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray); margin: 12px 0 6px;">NAVIGATE: Screen 3 → Communications</div>
+          <ul class="talking-points">
+            <li>Email pre-populates with every confirmed trailer, dock, date, and time slot</li>
+            <li>Sonali reviews it, hits Send — Kenco gets it instantly</li>
+            <li>Previously Sonali would manually type this out and email it herself</li>
+            <li>CC list pre-configured: Sonali, Kevin, any other stakeholders</li>
+          </ul>
+          <div class="prompt-box">"Send it to Kenco."</div>
+          <div class="response-box">Email confirmed sent, 115 trailers, $2.4M revenue, 6 hours saved vs. manual</div>
+        </div>
+      </div>
+
+      <div class="demo-step" onclick="toggleStep(this)">
+        <div class="demo-step-header">
+          <div class="step-num">5</div>
+          <div class="step-title">Handle a Reschedule (Bonus)</div>
+          <div class="step-time">~1 min</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="demo-step-body">
+          <div class="you-say">One more thing Sonali mentioned — TSPs sometimes call or email to reschedule mid-week. Here's how that works.</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--gray); margin: 12px 0 6px;">SHOW: Reschedule log at bottom of Communications screen</div>
+          <ul class="talking-points">
+            <li>Currently: TSP emails the inbound scheduler, she manually updates the spreadsheet</li>
+            <li>Phase 2: AI reads the email, extracts trailer ID + new date, updates the schedule automatically</li>
+            <li>Today: the log captures it in one place, notifies Sonali, slot gets reassigned to next priority trailer</li>
+          </ul>
+          <div class="prompt-box">"Log a reschedule for TMS-3390 — driver mechanical issue, available Tuesday instead."</div>
+          <div class="response-box">TMS-3390 status → Rescheduled, Sonali notified, TMS-5512 offered as replacement for that slot</div>
+        </div>
+      </div>
+
+      <div class="demo-step" onclick="toggleStep(this)">
+        <div class="demo-step-header">
+          <div class="step-num">6</div>
+          <div class="step-title">Wrap Up — Phase Roadmap</div>
+          <div class="step-time">~1 min</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="demo-step-body">
+          <div class="you-say">So this is Phase 1 — live in your Mfg Gold Template environment today. Here's what Phase 2 and 3 look like.</div>
+          <ul class="talking-points">
+            <li>✅ <strong>Phase 1 (done):</strong> SAP + SharePoint ingestion, OTIF + revenue scoring, Canvas App, schedule → Kenco</li>
+            <li>🔜 <strong>Phase 2:</strong> Add detention cost data, E2Open integration, AI reading reschedule emails</li>
+            <li>🔮 <strong>Phase 3:</strong> AI Builder normalizes the 40 different external supplier packing list formats automatically</li>
+            <li>Portable solution file — can be imported into production environment when ready</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── OBJECTIONS ── -->
+  <div class="section" id="objections">
+    <div class="section-title"><span class="icon">🛡️</span> What To Say When...</div>
+    <div class="objection-block">
+      <div class="obj-q">"We already have a process."</div>
+      <div class="obj-a">Sonali told us the current process isn't sustainable for one person and takes 6 hours every Monday. This doesn't replace her judgment — it does the data mining for her so she can focus on strategic work.</div>
+    </div>
+    <div class="objection-block">
+      <div class="obj-q">"How does this connect to SAP?"</div>
+      <div class="obj-a">Power Automate has a native SAP connector. Once Samyak configures the credentials, the Monday morning ingestion runs automatically. The 3 non-SAP factories send Excel — that flows in from SharePoint.</div>
+    </div>
+    <div class="objection-block">
+      <div class="obj-q">"What about our 800 external suppliers?"</div>
+      <div class="obj-a">Phase 1 handles your 40 full-truckload suppliers — the ones that matter for this use case. The Field Mapping table normalizes their different column names automatically. Phase 3 adds AI Builder for the truly unstructured formats.</div>
+    </div>
+    <div class="objection-block">
+      <div class="obj-q">"Can we pilot this first?"</div>
+      <div class="obj-a">Yes — it's already live in a Mfg Gold Template environment. We have a portable solution zip that imports to any Power Platform environment. Samyak can validate the data against your real SAP for one week before going live.</div>
+    </div>
+    <div class="objection-block">
+      <div class="obj-q">"Who maintains this?"</div>
+      <div class="obj-a">Very little maintenance required. The scoring weights are in a config table — no code. Adding a new supplier or dock is a row in Dataverse. Power Automate handles the scheduling. Samyak can own this with current Power Platform skills.</div>
+    </div>
+    <div class="objection-block">
+      <div class="obj-q">"Can we export this to production?"</div>
+      <div class="obj-a">Yes — we exported a CarrierTrailerPrioritization.zip solution file. Import it to any Power Platform environment with one PAC CLI command. Zero rework.</div>
+    </div>
+  </div>
+
+  <!-- ── FOLLOW-UPS ── -->
+  <div class="section" id="followups">
+    <div class="section-title"><span class="icon">📋</span> Open Items from Discovery (March 20, 2026)</div>
+    <table class="followup-table">
+      <thead>
+        <tr><th>Item</th><th>Owner</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>E2Open API details for future integration</td><td>Sonali</td><td><span class="status-pending">Pending</span></td></tr>
+        <tr><td>SAP/Excel column headers screenshot</td><td>Sonali</td><td><span class="status-pending">Pending</span></td></tr>
+        <tr><td>SharePoint in-transit Excel location verify</td><td>Sonali</td><td><span class="status-pending">Pending</span></td></tr>
+        <tr><td>Power BI backend data source for backlog</td><td>Kevin</td><td><span class="status-pending">Pending</span></td></tr>
+        <tr><td>Updated VSM spreadsheet → share with Samyak</td><td>Kevin</td><td><span class="status-pending">Pending</span></td></tr>
+        <tr><td>Inventory Pooling use case (separate track)</td><td>Kanika</td><td><span class="status-pending">Separate track</span></td></tr>
+        <tr><td>Dataverse solution deployed to Mfg Gold Template</td><td>Microsoft</td><td><span class="status-done">✅ Done</span></td></tr>
+        <tr><td>Canvas App YAML + Code App built</td><td>Microsoft</td><td><span class="status-done">✅ Done</span></td></tr>
+        <tr><td>Solution ZIP exported to GitHub</td><td>Microsoft</td><td><span class="status-done">✅ Done</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── FILES ── -->
+  <div class="section" id="files">
+    <div class="section-title"><span class="icon">📁</span> Files in This Engagement</div>
+    <table class="files-table">
+      <thead>
+        <tr><th>File</th><th>What It Is</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>customers/carrier/docs/carrier-trailer-prioritization-engagement-guide.html</td><td>This guide</td></tr>
+        <tr><td>customers/carrier/demos/carrier_trailer_prioritization_demo.json</td><td>Full 6-step scripted demo with talking points + objection handling</td></tr>
+        <tr><td>customers/carrier/demos/carrier_trailer_prioritization_agent.json</td><td>Interactive ScriptedDemoAgent JSON (loads in demos.html)</td></tr>
+        <tr><td>d365/carrier-trailer-prioritization/solution/CarrierTrailerPrioritization.zip</td><td>Portable solution — import to any Power Platform environment</td></tr>
+        <tr><td>d365/carrier-trailer-prioritization/canvas-app/Screens/</td><td>3 Canvas App YAML screens — paste into Power Apps Studio</td></tr>
+        <tr><td>d365/carrier-trailer-prioritization/code-app/</td><td>React + Fluent UI Code App scaffold</td></tr>
+        <tr><td>d365/carrier-trailer-prioritization/flows/flows.yaml</td><td>4 Power Automate flow specifications</td></tr>
+        <tr><td>d365/carrier-trailer-prioritization/dataverse/schema.yaml</td><td>Human-readable Dataverse schema (6 tables, 40+ columns)</td></tr>
+        <tr><td>d365/carrier-trailer-prioritization/README.md</td><td>Full architecture + deployment guide</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 24px;">
+      <div style="font-weight: 600; margin-bottom: 10px; color: var(--gray);">Import Solution to Another Environment</div>
+      <div class="code-block">
+        <span class="code-comment"># Auth to target environment</span><br/>
+        pac auth create --url https://yourorg.crm.dynamics.com<br/><br/>
+        <span class="code-comment"># Import the solution</span><br/>
+        pac solution import --path d365/carrier-trailer-prioritization/solution/CarrierTrailerPrioritization.zip
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  function toggleStep(el) {
+    el.classList.toggle('open');
+  }
+</script>
+</body>
+</html>

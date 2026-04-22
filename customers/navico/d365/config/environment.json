@@ -1,0 +1,307 @@
+{
+    "environment": {
+        "name": "Mfg Gold Template",
+        "url": "https://orgecbce8ef.crm.dynamics.com",
+        "apiVersion": "v9.2"
+    },
+    "customer": {
+        "name": "Navico",
+        "project": "D365 Customer Service Competitive",
+        "industry": "Marine Electronics",
+        "regions": ["Americas", "EMEA", "APAC"],
+        "note": "Competitive bake-off vs Salesforce Service Cloud. Customer already uses D365 CS in basic case management mode — no channels configured. Focus: show the connected, modern omnichannel experience they're missing.",
+        "currentState": {
+            "crm": "Salesforce (Sales) + D365 Customer Service (basic case mgmt only)",
+            "phone": "RingCentral (no screen pop, manual lookup)",
+            "channels": ["Email", "Phone (manual)", "Contact Us web forms", "Homegrown portal (Optimizely)"],
+            "painPoints": [
+                "No screen pop — agent manually looks up B2B vs B2C caller",
+                "Single queue, no intelligent routing by tier, brand, or skill",
+                "No digital channels (chat, social) at all today",
+                "Portal KB is outdated — ServiceTarget app for Q&A, no AI or self-service",
+                "Managers manually categorizing cases that come in too generic",
+                "No WFM, no analytics dashboard, no proactive engagement",
+                "Siloed Sales (SFDC) + Service (D365) — no unified customer view",
+                "RMA process is partially manual, requires tech validation before ERP submission",
+                "Product registration and warranty lookup not integrated with CRM"
+            ]
+        }
+    },
+    "demo": {
+        "type": "Competitive bake-off",
+        "competitorDisplaced": "Salesforce Service Cloud",
+        "colleague": "John Kassar (D365 Sales demo)",
+        "focusAreas": [
+            "Omnichannel: Email, Chat, Voice (PRIMARY)",
+            "Intelligent Case Routing by Brand, Tier, and Skill",
+            "Screen Pop with Customer 360 (B2B vs B2C identification)",
+            "Copilot Agent Assist — suggested replies, KB surfacing, case summarization",
+            "RMA Case Type Flows (Exchange, Credit, Repair, OBS)",
+            "Serial / Warranty Lookup on Case",
+            "Analytics & Supervisor Dashboards",
+            "AI-powered KB and Self-Service modernization"
+        ],
+        "channels": ["email", "chat", "phone", "web"],
+        "brands": [
+            "Lowrance",
+            "Simrad",
+            "B&G",
+            "C-MAP",
+            "Northstar"
+        ],
+        "brandDescriptions": {
+            "Lowrance": "Fish finders, chartplotters, and GPS navigation for recreational fishing and boating",
+            "Simrad": "Professional-grade marine electronics for commercial and high-performance vessels",
+            "B&G": "Sailing-specific navigation and performance instruments",
+            "C-MAP": "Marine charts and mapping software",
+            "Northstar": "Marine navigation systems"
+        },
+        "customerBase": {
+            "b2b": {
+                "description": "Tier 1 & 2 distributors and dealers — account-driven, highest volume EMEA",
+                "types": ["Tier 1 Distributor (direct)", "Tier 2 Dealer (distributor's customer)"]
+            },
+            "b2c": {
+                "description": "End consumers — larger volume in Americas, product registration + warranty focus",
+                "types": ["Registered Consumer", "Unregistered End User"]
+            }
+        },
+        "caseTypes": [
+            {
+                "name": "Technical Support",
+                "percentage": 52,
+                "priority": "High",
+                "slaMinutes": 240,
+                "requiresSerialLookup": true
+            },
+            {
+                "name": "Warranty Claim",
+                "percentage": 24,
+                "priority": "High",
+                "slaMinutes": 240,
+                "requiresSerialLookup": true
+            },
+            {
+                "name": "RMA - Exchange",
+                "percentage": 8,
+                "priority": "High",
+                "slaMinutes": 480,
+                "requiresSerialLookup": true,
+                "requiresTechValidation": true
+            },
+            {
+                "name": "RMA - Credit",
+                "percentage": 6,
+                "priority": "Normal",
+                "slaMinutes": 480,
+                "requiresSerialLookup": true,
+                "requiresTechValidation": true
+            },
+            {
+                "name": "RMA - Repair",
+                "percentage": 6,
+                "priority": "Normal",
+                "slaMinutes": 1440,
+                "requiresSerialLookup": true,
+                "requiresTechValidation": true
+            },
+            {
+                "name": "OBS - Onboard Support Request",
+                "percentage": 2,
+                "priority": "High",
+                "slaMinutes": 120,
+                "requiresSerialLookup": false
+            },
+            {
+                "name": "Contact Us / General Inquiry",
+                "percentage": 2,
+                "priority": "Normal",
+                "slaMinutes": 480,
+                "requiresSerialLookup": false
+            }
+        ],
+        "customerTiers": {
+            "1": {
+                "label": "Platinum Expert",
+                "priority": 9000,
+                "color": "#6a0dad",
+                "description": "Top-tier distributors — dedicated support, fastest SLA, direct tech specialist access"
+            },
+            "2": {
+                "label": "Platinum",
+                "priority": 7500,
+                "color": "#e74c3c",
+                "description": "Strategic distributors — priority routing, 4-hour response"
+            },
+            "3": {
+                "label": "Gold",
+                "priority": 6000,
+                "color": "#e67e22",
+                "description": "Key dealers and distributors — standard business hours, 8-hour response"
+            },
+            "4": {
+                "label": "Standard",
+                "priority": 3000,
+                "color": "#3498db",
+                "description": "Registered dealers — standard support, 1-business-day response"
+            },
+            "5": {
+                "label": "Consumer",
+                "priority": 1000,
+                "color": "#95a5a6",
+                "description": "B2C end users — self-service first, portal + email support"
+            }
+        },
+        "agentSkillTiers": {
+            "tier1": "General Support — basic inquiries, case creation, routing",
+            "tier2": "Technical Support — product troubleshooting, serial/warranty validation",
+            "tier3": "Senior Technical — advanced diagnostics, escalation handling",
+            "tier4": "Product Expert — brand specialist, RMA approvals, ERP submission authorization"
+        },
+        "hotWords": [
+            "Safety",
+            "Emergency",
+            "Recall",
+            "Urgent",
+            "Legal",
+            "Man Overboard",
+            "Navigation Failure",
+            "Lost at Sea",
+            "Vessel Down"
+        ],
+        "hotWordPriorityBoost": 10000,
+        "sla": {
+            "firstResponseMinutes": 240,
+            "resolutionMinutes": 480,
+            "businessHoursStart": "08:00",
+            "businessHoursEnd": "17:00",
+            "workDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        },
+        "caseOrigins": {
+            "phone": 1,
+            "email": 2,
+            "web": 3,
+            "chat": 2483,
+            "portal": 3986
+        },
+        "agentCount": 37,
+        "repairDeptSeparate": true
+    },
+    "personas": {
+        "agents": [
+            {
+                "name": "Emma Thompson",
+                "role": "Customer Service Agent",
+                "region": "Americas",
+                "brand": "Lowrance",
+                "skillTier": "tier2",
+                "focus": "Inbound email, chat, phone — B2C recreational fishing customers"
+            },
+            {
+                "name": "Marco Rossi",
+                "role": "Senior Technical Specialist",
+                "region": "EMEA",
+                "brand": "Simrad",
+                "skillTier": "tier4",
+                "focus": "RMA approvals, tech validation, B2B distributor escalations"
+            },
+            {
+                "name": "Sarah Mitchell",
+                "role": "Customer Service Supervisor",
+                "region": "Americas",
+                "brand": "All",
+                "skillTier": "tier4",
+                "focus": "Queue oversight, analytics dashboard, case categorization, NPS review"
+            }
+        ],
+        "customers": [
+            {
+                "name": "Jake Harrington",
+                "title": "Purchasing Manager",
+                "company": "Atlantic Marine Supply Co.",
+                "phone": "+1 (651) 226-3398",
+                "email": "jake.harrington@atlanticmarinesupply.com",
+                "tier": 2,
+                "customerType": "B2B - Tier 1 Distributor",
+                "brand": "Simrad",
+                "scenario": "Inbound phone — serial lookup, warranty validation, RMA Exchange request for Simrad NSX chartplotter fleet order",
+                "serialNumbers": ["SIM-2024-NSX-10042", "SIM-2024-NSX-10043"]
+            },
+            {
+                "name": "Christine Delacroix",
+                "title": "Service Manager",
+                "company": "Euro Marine Distributors",
+                "phone": "+44 20 7845 3321",
+                "email": "c.delacroix@euromarinedist.com",
+                "tier": 1,
+                "customerType": "B2B - Platinum Expert Distributor (EMEA)",
+                "brand": "B&G",
+                "scenario": "Live chat — B&G Triton2 instrument display technical issue, sailing race season urgent escalation",
+                "serialNumbers": ["BG-2024-TRI2-20011"]
+            },
+            {
+                "name": "Mike Torres",
+                "title": "Weekend Fisherman",
+                "company": null,
+                "phone": "+1 (713) 555-0287",
+                "email": "mjtorres87@gmail.com",
+                "tier": 5,
+                "customerType": "B2C - Registered Consumer",
+                "brand": "Lowrance",
+                "scenario": "Inbound email — Lowrance HDS Live fish finder not powering on, warranty claim, product registered 14 months ago",
+                "serialNumbers": ["LWR-2024-HDS-88821"]
+            }
+        ]
+    },
+    "demoScenarios": {
+        "scenario1": {
+            "title": "Voice: Inbound Call — Distributor RMA Request",
+            "channel": "phone",
+            "persona": "Jake Harrington → Emma Thompson",
+            "highlights": [
+                "Screen pop identifies Atlantic Marine Supply Co. as Platinum Tier B2B distributor",
+                "Customer 360: recent cases, open orders, account tier displayed instantly",
+                "Agent searches serial SIM-2024-NSX-10042 — warranty valid, RMA Exchange eligible",
+                "Copilot suggests RMA Exchange case type, pre-fills fields",
+                "Case auto-routed to Marco Rossi (Simrad Tier 4 specialist) for tech validation",
+                "ERP integration note shown: approved RMA triggers fulfillment line"
+            ]
+        },
+        "scenario2": {
+            "title": "Chat: Platinum Expert Sailing Distributor — Urgent Escalation",
+            "channel": "chat",
+            "persona": "Christine Delacroix → Marco Rossi",
+            "highlights": [
+                "Customer initiates chat from portal — Platinum Expert tier auto-escalates queue priority",
+                "Copilot agent assist surfaces B&G Triton2 known fault KB article in real time",
+                "Agent uses suggested reply to acknowledge and troubleshoot",
+                "Issue unresolved — Copilot summarizes case for escalation handoff",
+                "Supervisor Sarah sees live conversation in Omnichannel Insights dashboard"
+            ]
+        },
+        "scenario3": {
+            "title": "Email: Consumer Warranty Claim — Lowrance HDS Live",
+            "channel": "email",
+            "persona": "Mike Torres → Emma Thompson (auto-routed)",
+            "highlights": [
+                "Inbound email parsed by AI — intent = warranty claim, product = Lowrance HDS Live",
+                "Case auto-created, serial LWR-2024-HDS-88821 validated — warranty active (14 months)",
+                "Copilot drafts suggested response with next steps",
+                "SLA timer visible — consumer tier 8-hour response target",
+                "NPS survey auto-queued on case close"
+            ]
+        },
+        "scenario4": {
+            "title": "Supervisor View: Analytics & Queue Intelligence",
+            "channel": "dashboard",
+            "persona": "Sarah Mitchell",
+            "highlights": [
+                "Omnichannel Insights: live queue health, agent utilization across email/chat/voice",
+                "Case volume by brand (Lowrance vs Simrad vs B&G) — like Navico's actual 52/48 split",
+                "Hot word alerts panel — 'Navigation Failure' case flagged in queue",
+                "Backlog aging report — cases without categories (Navico's current pain: managers manually tagging)",
+                "Copilot auto-categorization rate vs manual — showing time savings"
+            ]
+        }
+    }
+}

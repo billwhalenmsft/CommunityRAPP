@@ -1,0 +1,88 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: SAP Cancel Edit PR
+    triggerQueries:
+      - cancel PR
+      - cancel purchase requisition
+      - delete PR
+      - cancel my PR
+      - I want to cancel
+      - edit PR
+      - modify PR
+      - change PR
+      - update PR
+
+  actions:
+    - kind: Question
+      id: askPRNumber
+      alwaysPrompt: false
+      variable: init:Topic.PRNumber
+      prompt:
+        text: Which PR number (BANFN) would you like to cancel or edit?
+      entity: StringPrebuiltEntity
+
+    - kind: Question
+      id: askCancelOrEdit
+      alwaysPrompt: false
+      variable: init:Topic.CancelAction
+      prompt:
+        text: What would you like to do with PR ${Topic.PRNumber}?
+      entity:
+        kind: ClosedListEntity
+        items:
+          - displayName: Cancel the PR entirely
+            synonyms:
+              - cancel
+              - delete
+              - remove
+              - close
+          - displayName: Edit / modify the PR
+            synonyms:
+              - edit
+              - modify
+              - change
+              - update
+
+    - kind: Question
+      id: askReason
+      alwaysPrompt: false
+      variable: init:Topic.CancelReason
+      prompt:
+        text: What's the reason for this change? (This is logged in the SAP audit trail)
+      entity: StringPrebuiltEntity
+
+    - kind: SendActivity
+      id: confirmCancel
+      activity:
+        text: >-
+          ⚠️ You're about to **${Topic.CancelAction}** PR **${Topic.PRNumber}**.
+
+          Reason: *${Topic.CancelReason}*
+
+
+          This will update the EBAN deletion indicator. Continue?
+
+    - kind: InvokeFlowAction
+      id: callCancelFlow
+      displayName: SAP Cancel Edit PR Flow
+      inputs:
+        - name: pr_number
+          value: =Topic.PRNumber
+        - name: action
+          value: =Topic.CancelAction
+        - name: reason
+          value: =Topic.CancelReason
+        - name: user_guid
+          value: =System.User.Id
+
+    - kind: SendActivity
+      id: cancelConfirmed
+      activity:
+        text: >-
+          ✅ **PR ${Topic.PRNumber} has been ${Topic.CancelAction}led.**
+
+
+          The SAP EBAN record has been updated and the requester notified.

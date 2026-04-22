@@ -1,0 +1,108 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2016-06-01/Microsoft.Logic.json",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "flowDisplayName": "Ascend: SAP Vendor Lookup (Demo \u2192 Dataverse)",
+    "description": "Looks up vendor in Dataverse ascend_sapvendor table \u2014 emulating SAP LFA1/LFB1/LFM1. In production, replace Dataverse actions with SAP ERP connector actions reading LFA1, LFB1, LFM1.",
+    "sapTablesEmulated": [
+      "LFA1",
+      "LFB1",
+      "LFM1"
+    ],
+    "demoMode": true,
+    "productionConnector": "SAP ERP (on-premises data gateway required)"
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Skills",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "vendor_name": {
+              "type": "string",
+              "description": "Vendor name to search (emulates SAP LFA1.NAME1 search)"
+            },
+            "company_code": {
+              "type": "string",
+              "description": "SAP company code (emulates LFB1.BUKRS filter)",
+              "default": "1000"
+            },
+            "purch_org": {
+              "type": "string",
+              "description": "SAP purchasing org (emulates LFM1.EKORG filter)",
+              "default": "1000"
+            }
+          },
+          "required": [
+            "vendor_name"
+          ]
+        }
+      }
+    }
+  },
+  "actions": {
+    "DemoModeCheck": {
+      "type": "Compose",
+      "inputs": "\u26a0\ufe0f DEMO MODE: Querying Dataverse ascend_sapvendor table (emulates SAP LFA1/LFB1/LFM1). Switch environment variable ascend_DemoMode to FALSE to use real SAP ERP connector."
+    },
+    "QueryDataverse_SAP_Vendors": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "ListRecords",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sapvendors",
+          "$filter": "contains(ascend_name1, '@{triggerBody()?['vendor_name']}') and ascend_sperr eq false and ascend_sperm eq false and ascend_bukrs eq '@{triggerBody()?['company_code']}'",
+          "$select": "ascend_lifnr,ascend_name1,ascend_bukrs,ascend_ekorg,ascend_waers,ascend_datasource",
+          "$orderby": "ascend_name1 asc"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "runAfter": {
+        "DemoModeCheck": [
+          "Succeeded"
+        ]
+      },
+      "description": "READ from Dataverse ascend_sapvendor (emulates SAP RFC_READ_TABLE on LFA1 + LFB1 + LFM1)"
+    },
+    "BuildVendorResponse": {
+      "type": "Compose",
+      "inputs": {
+        "status": "@if(equals(length(outputs('QueryDataverse_SAP_Vendors')?['body/value']), 0), 'not_found', if(equals(length(outputs('QueryDataverse_SAP_Vendors')?['body/value']), 1), 'found', 'multiple_found'))",
+        "vendors": "@outputs('QueryDataverse_SAP_Vendors')?['body/value']",
+        "sap_tables_emulated": [
+          "LFA1",
+          "LFB1",
+          "LFM1"
+        ],
+        "data_source": "SAP ECC 6.0 (Demo via Dataverse)",
+        "demo_note": "DEMO: In production this calls SAP RFC_READ_TABLE / BAPI_VENDOR_GETDETAIL on LFA1, LFB1, LFM1"
+      },
+      "runAfter": {
+        "QueryDataverse_SAP_Vendors": [
+          "Succeeded"
+        ]
+      }
+    },
+    "RespondToCopilotStudio": {
+      "type": "Response",
+      "inputs": {
+        "statusCode": 200,
+        "body": "@outputs('BuildVendorResponse')",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "runAfter": {
+        "BuildVendorResponse": [
+          "Succeeded"
+        ]
+      }
+    }
+  }
+}

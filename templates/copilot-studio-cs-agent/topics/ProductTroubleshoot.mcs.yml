@@ -1,0 +1,185 @@
+kind: AdaptiveDialog
+modelDescription: Guides customers through product troubleshooting using serial number identification and diagnostic steps from KB articles.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - troubleshoot
+      - not working
+      - broken
+      - my product isn't working
+      - won't turn on
+      - error message
+      - product fault
+      - something is wrong
+      - issue with my
+      - problem with my
+      - stopped working
+      - malfunctioning
+
+  actions:
+    - kind: SendActivity
+      id: intro
+      activity:
+        text:
+          - "I'd be happy to help troubleshoot your product. First, could you provide me with the **serial number**? It's usually on the product label or in the device settings."
+
+    - kind: Question
+      id: askSerial
+      property: Topic.SerialNumber
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What is the serial number?"
+
+    - kind: SendActivity
+      id: askIssueDesc
+      activity:
+        text:
+          - "Thanks! Now please describe the issue you're experiencing. For example:\n\n🔌 **Power issue** — won't turn on, screen black, no response\n🔄 **Software/firmware** — update failed, features missing, device unresponsive after update\n📡 **Connectivity** — not connecting, devices can't communicate, network issues\n⚙️ **Performance** — slow, intermittent, unusual behavior\n❓ **Other** — describe what's happening"
+
+    - kind: Question
+      id: askIssueType
+      property: Topic.IssueType
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Which best describes your issue?"
+      entity:
+        displayName: Issue Type
+      choices:
+        - value: power
+          synonyms:
+            - power
+            - won't turn on
+            - screen black
+            - dead
+            - not powering
+            - no power
+        - value: software
+          synonyms:
+            - software
+            - firmware
+            - update
+            - bricked
+            - unresponsive after update
+            - features missing
+        - value: connectivity
+          synonyms:
+            - connectivity
+            - network
+            - wifi
+            - bluetooth
+            - not connecting
+            - can't find
+            - devices not showing
+        - value: performance
+          synonyms:
+            - slow
+            - intermittent
+            - performance
+            - unusual behavior
+            - sometimes works
+        - value: other
+          synonyms:
+            - other
+            - something else
+            - different issue
+
+    - kind: ConditionGroup
+      id: routeByIssue
+      conditions:
+        - id: powerIssue
+          condition: =Topic.IssueType = "power"
+          actions:
+            - kind: SendActivity
+              id: powerDiag
+              activity:
+                text:
+                  - "Let's walk through the power diagnostic steps:\n\n1️⃣ **Check power supply** — verify the power source is working and connections are secure\n2️⃣ **Inspect wiring and cables** — look for damage, loose connections, or corrosion\n3️⃣ **Check fuses** — a blown fuse is the most common cause of no-power situations\n4️⃣ **Hard reset** — hold the power button for 15+ seconds, wait 10 seconds, then power on again\n5️⃣ **Disconnect peripherals** — remove all connected devices and try powering on standalone\n\nDid any of these steps help?"
+
+        - id: softwareIssue
+          condition: =Topic.IssueType = "software"
+          actions:
+            - kind: SendActivity
+              id: softwareDiag
+              activity:
+                text:
+                  - "For software or firmware issues, try these recovery steps:\n\n1️⃣ **Hard reset** — hold power for 15 seconds, wait, then restart\n2️⃣ **Check for updates** — navigate to Settings > System > Software Update\n3️⃣ **Clear cache/temp files** — look for a cache clear option in Settings\n4️⃣ **Factory reset** — Settings > System > Factory Reset\n   ⚠️ *Warning: this erases all user data and settings — back up first if possible*\n5️⃣ **Clean reinstall** — download the latest software from the manufacturer's website and reinstall from scratch\n\nWhich step are you on, or would you like more detail on any of these?"
+
+        - id: connectivityIssue
+          condition: =Topic.IssueType = "connectivity"
+          actions:
+            - kind: SendActivity
+              id: connectDiag
+              activity:
+                text:
+                  - "For connectivity issues, let's narrow it down:\n\n**Wired connections:**\n• Check cable integrity and connections at both ends\n• Verify the hub/switch has power and shows link activity\n• Try a different cable or port\n\n**Wireless (WiFi/Bluetooth):**\n• Ensure wireless is enabled in Settings\n• Check you're within range\n• Try forgetting the connection and re-pairing\n• Restart both devices\n\n**Network/multi-device:**\n• Verify all devices are on the same firmware version\n• Check if the issue is one device or network-wide\n• Try isolating devices (disconnect one at a time)\n\nWhich connection type is the issue?"
+
+        - id: performanceIssue
+          condition: =Topic.IssueType = "performance"
+          actions:
+            - kind: SendActivity
+              id: perfDiag
+              activity:
+                text:
+                  - "For performance issues:\n\n1️⃣ **Restart the device** — a fresh boot often resolves intermittent issues\n2️⃣ **Check available storage** — low storage can cause slow performance\n3️⃣ **Update software** — make sure you're on the latest version\n4️⃣ **Check operating conditions** — temperature, humidity, and power supply can affect performance\n5️⃣ **Monitor for patterns** — does the issue happen at specific times or under specific conditions?\n\nCan you tell me more about when the performance issue occurs?"
+
+      elseActions:
+        - kind: SendActivity
+          id: otherIssue
+          activity:
+            text:
+              - "Let me search our knowledge base for information about your issue. Can you describe what's happening in a bit more detail?"
+
+    - kind: Question
+      id: askResolved
+      property: Topic.Resolved
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Did that help resolve the issue?"
+      entity:
+        displayName: Resolution
+      choices:
+        - value: yes
+          synonyms:
+            - yes
+            - that worked
+            - fixed it
+            - all good
+            - resolved
+        - value: no
+          synonyms:
+            - no
+            - still broken
+            - didn't help
+            - not working
+            - same issue
+
+    - kind: ConditionGroup
+      id: checkResolution
+      conditions:
+        - id: resolved
+          condition: =Topic.Resolved = "yes"
+          actions:
+            - kind: SendActivity
+              id: resolvedMsg
+              activity:
+                text:
+                  - "Great, glad I could help! 🎉 Is there anything else I can assist you with today?"
+
+      elseActions:
+        - kind: SendActivity
+          id: notResolvedMsg
+          activity:
+            text:
+              - "I'm sorry the troubleshooting steps didn't resolve the issue. Let me connect you with a support specialist who can dig deeper. They'll have our full conversation so you won't need to repeat anything."
+        - kind: TransferToAgent
+          id: troubleshootEscalate
+          activity:
+            text: "Customer has a {Topic.IssueType} issue with serial number {Topic.SerialNumber}. Self-service troubleshooting steps attempted but did not resolve. Please continue diagnostics."
+          context:
+            EscalationReason: "Unresolved troubleshooting - {Topic.IssueType}"
+            SerialNumber: "{Topic.SerialNumber}"

@@ -1,0 +1,63 @@
+{
+    "_metadata": {
+        "description": "Navico Knowledge Articles — for Copilot Agent Assist to surface during demo",
+        "brands": ["Simrad", "Lowrance", "B&G", "C-MAP"],
+        "purpose": "These KB articles should be surfaced by Copilot in real time during case handling — demonstrating AI-powered agent assist vs. agents manually searching Rusty Tech/ServiceTarget today."
+    },
+    "articles": [
+        {
+            "title": "Simrad NSX Touchscreen Unresponsive After Firmware Update — Recovery Steps",
+            "externalNumber": "KB-SIM-0042",
+            "brand": "Simrad",
+            "product": "Simrad NSX 3007 / NSX 3009",
+            "keywords": ["NSX", "touchscreen", "firmware", "unresponsive", "update", "v3.8"],
+            "content": "**Symptom:** Simrad NSX chartplotter touchscreen becomes unresponsive following firmware update to v3.8.x.\n\n**Root Cause:** Firmware v3.8.1 introduced a display driver update that may require a full factory calibration reset on certain display assemblies manufactured before Q3 2023.\n\n**Resolution Steps:**\n1. Hold the MENU button for 10 seconds to force a soft reset.\n2. If unresponsive, power off unit completely (disconnect from power source).\n3. Hold POWER + MENU simultaneously during power-on to enter Recovery Mode.\n4. Select **Factory Display Calibration** from Recovery Menu.\n5. Allow calibration to complete (approx. 3 minutes).\n6. If issue persists after calibration, escalate to Tier 4 RMA Exchange path.\n\n**Warranty Note:** Firmware-induced display failures are covered under the standard 3-year warranty.\n\n**Escalation Trigger:** Units manufactured before July 2023 (serial prefix SIM-2023-NSX or earlier) have higher failure rate — flag for direct Tier 4 review.",
+            "demoUse": "Surface during Jake Harrington voice call — Copilot suggests this article in real time while agent is on the phone. Agent clicks 'Send to Customer' to email article while on call."
+        },
+        {
+            "title": "B&G Triton2 Wind Instrument — Calibrating Apparent Wind Angle",
+            "externalNumber": "KB-BG-0117",
+            "brand": "B&G",
+            "product": "B&G Triton2",
+            "keywords": ["Triton2", "wind", "apparent wind", "calibration", "AWA", "erratic", "sailing"],
+            "content": "**Symptom:** B&G Triton2 instrument display showing erratic or inaccurate Apparent Wind Angle (AWA) readings.\n\n**Common Causes:**\n- Wind vane sensor contamination (salt/debris)\n- Transducer cable connection loose at the masthead\n- Calibration offset drift after season storage\n- NMEA 2000 bus interference from recently added devices\n\n**Resolution Steps:**\n1. Inspect wind vane sensor at masthead — clear debris, ensure free rotation.\n2. Check NMEA 2000 connector at base of mast for corrosion.\n3. On Triton2 display: **Settings > Sensors > Wind > Calibration > Auto-Calibrate Wind**.\n4. Sail a full 360° circle in steady wind (minimum 8 knots) to complete auto-calibration.\n5. If AWA still erratic, run **NMEA 2000 Network Diagnostics** from the display.\n\n**Pre-Race Urgency Protocol:** If race is within 48 hours, escalate to Tier 3 for remote diagnostics session. Priority override for Platinum Expert accounts.\n\n**Parts Required (if sensor replacement needed):** B&G Wind Transducer Kit — part WTP-BG-300.",
+            "demoUse": "Surface during Christine Delacroix chat — Copilot surfaces this in agent assist panel. Marco uses suggested reply to send troubleshooting steps instantly, no manual search needed."
+        },
+        {
+            "title": "Lowrance HDS Live — Unit Not Powering On: Diagnostics & Warranty Claim Process",
+            "externalNumber": "KB-LWR-0088",
+            "brand": "Lowrance",
+            "product": "Lowrance HDS-9 Live / HDS-12 Live",
+            "keywords": ["HDS", "HDS Live", "not powering on", "power", "warranty", "consumer", "won't start"],
+            "content": "**Symptom:** Lowrance HDS Live unit will not power on. No screen activity when power button pressed.\n\n**Pre-Warranty Check Steps (ask customer first):**\n1. Verify 12V power lead voltage at connector (minimum 10.8V).\n2. Check inline fuse (5A) on red power wire — replace if blown.\n3. Try alternate power source if available.\n4. Ensure connector is fully seated and pins are clean.\n\n**If Issue Persists — Warranty Claim Initiation:**\n- Verify serial number under **Settings > System > System Information** (if unit can boot at all) or check label on back of unit.\n- Check warranty status using serial number in CRM warranty lookup.\n- HDS Live units carry a **3-year limited warranty** from date of first retail purchase.\n- Consumer-registered units: warranty start = registration date.\n\n**Warranty Claim Path:**\n1. Create Warranty Claim case type in D365.\n2. Log serial number + warranty validation result.\n3. If under warranty: authorize prepaid return shipping label.\n4. Customer returns unit to Navico Repair Center (Tulsa, OK).\n5. Target repair/exchange turnaround: 10 business days.\n\n**For B2C Consumers:** Send confirmation email with return instructions. NPS survey auto-sends on case close.",
+            "demoUse": "Surface during Mike Torres email case — AI parses inbound email intent as warranty claim, case auto-created, Copilot suggests this article and drafts the response. Shows zero manual lookup vs. today's manual process."
+        },
+        {
+            "title": "RMA Process Overview — Exchange, Credit, Repair, OBS",
+            "externalNumber": "KB-RMA-0001",
+            "brand": "All",
+            "product": "All Products",
+            "keywords": ["RMA", "return", "exchange", "credit", "repair", "OBS", "onboard support", "warranty return"],
+            "content": "**Navico RMA Types:**\n\n**1. Exchange RMA**\n- Defective unit swapped for new/refurbished replacement.\n- Requires: serial lookup + warranty valid + Tech Specialist (Tier 4) approval.\n- ERP trigger: creates fulfillment/replacement order line.\n- Use when: hardware failure confirmed, unit within warranty.\n\n**2. Credit RMA**\n- Credit issued to customer account in ERP (no physical exchange).\n- Requires: Tech validation + Finance/Admin approval.\n- Processed by Finance team, does not go to logistics.\n- Use when: customer prefers credit vs. replacement.\n\n**3. Repair RMA**\n- Unit shipped to Navico Repair Center (Tulsa, OK or EMEA repair hub).\n- Workflow: Inbound scan → Diagnosis → Repair → Outbound → Return to customer.\n- ERP link: repair job created on receipt scan.\n- Turnaround: 10-15 business days.\n- Use when: unit repairable, customer prefers original unit back.\n\n**4. OBS — Onboard Support Request**\n- Technical specialist provides remote or on-site support to resolve issue without exchange.\n- High priority — navigator/vessel owner unable to use equipment.\n- Escalation to Tier 4 Product Expert required.\n- Use when: vessel is operational but system needs expert configuration.\n\n**RMA Approval Gate:**\nAll RMA types (except OBS) require Tier 4 Technical Specialist sign-off before ERP submission. Attach evidence (photos, error logs) to case before routing for approval.",
+            "demoUse": "Background KB — Copilot can reference when creating RMA case types. Useful for supervisor view to show AI-assisted categorization."
+        },
+        {
+            "title": "Understanding Customer Tiers — Routing & Priority Reference",
+            "externalNumber": "KB-OPS-0002",
+            "brand": "All",
+            "product": "N/A — Operations Reference",
+            "keywords": ["tier", "Platinum Expert", "Platinum", "Gold", "routing", "priority", "B2B", "B2C"],
+            "content": "**Navico Customer Tier Reference (for case routing):**\n\n| Tier | Label | Response Target | Routing |\n|------|-------|----------------|----------|\n| 1 | Platinum Expert | 2 hours | Dedicated Tier 4 specialist, highest queue priority |\n| 2 | Platinum | 4 hours | Tier 3+ agents, priority routing |\n| 3 | Gold | 8 hours (business hrs) | Tier 2+ agents, standard queue |\n| 4 | Standard | 1 business day | Tier 1-2 agents |\n| 5 | Consumer (B2C) | 8 hours email | Self-service first, then Tier 1 |\n\n**B2B vs B2C Split:**\n- B2B: Account-driven. Route by account tier → brand → agent skill.\n- B2C: Consumer registration status determines priority (registered consumers get faster handling).\n\n**Brand Skill Routing:**\n- Lowrance cases → Lowrance product specialists\n- Simrad cases → Simrad/commercial marine specialists\n- B&G cases → Sailing specialists (also handle Simrad nautical)\n- C-MAP cases → Chart/software specialists\n\n**Hot Word Override:** Cases containing keywords (Navigation Failure, Safety, Emergency, Man Overboard) automatically receive +10,000 priority boost regardless of tier.",
+            "demoUse": "Reference during supervisor scenario — shows how intelligent routing replaces the manual 1-queue, manager-categorizes approach they have today."
+        },
+        {
+            "title": "C-MAP Chart Card — Subscription Validation Error Fix",
+            "externalNumber": "KB-CMAP-0031",
+            "brand": "C-MAP",
+            "product": "C-MAP DISCOVER / MAX-N+ Chart Cards",
+            "keywords": ["C-MAP", "chart", "subscription", "validation failed", "update", "app", "expired"],
+            "content": "**Symptom:** C-MAP chart cards returning 'Subscription Validation Failed' error in C-MAP app or on-device update.\n\n**Common Causes:**\n1. Chart card registered to previous owner/account — needs re-registration.\n2. C-MAP app authentication token expired — requires re-login.\n3. Dealer bulk order cards not yet activated in C-MAP portal.\n\n**Resolution Steps:**\n1. Open C-MAP app → **Account > Sign Out** → Sign back in.\n2. Navigate to **My Charts > Validate Charts** — allow 60 seconds.\n3. If error persists: go to [c-map.com/validate](https://c-map.com) → enter card serial number manually.\n4. For dealer bulk orders: confirm PO number and activation batch in Navico Dealer Portal.\n\n**Dealer Escalation (12+ units affected):**\n- Open Technical Support case in D365.\n- Include: PO number, quantity, card serial range, error screenshot.\n- Route to C-MAP Software Specialist team.\n- Resolution target: same business day for Platinum/Gold dealers.\n\n**Consumer Registration:** Each C-MAP card must be registered to one My C-MAP account. Transfers between accounts require dealer authorization code.",
+            "demoUse": "Queue case in supervisor view — demonstrates Copilot auto-categorization assigning correct skill (C-MAP specialist vs. generic tech)."
+        }
+    ]
+}

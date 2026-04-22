@@ -1,0 +1,204 @@
+{
+    "_metadata": {
+        "description": "Navico Hero Cases — Rich demo cases with full activity timelines for Copilot agent assist and supervisor view demos",
+        "scenarios": [
+            "Scenario 1: Voice — Inbound B2B RMA (Atlantic Marine / Jake Harrington / Simrad NSX)",
+            "Scenario 2: Chat — Platinum Expert EMEA Escalation (Euro Marine / Christine Delacroix / B&G Triton2)",
+            "Scenario 3: Email — B2C Consumer Warranty (Mike Torres / Lowrance HDS Live)",
+            "Scenario 4: Supervisor View — Analytics & Queue Intelligence (Sarah Mitchell)"
+        ]
+    },
+    "heroCases": [
+        {
+            "id": "hero-voice-01",
+            "title": "Simrad NSX 3007 — Touchscreen Unresponsive After Firmware Update",
+            "account": "Atlantic Marine Supply Co.",
+            "contact": "Jake Harrington",
+            "caseType": "Technical Support",
+            "channel": "Phone",
+            "origin": 1,
+            "priority": "High",
+            "priorityCode": 2,
+            "brand": "Simrad",
+            "serialNumber": "SIM-2024-NSX-10042",
+            "status": "In Progress",
+            "scenarioRole": "HERO — Scenario 1 (Voice Screen Pop)",
+            "description": "Jake Harrington (Purchasing Manager, Atlantic Marine Supply Co.) reporting that Simrad NSX 3007 chartplotter (serial SIM-2024-NSX-10042) became completely unresponsive on the touchscreen following a firmware update to v3.8.1. Unit is installed on a 45ft commercial fishing vessel. Navigation is currently impaired.\n\nCustomer tier: Platinum Expert (B2B, Tier 1 Distributor). Auto-routed to Simrad specialist queue.\n\n[DEMO FLOW: This case is pre-seeded as 'In Progress'. During demo, agent Emma receives incoming call from Jake. Screen pop surfaces this case + account 360. Copilot suggests KB-SIM-0042. Agent reviews, routes to Marco Rossi (Simrad Tier 4) for RMA validation.]",
+            "activities": [
+                {
+                    "type": "phonecall",
+                    "subject": "Inbound call — Jake Harrington re: NSX touchscreen failure",
+                    "description": "Jake called in to report touchscreen issue. Left voicemail for Emma. Callback scheduled.",
+                    "direction": "Incoming",
+                    "duration": 3,
+                    "createdRelativeHours": -48
+                },
+                {
+                    "type": "email",
+                    "subject": "RE: Simrad NSX Touchscreen Issue — Case Reference NAV-2026-4412",
+                    "description": "Auto-acknowledgment email sent to jake.harrington@atlanticmarinesupply.com confirming case creation and Platinum Expert SLA (2hr response).",
+                    "direction": "Outgoing",
+                    "createdRelativeHours": -47
+                },
+                {
+                    "type": "note",
+                    "subject": "Tech pre-screening — firmware v3.8.1 known issue",
+                    "description": "Reviewed KB-SIM-0042. Unit serial SIM-2024-NSX-10042 is pre-Q3 2023 manufacture — higher failure rate flag. Warranty valid until 2027-04-15. Pre-approved for escalation to Marco Rossi (Simrad Tier 4).",
+                    "createdRelativeHours": -24
+                }
+            ],
+            "copilotAssistHighlights": [
+                "Suggested KB-SIM-0042 based on 'NSX touchscreen firmware' keywords",
+                "Drafted suggested reply with recovery steps",
+                "Flagged pre-Q3 2023 serial for elevated failure risk",
+                "Recommended RMA Exchange path based on case type + warranty status"
+            ],
+            "screenPopData": {
+                "accountTier": "Platinum Expert",
+                "openCases": 2,
+                "lastContactDate": "2026-03-15",
+                "warrantyStatus": "Active (expires 2027-04-15)",
+                "recentOrders": ["PO-AMS-8812", "PO-AMS-8813", "PO-AMS-9001"],
+                "annualRevenue": "$2.4M"
+            }
+        },
+        {
+            "id": "hero-chat-01",
+            "title": "B&G Triton2 — Wind Instrument Erratic Before Race Season (URGENT)",
+            "account": "Euro Marine Distributors",
+            "contact": "Christine Delacroix",
+            "caseType": "Technical Support",
+            "channel": "Chat",
+            "origin": 2483,
+            "priority": "High",
+            "priorityCode": 2,
+            "brand": "B&G",
+            "serialNumber": "BG-2024-TRI2-20011",
+            "status": "Active",
+            "scenarioRole": "HERO — Scenario 2 (Live Chat / Platinum Expert Escalation)",
+            "description": "Christine Delacroix (Service Manager, Euro Marine Distributors, London EMEA) initiates chat from the Navico dealer portal. B&G Triton2 Instrument Display (serial BG-2024-TRI2-20011) showing erratic Apparent Wind Angle readings across 3 fleet units. Customer fleet preparing for spring racing season — resolution required within 48 hours.\n\nAccount tier: Platinum Expert (EMEA, Tier 1). Auto-escalated to priority queue with +1000 priority boost. Routed to Marco Rossi (B&G sailing specialist).\n\n[DEMO FLOW: Christine chats in via portal widget. Copilot agent assist surfaces KB-BG-0117 instantly. Marco uses suggested reply. Issue not fully resolvable via chat — Copilot summarizes case for escalation. Supervisor Sarah can see conversation in Omnichannel Insights live.]",
+            "activities": [
+                {
+                    "type": "note",
+                    "subject": "Chat context — customer portal initiated",
+                    "description": "Christine initiated chat from dealer portal. Identified as Platinum Expert — auto-routed to Marco Rossi. Session started 09:14 GMT. Customer mentioned race season deadline (3 days).",
+                    "createdRelativeHours": -1
+                }
+            ],
+            "copilotAssistHighlights": [
+                "Surfaced KB-BG-0117 (Triton2 AWA calibration) within 8 seconds of case opening",
+                "Drafted opening suggested reply acknowledging Platinum Expert tier and urgency",
+                "Generated case summary for escalation handoff (when first-contact resolution not possible)",
+                "Notified supervisor Sarah Mitchell of Platinum Expert case in live queue"
+            ],
+            "screenPopData": {
+                "accountTier": "Platinum Expert",
+                "openCases": 1,
+                "lastContactDate": "2026-02-28",
+                "warrantyStatus": "Active (expires 2027-06-20)",
+                "region": "EMEA",
+                "fleetSize": "18 vessels"
+            }
+        },
+        {
+            "id": "hero-email-01",
+            "title": "Lowrance HDS-9 Live — Unit Not Powering On (Consumer Warranty Claim)",
+            "account": "Freshwater Fishing Depot",
+            "contact": "Mike Torres",
+            "caseType": "Warranty Claim",
+            "channel": "Email",
+            "origin": 2,
+            "priority": "Normal",
+            "priorityCode": 3,
+            "brand": "Lowrance",
+            "serialNumber": "LWR-2024-HDS-88821",
+            "status": "Waiting for Details",
+            "scenarioRole": "HERO — Scenario 3 (Email AI Triage / B2C Consumer)",
+            "description": "Mike Torres (registered B2C consumer) sent inbound email to support@navico.com from mjtorres87@gmail.com. Subject: 'My Lowrance HDS wont turn on'. Body text: 'Hi, I bought my HDS 9 Live about a year ago and this morning it just won't turn on at all. I tried pressing the power button many times and checked the fuse but nothing works. Serial is on the back of the unit - LWR-2024-HDS-88821. Please help!'\n\nAI triage: Intent = Warranty Claim. Product = Lowrance HDS-9 Live. Serial validated — warranty active (purchased Feb 2024, 3-year warranty expires Feb 2027). B2C consumer registered.\n\n[DEMO FLOW: Inbound email arrives, AI creates case automatically, Copilot suggests KB-LWR-0088 and drafts reply with return instructions. Shows zero manual effort vs. today's manual email processing. NPS survey auto-queued on close.]",
+            "inboundEmailText": "Hi, I bought my HDS 9 Live about a year ago and this morning it just won't turn on at all. I tried pressing the power button many times and checked the fuse but nothing works. Serial is on the back of the unit - LWR-2024-HDS-88821. Please help!",
+            "activities": [
+                {
+                    "type": "email",
+                    "subject": "My Lowrance HDS wont turn on",
+                    "description": "Original inbound email from mjtorres87@gmail.com. AI extracted: product=Lowrance HDS-9 Live, issue=power failure, serial=LWR-2024-HDS-88821, intent=warranty claim.",
+                    "direction": "Incoming",
+                    "createdRelativeHours": -2
+                },
+                {
+                    "type": "email",
+                    "subject": "RE: Your Navico Support Case — Warranty Claim #NAV-2026-4415",
+                    "description": "[Copilot-drafted] Dear Mike, Thank you for contacting Navico Support. I have created a warranty claim case for your Lowrance HDS-9 Live (Serial: LWR-2024-HDS-88821). I've confirmed your unit is within the 3-year limited warranty. Please see the next steps below for your prepaid return...",
+                    "direction": "Outgoing",
+                    "createdRelativeHours": -1
+                }
+            ],
+            "copilotAssistHighlights": [
+                "AI parsed inbound email — detected warranty claim intent, extracted serial number",
+                "Auto-created case, auto-populated serial, product, and customer fields",
+                "Validated serial LWR-2024-HDS-88821 — warranty active",
+                "Surfaced KB-LWR-0088 — power troubleshooting + warranty claim steps",
+                "Drafted full consumer response with return instructions (one-click send)",
+                "NPS survey auto-queued for case close"
+            ],
+            "aiTriageResults": {
+                "detectedIntent": "Warranty Claim",
+                "detectedProduct": "Lowrance HDS-9 Live",
+                "extractedSerial": "LWR-2024-HDS-88821",
+                "warrantyStatus": "Active",
+                "warrantyExpiry": "2027-02-14",
+                "customerType": "B2C Registered Consumer",
+                "confidence": 0.97
+            }
+        },
+        {
+            "id": "hero-supervisor-01",
+            "title": "[SUPERVISOR VIEW] Queue Analytics & Intelligent Routing Dashboard",
+            "account": null,
+            "contact": null,
+            "caseType": "Dashboard Demo",
+            "channel": "Dashboard",
+            "origin": null,
+            "priority": "N/A",
+            "priorityCode": null,
+            "brand": "All",
+            "serialNumber": null,
+            "status": "N/A",
+            "scenarioRole": "HERO — Scenario 4 (Supervisor Sarah Mitchell / Omnichannel Insights)",
+            "description": "Supervisor view demo showing Sarah Mitchell's experience as a Customer Service Manager at Navico. Demonstrates the connected intelligence that Sarah does NOT have today (single queue, manual categorization, no analytics).",
+            "supervisorDashboardHighlights": [
+                "Live queue: 12 active conversations across email (6), chat (4), voice (2)",
+                "Agent utilization: Emma Thompson 85%, Marco Rossi 92% — Copilot suggest overflow routing",
+                "Case volume by brand: Lowrance 44%, Simrad 31%, B&G 18%, C-MAP 7%",
+                "Hot word alert: 'Navigation Failure' detected in new case — auto-bumped to priority queue",
+                "Cases awaiting categorization: 3 (down from 47 in current Navico state)",
+                "Copilot auto-categorization rate: 89% of cases categorized without manager review",
+                "SLA compliance: Platinum Expert 94%, Platinum 88%, Gold 76%",
+                "NPS trend: +32 (rolling 30 days) — benchmark context",
+                "Backlog aging: 0 cases >24h for Platinum tier, 4 cases >8h for Gold",
+                "RMA queue: 6 pending tech validation, 2 awaiting ERP submission"
+            ],
+            "beforeAfterContrast": {
+                "before": [
+                    "1 queue — all cases regardless of brand, tier, or skill",
+                    "Managers manually reviewing and categorizing generic incoming cases",
+                    "No visibility into agent utilization or queue health",
+                    "RingCentral phone — no screen pop, manual account lookup every call",
+                    "No chat or digital channels",
+                    "ServiceTarget KB (Rusty tech) — agents manually searching Q&A",
+                    "No WFM, no analytics dashboard",
+                    "NPS surveys ad hoc — no systematic follow-up"
+                ],
+                "after": [
+                    "Intelligent omnichannel routing — email, chat, voice all unified",
+                    "89% of cases auto-categorized by Copilot — managers focus on exceptions",
+                    "Real-time supervisor insights — queue health, SLA, agent utilization",
+                    "Screen pop on every inbound call — 0 seconds to customer context",
+                    "Chat widget live on dealer portal — B2B customers self-serve or chat",
+                    "Copilot agent assist — KB surfaces in <10 seconds, suggested replies",
+                    "WFM preview available — shift scheduling, forecast, adherence",
+                    "NPS auto-triggered on case close — full VOC loop"
+                ]
+            }
+        }
+    ]
+}

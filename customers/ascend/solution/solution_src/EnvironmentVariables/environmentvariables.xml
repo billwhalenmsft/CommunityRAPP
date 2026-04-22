@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<environmentvariables>
+  <!--
+    =======================================================================
+    Ascend Procurement Agent – Environment Variables
+    =======================================================================
+    DEMO_MODE = true  →  All SAP flows read/write Dataverse emulation tables.
+                         Data is clearly labeled "SAP ECC 6.0 (Demo via Dataverse)".
+    DEMO_MODE = false →  Flows connect to real SAP ECC 6.0 via SAP ERP connector
+                         (requires on-premises data gateway and SAP credentials).
+    =======================================================================
+  -->
+
+  <environmentvariabledefinition>
+    <uniquename>ascend_DemoMode</uniquename>
+    <displayname>Ascend: Demo Mode (Use Dataverse SAP Emulation)</displayname>
+    <description>When TRUE, all Power Automate flows read and write the Dataverse SAP emulation tables instead of connecting to real SAP ECC 6.0. Set to FALSE only in production with a configured SAP ERP connector and on-premises data gateway.</description>
+    <datatype>Boolean</datatype>
+    <defaultvalue>true</defaultvalue>
+    <isrequired>1</isrequired>
+  </environmentvariabledefinition>
+
+  <environmentvariabledefinition>
+    <uniquename>ascend_SAPConnectionString</uniquename>
+    <displayname>Ascend: SAP ERP Connection (Production Only)</displayname>
+    <description>SAP ECC 6.0 connection reference for the Power Automate SAP ERP connector. Leave blank when DemoMode is TRUE. Format: ApplicationServer=sap.ascend.com;SystemNumber=00;Client=100;LogonGroup=PUBLIC</description>
+    <datatype>String</datatype>
+    <defaultvalue></defaultvalue>
+    <isrequired>0</isrequired>
+  </environmentvariabledefinition>
+
+  <environmentvariabledefinition>
+    <uniquename>ascend_CompanyCode</uniquename>
+    <displayname>Ascend: SAP Company Code</displayname>
+    <description>SAP company code used for all PR validation (LFB1, SKB1 lookups). Demo default: 1000</description>
+    <datatype>String</datatype>
+    <defaultvalue>1000</defaultvalue>
+    <isrequired>1</isrequired>
+  </environmentvariabledefinition>
+
+  <environmentvariabledefinition>
+    <uniquename>ascend_PurchasingOrg</uniquename>
+    <displayname>Ascend: SAP Purchasing Organization</displayname>
+    <description>SAP purchasing organization used for vendor and agreement validation (LFM1, EKKO lookups). Demo default: 1000</description>
+    <datatype>String</datatype>
+    <defaultvalue>1000</defaultvalue>
+    <isrequired>1</isrequired>
+  </environmentvariabledefinition>
+
+  <environmentvariabledefinition>
+    <uniquename>ascend_ApprovalNotificationEmail</uniquename>
+    <displayname>Ascend: Approval Notification Email (Demo)</displayname>
+    <description>Email address used for approval notification emails in demo mode. In production, notifications go through SAP BUS2105 workflow.</description>
+    <datatype>String</datatype>
+    <defaultvalue>procurement-demo@ascend.com</defaultvalue>
+    <isrequired>0</isrequired>
+  </environmentvariabledefinition>
+
+</environmentvariables>

@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bots in Blazers — Mfg CoE Command Center Overview</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    :root {
+      --bg:      #0d1117;
+      --bg2:     #161b22;
+      --bg3:     #21262d;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --text2:   #8b949e;
+      --accent:  #58a6ff;
+      --accent2: #1f6feb;
+      --green:   #3fb950;
+      --yellow:  #d29922;
+      --red:     #f85149;
+      --purple:  #bc8cff;
+      --orange:  #ffa657;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Print Setup ────────────────────────────────────────────────── */
+    @page {
+      size: 1280px 720px landscape;
+      margin: 0;
+    }
+    @media print {
+      body { background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slide { page-break-after: always; page-break-inside: avoid; }
+      .print-hint { display: none; }
+      .nav-bar { display: none; }
+    }
+
+    /* ── Nav Bar ────────────────────────────────────────────────────── */
+    .nav-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--bg2); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 10px 24px; gap: 12px;
+    }
+    .nav-bar .title { font-weight: 700; color: var(--accent); font-size: 15px; }
+    .nav-bar .ml { margin-left: auto; display: flex; gap: 8px; }
+    .nav-bar button {
+      background: var(--accent2); color: white; border: none; border-radius: 6px;
+      padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .nav-bar button:hover { background: var(--accent); }
+    .nav-bar .hint {
+      font-size: 12px; color: var(--text2);
+      border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px;
+    }
+
+    /* ── Slides Container ───────────────────────────────────────────── */
+    .slides { padding-top: 56px; }
+
+    /* ── Base Slide ─────────────────────────────────────────────────── */
+    .slide {
+      width: 1280px; max-width: 100%;
+      min-height: 720px;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 3px solid var(--border);
+    }
+
+    /* slide top bar */
+    .slide-topbar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 28px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .slide-topbar .logo-text {
+      font-weight: 800; font-size: 15px; color: var(--accent);
+      letter-spacing: -0.3px; line-height: 1.1;
+    }
+    .slide-topbar .logo-text small {
+      display: block; font-size: 10px; font-weight: 500; color: var(--text2);
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .slide-topbar .slide-num {
+      margin-left: auto; font-size: 11px; color: var(--text2);
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2px 10px;
+    }
+    .slide-topbar .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+      margin-right: 12px; flex-shrink: 0;
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    /* slide body */
+    .slide-body {
+      flex: 1; display: flex; flex-direction: column;
+      padding: 36px 52px;
+    }
+    .slide-body.row { flex-direction: row; gap: 40px; }
+
+    /* slide footer */
+    .slide-footer {
+      height: 32px; background: var(--bg2); border-top: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 28px;
+      font-size: 11px; color: var(--text2); flex-shrink: 0;
+    }
+
+    /* ── Typography ─────────────────────────────────────────────────── */
+    .slide-title {
+      font-size: 36px; font-weight: 800; color: var(--text);
+      line-height: 1.15; margin-bottom: 8px;
+    }
+    .slide-subtitle {
+      font-size: 16px; color: var(--text2); margin-bottom: 32px;
+      font-weight: 400;
+    }
+    .section-label {
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 14px;
+    }
+    h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    p  { color: var(--text2); font-size: 13px; line-height: 1.6; }
+
+    /* ── Cards ──────────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .card-sm {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    /* ── Grid helpers ───────────────────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+
+    /* ── KPI tiles ──────────────────────────────────────────────────── */
+    .kpi {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 20px; text-align: center;
+    }
+    .kpi-value {
+      font-size: 32px; font-weight: 800;
+      background: linear-gradient(135deg, var(--text), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .kpi-label { font-size: 11px; color: var(--text2); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── Agent pills ────────────────────────────────────────────────── */
+    .agent-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 20px;
+      padding: 6px 12px; font-size: 12px; font-weight: 500;
+    }
+    .agent-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+    /* ── Feature blocks ─────────────────────────────────────────────── */
+    .feature-row {
+      display: flex; gap: 12px; align-items: flex-start; margin-bottom: 18px;
+    }
+    .feature-icon {
+      font-size: 28px; line-height: 1; flex-shrink: 0; width: 44px;
+      text-align: center; margin-top: 2px;
+    }
+    .feature-text h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; color: var(--text); }
+    .feature-text p { font-size: 12px; color: var(--text2); }
+
+    /* ── Tags / badges ──────────────────────────────────────────────── */
+    .tag {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .tag.blue   { background: rgba(88,166,255,0.15); color: var(--accent); }
+    .tag.green  { background: rgba(63,185,80,0.15);  color: var(--green); }
+    .tag.purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .tag.orange { background: rgba(255,166,87,0.15);  color: var(--orange); }
+    .tag.yellow { background: rgba(210,153,34,0.15);  color: var(--yellow); }
+
+    /* ── Timeline ───────────────────────────────────────────────────── */
+    .timeline-item {
+      display: flex; gap: 16px; margin-bottom: 22px; align-items: flex-start;
+    }
+    .timeline-dot {
+      width: 12px; height: 12px; border-radius: 50%; background: var(--accent);
+      flex-shrink: 0; margin-top: 4px;
+      box-shadow: 0 0 8px rgba(88,166,255,0.4);
+    }
+    .timeline-dot.green { background: var(--green); box-shadow: 0 0 8px rgba(63,185,80,0.4); }
+    .timeline-dot.purple { background: var(--purple); box-shadow: 0 0 8px rgba(188,140,255,0.4); }
+    .timeline-line {
+      width: 2px; background: var(--border); margin-left: 5px; margin-top: -10px;
+      height: 20px; flex-shrink: 0;
+    }
+
+    /* ── Stat bars ──────────────────────────────────────────────────── */
+    .stat-bar { margin-bottom: 14px; }
+    .stat-bar-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; color: var(--text2); }
+    .stat-bar-track { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+    .stat-bar-fill  { height: 100%; border-radius: 3px; background: var(--accent); }
+
+    /* ── Cover accent lines ─────────────────────────────────────────── */
+    .accent-stripe {
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent2), var(--accent), var(--purple));
+    }
+
+    /* ── Separator ──────────────────────────────────────────────────── */
+    .sep { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    /* ── Sidebar mock ───────────────────────────────────────────────── */
+    .sidebar-mock {
+      width: 200px; flex-shrink: 0;
+      background: var(--bg2); border-right: 1px solid var(--border);
+      padding: 16px 0; border-radius: 0 0 0 10px;
+    }
+    .nav-section { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); padding: 8px 16px 4px; font-weight: 600; }
+    .nav-item { padding: 7px 16px; font-size: 13px; display: flex; align-items: center; gap: 8px; color: var(--text2); border-left: 3px solid transparent; }
+    .nav-item.active { color: var(--accent); background: rgba(88,166,255,0.08); border-left-color: var(--accent); }
+    .nav-icon { font-size: 14px; }
+
+    /* ── Persona card ───────────────────────────────────────────────── */
+    .persona-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px; text-align: center;
+    }
+    .persona-icon { font-size: 32px; margin-bottom: 8px; }
+    .persona-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .persona-role { font-size: 11px; color: var(--accent); margin-bottom: 6px; }
+    .persona-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+    /* ── Arch diagram boxes ─────────────────────────────────────────── */
+    .arch-box {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 14px; text-align: center; font-size: 12px; font-weight: 600;
+    }
+    .arch-arrow { text-align: center; color: var(--text2); font-size: 16px; padding: 2px 0; }
+    .arch-col { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .arch-row { display: flex; gap: 12px; align-items: center; flex: 1; }
+    .arch-layer {
+      background: rgba(88,166,255,0.05); border: 1px solid rgba(88,166,255,0.15);
+      border-radius: 8px; padding: 10px 14px; text-align: center;
+      font-size: 11px; font-weight: 600; color: var(--accent);
+    }
+
+    /* ── Quote / callout ────────────────────────────────────────────── */
+    .callout {
+      background: rgba(88,166,255,0.07);
+      border: 1px solid rgba(88,166,255,0.2);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px; padding: 16px 20px;
+      font-size: 14px; font-style: italic; color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Screen mock ────────────────────────────────────────────────── */
+    .screen-mock {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; flex: 1;
+    }
+    .screen-titlebar {
+      background: var(--bg3); padding: 8px 14px;
+      display: flex; align-items: center; gap: 6px;
+      border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text2);
+    }
+    .dot-r { width:10px;height:10px;border-radius:50%;background:var(--red);flex-shrink:0; }
+    .dot-y { width:10px;height:10px;border-radius:50%;background:var(--yellow);flex-shrink:0; }
+    .dot-g { width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0; }
+    .screen-content { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .mock-kpi {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px; text-align: center;
+    }
+    .mock-kpi-num { font-size: 24px; font-weight: 800; color: var(--accent); }
+    .mock-kpi-lbl { font-size: 10px; color: var(--text2); margin-top: 2px; }
+    .mock-list-item {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 10px; font-size: 11px; color: var(--text2);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .mock-bullet { width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0; }
+
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation / Print Helper ─────────────────────────────────── -->
+<div class="nav-bar print-hint">
+  <span class="title">🤖 Bots in Blazers — Presentation Export</span>
+  <div class="ml">
+    <span class="hint">💡 Print → Save as PDF for best results. Use landscape A4 / letter.</span>
+    <button onclick="window.print()">🖨️ Save as PDF</button>
+  </div>
+</div>
+
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SLIDE 1 — COVER
+═══════════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="accent-stripe"></div>
+  <div class="slide-topbar">
+    <div class="status-dot"></div>
+    <div class="logo-text">Bots in Blazers<small>Mfg CoE Command Center</small></div>
+    <div class="slide-num">01 / 08</div>
+  </div>
+
+  <div class="slide-body" style="justify-content:center;align-items:center;text-align:center;gap:0">
+    <div style="font-size:64px;margin-bottom:20px">🤖</div>
+    <div class="section-label">Discrete Manufacturing · Agentic Center of Excellence</div>
+    <div class="slide-title" style="font-size:52px;max-width:800px">Bots in Blazers</div>
+    <div style="font-size:22px;color:var(--accent);font-weight:600;margin-bottom:16px">Mfg CoE Command Center</div>
+    <p style="font-size:16px;max-width:600px;margin:0 auto 32px">
+      A unified AI Agent operations hub for the Microsoft Discrete Manufacturing
+      Sales Engineering team — built on Azure Functions, GitHub, and OpenAI.
+    </p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <span class="tag blue">Azure Functions</span>
+      <span class="tag green">OpenAI GPT-4o</span>
+      <span class="tag purple">D365 CE</span>
+      <span class="tag orange">Copilot Studio</span>
+      <span class="tag yellow">Azure AI Foundry</span>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>bots-in-blazers.fun</span>
+    <span style="margin-left:auto">April 2026 · Internal Review</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SLIDE 2 — WHAT IS THIS / WHY
+═══════════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-topbar">
+    <div class="status-dot"></div>
+    <div class="logo-text">Bots in Blazers<small>Mfg CoE Command Center</small></div>
+    <div class="slide-num">02 / 08</div>
+  </div>
+
+  <div class="slide-body row" style="align-items:stretch">
+    <!-- Left: Problem / Context -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:20px">
+      <div>
+        <div class="section-label">The Challenge</div>
+        <div class="slide-title" style="font-size:28px">AI Agent work needs a<br/>control tower</div>
+        <div class="slide-subtitle" style="font-size:14px;margin-top:8px">
+          Managing 14+ agents, 20+ GitHub issues, SOPs, and demos across<br/>
+          multiple D365 environments without a central hub is chaos.
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="feature-row">
+          <div class="feature-icon">📋</div>
+          <div class="feature-text">
+            <h3>No single source of truth</h3>
+            <p>Work tracked across GitHub, Teams, OneNote, email — no unified view</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🤖</div>
+          <div class="feature-text">
+            <h3>Agents need orchestration</h3>
+            <p>PM, Developer, Architect, SME agents all need to coordinate on shared outcomes</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🏭</div>
+          <div class="feature-text">
+            <h3>Demo environments drift</h3>
+            <p>Master CE Mfg and Mfg Gold Template need continuous alignment with product updates</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Solution card -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div class="section-label">The Solution</div>
+      <div class="callout" style="margin-bottom:10px">
+        "A living Command Center where agents and humans co-manage work —
+        not a status dashboard that goes stale after a sprint."
+      </div>
+
+      <div class="card">
+        <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:var(--accent)">✅ What it solves</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="color:var(--green);font-size:14px;margin-top:1px">●</span>
+            <span style="font-size:13px">GitHub Issues as the live backlog — no duplication</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="color:var(--green);font-size:14px;margin-top:1px">●</span>
+            <span style="font-size:13px">14 CoE agents pre-loaded and always available in chat</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="color:var(--green);font-size:14px;margin-top:1px">●</span>
+            <span style="font-size:13px">Outcomes tracked with priority, status, and agent links</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="color:var(--green);font-size:14px;margin-top:1px">●</span>
+            <span style="font-size:13px">SOPs and Knowledge Base for institutional memory</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="color:var(--green);font-size:14px;margin-top:1px">●</span>
+            <span style="font-size:13px">D365 environment context cards for every agent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">bots-in-blazers.fun · Internal Review</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SLIDE 3 — DASHBOARD SCREENSHOT MOCK
+═══════════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-topbar">
+    <div class="status-dot"></div>
+    <div class="logo-text">Bots in Blazers<small>Mfg CoE Command Center</small></div>
+    <div class="slide-num">03 / 08</div>
+  </div>
+
+  <div class="slide-body row" style="padding:24px 36px;gap:24px;align-items:stretch">
+
+    <!-- Sidebar mock -->
+    <div class="sidebar-mock">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active"><span class="nav-icon">🏠</span> Dashboard</div>
+      <div class="nav-item"><span class="nav-icon">🤖</span> Agent Team</div>
+      <div class="nav-item"><span class="nav-icon">🎯</span> Outcomes</div>
+      <div class="nav-item"><span class="nav-icon">📋</span> Kanban Board</div>
+      <div class="nav-section">Workspace</div>
+      <div class="nav-item"><span class="nav-icon">📚</span> Knowledge Base</div>
+      <div class="nav-item"><span class="nav-icon">📄</span> SOPs</div>
+      <div class="nav-item"><span class="nav-icon">💬</span> Agent Forum</div>
+      <div class="nav-section">Tools</div>
+      <div class="nav-item"><span class="nav-icon">📦</span> Agent Library</div>
+      <div class="nav-item"><span class="nav-icon">📱</span> Quick Capture</div>
+      <div class="nav-item"><span class="nav-icon">🏆</span> Achievements</div>
+      <div class="nav-item"><span class="nav-icon">⚙️</span> Settings</div>
+    </div>
+
+    <!-- Main area mock -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+
+      <!-- KPI Row -->
+      <div class="grid-4" style="gap:10px">
+        <div class="kpi"><div class="kpi-value">14</div><div class="kpi-label">Active Agents</div></div>
+        <div class="kpi"><div class="kpi-value" style="background:linear-gradient(135deg,var(--text),var(--green));-webkit-background-clip:text;background-clip:text;">28</div><div class="kpi-label">Open Issues</div></div>
+        <div class="kpi"><div class="kpi-value" style="background:linear-gradient(135deg,var(--text),var(--yellow));-webkit-background-clip:text;background-clip:text;">3</div><div class="kpi-label">Need Your Input</div></div>
+        <div class="kpi"><div class="kpi-value" style="background:linear-gradient(135deg,var(--text),var(--purple));-webkit-background-clip:text;background-clip:text;">13</div><div class="kpi-label">Completed</div></div>
+      </div>
+
+      <!-- Agent Pills row -->
+      <div class="card-sm" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <span style="font-size:11px;color:var(--text2);margin-right:4px">Active CoE Agents:</span>
+        <span class="agent-pill"><span class="dot"></span>Orchestrator</span>
+        <span class="agent-pill"><span class="dot"></span>PM</span>
+        <span class="agent-pill"><span class="dot"></span>Developer</span>
+        <span class="agent-pill"><span class="dot"></span>Architect</span>
+        <span class="agent-pill"><span class="dot"></span>SME</span>
+        <span class="agent-pill"><span class="dot"></span>UX Designer</span>
+        <span class="agent-pill"><span class="dot"></span>Data Analyst</span>
+        <span class="agent-pill"><span class="dot" style="background:var(--yellow)"></span>QA Engineer</span>
+      </div>
+
+      <!-- Two columns: Recent Activity + Needs Bill -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1">
+        <div class="card" style="overflow:hidden">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">📡 Recent Activity</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="mock-list-item"><div class="mock-bullet" style="background:var(--red)"></div><span>#47 Field Service SOP — updated 2h ago</span></div>
+            <div class="mock-list-item"><div class="mock-bullet"></div><span>#45 D365 Gold Template alignment — open</span></div>
+            <div class="mock-list-item"><div class="mock-bullet" style="background:var(--green)"></div><span>#44 Quick Capture mobile form ✓ closed</span></div>
+            <div class="mock-list-item"><div class="mock-bullet"></div><span>#43 Agent Library install UX — updated</span></div>
+            <div class="mock-list-item"><div class="mock-bullet" style="background:var(--yellow)"></div><span>#41 Outcome Validator SOP draft — review</span></div>
+          </div>
+        </div>
+        <div class="card" style="overflow:hidden;border-color:rgba(210,153,34,0.4)">
+          <div style="font-size:12px;font-weight:700;color:var(--yellow);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">⚠️ Needs Your Input (3)</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="card-sm" style="border-color:rgba(210,153,34,0.3);padding:10px 12px">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                <span class="tag yellow">BLOCKED</span>
+                <span style="font-size:12px;color:var(--accent);font-weight:600">#47 Field Service SOP</span>
+              </div>
+              <div style="font-size:11px;color:var(--text2)">PM Agent needs approval on scope before sprint 3 kickoff</div>
+            </div>
+            <div class="card-sm" style="border-color:rgba(210,153,34,0.3);padding:10px 12px">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                <span class="tag yellow">BLOCKED</span>
+                <span style="font-size:12px;color:var(--accent);font-weight:600">#39 RAR Registry integration</span>
+              </div>
+              <div style="font-size:11px;color:var(--text2)">Architect Agent awaiting direction on auth pattern</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">Dashboard — live data from GitHub Issues · bots-in-blazers.fun</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SLIDE 4 — AGENT TEAM
+═══════════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-topbar">
+    <div class="status-dot"></div>
+    <div class="logo-text">Bots in Blazers<small>Mfg CoE Command Center</small></div>
+    <div class="slide-num">04 / 08</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="section-label">Agent Team</div>
+    <div class="slide-title" style="font-size:26px;margin-bottom:4px">14 Specialized AI Agents</div>
+    <div class="slide-subtitle" style="margin-bottom:20px;font-size:13px">Each agent has a defined persona, expertise, and set of responsibilities within the CoE mission</div>
+
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px">
+      <div class="persona-card">
+        <div class="persona-icon">⚙️</div>
+        <div class="persona-name">Orchestrator</div>
+        <div class="persona-role">Coordinator</div>
+        <div class="persona-desc">Routes work and manages the GitHub feedback loop</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🎯</div>
+        <div class="persona-name">Outcome Framer</div>
+        <div class="persona-role">Strategist</div>
+        <div class="persona-desc">Gates all work on verified KPIs and success metrics</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🗂️</div>
+        <div class="persona-name">PM</div>
+        <div class="persona-role">Project Manager</div>
+        <div class="persona-desc">Sprint planning, backlog, and weekly digest</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🏭</div>
+        <div class="persona-name">SME</div>
+        <div class="persona-role">Domain Expert</div>
+        <div class="persona-desc">SOPs, processes, and use case definitions for Mfg</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🧑‍💻</div>
+        <div class="persona-name">Developer</div>
+        <div class="persona-role">Engineer</div>
+        <div class="persona-desc">Agent code, D365 configs, and RAPP scaffolding</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🏗️</div>
+        <div class="persona-name">Architect</div>
+        <div class="persona-role">Solution Design</div>
+        <div class="persona-desc">Microsoft stack design and integration patterns</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🎨</div>
+        <div class="persona-name">UX Designer</div>
+        <div class="persona-role">Experience</div>
+        <div class="persona-desc">Wireframes, user stories, and UX flows</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:10px">
+      <div class="persona-card">
+        <div class="persona-icon">✍️</div>
+        <div class="persona-name">Content</div>
+        <div class="persona-role">Strategist</div>
+        <div class="persona-desc">Docs, communications, and knowledge base</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">📊</div>
+        <div class="persona-name">Data Analyst</div>
+        <div class="persona-role">Analytics</div>
+        <div class="persona-desc">KPI dashboards and data-driven recommendations</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🔒</div>
+        <div class="persona-name">Security</div>
+        <div class="persona-role">Reviewer</div>
+        <div class="persona-desc">Security reviews and compliance checks</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🧪</div>
+        <div class="persona-name">QA Engineer</div>
+        <div class="persona-role">Quality</div>
+        <div class="persona-desc">Test cases and quality gate sign-off</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">📋</div>
+        <div class="persona-name">Intake Logger</div>
+        <div class="persona-role">Capture</div>
+        <div class="persona-desc">Idea capture and decision tracking</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">✅</div>
+        <div class="persona-name">Outcome Validator</div>
+        <div class="persona-role">Sign-off</div>
+        <div class="persona-desc">Evidence-based outcome validation</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🎭</div>
+        <div class="persona-name">Customer Persona</div>
+        <div class="persona-role">Tester</div>
+        <div class="persona-desc">Simulates customer scenarios for demos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">All agents are always available in the chat interface · bots-in-blazers.fun</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SLIDE 5 — KEY FEATURES
+═══════════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-topbar">
+    <div class="status-dot"></div>
+    <div class="logo-text">Bots in Blazers<small>Mfg CoE Command Center</small></div>
+    <div class="slide-num">05 / 08</div>
+  </div>
+
+  <div class="slide-body row">
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div>
+        <div class="section-label">Capabilities</div>
+        <div class="slide-title" style="font-size:26px;margin-bottom:4px">Built for how the team actually works</div>
+        <div class="slide-subtitle" style="font-size:13px">Every feature is designed for a real workflow pain point</div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-text">
+          <h3>Outcomes Editor</h3>
+          <p>Create, edit, and track strategic outcomes with priority, status (Active / Achieved / Paused), emoji, and linked GitHub issues. Custom outcomes persist in your browser — nothing requires a backend.</p>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">📱</div>
+        <div class="feature-text">
+          <h3>Quick Capture</h3>
+          <p>Mobile-optimized idea capture — Idea, Use Case, SOP Request, or Bug. With a GitHub PAT it files issues directly via API. Without one, it opens a pre-filled GitHub form. Bookmark <code style="color:var(--accent)">?quick=1</code> for phone speed-dial.</p>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">💬</div>
+        <div class="feature-text">
+          <h3>Agent Forum</h3>
+          <p>Threaded discussion board backed by GitHub Issues. Agents post updates, Bill steers direction, all tracked in the repo. Topics can have comments, replies, and emoji reactions.</p>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">📋</div>
+        <div class="feature-text">
+          <h3>Kanban Board</h3>
+          <p>Live view of GitHub Issues filtered by <code style="color:var(--accent)">mfg-coe</code> label — Backlog, Active, Needs Bill, Done. Issue counts auto-refresh from GitHub API.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div style="height:38px"></div><!-- spacer aligns with left column title -->
+      <div class="feature-row">
+        <div class="feature-icon">📦</div>
+        <div class="feature-text">
+          <h3>Agent Library</h3>
+          <p>Browse and install agents from RAR Registry, AIBAST, Community, Agent 365, or custom GitHub sources. Two-section layout: Installed vs. Available. Core CoE agents cannot be removed.</p>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-text">
+          <h3>Achievement Cards</h3>
+          <p>12 flip-card milestones with XP tracking. Unlocks based on real activity — installing agents, filing issues, adding sources, earning admin access. Gamifies CoE adoption.</p>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">🔵</div>
+        <div class="feature-text">
+          <h3>Agent 365 Integration</h3>
+          <p>Connect your Microsoft tenant to browse Copilot Studio, Azure AI Foundry, and Marketplace agents all in one place. Install/uninstall from the same interface as local agents.</p>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">🌙</div>
+        <div class="feature-text">
+          <h3>7 Color Themes</h3>
+          <p>Dark, Light, Neon, Forest, Midnight, Sunset, Ocean — all persisted to localStorage. Neon theme triggers a boot sequence animation. Easter egg: type "coe" anywhere.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">bots-in-blazers.fun · Internal Review</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SLIDE 6 — ARCHITECTURE
+═══════════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-topbar">
+    <div class="status-dot"></div>
+    <div class="logo-text">Bots in Blazers<small>Mfg CoE Command Center</small></div>
+    <div class="slide-num">06 / 08</div>
+  </div>
+
+  <div class="slide-body row">
+    <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+      <div>
+        <div class="section-label">Architecture</div>
+        <div class="slide-title" style="font-size:24px;margin-bottom:4px">Lightweight by design</div>
+        <div class="slide-subtitle" style="font-size:13px">No frameworks, no build step, no dependencies to update</div>
+      </div>
+
+      <!-- Architecture layers -->
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+        <div class="arch-layer" style="background:rgba(88,166,255,0.07)">
+          🌐 Frontend — Single HTML File (3,641 lines) · Azure Static Web Apps · bots-in-blazers.fun
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:16px;padding:2px">⬇</div>
+        <div class="arch-layer" style="background:rgba(63,185,80,0.07);color:var(--green)">
+          🔑 GitHub API — Issues · Comments · Labels · Repos (PAT-authenticated)
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:16px;padding:2px">⬇</div>
+        <div class="arch-layer" style="background:rgba(188,140,255,0.07);color:var(--purple)">
+          ⚡ Azure Functions Backend — GPT-4o · Agent Routing · Azure File Storage
+        </div>
+        <div style="text-align:center;color:var(--text2);font-size:16px;padding:2px">⬇</div>
+        <div class="arch-layer" style="background:rgba(255,166,87,0.07);color:var(--orange)">
+          🏭 D365 CE — Master CE Mfg · Mfg Gold Template · Copilot Studio Agents
+        </div>
+      </div>
+
+      <div class="card-sm" style="margin-top:auto">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Key Design Decisions</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:12px;color:var(--text)">✦ Single HTML file — deploy anywhere, no build pipeline needed</div>
+          <div style="font-size:12px;color:var(--text)">✦ GitHub Issues as the database — no separate backend for content</div>
+          <div style="font-size:12px;color:var(--text)">✦ localStorage for user prefs — zero auth complexity for personal settings</div>
+          <div style="font-size:12px;color:var(--text)">✦ Azure Static Web Apps — free tier, custom domain, auto-HTTPS</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div style="height:58px"></div>
+
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">🗂️ Repository Structure</div>
+        <div style="font-family:monospace;font-size:12px;color:var(--text2);display:flex;flex-direction:column;gap:5px">
+          <div><span style="color:var(--accent)">billwhalenmsft/CommunityRAPP-BillWhalen</span></div>
+          <div style="margin-left:12px;color:var(--text2)">├── <span style="color:var(--green)">customers/mfg_coe/web_ui/</span></div>
+          <div style="margin-left:24px">│   └── <span style="color:var(--text)">index.html</span> ← Command Center SPA</div>
+          <div style="margin-left:12px">├── <span style="color:var(--purple)">agents/</span> ← 14 Python agent files</div>
+          <div style="margin-left:12px">├── <span style="color:var(--orange)">customers/mfg_coe/</span></div>
+          <div style="margin-left:24px">│   ├── COE_CHARTER.md</div>
+          <div style="margin-left:24px">│   └── knowledge_base/</div>
+          <div style="margin-left:12px">└── <span style="color:var(--yellow)">function_app.py</span> ← Azure Function entry</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:10px">
+        <div class="kpi"><div class="kpi-value">1</div><div class="kpi-label">HTML file</div></div>
+        <div class="kpi"><div class="kpi-value" style="background:linear-gradient(135deg,var(--text),var(--green));-webkit-background-clip:text;background-clip:text;">3.6k</div><div class="kpi-label">Lines of code</div></div>
+        <div class="kpi"><div class="kpi-value" style="background:linear-gradient(135deg,var(--text),var(--purple));-webkit-background-clip:text;background-clip:text;">14</div><div class="kpi-label">AI agents</div></div>
+        <div class="kpi"><div class="kpi-value" style="background:linear-gradient(135deg,var(--text),var(--orange));-webkit-background-clip:text;background-clip:text;">7</div><div class="kpi-label">Color themes</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">Stack: Azure Static Web Apps · Azure Functions · GitHub API · OpenAI GPT-4o</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SLIDE 7 — RAPP PIPELINE
+═══════════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-topbar">
+    <div class="status-dot"></div>
+    <div class="logo-text">Bots in Blazers<small>Mfg CoE Command Center</small></div>
+    <div class="slide-num">07 / 08</div>
+  </div>
+
+  <div class="slide-body row">
+    <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+      <div>
+        <div class="section-label">How agents are built</div>
+        <div class="slide-title" style="font-size:26px;margin-bottom:4px">RAPP Pipeline</div>
+        <div class="slide-subtitle" style="font-size:13px">Rapid AI Agent Production Pipeline — transcript to deployed agent in minutes</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:2px">1. Discovery Transcript</div>
+            <div style="font-size:12px;color:var(--text2)">Drop a call recording or notes into the RAPP agent — it extracts use cases, personas, and requirements automatically</div>
+          </div>
+        </div>
+        <div style="width:2px;height:12px;background:var(--border);margin-left:5px"></div>
+        <div class="timeline-item">
+          <div class="timeline-dot green"></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:2px">2. Agent Code Generation</div>
+            <div style="font-size:12px;color:var(--text2)">RAPP generates Python agent class, metadata schema, test cases, and deployment config in one step</div>
+          </div>
+        </div>
+        <div style="width:2px;height:12px;background:var(--border);margin-left:5px"></div>
+        <div class="timeline-item">
+          <div class="timeline-dot purple"></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:2px">3. Quality Gates QG1–QG6</div>
+            <div style="font-size:12px;color:var(--text2)">Six automated checkpoints: requirements, design, implementation, testing, demo, and deployment readiness</div>
+          </div>
+        </div>
+        <div style="width:2px;height:12px;background:var(--border);margin-left:5px"></div>
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--orange)"></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:2px">4. Deploy to Azure + Copilot Studio</div>
+            <div style="font-size:12px;color:var(--text2)">Auto-pushes to Azure File Storage, available in Command Center chat immediately; YAML exported for Copilot Studio</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout" style="font-size:12px">
+        ⚡ <strong>Fast path:</strong> <code>transcript_to_agent</code> action goes from raw transcript → deployable Python agent + demo JSON + HTML tester in a single call
+      </div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div style="height:58px"></div>
+
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">🔗 Where CoE agents are built</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="font-size:18px">🏭</span>
+            <div>
+              <div style="font-size:13px;font-weight:600">D365 Master CE Mfg</div>
+              <div style="font-size:11px;color:var(--text2)">Primary demo environment — Field Service, Sales, CS scenarios. All agent knowledge base cards reference this org.</div>
+            </div>
+          </div>
+          <hr class="sep" style="margin:4px 0"/>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="font-size:18px">🥇</span>
+            <div>
+              <div style="font-size:13px;font-weight:600">Mfg Gold Template</div>
+              <div style="font-size:11px;color:var(--text2)">Baseline template for cloning to new customers. Maintains pristine data model and agent configurations.</div>
+            </div>
+          </div>
+          <hr class="sep" style="margin:4px 0"/>
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <span style="font-size:18px">🤖</span>
+            <div>
+              <div style="font-size:13px;font-weight:600">Community RAPP Repository</div>
+              <div style="font-size:11px;color:var(--text2)">Open source pipeline that other SE teams can fork. CoE work is upstream contribution back to the community.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-bar">
+        <div class="stat-bar-label"><span>Agent production speed vs. manual</span><span style="color:var(--green)">~10x faster</span></div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:90%;background:var(--green)"></div></div>
+      </div>
+      <div class="stat-bar">
+        <div class="stat-bar-label"><span>Agents with full RAPP quality gates</span><span>8 / 14</span></div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:57%"></div></div>
+      </div>
+      <div class="stat-bar">
+        <div class="stat-bar-label"><span>Demo scenarios covered</span><span>4 industries</span></div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:40%;background:var(--purple)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">RAPP: Rapid AI Agent Production Pipeline · github.com/billwhalenmsft/CommunityRAPP-BillWhalen</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SLIDE 8 — NEXT STEPS / CLOSING
+═══════════════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="accent-stripe"></div>
+  <div class="slide-topbar">
+    <div class="status-dot"></div>
+    <div class="logo-text">Bots in Blazers<small>Mfg CoE Command Center</small></div>
+    <div class="slide-num">08 / 08</div>
+  </div>
+
+  <div class="slide-body row">
+    <div style="flex:1.2;display:flex;flex-direction:column;gap:16px">
+      <div>
+        <div class="section-label">What's Next</div>
+        <div class="slide-title" style="font-size:26px;margin-bottom:4px">Roadmap Q2–Q3 2026</div>
+        <div class="slide-subtitle" style="font-size:13px">Expanding the agent team's autonomous capabilities</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card-sm" style="display:flex;gap:12px;align-items:flex-start">
+          <span class="tag blue" style="flex-shrink:0;margin-top:2px">Q2</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px">Community Mode</div>
+            <div style="font-size:12px;color:var(--text2)">Public read access to the Command Center — other SE teams can browse CoE outputs without a PAT. GitHub OAuth for authenticated contributions.</div>
+          </div>
+        </div>
+        <div class="card-sm" style="display:flex;gap:12px;align-items:flex-start">
+          <span class="tag green" style="flex-shrink:0;margin-top:2px">Q2</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px">Agent Team Starter Kit</div>
+            <div style="font-size:12px;color:var(--text2)">Published template for other SE teams to fork and deploy their own CoE Command Centers in under 30 minutes. Charter + Personas included.</div>
+          </div>
+        </div>
+        <div class="card-sm" style="display:flex;gap:12px;align-items:flex-start">
+          <span class="tag purple" style="flex-shrink:0;margin-top:2px">Q3</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px">Autonomous Sprint Mode</div>
+            <div style="font-size:12px;color:var(--text2)">Agents run weekly sprints autonomously — pick backlog items, produce deliverables, and post results to the forum for review before merging.</div>
+          </div>
+        </div>
+        <div class="card-sm" style="display:flex;gap:12px;align-items:flex-start">
+          <span class="tag orange" style="flex-shrink:0;margin-top:2px">Q3</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px">Live D365 Integration</div>
+            <div style="font-size:12px;color:var(--text2)">Command Center pulls live data from Master CE Mfg — open cases, active opportunities, recent field service work — for real-time demo context.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+      <div style="height:58px"></div>
+
+      <div class="card" style="border-color:rgba(88,166,255,0.3);background:rgba(88,166,255,0.05)">
+        <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px">🔗 Access</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:13px">
+            <div style="color:var(--text2);font-size:11px;margin-bottom:2px">Command Center (fix pending for Defender flagging)</div>
+            <code style="color:var(--accent)">bots-in-blazers.fun</code>
+          </div>
+          <hr class="sep" style="margin:4px 0"/>
+          <div style="font-size:13px">
+            <div style="color:var(--text2);font-size:11px;margin-bottom:2px">Source code</div>
+            <code style="color:var(--accent)">github.com/billwhalenmsft/CommunityRAPP-BillWhalen</code>
+          </div>
+          <hr class="sep" style="margin:4px 0"/>
+          <div style="font-size:13px">
+            <div style="color:var(--text2);font-size:11px;margin-bottom:2px">Starter Kit (other SE teams)</div>
+            <code style="color:var(--accent)">github.com/billwhalenmsft/agent-team-starter-kit</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">📬 Defender False Positive</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7">
+          The <code>.fun</code> TLD triggered Microsoft Defender's reputation filter.
+          To request removal:
+          <br/><br/>
+          1. Go to <strong style="color:var(--accent)">microsoft.com/wdsi/support/report-false-positive</strong>
+          <br/>
+          2. Submit <code>bots-in-blazers.fun</code> as a false positive URL
+          <br/>
+          3. Category: Phishing/Malware → False Positive
+          <br/><br/>
+          Typically resolved within 24–48 hours.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">Bill Whalen · Microsoft SE Discrete Manufacturing · April 2026</div>
+</div>
+
+</div><!-- /slides -->
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+{
+  "source": {
+    "pptx": "Microsoft brand PowerPoint template - Copy.pptx",
+    "themePart": "ppt/theme/theme1.xml"
+  },
+  "slide": {
+    "widthPx": 1280,
+    "heightPx": 720
+  },
+  "fonts": {
+    "major": "Segoe UI Semibold",
+    "minor": "Segoe UI"
+  },
+  "colors": {
+    "dk1": "000000",
+    "lt1": "FFFFFF",
+    "dk2": "091F2E",
+    "lt2": "FFF8F3",
+    "accent1": "702573",
+    "accent2": "BF3AC4",
+    "accent3": "FE5B38",
+    "accent4": "D59DD7",
+    "accent5": "FEE298",
+    "accent6": "D7D2CA",
+    "hlink": "0077D3",
+    "folHlink": "0077D3"
+  },
+  "semantic": {
+    "background": "#FFFFFF",
+    "surface": "#FFF8F3",
+    "text": "#000000",
+    "textStrong": "#091F2E",
+    "brandPrimary": "#BF3AC4",
+    "brandSecondary": "#702573",
+    "link": "#0077D3",
+    "heading": "#091F2E"
+  },
+  "artwork": {
+    "background": {
+      "path": "assets/theme-background.png",
+      "layoutName": "1_Title_Gradient_Warm Gray",
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "logo": {
+      "path": "assets/theme-logo.png",
+      "layoutName": "1_Title_Gradient_Warm Gray",
+      "x": 61,
+      "y": 62,
+      "width": 143,
+      "height": 31,
+      "source": "override"
+    },
+    "logoDark": {
+      "path": "assets/theme-logo-dark.png",
+      "layoutName": "1_Title_Gradient_Warm Gray",
+      "x": 61,
+      "y": 62,
+      "width": 143,
+      "height": 31,
+      "source": "override-dark"
+    },
+    "warnings": []
+  }
+}

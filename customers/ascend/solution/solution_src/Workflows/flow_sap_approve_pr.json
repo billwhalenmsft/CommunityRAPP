@@ -1,0 +1,134 @@
+{
+  "metadata": {
+    "flowDisplayName": "Ascend: SAP Approve/Reject PR (Demo \u2192 Dataverse)",
+    "description": "Updates PR release status in Dataverse \u2014 emulating SAP EBAN release field updates and BUS2105 workflow trigger. In production, use SAP BAPI_RELEASE_PURCHASE_DOC or custom Z-function + workflow trigger.",
+    "sapTablesEmulated": [
+      "EBAN",
+      "BUS2105_workflow"
+    ],
+    "demoMode": true,
+    "productionBAPI": "BAPI_RELEASE_PURCHASE_DOC + SWR_WORKITEM_COMPLETE"
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Skills",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "reject"
+              ]
+            },
+            "pr_number": {
+              "type": "string"
+            },
+            "approver_guid": {
+              "type": "string"
+            },
+            "approver_name": {
+              "type": "string"
+            },
+            "rejection_reason": {
+              "type": "string"
+            },
+            "requestor_email": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "pr_number",
+            "approver_guid",
+            "approver_name"
+          ]
+        }
+      }
+    }
+  },
+  "actions": {
+    "GetPR_ForValidation_Emulates_EBAN": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "ListRecords",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sappurchaserequisitions",
+          "$filter": "ascend_banfn eq '@{triggerBody()?['pr_number']}'",
+          "$select": "ascend_sappurchaserequisitionid,ascend_frgst,ascend_approverid,ascend_approvername,ascend_afnam,ascend_locked"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "description": "READ Dataverse ascend_sappurchaserequisition (emulates SAP EBAN lock check + release status read)"
+    },
+    "UpdatePRStatus_Emulates_EBAN_Write": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "UpdateRecord",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sappurchaserequisitions",
+          "recordId": "@first(outputs('GetPR_ForValidation_Emulates_EBAN')?['body/value'])?['ascend_sappurchaserequisitionid']",
+          "item": {
+            "ascend_frgst": "@if(equals(triggerBody()?['action'], 'approve'), 100001, 100002)",
+            "ascend_approverid": "@triggerBody()?['approver_guid']",
+            "ascend_approvername": "@triggerBody()?['approver_name']",
+            "ascend_rejectionreason": "@if(equals(triggerBody()?['action'], 'reject'), triggerBody()?['rejection_reason'], null)"
+          }
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "runAfter": {
+        "GetPR_ForValidation_Emulates_EBAN": [
+          "Succeeded"
+        ]
+      },
+      "description": "WRITE Dataverse ascend_sappurchaserequisition (emulates SAP EBAN release field update \u2014 FRGST approved=100001/rejected=100002)"
+    },
+    "SendApprovalEmail_Emulates_BUS2105": {
+      "type": "Compose",
+      "inputs": {
+        "demo_mode": "DEMO: In production this sends a real email via SAP BUS2105/SWI_CREATE_VIA_INTERNET",
+        "notification_to": "@triggerBody()?['requestor_email']",
+        "notification_subject": "@concat('[DEMO \u2013 SAP ECC 6.0] PR ', triggerBody()?['pr_number'], ' has been ', triggerBody()?['action'], 'd')",
+        "notification_body_preview": "Email notification logged (no connector needed for demo)"
+      }
+    },
+    "RespondToCopilotStudio": {
+      "type": "Response",
+      "inputs": {
+        "statusCode": 200,
+        "body": {
+          "status": "@concat(triggerBody()?['action'], 'd')",
+          "pr_number": "@triggerBody()?['pr_number']",
+          "actioned_by": "@triggerBody()?['approver_name']",
+          "sap_tables_written": [
+            "EBAN"
+          ],
+          "workflow_emulated": "BUS2105",
+          "data_source": "SAP ECC 6.0 (Demo via Dataverse)",
+          "demo_note": "DEMO: In production uses BAPI_RELEASE_PURCHASE_DOC + SAP BUS2105 workflow trigger"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "runAfter": {
+        "SendApprovalEmail_Emulates_BUS2105": [
+          "Succeeded",
+          "Failed"
+        ]
+      }
+    }
+  }
+}

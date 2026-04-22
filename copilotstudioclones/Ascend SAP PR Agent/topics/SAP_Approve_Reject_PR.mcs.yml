@@ -1,0 +1,89 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: SAP Approve Reject PR
+    triggerQueries:
+      - approve PR
+      - reject PR
+      - I approve
+      - I reject
+      - approve purchase requisition
+      - reject purchase requisition
+      - approve the PR
+      - deny PR
+      - I'll approve it
+      - approve that
+
+  actions:
+    - kind: Question
+      id: askPRNumber
+      alwaysPrompt: false
+      variable: init:Topic.PRNumber
+      prompt:
+        text: Which PR number (BANFN) would you like to approve or reject?
+      entity: StringPrebuiltEntity
+
+    - kind: Question
+      id: askApproveReject
+      alwaysPrompt: false
+      variable: init:Topic.ApprovalDecision
+      prompt:
+        text: Approve or reject PR ${Topic.PRNumber}?
+      entity:
+        kind: ClosedListEntity
+        items:
+          - displayName: Approve
+            synonyms:
+              - approve
+              - yes
+              - looks good
+              - approved
+          - displayName: Reject
+            synonyms:
+              - reject
+              - deny
+              - no
+              - rejected
+              - denied
+
+    - kind: Question
+      id: askComments
+      alwaysPrompt: false
+      variable: init:Topic.ApprovalComments
+      prompt:
+        text: Any comments to include with your decision? (optional — press Enter to skip)
+      entity: StringPrebuiltEntity
+
+    - kind: SendActivity
+      id: confirmDecision
+      activity:
+        text: >-
+          Are you sure you want to **${Topic.ApprovalDecision}** PR **${Topic.PRNumber}**?
+
+    - kind: InvokeFlowAction
+      id: callApproveFlow
+      displayName: SAP Approve Reject PR Flow
+      inputs:
+        - name: pr_number
+          value: =Topic.PRNumber
+        - name: decision
+          value: =Topic.ApprovalDecision
+        - name: comments
+          value: =Topic.ApprovalComments
+        - name: approver_guid
+          value: =System.User.Id
+
+    - kind: SendActivity
+      id: decisionConfirmed
+      activity:
+        text: >-
+          ✅ **Decision recorded in SAP EBAN.**
+
+
+          PR **${Topic.PRNumber}** has been **${Topic.ApprovalDecision}d**.
+
+
+          The requester has been notified. The EBAN release indicator (FRGST)
+          has been updated accordingly.

@@ -1,0 +1,77 @@
+kind: AdaptiveDialog
+modelDescription: Guides customers through registering a new product for warranty activation and support qualification.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - register my product
+      - product registration
+      - activate warranty
+      - register new product
+      - I just bought a new
+      - register serial
+      - new product setup
+
+  actions:
+    - kind: SendActivity
+      id: intro
+      activity:
+        text:
+          - "Great — registering your product activates your warranty and qualifies you for support. I'll need a few details:\n\n1. **Serial number** (on the product label or in device settings)\n2. **Purchase date**\n3. **Installation details** (if applicable)"
+
+    - kind: Question
+      id: askSerial
+      property: Topic.SerialNumber
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What is the serial number?"
+
+    - kind: Question
+      id: askPurchaseDate
+      property: Topic.PurchaseDate
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "When did you purchase it? (approximate date is fine)"
+
+    - kind: Question
+      id: askInstallerType
+      property: Topic.InstallerType
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Was this professionally installed, or did you set it up yourself?"
+      entity:
+        displayName: Installer Type
+      choices:
+        - value: professional
+          synonyms:
+            - professional
+            - certified
+            - dealer installed
+            - shop installed
+            - technician
+            - contractor
+        - value: self
+          synonyms:
+            - self
+            - myself
+            - I installed it
+            - DIY
+            - self installed
+
+    - kind: SendActivity
+      id: summary
+      activity:
+        text:
+          - "Thanks! Here's a summary:\n\n📝 **Registration Details**\n• Serial: **{Topic.SerialNumber}**\n• Purchase Date: **{Topic.PurchaseDate}**\n• Installation: **{Topic.InstallerType}**\n\nI'll connect you with a specialist to finalize the registration. They'll:\n✅ Create or update your asset record\n✅ Activate your warranty\n✅ Send you a confirmation with your warranty details\n\nThis usually takes just a few minutes."
+
+    - kind: TransferToAgent
+      id: registrationTransfer
+      activity:
+        text: "Customer wants to register product serial {Topic.SerialNumber}, purchased {Topic.PurchaseDate}. Installation type: {Topic.InstallerType}. Create Customer Asset record and activate warranty."
+      context:
+        EscalationReason: "Product registration"
+        SerialNumber: "{Topic.SerialNumber}"

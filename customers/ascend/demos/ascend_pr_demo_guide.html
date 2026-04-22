@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ascend Procurement Assistant — Demo & Execution Guide</title>
+<style>
+  /* ── Reset & base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --sap-blue:      #0070f2;
+    --sap-dark:      #003d7a;
+    --sap-light:     #e8f2fd;
+    --ms-purple:     #742774;
+    --ms-blue:       #0078d4;
+    --ms-dark:       #002050;
+    --accent-green:  #107c10;
+    --accent-orange: #d83b01;
+    --accent-yellow: #ffd700;
+    --bg:            #f5f7fa;
+    --card-bg:       #ffffff;
+    --text:          #1a1a2e;
+    --text-muted:    #555;
+    --border:        #dde2ea;
+    --radius:        10px;
+    --shadow:        0 2px 12px rgba(0,0,0,.08);
+    --shadow-hover:  0 6px 24px rgba(0,0,0,.14);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  a { color: var(--ms-blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    background: #f0f2f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: #c7254e;
+  }
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.87em;
+    line-height: 1.6;
+    margin: 10px 0;
+  }
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+
+  /* ── Layout ───────────────────────────────────────────────── */
+  .page-wrapper { display: flex; min-height: 100vh; }
+
+  /* Sidebar nav */
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: var(--ms-dark);
+    color: #e0e8f8;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 0 0 40px;
+    z-index: 100;
+  }
+  .sidebar-logo {
+    background: linear-gradient(135deg, var(--ms-purple), var(--ms-blue));
+    padding: 24px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sidebar-logo .logo-title { font-size: 1.05rem; font-weight: 700; color: #fff; }
+  .sidebar-logo .logo-sub { font-size: 0.75rem; color: rgba(255,255,255,.7); }
+  .sidebar-logo .badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 8px;
+    background: rgba(255,215,0,.2);
+    border: 1px solid rgba(255,215,0,.4);
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: var(--accent-yellow);
+    font-weight: 600;
+    width: fit-content;
+  }
+  .nav-section { padding: 16px 20px 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.4); }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    color: rgba(255,255,255,.75);
+    font-size: 0.88rem;
+    transition: all .15s;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    border-left-color: var(--ms-blue);
+    text-decoration: none;
+  }
+  .nav-link .icon { font-size: 1rem; width: 18px; text-align: center; opacity: .8; }
+
+  /* Main content */
+  .main { flex: 1; min-width: 0; padding: 0; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--ms-dark) 0%, #0a3055 40%, var(--sap-dark) 100%);
+    color: white;
+    padding: 60px 56px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -60px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,112,242,.3) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,112,242,.25);
+    border: 1px solid rgba(0,112,242,.5);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #89ccff;
+    margin-bottom: 18px;
+  }
+  .hero h1 { font-size: 2.1rem; font-weight: 700; margin-bottom: 10px; line-height: 1.2; }
+  .hero .subtitle { font-size: 1.05rem; color: rgba(255,255,255,.75); max-width: 680px; margin-bottom: 28px; }
+  .hero-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,.85);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Content sections */
+  .content { padding: 40px 56px 80px; }
+  .section { margin-bottom: 60px; scroll-margin-top: 20px; }
+  .section-title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--ms-dark);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--sap-blue);
+  }
+  .section-subtitle { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 24px; }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    transition: box-shadow .2s;
+  }
+  .card:hover { box-shadow: var(--shadow-hover); }
+  .card-grid { display: grid; gap: 18px; }
+  .card-grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .card-grid.cols-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .card-desc { color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
+
+  /* Steps */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex;
+    gap: 0;
+    position: relative;
+  }
+  .step:not(:last-child) .step-line::after {
+    content: '';
+    position: absolute;
+    left: 19px; top: 48px;
+    width: 2px;
+    height: calc(100% - 10px);
+    background: var(--border);
+  }
+  .step-left { display: flex; flex-direction: column; align-items: center; min-width: 42px; }
+  .step-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--ms-blue);
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .step-num.done { background: var(--accent-green); }
+  .step-line { width: 2px; background: var(--border); flex: 1; margin-top: 4px; }
+  .step-content { flex: 1; padding: 0 0 32px 20px; }
+  .step-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; padding-top: 8px; }
+  .step-body { color: var(--text-muted); font-size: 0.9rem; }
+
+  /* Chat demo */
+  .chat-demo {
+    background: #f8f9fc;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .chat-header {
+    background: linear-gradient(90deg, var(--ms-blue), var(--sap-blue));
+    color: white;
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; font-weight: 600;
+  }
+  .chat-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .chat-body { padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; }
+  .msg { display: flex; gap: 10px; max-width: 90%; }
+  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
+  .msg-bubble {
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    max-width: 560px;
+  }
+  .msg.user .msg-bubble {
+    background: var(--ms-blue);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+  .msg.agent .msg-bubble {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+  .msg-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    align-self: flex-end;
+  }
+  .msg.agent .msg-avatar { background: var(--sap-light); color: var(--sap-blue); }
+  .msg.user .msg-avatar { background: var(--ms-blue); color: white; }
+  .msg-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: #fff8e6;
+    border: 1px solid #f5c342;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 4px;
+    display: flex; align-items: flex-start; gap: 6px;
+  }
+  .msg-note-icon { flex-shrink: 0; margin-top: 1px; }
+  .card-rows { list-style: none; display: flex; flex-direction: column; gap: 0; }
+  .card-rows li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    font-size: 0.9rem;
+  }
+  .card-rows li:last-child { border-bottom: none; }
+  .card-rows .label { color: var(--text-muted); font-size: 0.82rem; min-width: 110px; flex-shrink: 0; }
+  .card-rows .value { font-weight: 600; text-align: right; }
+
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .data-table th {
+    background: var(--sap-light);
+    color: var(--sap-dark);
+    font-weight: 700;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--sap-blue);
+  }
+  .data-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:hover td { background: #fafbfd; }
+  .data-table .mono { font-family: 'Cascadia Code', monospace; font-size: 0.83em; color: var(--sap-blue); }
+
+  /* Badges */
+  .badge-sap {
+    display: inline-block;
+    background: #fff4e0;
+    border: 1px solid #e69a00;
+    color: #7d4b00;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.73rem;
+    font-weight: 600;
+  }
+  .badge-demo {
+    display: inline-block;
+    background: #e8f4fd;
+    border: 1px solid var(--ms-blue);
+    color: var(--ms-dark);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.73rem;
+    font-weight: 600;
+  }
+  .badge-ok {
+    background: #e6f4ea; border: 1px solid #34a853; color: #185c26;
+    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.73rem; font-weight: 600;
+  }
+  .badge-warn {
+    background: #fff8e6; border: 1px solid #f5c342; color: #7a4b00;
+    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.73rem; font-weight: 600;
+  }
+
+  /* Alert boxes */
+  .alert {
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 14px 0;
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 0.9rem;
+  }
+  .alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .alert.info { background: var(--sap-light); border: 1px solid var(--sap-blue); color: var(--sap-dark); }
+  .alert.warn { background: #fff8e6; border: 1px solid #f5c342; color: #6b4300; }
+  .alert.success { background: #e6f4ea; border: 1px solid #34a853; color: #185c26; }
+  .alert.danger { background: #fce8e6; border: 1px solid #ea4335; color: #6a1b0d; }
+
+  /* Accordion */
+  .accordion { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+  .accordion-header {
+    background: var(--card-bg);
+    padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.93rem;
+    user-select: none;
+    transition: background .15s;
+  }
+  .accordion-header:hover { background: #f0f4fa; }
+  .accordion-header .acc-arrow { transition: transform .2s; font-size: 0.8rem; color: var(--text-muted); }
+  .accordion-header.open .acc-arrow { transform: rotate(90deg); }
+  .accordion-body { display: none; padding: 16px 18px; border-top: 1px solid var(--border); background: #fafbfd; font-size: 0.89rem; }
+  .accordion-body.open { display: block; }
+
+  /* Progress tracker */
+  .progress-track { display: flex; gap: 0; margin-bottom: 28px; }
+  .progress-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+  }
+  .progress-step::before {
+    content: '';
+    position: absolute;
+    top: 15px; left: 50%; right: -50%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+  .progress-step:last-child::before { display: none; }
+  .progress-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--border);
+    color: var(--text-muted);
+    margin: 0 auto 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.82rem;
+    position: relative; z-index: 1;
+  }
+  .progress-step.done .progress-dot { background: var(--accent-green); color: white; }
+  .progress-step.active .progress-dot { background: var(--ms-blue); color: white; box-shadow: 0 0 0 4px rgba(0,120,212,.2); }
+  .progress-label { font-size: 0.72rem; color: var(--text-muted); line-height: 1.3; }
+  .progress-step.done .progress-label, .progress-step.active .progress-label { color: var(--text); font-weight: 600; }
+
+  /* Arch diagram */
+  .arch-box {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    text-align: center;
+    font-size: 0.85rem;
+    position: relative;
+    background: white;
+  }
+  .arch-box.ms { border-color: var(--ms-blue); background: #f0f7ff; }
+  .arch-box.sap { border-color: var(--sap-blue); background: #f0f6ff; }
+  .arch-box.dv { border-color: var(--ms-purple); background: #faf0ff; }
+  .arch-arrow { text-align: center; font-size: 1.2rem; color: var(--text-muted); padding: 4px 0; }
+  .arch-label { font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+  .arch-items { font-size: 0.78rem; color: var(--text-muted); }
+  .arch-row { display: flex; align-items: center; gap: 10px; }
+  .arch-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+  /* Talking points */
+  .talking-point {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--ms-blue);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .talking-point.sap { border-left-color: var(--sap-blue); }
+  .talking-point.green { border-left-color: var(--accent-green); }
+  .talking-point .tp-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+  .talking-point .tp-body { font-size: 0.87rem; color: var(--text-muted); }
+
+  /* Copy button */
+  .copy-wrap { position: relative; }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    color: rgba(255,255,255,.7);
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,.2); color: white; }
+
+  /* Misc */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media(max-width:900px) { .two-col { grid-template-columns: 1fr; } }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag { background: var(--sap-light); color: var(--sap-dark); border-radius: 4px; padding: 2px 8px; font-size: 0.78rem; font-weight: 600; }
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .sticky-toc { position: sticky; top: 0; background: rgba(255,255,255,.95); backdrop-filter: blur(8px); z-index: 50; border-bottom: 1px solid var(--border); padding: 10px 56px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; font-size: 0.82rem; }
+  .sticky-toc a { color: var(--ms-blue); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ────────────────────────────────────────────
+     SIDEBAR
+──────────────────────────────────────────── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">🏭 Ascend Procurement</div>
+    <div class="logo-sub">SAP ECC 6.0 PR Agent Suite</div>
+    <div class="badge">⚡ RAPP Phase 6</div>
+  </div>
+
+  <div class="nav-section">Overview</div>
+  <a class="nav-link active" href="#overview" onclick="setActive(this)"><span class="icon">🗺️</span>What Was Built</a>
+  <a class="nav-link" href="#architecture" onclick="setActive(this)"><span class="icon">🏗️</span>Architecture</a>
+  <a class="nav-link" href="#sap-mapping" onclick="setActive(this)"><span class="icon">📦</span>SAP Table Mapping</a>
+
+  <div class="nav-section">Deploy</div>
+  <a class="nav-link" href="#deploy-steps" onclick="setActive(this)"><span class="icon">🚀</span>Step-by-Step Deploy</a>
+  <a class="nav-link" href="#env-vars" onclick="setActive(this)"><span class="icon">⚙️</span>Environment Variables</a>
+  <a class="nav-link" href="#sample-data" onclick="setActive(this)"><span class="icon">🗄️</span>Sample Data Guide</a>
+
+  <div class="nav-section">Demo</div>
+  <a class="nav-link" href="#demo-create" onclick="setActive(this)"><span class="icon">🛒</span>Create a PR</a>
+  <a class="nav-link" href="#demo-status" onclick="setActive(this)"><span class="icon">🔎</span>Check PR Status</a>
+  <a class="nav-link" href="#demo-approve" onclick="setActive(this)"><span class="icon">✅</span>Approve / Reject</a>
+  <a class="nav-link" href="#demo-followup" onclick="setActive(this)"><span class="icon">📩</span>Cancel & Remind</a>
+
+  <div class="nav-section">Reference</div>
+  <a class="nav-link" href="#talking-points" onclick="setActive(this)"><span class="icon">🎤</span>Demo Talking Points</a>
+  <a class="nav-link" href="#doa-guide" onclick="setActive(this)"><span class="icon">📊</span>DoA Approval Matrix</a>
+  <a class="nav-link" href="#prod-guide" onclick="setActive(this)"><span class="icon">🔧</span>Prod Upgrade Path</a>
+  <a class="nav-link" href="#troubleshoot" onclick="setActive(this)"><span class="icon">🩺</span>Troubleshooting</a>
+</nav>
+
+<!-- ────────────────────────────────────────────
+     MAIN
+──────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- Hero -->
+  <div class="hero" id="overview">
+    <div class="hero-badge">⚡ RAPP Phase 6 · Discrete Manufacturing CoE</div>
+    <h1>Ascend Procurement Assistant</h1>
+    <p class="subtitle">
+      Conversational Purchase Requisition agent for SAP ECC 6.0 — deployed as a native
+      Copilot Studio agent in Microsoft Teams, backed by Power Automate flows that
+      emulate SAP EBAN, EBKN, LFA1, T023, CSKS, T030, T16FS, and EKKO in Dataverse.
+    </p>
+    <div class="hero-pills">
+      <div class="pill">🤖 Copilot Studio</div>
+      <div class="pill">⚡ Power Automate</div>
+      <div class="pill">🗃️ Dataverse (SAP emulation)</div>
+      <div class="pill">🏭 SAP ECC 6.0</div>
+      <div class="pill">💬 Microsoft Teams</div>
+      <div class="pill">🐍 RAPP Python agents</div>
+    </div>
+  </div>
+
+  <!-- Sticky TOC -->
+  <div class="sticky-toc">
+    <strong>Jump to:</strong>
+    <a href="#overview">Overview</a>
+    <a href="#deploy-steps">Deploy</a>
+    <a href="#demo-create">Demo: Create PR</a>
+    <a href="#demo-approve">Demo: Approve</a>
+    <a href="#talking-points">Talking Points</a>
+    <a href="#prod-guide">Production Upgrade</a>
+  </div>
+
+  <div class="content">
+
+    <!-- ── WHAT WAS BUILT ──────────────────────────────────── -->
+    <div class="section" id="overview-detail">
+      <div class="section-title">🗺️ What Was Built</div>
+      <p class="section-subtitle">Complete bill of materials for the Ascend Procurement Agent solution</p>
+
+      <div class="card-grid cols-3" style="margin-bottom:24px">
+        <div class="card">
+          <div class="card-title">🐍 Python Agents (RAPP)</div>
+          <div class="card-desc">3 backend agents inheriting from BasicAgent — deployed to Azure Functions via RAPP pipeline.</div>
+          <div class="tag-row">
+            <span class="tag">ascend_purchase_requisition_agent.py</span>
+            <span class="tag">ascend_pr_status_agent.py</span>
+            <span class="tag">ascend_pr_approval_agent.py</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">💬 Copilot Studio Topics</div>
+          <div class="card-desc">4 native Copilot Studio YAML topics — transpiled from RAPP agents and ready to import.</div>
+          <div class="tag-row">
+            <span class="tag">Create PR</span>
+            <span class="tag">Check Status</span>
+            <span class="tag">Approve/Reject</span>
+            <span class="tag">Cancel/Remind</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ Power Automate Flows</div>
+          <div class="card-desc">6 flows connecting Copilot Studio to Dataverse (demo) or SAP ERP connector (production).</div>
+          <div class="tag-row">
+            <span class="tag">Vendor Lookup</span>
+            <span class="tag">Create PR</span>
+            <span class="tag">Get Status</span>
+            <span class="tag">Approve/Reject</span>
+            <span class="tag">Cancel/Edit</span>
+            <span class="tag">Reminder</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🗃️ Dataverse Tables (SAP Demo)</div>
+          <div class="card-desc">8 tables emulating SAP ECC 6.0 master and transactional data. All rows include <code>data_source = "SAP ECC 6.0 (Demo via Dataverse)"</code>.</div>
+          <div class="tag-row">
+            <span class="tag">LFA1 → Vendor</span>
+            <span class="tag">EBAN → PR</span>
+            <span class="tag">EBKN → Account</span>
+            <span class="tag">T023 → Category</span>
+            <span class="tag">CSKS → Cost Center</span>
+            <span class="tag">SKA1 → GL</span>
+            <span class="tag">EKKO → Contract</span>
+            <span class="tag">T16FS → DoA</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📦 Solution Package</div>
+          <div class="card-desc">Importable Power Platform solution ZIP with all components, environment variables, and sample data CSVs.</div>
+          <div class="tag-row">
+            <span class="tag">AscendProcurementAgent_1_0_0_0.zip</span>
+            <span class="tag">37.7 KB</span>
+            <span class="tag">32 files</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📄 Sample Data (8 CSVs)</div>
+          <div class="card-desc">12 vendors (incl. 1 blocked), 5 PRs in various states, contracts, DoA tiers — all labeled as SAP demo data.</div>
+          <div class="tag-row">
+            <span class="tag">Microsoft</span>
+            <span class="tag">Dell</span>
+            <span class="tag">AWS</span>
+            <span class="tag">SAP</span>
+            <span class="tag">Accenture</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert info">
+        <div class="alert-icon">ℹ️</div>
+        <div><strong>Demo Mode is ON by default.</strong> All flows read/write to Dataverse tables that emulate SAP ECC 6.0. No SAP system connection is required for demos. Flip <code>ascend_DemoMode</code> to <code>false</code> and configure the SAP ERP connector to go live.</div>
+      </div>
+    </div>
+
+    <!-- ── ARCHITECTURE ───────────────────────────────────── -->
+    <div class="section" id="architecture">
+      <div class="section-title">🏗️ Architecture</div>
+      <p class="section-subtitle">How messages flow from Teams/M365 Copilot to SAP ECC 6.0 (or Dataverse in demo mode)</p>
+
+      <div class="card" style="padding:28px 32px">
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:700px;margin:0 auto">
+          <div class="arch-box ms">
+            <div class="arch-label" style="color:var(--ms-dark)">User Interface</div>
+            <div class="arch-items">Microsoft Teams &nbsp;·&nbsp; M365 Copilot Chat &nbsp;·&nbsp; Copilot Studio Test Canvas</div>
+          </div>
+          <div class="arch-arrow">↕</div>
+          <div class="arch-box ms">
+            <div class="arch-label" style="color:var(--ms-dark)">Copilot Studio Agent — Ascend Procurement Assistant</div>
+            <div class="arch-items">
+              Topic: Create PR &nbsp;·&nbsp; Topic: Check Status &nbsp;·&nbsp; Topic: Approve/Reject &nbsp;·&nbsp; Topic: Cancel/Remind<br>
+              <small>Natural language understanding · Intent routing · Conversation state management</small>
+            </div>
+          </div>
+          <div class="arch-arrow">↕ HTTP trigger</div>
+          <div class="arch-box ms">
+            <div class="arch-label" style="color:var(--ms-dark)">Power Automate (6 Flows)</div>
+            <div class="arch-items">Vendor Lookup · Create PR · Get Status · Approve/Reject · Cancel/Edit · Send Reminder</div>
+          </div>
+          <div class="arch-arrow">↕</div>
+          <div class="arch-row" style="gap:16px">
+            <div class="arch-box dv" style="flex:1">
+              <div class="arch-label" style="color:var(--ms-purple)">🟣 DEMO MODE (Default)</div>
+              <div class="arch-items">Dataverse Tables<br><small>8 tables emulating SAP ECC 6.0<br>ascend_sap* prefix<br>data_source field on every row</small></div>
+            </div>
+            <div style="color:var(--text-muted);font-size:1.5rem;align-self:center">⟷</div>
+            <div class="arch-box sap" style="flex:1;opacity:.55">
+              <div class="arch-label" style="color:var(--sap-dark)">🔵 PRODUCTION</div>
+              <div class="arch-items">SAP ERP Connector<br><small>On-premises Data Gateway<br>BAPIs: BAPI_PR_CREATE,<br>BAPI_RELEASE_PURCHASE_DOC,<br>RFC_READ_TABLE</small></div>
+            </div>
+          </div>
+          <div class="arch-arrow">↕ (RAPP Azure Functions)</div>
+          <div class="arch-box" style="background:#f8f9fc">
+            <div class="arch-label">Azure Functions — RAPP Backend</div>
+            <div class="arch-items">ascend_purchase_requisition_agent.py · ascend_pr_status_agent.py · ascend_pr_approval_agent.py</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SAP TABLE MAPPING ──────────────────────────────── -->
+    <div class="section" id="sap-mapping">
+      <div class="section-title">📦 SAP ECC 6.0 Table Mapping</div>
+      <p class="section-subtitle">Every Dataverse table maps 1:1 to SAP ECC 6.0 transparency tables</p>
+
+      <div class="card" style="overflow:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dataverse Table</th>
+              <th>SAP Tables Emulated</th>
+              <th>SAP Description</th>
+              <th>Demo Records</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>ascend_sapvendor</code></td>
+              <td><span class="mono">LFA1, LFB1, LFM1</span></td>
+              <td>Vendor master (general, company code, purchasing org)</td>
+              <td>12 vendors (1 blocked)</td>
+              <td><span class="badge-ok">✓ Loaded</span></td>
+            </tr>
+            <tr>
+              <td><code>ascend_sappurchaserequisition</code></td>
+              <td><span class="mono">EBAN</span></td>
+              <td>Purchase requisition item data</td>
+              <td>5 PRs (pending, approved, rejected)</td>
+              <td><span class="badge-ok">✓ Loaded</span></td>
+            </tr>
+            <tr>
+              <td><code>ascend_sappraccountassignment</code></td>
+              <td><span class="mono">EBKN</span></td>
+              <td>PR account assignment (GL + cost center)</td>
+              <td>5 account assignments</td>
+              <td><span class="badge-ok">✓ Loaded</span></td>
+            </tr>
+            <tr>
+              <td><code>ascend_sapmaterialgroup</code></td>
+              <td><span class="mono">T023, T023T</span></td>
+              <td>Material group (MATKL) + description</td>
+              <td>8 groups (ITSOFT, ITHW, ITSVC…)</td>
+              <td><span class="badge-ok">✓ Loaded</span></td>
+            </tr>
+            <tr>
+              <td><code>ascend_sapcostcenter</code></td>
+              <td><span class="mono">CSKS</span></td>
+              <td>Cost center master data</td>
+              <td>7 cost centers (1 inactive)</td>
+              <td><span class="badge-ok">✓ Loaded</span></td>
+            </tr>
+            <tr>
+              <td><code>ascend_sapglaccount</code></td>
+              <td><span class="mono">SKA1, SKB1</span></td>
+              <td>GL account master (chart of accounts, company code)</td>
+              <td>9 GL accounts (1 blocked)</td>
+              <td><span class="badge-ok">✓ Loaded</span></td>
+            </tr>
+            <tr>
+              <td><code>ascend_sapcontract</code></td>
+              <td><span class="mono">EKKO, EKPO, EORD</span></td>
+              <td>Outline agreements (framework contracts) + source list</td>
+              <td>5 contracts (1 expired)</td>
+              <td><span class="badge-ok">✓ Loaded</span></td>
+            </tr>
+            <tr>
+              <td><code>ascend_sapreleasestrategy</code></td>
+              <td><span class="mono">T16FS, T161F/G/H/S</span></td>
+              <td>Release strategy / Delegation of Authority</td>
+              <td>4 DoA levels (L1–L4)</td>
+              <td><span class="badge-ok">✓ Loaded</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert warn" style="margin-top:16px">
+        <div class="alert-icon">⚠️</div>
+        <div><strong>Demo Data Disclaimer:</strong> Every row in these tables includes <code>ascend_datasource = "SAP ECC 6.0 (Demo via Dataverse)"</code>. This field is surfaced in the Copilot Studio responses so demo audiences always know they're seeing emulated data.</div>
+      </div>
+    </div>
+
+    <!-- ── DEPLOY STEPS ───────────────────────────────────── -->
+    <div class="section" id="deploy-steps">
+      <div class="section-title">🚀 Step-by-Step Deployment</div>
+      <p class="section-subtitle">Deploy the solution ZIP to any Power Platform environment in under 30 minutes</p>
+
+      <div class="progress-track">
+        <div class="progress-step done"><div class="progress-dot">✓</div><div class="progress-label">Build ZIP</div></div>
+        <div class="progress-step active"><div class="progress-dot">2</div><div class="progress-label">Import Solution</div></div>
+        <div class="progress-step"><div class="progress-dot">3</div><div class="progress-label">Configure Env Vars</div></div>
+        <div class="progress-step"><div class="progress-dot">4</div><div class="progress-label">Load Sample Data</div></div>
+        <div class="progress-step"><div class="progress-dot">5</div><div class="progress-label">Connect Flows</div></div>
+        <div class="progress-step"><div class="progress-dot">6</div><div class="progress-label">Publish Bot</div></div>
+        <div class="progress-step"><div class="progress-dot">7</div><div class="progress-label">Test & Demo</div></div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-left"><div class="step-num done">✓</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Build the Solution ZIP</div>
+            <div class="step-body">
+              <p style="margin-bottom:8px">Already done — the ZIP is at <code>customers/ascend/solution/AscendProcurementAgent_1_0_0_0.zip</code> (37.7 KB, 32 files).</p>
+              <p>To rebuild after changes:</p>
+              <div class="copy-wrap"><pre><code>python customers/ascend/solution/build_solution.py</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Import Solution to Power Platform</div>
+            <div class="step-body">
+              <ol style="padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+                <li>Go to <a href="https://make.powerapps.com" target="_blank">make.powerapps.com</a></li>
+                <li>Select your target environment (top-right dropdown)</li>
+                <li>Navigate to <strong>Solutions → Import solution</strong></li>
+                <li>Click <strong>Browse</strong> and upload <code>AscendProcurementAgent_1_0_0_0.zip</code></li>
+                <li>Review component list (8 entities, 6 flows, 1 bot, 5 env vars) → click <strong>Import</strong></li>
+                <li>Wait 3–5 minutes for import to complete ✅</li>
+              </ol>
+              <div class="alert success" style="margin-top:10px"><div class="alert-icon">✅</div><div>The solution is <strong>unmanaged</strong> — you can edit all components after import.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step" id="env-vars">
+          <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Configure Environment Variables</div>
+            <div class="step-body">
+              <p style="margin-bottom:12px">Solutions → <em>Ascend Procurement Agent</em> → <strong>Environment Variables</strong> → click each → <strong>Edit current value</strong></p>
+              <table class="data-table" style="margin-bottom:8px">
+                <thead><tr><th>Variable</th><th>Demo Value</th><th>Purpose</th></tr></thead>
+                <tbody>
+                  <tr><td><code>ascend_DemoMode</code></td><td><code>true</code></td><td>Routes flows to Dataverse (not SAP)</td></tr>
+                  <tr><td><code>ascend_CompanyCode</code></td><td><code>1000</code></td><td>SAP BUKRS company code</td></tr>
+                  <tr><td><code>ascend_PurchasingOrg</code></td><td><code>1000</code></td><td>SAP EKORG purchasing org</td></tr>
+                  <tr><td><code>ascend_ApprovalNotificationEmail</code></td><td>your email</td><td>Sends approval/reminder emails here</td></tr>
+                  <tr><td><code>ascend_SAPConnectionString</code></td><td><em>leave blank</em></td><td>Only needed in production SAP mode</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="step" id="sample-data">
+          <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Load Sample Data into Dataverse</div>
+            <div class="step-body">
+              <p style="margin-bottom:10px">Import the 8 CSVs from <code>customers/ascend/solution/sample_data/</code> into Dataverse:</p>
+              <ol style="padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+                <li>make.powerapps.com → <strong>Dataverse → Tables</strong></li>
+                <li>Search for each <code>ascend_sap*</code> table</li>
+                <li>Open table → <strong>Import → Import data from Excel/CSV</strong></li>
+                <li>Upload matching CSV, map columns, import</li>
+              </ol>
+              <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;gap:10px;font-size:.85rem"><span class="badge-sap">LFA1/LFB1/LFM1</span><code>ascend_sapvendor_data.csv</code> — 12 vendors</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:.85rem"><span class="badge-sap">T023/T023T</span><code>ascend_sapmaterialgroup_data.csv</code> — 8 categories</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:.85rem"><span class="badge-sap">CSKS</span><code>ascend_sapcostcenter_data.csv</code> — 8 cost centers</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:.85rem"><span class="badge-sap">SKA1/SKB1</span><code>ascend_sapglaccount_data.csv</code> — 9 GL accounts</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:.85rem"><span class="badge-sap">EKKO/EKPO</span><code>ascend_sapcontract_data.csv</code> — 5 contracts</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:.85rem"><span class="badge-sap">T16FS</span><code>ascend_sapreleasestrategy_data.csv</code> — 4 DoA levels</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:.85rem"><span class="badge-sap">EBAN</span><code>ascend_sappurchaserequisition_data.csv</code> — 5 PRs</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:.85rem"><span class="badge-sap">EBKN</span><code>ascend_sappraccountassignment_data.csv</code> — 5 assignments</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-left"><div class="step-num">5</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Authorize Flow Connections</div>
+            <div class="step-body">
+              <p>Solutions → Ascend Procurement Agent → <strong>Cloud flows</strong> → open each flow:</p>
+              <ul style="padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:5px">
+                <li>Authorize <strong>Microsoft Dataverse</strong> connection (all 6 flows)</li>
+                <li>Authorize <strong>Office 365 Outlook</strong> connection (<code>flow_sap_approve_pr</code> and <code>flow_sap_send_reminder</code>)</li>
+                <li>Toggle each flow <strong>ON</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-left"><div class="step-num">6</div><div class="step-line"></div></div>
+          <div class="step-content">
+            <div class="step-title">Publish the Copilot Studio Bot</div>
+            <div class="step-body">
+              <ol style="padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+                <li>Go to <a href="https://copilotstudio.microsoft.com" target="_blank">copilotstudio.microsoft.com</a></li>
+                <li>Open <strong>Ascend Procurement Assistant</strong></li>
+                <li>Verify 4 topics appear under <strong>Topics</strong></li>
+                <li>Open each topic → confirm Power Automate action is connected</li>
+                <li>Click <strong>Publish</strong> (top-right)</li>
+                <li><em>Optional:</em> Channels → Microsoft Teams → Turn on Teams</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-left"><div class="step-num">7</div></div>
+          <div class="step-content">
+            <div class="step-title">Test &amp; Run Your First Demo 🎉</div>
+            <div class="step-body">
+              <p>Use the Copilot Studio <strong>Test</strong> pane (right side) or open in Teams. Try the demo scripts below.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO: CREATE PR ────────────────────────────────── -->
+    <div class="section" id="demo-create">
+      <div class="section-title">🛒 Demo Scenario 1 — Create a Purchase Requisition</div>
+      <p class="section-subtitle">11-step guided PR creation: vendor lookup → classification → GL derivation → DoA routing → SAP write (demo)</p>
+
+      <div class="two-col">
+        <div>
+          <div class="chat-demo">
+            <div class="chat-header">
+              <div class="chat-avatar">🤖</div>
+              <div>
+                <div>Ascend Procurement Assistant</div>
+                <div style="font-size:.75rem;opacity:.8">Microsoft Teams · SAP ECC 6.0 (Demo)</div>
+              </div>
+            </div>
+            <div class="chat-body">
+              <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">I need to buy Microsoft 365 E5 licenses</div></div>
+              <div class="msg agent">
+                <div class="msg-avatar">🤖</div>
+                <div>
+                  <div class="msg-bubble">I'd be happy to help you create a Purchase Requisition for Microsoft 365 E5 licenses. Let's get started!<br><br>🔍 <strong>Vendor Lookup</strong> — I found these vendors matching "Microsoft":<br><br>• <strong>V100001</strong> — Microsoft Corporation<br>• <strong>V100002</strong> — Microsoft Licensing LLC ⭐ <em>Active contract (EA #4500012345)</em><br>• <strong>V100003</strong> — Microsoft Ireland Operations (EU)<br><br>Which vendor would you like to use?</div>
+                  <div class="msg-note"><span class="msg-note-icon">⚠️</span><em>DEMO: Querying Dataverse <code>ascend_sapvendor</code> (emulates SAP LFA1). In production: SAP RFC_READ_TABLE → LFA1 + LFM1</em></div>
+                </div>
+              </div>
+              <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">Microsoft Licensing LLC</div></div>
+              <div class="msg agent"><div class="msg-avatar">🤖</div><div class="msg-bubble">Selected: <strong>Microsoft Licensing LLC (V100002)</strong> ✅<br><br>📋 <strong>Item Classification</strong> — Based on "Microsoft 365 E5 licenses," this looks like <strong>IT Software &amp; Licenses (ITSOFT)</strong>. Does that sound right? Or would you like to choose a different category?</div></div>
+              <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">Yes that's right</div></div>
+              <div class="msg agent"><div class="msg-avatar">🤖</div><div class="msg-bubble">Category: <strong>IT Software &amp; Licenses (ITSOFT)</strong> ✅<br><br>How much do you need, and how often?<br><em>Example: "$2,000 per month for 12 months" or "$24,000 one-time"</em></div></div>
+              <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">$2,000 per month for 12 months</div></div>
+              <div class="msg agent"><div class="msg-avatar">🤖</div><div class="msg-bubble">Got it — <strong>$2,000/month × 12 months = $24,000 total</strong>.<br><br>Which cost center should this be charged to?<br><em>Available: 100200 (IT Operations), 100300 (Finance), 100100 (Corporate IT)…</em></div></div>
+              <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">100200</div></div>
+              <div class="msg agent">
+                <div class="msg-avatar">🤖</div>
+                <div>
+                  <div class="msg-bubble">
+                    ✅ <strong>PR Preview — Please Confirm</strong><br><br>
+                    📋 <strong>Purchase Requisition Draft</strong><br>
+                    • Description: Microsoft 365 E5 licenses<br>
+                    • Vendor: Microsoft Licensing LLC (V100002)<br>
+                    • Category: ITSOFT — IT Software &amp; Licenses<br>
+                    • Amount: $2,000/month × 12 = <strong>$24,000 total</strong><br>
+                    • Cost Center: 100200 (IT Operations)<br>
+                    • GL Account: 612345 (IT Software &amp; Subscriptions)<br>
+                    • Contract: #4500012345 (Microsoft EA — $500K max, active thru 2027)<br>
+                    • Approver: <strong>John Smith</strong> (L2 — $5,001–$25,000 range)<br><br>
+                    Type <strong>"confirm"</strong> to submit to SAP, or <strong>"edit"</strong> to change anything.
+                  </div>
+                  <div class="msg-note"><span class="msg-note-icon">⚠️</span><em>DEMO: GL derived from Dataverse <code>ascend_sapglaccount</code> (emulates SAP T030). DoA from <code>ascend_sapreleasestrategy</code> (emulates T16FS).</em></div>
+                </div>
+              </div>
+              <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">confirm</div></div>
+              <div class="msg agent">
+                <div class="msg-avatar">🤖</div>
+                <div>
+                  <div class="msg-bubble">
+                    🎉 <strong>PR Created Successfully!</strong><br><br>
+                    📄 <strong>PR Number: 10025042113</strong><br>
+                    • Written to: SAP EBAN (via Dataverse demo)<br>
+                    • Account Assignment: EBKN — Cost Center 100200, GL 612345<br>
+                    • Contract Reference: 4500012345<br>
+                    • Approval Request: Sent to <strong>John Smith</strong><br><br>
+                    You can track this PR: <em>"Check PR 10025042113 status"</em>
+                  </div>
+                  <div class="msg-note"><span class="msg-note-icon">⚠️</span><em>DEMO: Wrote to Dataverse <code>ascend_sappurchaserequisition</code> + <code>ascend_sappraccountassignment</code>. In production: SAP BAPI_PR_CREATE → EBAN + EBKN → generates real BANFN</em></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">📋 What's Being Demonstrated</div>
+            <ul class="card-rows">
+              <li><span class="label">Step 1–2</span><span class="value">NLP intent recognition</span></li>
+              <li><span class="label">Step 3</span><span class="value">SAP LFA1 vendor lookup</span></li>
+              <li><span class="label">Step 4</span><span class="value">T023 item classification</span></li>
+              <li><span class="label">Step 5–6</span><span class="value">EORD contract matching</span></li>
+              <li><span class="label">Step 7</span><span class="value">T030/SKA1 GL derivation</span></li>
+              <li><span class="label">Step 8</span><span class="value">T16FS DoA evaluation</span></li>
+              <li><span class="label">Step 9</span><span class="value">PR preview + confirmation</span></li>
+              <li><span class="label">Step 10</span><span class="value">EBAN + EBKN write</span></li>
+              <li><span class="label">Step 11</span><span class="value">Approval notification</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">💬 Alternative Phrases to Try</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+              <div style="background:#f0f7ff;border-radius:8px;padding:9px 12px;font-size:.85rem">"Create a PR for Dell laptops"</div>
+              <div style="background:#f0f7ff;border-radius:8px;padding:9px 12px;font-size:.85rem">"I need to buy AWS cloud services monthly"</div>
+              <div style="background:#f0f7ff;border-radius:8px;padding:9px 12px;font-size:.85rem">"Submit a purchase request for Accenture consulting"</div>
+              <div style="background:#fff8e6;border-radius:8px;padding:9px 12px;font-size:.85rem">Try: "Buy something from Dell Financial Services" — demonstrates <strong>blocked vendor</strong> error</div>
+              <div style="background:#fff8e6;border-radius:8px;padding:9px 12px;font-size:.85rem">Try: "$150,000 one-time" — routes to <strong>L3 approval</strong> (Susan Lee)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO: STATUS ───────────────────────────────────── -->
+    <div class="section" id="demo-status">
+      <div class="section-title">🔎 Demo Scenario 2 — Check PR Status</div>
+      <p class="section-subtitle">Look up a specific PR or list all your recent requisitions</p>
+
+      <div class="two-col">
+        <div class="chat-demo">
+          <div class="chat-header"><div class="chat-avatar">🤖</div><div>Ascend Procurement Assistant</div></div>
+          <div class="chat-body">
+            <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">What's the status of PR 10012345?</div></div>
+            <div class="msg agent">
+              <div class="msg-avatar">🤖</div>
+              <div>
+                <div class="msg-bubble">
+                  🔍 <strong>PR 10012345 — Status</strong><br><br>
+                  📄 Microsoft 365 E5 – Annual<br>
+                  • Vendor: Microsoft Licensing LLC<br>
+                  • Amount: <strong>$24,000</strong> ($2,000/month × 12)<br>
+                  • GL: 612345 — IT Software<br>
+                  • Contract: #4500012345 (Microsoft EA)<br>
+                  • Status: 🟡 <strong>Pending Approval</strong><br>
+                  • Approver: John Smith (L2)<br>
+                  • Submitted: March 30, 2026<br><br>
+                  Would you like to:<br>
+                  • Send a reminder to John Smith<br>
+                  • Cancel this PR<br>
+                  • Edit the PR
+                </div>
+                <div class="msg-note"><span class="msg-note-icon">⚠️</span><em>DEMO: Read from Dataverse <code>ascend_sappurchaserequisition</code> (emulates SAP EBAN query by BANFN)</em></div>
+              </div>
+            </div>
+            <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">Show me all my recent PRs</div></div>
+            <div class="msg agent"><div class="msg-avatar">🤖</div><div class="msg-bubble">📋 <strong>Your Recent Purchase Requisitions</strong><br><br>1. <strong>10012345</strong> — Microsoft 365 E5 ($24,000) — 🟡 Pending<br>2. <strong>10012310</strong> — Dell Laptops x10 ($15,000) — ✅ Approved<br>3. <strong>10012290</strong> — AWS Cloud Services ($36,000) — ❌ Rejected<br>4. <strong>10012280</strong> — Accenture Advisory ($45,000) — 🟡 Pending<br><br>Select a PR number for details.</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">🎯 Demo Tips</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+              <div style="background:#f0f7ff;border-radius:8px;padding:9px 12px;font-size:.85rem">"Check PR 10012310" — shows <strong>approved</strong> state</div>
+              <div style="background:#fce8e6;border-radius:8px;padding:9px 12px;font-size:.85rem">"Check PR 10012290" — shows <strong>rejected</strong> state with reason</div>
+              <div style="background:#f0f7ff;border-radius:8px;padding:9px 12px;font-size:.85rem">"List my PRs" — shows all 4 sample requisitions</div>
+              <div style="background:#f0f7ff;border-radius:8px;padding:9px 12px;font-size:.85rem">"What PRs are pending approval?" — shows approver view</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO: APPROVE ──────────────────────────────────── -->
+    <div class="section" id="demo-approve">
+      <div class="section-title">✅ Demo Scenario 3 — Approve / Reject a PR</div>
+      <p class="section-subtitle">DoA-validated approval with Teams notification — emulates SAP BUS2105 workflow</p>
+
+      <div class="two-col">
+        <div class="chat-demo">
+          <div class="chat-header"><div class="chat-avatar">🤖</div><div>Ascend Procurement Assistant (as Approver)</div></div>
+          <div class="chat-body">
+            <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">Approve PR 10012345</div></div>
+            <div class="msg agent">
+              <div class="msg-avatar">🤖</div>
+              <div>
+                <div class="msg-bubble">
+                  📋 <strong>PR Approval Request</strong><br><br>
+                  Reviewing PR <strong>10012345</strong>:<br>
+                  • Item: Microsoft 365 E5 – Annual<br>
+                  • Vendor: Microsoft Licensing LLC<br>
+                  • Amount: $24,000 total<br>
+                  • Contract: #4500012345 (active, within limit)<br>
+                  • Requestor: J. Smith<br><br>
+                  🔐 <strong>Authority Check:</strong> $24,000 falls within your L2 authorization ($5,001–$25,000) ✅<br><br>
+                  Type <strong>"approve"</strong> to confirm, or <strong>"reject [reason]"</strong> to decline.
+                </div>
+              </div>
+            </div>
+            <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">approve</div></div>
+            <div class="msg agent">
+              <div class="msg-avatar">🤖</div>
+              <div>
+                <div class="msg-bubble">
+                  ✅ <strong>PR 10012345 Approved!</strong><br><br>
+                  • EBAN release status updated: <strong>Approved</strong><br>
+                  • Requestor notified via email<br>
+                  • Next step: SAP generates PO via ME21N<br><br>
+                  <em>Approval recorded by: John Smith (L2)</em>
+                </div>
+                <div class="msg-note"><span class="msg-note-icon">⚠️</span><em>DEMO: Updated Dataverse FRGST field (emulates SAP EBAN release + BUS2105 workflow completion). Email sent via Office 365.</em></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">🎯 DoA Demo Scenarios</div>
+            <table class="data-table" style="margin-top:8px">
+              <thead><tr><th>Amount</th><th>Approver</th><th>Level</th></tr></thead>
+              <tbody>
+                <tr><td>$0 – $5,000</td><td>Jane Doe</td><td><span class="badge-ok">L1</span></td></tr>
+                <tr><td>$5,001 – $25,000</td><td>John Smith</td><td><span class="badge-demo">L2</span></td></tr>
+                <tr><td>$25,001 – $100,000</td><td>Susan Lee</td><td><span class="badge-warn">L3</span></td></tr>
+                <tr><td>$100,001+</td><td>CFO Office</td><td><span class="badge-sap">L4</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <br>
+          <div class="card">
+            <div class="card-title">💬 Try These</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+              <div style="background:#fce8e6;border-radius:8px;padding:9px 12px;font-size:.85rem">"Reject PR 10012280 — budget exceeded"</div>
+              <div style="background:#f0f7ff;border-radius:8px;padding:9px 12px;font-size:.85rem">"Show PRs pending my approval"</div>
+              <div style="background:#fff8e6;border-radius:8px;padding:9px 12px;font-size:.85rem">Try approving PR 10012280 ($45K) as L2 — demonstrates <strong>DoA exceeded</strong> error</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO: CANCEL / REMIND ──────────────────────────── -->
+    <div class="section" id="demo-followup">
+      <div class="section-title">📩 Demo Scenario 4 — Cancel &amp; Send Reminders</div>
+      <p class="section-subtitle">PR follow-up actions with eligibility checks</p>
+
+      <div class="two-col">
+        <div class="chat-demo">
+          <div class="chat-header"><div class="chat-avatar">🤖</div><div>Ascend Procurement Assistant</div></div>
+          <div class="chat-body">
+            <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">Send a reminder to the approver for PR 10012345</div></div>
+            <div class="msg agent">
+              <div class="msg-avatar">🤖</div>
+              <div>
+                <div class="msg-bubble">📧 Reminder sent to <strong>John Smith</strong> for PR 10012345 ($24,000)!<br><br>The email includes:<br>• PR details and amount<br>• Direct approval link<br>• Option to approve by replying in Teams<br><br><em>Note: PR has been pending for 3 days.</em></div>
+                <div class="msg-note"><span class="msg-note-icon">⚠️</span><em>DEMO: Office 365 email sent. In production: SAP SWI_CREATE_VIA_INTERNET or Z-program re-triggers BUS2105 work item.</em></div>
+              </div>
+            </div>
+            <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">Cancel PR 10012290</div></div>
+            <div class="msg agent"><div class="msg-avatar">🤖</div><div class="msg-bubble">✅ <strong>PR 10012290 Cancelled</strong><br><br>AWS Cloud Services PR has been cancelled.<br>• EBAN status: Cancelled<br>• All open items cleared<br><br>A new PR can be created if needed.</div></div>
+            <div class="msg user"><div class="msg-avatar">👤</div><div class="msg-bubble">Cancel PR 10012310</div></div>
+            <div class="msg agent"><div class="msg-avatar">🤖</div><div class="msg-bubble">⛔ <strong>Cannot Cancel</strong><br><br>PR 10012310 (Dell Laptops) has already been <strong>approved</strong>. Approved PRs cannot be cancelled through this system.<br><br>To cancel an approved PR, please contact the purchasing team or use SAP ME52N directly.</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">🎯 Eligibility Logic Demo</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;font-size:.88rem">
+              <div style="background:#e6f4ea;border-radius:8px;padding:9px 12px">
+                <strong>Can Cancel / Edit:</strong><br>Status = Pending · Not locked in SAP · Requestor = current user
+              </div>
+              <div style="background:#fce8e6;border-radius:8px;padding:9px 12px">
+                <strong>Cannot Cancel:</strong><br>Already Approved · PO created · Locked in SAP
+              </div>
+              <div style="background:#fff8e6;border-radius:8px;padding:9px 12px">
+                <strong>Reminder Rules:</strong><br>Only for Pending PRs · One reminder per 24h (demo: no limit)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TALKING POINTS ─────────────────────────────────── -->
+    <div class="section" id="talking-points">
+      <div class="section-title">🎤 Demo Talking Points</div>
+      <p class="section-subtitle">Key messages for presenting to Ascend stakeholders</p>
+
+      <div class="talking-point">
+        <div class="tp-title">💬 "This is your SAP data — we just made it conversational"</div>
+        <div class="tp-body">Every vendor, contract, GL account, cost center, and DoA level shown here comes from Dataverse tables that mirror your SAP ECC 6.0 master data (LFA1, EKKO, CSKS, T030, T16FS). In production, those same flows read directly from SAP instead of Dataverse — zero re-training needed.</div>
+      </div>
+      <div class="talking-point sap">
+        <div class="tp-title">🏭 "We mapped every field back to SAP table columns"</div>
+        <div class="tp-body">PR Number → BANFN · Vendor → LIFNR · Category → MATKL · GL → SAKTO · Cost Center → KOSTL · Contract → EBELN · Release Status → FRGST. When this goes to production, BAPI_PR_CREATE returns a real BANFN from SAP — no data entry in SAP required.</div>
+      </div>
+      <div class="talking-point green">
+        <div class="tp-title">🛡️ "DoA compliance is enforced automatically"</div>
+        <div class="tp-body">The agent looks up your T16FS release strategy in real time. A $24,000 PR automatically routes to L2 (John Smith). A $50,000 PR goes to L3 (Susan Lee). $100K+ goes to CFO Office. No one can approve outside their authority — the system blocks it with a specific error message.</div>
+      </div>
+      <div class="talking-point">
+        <div class="tp-title">📋 "Contract compliance is baked in"</div>
+        <div class="tp-body">When a vendor + category combination matches an active SAP outline agreement (EKKO), the PR automatically references it. Spend is tracked against the contract maximum value. The agent flags when you're close to the limit or when the contract has expired.</div>
+      </div>
+      <div class="talking-point sap">
+        <div class="tp-title">⚡ "From request to PR number in under 3 minutes"</div>
+        <div class="tp-body">The full 11-step flow — intent detection, vendor lookup, classification, GL derivation, DoA routing, and EBAN write — completes in a single conversation. Compare that to the current ME51N experience.</div>
+      </div>
+    </div>
+
+    <!-- ── DoA MATRIX ─────────────────────────────────────── -->
+    <div class="section" id="doa-guide">
+      <div class="section-title">📊 Delegation of Authority Matrix</div>
+      <p class="section-subtitle">Mirrors SAP T16FS / T161F / T161G release strategy configuration</p>
+
+      <div class="card" style="overflow:auto">
+        <table class="data-table">
+          <thead>
+            <tr><th>DoA Level</th><th>Approver</th><th>SAP User ID</th><th>Value Range</th><th>SAP Tables</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-ok">L1 — Line Manager</span></td>
+              <td>Jane Doe</td><td><code>U001</code></td>
+              <td>$0 – $5,000</td>
+              <td><span class="mono">T16FS.FRGGR=01 · FRGST=L1</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge-demo">L2 — Dept. Director</span></td>
+              <td>John Smith</td><td><code>U002</code></td>
+              <td>$5,001 – $25,000</td>
+              <td><span class="mono">T16FS.FRGGR=01 · FRGST=L2</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge-warn">L3 — VP Finance</span></td>
+              <td>Susan Lee</td><td><code>U003</code></td>
+              <td>$25,001 – $100,000</td>
+              <td><span class="mono">T16FS.FRGGR=01 · FRGST=L3</span></td>
+            </tr>
+            <tr>
+              <td><span class="badge-sap">L4 — CFO Office</span></td>
+              <td>CFO Office</td><td><code>U004</code></td>
+              <td>$100,001+</td>
+              <td><span class="mono">T16FS.FRGGR=01 · FRGST=L4</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert warn" style="margin-top:14px">
+        <div class="alert-icon">💡</div>
+        <div><strong>Demo tip:</strong> Create PRs with amounts of $3,000, $15,000, $60,000, and $200,000 consecutively to demonstrate all four DoA levels routing to different approvers.</div>
+      </div>
+    </div>
+
+    <!-- ── PRODUCTION UPGRADE ─────────────────────────────── -->
+    <div class="section" id="prod-guide">
+      <div class="section-title">🔧 Production Upgrade Path (Demo → SAP Live)</div>
+      <p class="section-subtitle">Three-step process to switch from Dataverse emulation to live SAP ECC 6.0</p>
+
+      <div class="card-grid cols-3" style="margin-bottom:24px">
+        <div class="card" style="border-top:3px solid var(--ms-blue)">
+          <div class="card-title">① Set Environment Variable</div>
+          <div class="card-desc">Change <code>ascend_DemoMode</code> from <code>true</code> to <code>false</code> in the Power Platform environment variables panel.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--sap-blue)">
+          <div class="card-title">② Configure SAP ERP Connector</div>
+          <div class="card-desc">Install the on-premises data gateway. Add SAP ERP connector. Set <code>ascend_SAPConnectionString</code> to your SAP hostname, system number, and client.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent-green)">
+          <div class="card-title">③ Swap Flow Actions</div>
+          <div class="card-desc">In each flow, replace Dataverse query actions with SAP ERP connector actions. Comments in each flow JSON label exactly which BAPI/RFC_READ_TABLE to call.</div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">📋 Flow-by-flow SAP replacement guide <span class="acc-arrow">▶</span></div>
+        <div class="accordion-body">
+          <table class="data-table">
+            <thead><tr><th>Flow</th><th>Demo (Dataverse)</th><th>Production (SAP ERP Connector)</th></tr></thead>
+            <tbody>
+              <tr><td>Vendor Lookup</td><td>Query <code>ascend_sapvendor</code></td><td><code>SAP RFC_READ_TABLE</code> → LFA1 + LFB1 + LFM1</td></tr>
+              <tr><td>Create PR</td><td>Create <code>ascend_sappurchaserequisition</code></td><td><code>SAP BAPI_PR_CREATE</code> → EBAN + EBKN (returns real BANFN)</td></tr>
+              <tr><td>Get PR Status</td><td>Read <code>ascend_sappurchaserequisition</code></td><td><code>SAP BAPI_REQUISITION_GETDETAIL</code></td></tr>
+              <tr><td>Approve PR</td><td>Update FRGST field</td><td><code>SAP BAPI_RELEASE_PURCHASE_DOC</code> + <code>SWR_WORKITEM_COMPLETE</code></td></tr>
+              <tr><td>Cancel/Edit PR</td><td>Update/delete record</td><td><code>SAP BAPI_PR_CHANGE</code> / ME52N</td></tr>
+              <tr><td>Send Reminder</td><td>Office 365 email only</td><td>Email + <code>SAP SWI_CREATE_VIA_INTERNET</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TROUBLESHOOTING ────────────────────────────────── -->
+    <div class="section" id="troubleshoot">
+      <div class="section-title">🩺 Troubleshooting</div>
+      <p class="section-subtitle">Common issues and fixes</p>
+
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">Solution import fails <span class="acc-arrow">▶</span></div>
+        <div class="accordion-body">Ensure the target Power Platform environment has Dataverse enabled (not the default environment for Trial). Check that you're using an unmanaged solution import.</div>
+      </div>
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">Flows not connected in Copilot Studio topics <span class="acc-arrow">▶</span></div>
+        <div class="accordion-body">In Copilot Studio, open each topic → click the Power Automate action → re-select the flow from the dropdown. This is needed when the flow connection was imported from a different environment.</div>
+      </div>
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">Sample data import fails (column mapping) <span class="acc-arrow">▶</span></div>
+        <div class="accordion-body">CSV column names must exactly match Dataverse field names (e.g., <code>ascend_lifnr</code>, not <code>LIFNR</code>). Use the Dataverse table column designer to verify field names before importing.</div>
+      </div>
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">Bot returns generic "I don't understand" <span class="acc-arrow">▶</span></div>
+        <div class="accordion-body">Ensure the bot has been <strong>published</strong> after import. Unpublished bots use the last published version, which may be empty on first import.</div>
+      </div>
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">Approval emails not sending <span class="acc-arrow">▶</span></div>
+        <div class="accordion-body">Check that the Office 365 Outlook connection is authorized in Power Automate. Verify <code>ascend_ApprovalNotificationEmail</code> is set. Check Power Automate run history for the specific error.</div>
+      </div>
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">Flow returns "No records found" for vendors <span class="acc-arrow">▶</span></div>
+        <div class="accordion-body">Confirm sample data was imported into <code>ascend_sapvendor</code> table. The vendor lookup uses a <code>contains()</code> filter on <code>ascend_name1</code> — try the exact vendor names from the CSV (e.g., "Microsoft", "Dell", "Amazon").</div>
+      </div>
+
+      <div class="alert success" style="margin-top:20px">
+        <div class="alert-icon">📁</div>
+        <div>
+          <strong>Full deployment guide:</strong> <code>customers/ascend/solution/DEPLOYMENT_GUIDE.md</code><br>
+          <strong>Solution source:</strong> <code>customers/ascend/solution/solution_src/</code><br>
+          <strong>Python agents:</strong> <code>customers/ascend/agents/</code><br>
+          <strong>Copilot Studio topics:</strong> <code>transpiled/copilot_studio_native/ascend_pr_agent/topics/</code>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /page-wrapper -->
+
+<script>
+function setActive(el) {
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleAccordion(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  header.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.copy-wrap').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = '#7fffb2';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+  });
+}
+
+// Highlight active nav on scroll
+const sections = ['overview-detail','architecture','sap-mapping','deploy-steps','demo-create','demo-status','demo-approve','demo-followup','talking-points','doa-guide','prod-guide','troubleshoot'];
+const navMap = {
+  'overview-detail':'#overview','architecture':'#architecture','sap-mapping':'#sap-mapping',
+  'deploy-steps':'#deploy-steps','env-vars':'#deploy-steps','sample-data':'#deploy-steps',
+  'demo-create':'#demo-create','demo-status':'#demo-status','demo-approve':'#demo-approve',
+  'demo-followup':'#demo-followup','talking-points':'#talking-points','doa-guide':'#doa-guide',
+  'prod-guide':'#prod-guide','troubleshoot':'#troubleshoot'
+};
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const href = navMap[entry.target.id];
+      if (href) {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.nav-link[href="${href}"]`);
+        if (link) link.classList.add('active');
+      }
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-80px 0px -60% 0px' });
+
+document.querySelectorAll('.section[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

@@ -3,12 +3,24 @@
     Step 21 - Add Tracking Number columns and seed data for Shipment Tracker
 .DESCRIPTION
     Creates bw_TrackingNumber and bw_CarrierCode custom columns on the
-    Sales Order entity. Seeds realistic tracking numbers on the 4 demo
-    orders from Step 20. Exports tracking data to data/order-tracking.json.
+    Sales Order entity. Seeds realistic tracking numbers on demo orders.
+
+    Customer-driven path: reads salesOrders[].tracking from
+    customers/{Customer}/d365/config/demo-data.json
+
+    Legacy fallback: if no -Customer specified or no salesOrders section,
+    seeds Zurn/Ferguson hardcoded order data.
+
+.PARAMETER Customer
+    Customer folder name (e.g. "navico", "zurnelkay"). Defaults to "zurnelkay".
+
 .NOTES
     Run AFTER 20-OrderMgmt.ps1 (orders must exist).
     Publisher prefix: bw (Bill Whalen - Solution Engineering)
 #>
+param(
+    [string]$Customer = "zurnelkay"
+)
 
 $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -130,36 +142,60 @@ Write-Host "  Published salesorder entity" -ForegroundColor Green
 Start-Sleep -Seconds 5
 
 # ============================================================
-# 3. Seed tracking numbers on demo orders
+# 3. Build tracking data — customer-driven or legacy fallback
+# ============================================================
+$trackingData = $null
+
+$demoDataPath = Join-Path $scriptDir "..\..\customers\$Customer\d365\config\demo-data.json"
+if (Test-Path $demoDataPath) {
+    $demoJson = Get-Content $demoDataPath -Raw | ConvertFrom-Json
+    if ($demoJson.salesOrders -and $demoJson.salesOrders.orders) {
+        $trackingData = $demoJson.salesOrders.orders | Where-Object { $_.tracking } | ForEach-Object {
+            @{
+                OrderNumber    = $_.orderNumber
+                TrackingNumber = $_.tracking.trackingNumber
+                CarrierCode    = if ($_.tracking.carrierCode) { $_.tracking.carrierCode } else { "fedex" }
+                Note           = "$($_.account) — $($_.tracking.carrier) ($($_.tracking.status))"
+            }
+        }
+        Write-Host "  Loaded $($trackingData.Count) orders from $Customer demo-data.json" -ForegroundColor Cyan
+    }
+}
+
+if (-not $trackingData) {
+    Write-Host "  No customer tracking data found — using Zurn/Ferguson legacy data" -ForegroundColor DarkYellow
+    $trackingData = @(
+        @{
+            OrderNumber    = "PO-94820"
+            TrackingNumber = "794644790132456"
+            CarrierCode    = "fedex"
+            Note           = "Ferguson Houston DC - FedEx Ground (In Transit)"
+        },
+        @{
+            OrderNumber    = "PO-93201"
+            TrackingNumber = "1Z999AA10312345678"
+            CarrierCode    = "ups"
+            Note           = "Ferguson Atlanta DC - UPS Ground (Delivered)"
+        },
+        @{
+            OrderNumber    = "PO-95102"
+            TrackingNumber = "611489176518964"
+            CarrierCode    = "fedex"
+            Note           = "Ferguson Jacksonville DC - FedEx Ground (Label Created)"
+        },
+        @{
+            OrderNumber    = "PO-HD-7845"
+            TrackingNumber = "1Z999AA16812345674"
+            CarrierCode    = "ups"
+            Note           = "HD Supply Atlanta DC - UPS Ground (In Transit)"
+        }
+    )
+}
+
+# ============================================================
+# 4. Seed tracking numbers on demo orders
 # ============================================================
 Write-Host "`n--- Seeding tracking numbers on demo orders ---" -ForegroundColor Yellow
-
-$trackingData = @(
-    @{
-        OrderNumber    = "PO-94820"
-        TrackingNumber = "794644790132456"
-        CarrierCode    = "fedex"
-        Note           = "Ferguson Houston DC - FedEx Ground (In Transit)"
-    },
-    @{
-        OrderNumber    = "PO-93201"
-        TrackingNumber = "1Z999AA10312345678"
-        CarrierCode    = "ups"
-        Note           = "Ferguson Atlanta DC - UPS Ground (Delivered)"
-    },
-    @{
-        OrderNumber    = "PO-95102"
-        TrackingNumber = "611489176518964"
-        CarrierCode    = "fedex"
-        Note           = "Ferguson Jacksonville DC - FedEx Ground (Label Created)"
-    },
-    @{
-        OrderNumber    = "PO-HD-7845"
-        TrackingNumber = "1Z999AA16812345674"
-        CarrierCode    = "ups"
-        Note           = "HD Supply Atlanta DC - UPS Ground (In Transit)"
-    }
-)
 
 $trackingExport = @{}
 
@@ -184,12 +220,12 @@ foreach ($t in $trackingData) {
             carrierCode    = $t.CarrierCode
         }
     } else {
-        Write-Host "  $($t.OrderNumber): NOT FOUND - run 20-OrderMgmt.ps1 first" -ForegroundColor Red
+        Write-Host "  $($t.OrderNumber): NOT FOUND - run 20-OrderMgmt.ps1 -Customer $Customer first" -ForegroundColor Red
     }
 }
 
 # ============================================================
-# 4. Export tracking data
+# 5. Export tracking data
 # ============================================================
 $trackingExport | ConvertTo-Json -Depth 3 | Out-File "$scriptDir\..\data\order-tracking.json" -Encoding utf8
 Write-Host "`nTracking data saved to data\order-tracking.json" -ForegroundColor DarkGray

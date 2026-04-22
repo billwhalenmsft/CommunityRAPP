@@ -1,0 +1,92 @@
+kind: AdaptiveDialog
+modelDescription: Guides customers through registering a new Navico product for warranty activation.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - register my product
+      - product registration
+      - activate warranty
+      - register new product
+      - I just bought a new
+      - register serial
+
+  actions:
+    - kind: SendActivity
+      id: intro
+      activity:
+        text:
+          - "Great — registering your Navico product activates your warranty and qualifies you for support. I'll need a few details:\n\n1. **Serial number** (on the product label or Settings > About)\n2. **Purchase date**\n3. **Proof of purchase** (receipt or invoice number)\n4. If professionally installed: **installer name and company**"
+
+    - kind: Question
+      id: askSerial
+      property: Topic.SerialNumber
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What is the serial number?"
+
+    - kind: Question
+      id: askPurchaseDate
+      property: Topic.PurchaseDate
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "When did you purchase it? (approximate date is fine)"
+
+    - kind: Question
+      id: askInstaller
+      property: Topic.InstallerType
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Was this professionally installed by a certified installer, or self-installed?"
+      entity:
+        displayName: Installer Type
+      choices:
+        - value: certified
+          synonyms:
+            - certified installer
+            - professional
+            - dealer installed
+            - shop installed
+        - value: self
+          synonyms:
+            - self installed
+            - I installed it
+            - DIY
+            - myself
+
+    - kind: ConditionGroup
+      id: checkInstaller
+      conditions:
+        - id: certifiedInstaller
+          condition: =Topic.InstallerType = "certified"
+          actions:
+            - kind: SendActivity
+              id: certifiedMsg
+              activity:
+                text:
+                  - "Excellent! A certified installer registration qualifies your system for **System Assembly Assurance** — this means your installation has been professionally validated and you may qualify for enhanced warranty coverage and priority support.\n\nI'll connect you with a specialist to complete the registration and verify the installer's certification. They'll create your asset record and activate your warranty."
+            - kind: TransferToAgent
+              id: certifiedTransfer
+              activity:
+                text: "Customer wants to register product serial {Topic.SerialNumber}, purchased {Topic.PurchaseDate}. Certified installer — verify installer certification and set System Assembly Assurance flag on asset."
+              context:
+                EscalationReason: "Product registration - certified installer"
+                SerialNumber: "{Topic.SerialNumber}"
+
+      elseActions:
+        - kind: SendActivity
+          id: selfInstallMsg
+          activity:
+            text:
+              - "Thanks for that information! Here's a summary:\n\n📝 **Registration Details**\n• Serial: **{Topic.SerialNumber}**\n• Purchase Date: **{Topic.PurchaseDate}**\n• Installation: Self-installed\n\nI'll connect you with a specialist to finalize the registration. They'll:\n✅ Create your asset record\n✅ Activate your 2-year standard warranty\n✅ Send you a confirmation email with your warranty details\n\nThis only takes a few minutes."
+        - kind: TransferToAgent
+          id: selfTransfer
+          activity:
+            text: "Customer wants to register product serial {Topic.SerialNumber}, purchased {Topic.PurchaseDate}. Self-installed. Create Customer Asset record and activate standard warranty."
+          context:
+            EscalationReason: "Product registration - self install"
+            SerialNumber: "{Topic.SerialNumber}"

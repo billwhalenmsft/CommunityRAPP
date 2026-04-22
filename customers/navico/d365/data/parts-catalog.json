@@ -1,0 +1,280 @@
+{
+    "priceListName": "Navico Aftermarket Parts & Accessories",
+    "_metadata": {
+        "customer": "Navico",
+        "description": "Navico aftermarket replacement parts catalog — used by 03a-PartsProducts.ps1 to provision parts price list",
+        "priceList": {
+            "name": "Navico Aftermarket Parts & Accessories",
+            "currency": "USD",
+            "description": "Replacement parts, accessories, and service components for Lowrance, Simrad, B&G, C-MAP, and Northstar products. Used by CS agents for Quick Quote on parts orders."
+        },
+        "unitGroup": "Parts & Accessories",
+        "defaultUnit": "Each",
+        "notes": [
+            "Parts flagged cr74e_parts=true so Quick Quote filters to parts-only price list",
+            "SKUs follow pattern: {BRAND}-PART-{CATEGORY}-{SEQ}",
+            "Prices are representative MSRP — adjust per current navico.com / dealer portal pricing"
+        ]
+    },
+    "parts": [
+        {
+            "_comment": "--- LOWRANCE PARTS ---",
+            "sku": "LWR-PART-XDR-001",
+            "name": "Lowrance Active Imaging 3-in-1 Transducer",
+            "description": "Active Imaging 3-in-1 transducer with CHIRP sonar, SideScan, and DownScan. Compatible with HDS Live, HDS Carbon, Elite FS series.",
+            "category": "Transducer",
+            "brand": "Lowrance",
+            "compatibleWith": ["HDS Live", "HDS Carbon", "Elite FS"],
+            "unitPrice": 199.99,
+            "cost": 120.00,
+            "partNumber": "000-14489-001"
+        },
+        {
+            "sku": "LWR-PART-XDR-002",
+            "name": "Lowrance ActiveTarget 2 Transducer Head",
+            "description": "Replacement transducer head for ActiveTarget 2 live sonar system. Scans Forward, Scout, and Down modes.",
+            "category": "Transducer",
+            "brand": "Lowrance",
+            "compatibleWith": ["ActiveTarget 2"],
+            "unitPrice": 349.99,
+            "cost": 210.00,
+            "partNumber": "000-15963-001"
+        },
+        {
+            "sku": "LWR-PART-CBL-001",
+            "name": "Lowrance 7-Pin Power/Data Cable 6ft",
+            "description": "OEM 7-pin power and data cable for HDS and Elite series units. 6-foot length.",
+            "category": "Cable",
+            "brand": "Lowrance",
+            "compatibleWith": ["HDS Live", "HDS Carbon", "Elite FS", "Hook Reveal"],
+            "unitPrice": 29.99,
+            "cost": 14.00,
+            "partNumber": "000-0119-75"
+        },
+        {
+            "sku": "LWR-PART-MNT-001",
+            "name": "Lowrance HDS Live Gimbal Bracket Mount",
+            "description": "OEM gimbal bracket mounting kit for HDS Live 9/12/16. Includes hardware.",
+            "category": "Mount",
+            "brand": "Lowrance",
+            "compatibleWith": ["HDS Live 9", "HDS Live 12", "HDS Live 16"],
+            "unitPrice": 49.99,
+            "cost": 22.00,
+            "partNumber": "000-14072-001"
+        },
+        {
+            "sku": "LWR-PART-ANT-001",
+            "name": "Lowrance Point-1 GPS/GLONASS Antenna",
+            "description": "High-sensitivity GPS/GLONASS antenna with 10Hz update rate. Compatible with HDS and NSS series.",
+            "category": "Antenna",
+            "brand": "Lowrance",
+            "compatibleWith": ["HDS Live", "HDS Carbon"],
+            "unitPrice": 149.99,
+            "cost": 80.00,
+            "partNumber": "000-11047-001"
+        },
+        {
+            "sku": "LWR-PART-CVR-001",
+            "name": "Lowrance HDS Live 12 Sun Cover",
+            "description": "Protective sun cover for HDS Live 12-inch display. UV resistant.",
+            "category": "Accessory",
+            "brand": "Lowrance",
+            "compatibleWith": ["HDS Live 12"],
+            "unitPrice": 24.99,
+            "cost": 10.00,
+            "partNumber": "000-12237-001"
+        },
+        {
+            "_comment": "--- SIMRAD PARTS ---",
+            "sku": "SIM-PART-XDR-001",
+            "name": "Simrad TotalScan Transom Mount Transducer",
+            "description": "TotalScan transducer with CHIRP, SideScan, and DownScan. Compatible with NSS evo3S and GO Series.",
+            "category": "Transducer",
+            "brand": "Simrad",
+            "compatibleWith": ["NSS evo3S", "GO Series", "NSX"],
+            "unitPrice": 249.99,
+            "cost": 150.00,
+            "partNumber": "000-11437-001"
+        },
+        {
+            "sku": "SIM-PART-RAD-001",
+            "name": "Simrad Halo24 Radar Dome Pedestal Cable 10m",
+            "description": "OEM 10-meter pedestal cable for Halo24 radar dome. Pre-assembled connector.",
+            "category": "Cable",
+            "brand": "Simrad",
+            "compatibleWith": ["Halo24"],
+            "unitPrice": 89.99,
+            "cost": 45.00,
+            "partNumber": "000-14175-001"
+        },
+        {
+            "sku": "SIM-PART-AP-001",
+            "name": "Simrad AP44 Drive Unit Interface Module",
+            "description": "Drive unit interface module for AP44 autopilot. Required for hydraulic and mechanical drive installations.",
+            "category": "Autopilot",
+            "brand": "Simrad",
+            "compatibleWith": ["AP44"],
+            "unitPrice": 399.99,
+            "cost": 240.00,
+            "partNumber": "000-13260-001"
+        },
+        {
+            "sku": "SIM-PART-CBL-001",
+            "name": "Simrad SimNet to NMEA 2000 Adapter Cable",
+            "description": "Adapter cable to connect SimNet devices to NMEA 2000 network backbone. 1-meter length.",
+            "category": "Cable",
+            "brand": "Simrad",
+            "compatibleWith": ["NSX", "NSS evo3S", "AP44"],
+            "unitPrice": 34.99,
+            "cost": 16.00,
+            "partNumber": "000-0119-88"
+        },
+        {
+            "sku": "SIM-PART-VHF-001",
+            "name": "Simrad RS90S Replacement Handset",
+            "description": "OEM replacement handset for RS90S Class D VHF Radio. DSC and GMDSS compatible.",
+            "category": "VHF Accessory",
+            "brand": "Simrad",
+            "compatibleWith": ["RS90S"],
+            "unitPrice": 79.99,
+            "cost": 40.00,
+            "partNumber": "000-14688-001"
+        },
+        {
+            "_comment": "--- B&G PARTS ---",
+            "sku": "BNG-PART-WND-001",
+            "name": "B&G Masthead Unit — Wind Sensor Replacement",
+            "description": "Replacement masthead wind sensor for H5000 and Zeus systems. Includes ultrasonic wind speed/direction measurement.",
+            "category": "Wind Sensor",
+            "brand": "B&G",
+            "compatibleWith": ["H5000", "Zeus S"],
+            "unitPrice": 699.99,
+            "cost": 420.00,
+            "partNumber": "000-11343-001"
+        },
+        {
+            "sku": "BNG-PART-DSP-001",
+            "name": "B&G Triton2 Display Replacement Screen",
+            "description": "Replacement display module for Triton2 instrument display. Sunlight-readable LCD panel.",
+            "category": "Display",
+            "brand": "B&G",
+            "compatibleWith": ["Triton2"],
+            "unitPrice": 149.99,
+            "cost": 75.00,
+            "partNumber": "000-12794-001"
+        },
+        {
+            "sku": "BNG-PART-CBL-001",
+            "name": "B&G H5000 Processor Power Cable",
+            "description": "OEM power cable for H5000 processor unit. 2-meter, waterproof connector.",
+            "category": "Cable",
+            "brand": "B&G",
+            "compatibleWith": ["H5000"],
+            "unitPrice": 44.99,
+            "cost": 20.00,
+            "partNumber": "000-10867-001"
+        },
+        {
+            "sku": "BNG-PART-MNT-001",
+            "name": "B&G Zeus S 12 Flush Mount Kit",
+            "description": "Flush mount installation kit for Zeus S 12-inch chartplotter. Gasket, hardware, and trim ring included.",
+            "category": "Mount",
+            "brand": "B&G",
+            "compatibleWith": ["Zeus S 12"],
+            "unitPrice": 64.99,
+            "cost": 30.00,
+            "partNumber": "000-11654-001"
+        },
+        {
+            "_comment": "--- C-MAP PARTS ---",
+            "sku": "CMAP-PART-CHT-001",
+            "name": "C-MAP REVEAL Coastal Chart Card — East US",
+            "description": "C-MAP REVEAL high-resolution chart card covering East US coastline. Annual subscription included.",
+            "category": "Chart Card",
+            "brand": "C-MAP",
+            "compatibleWith": ["HDS Live", "NSX", "Zeus S", "NSS evo3S"],
+            "unitPrice": 149.99,
+            "cost": 75.00,
+            "partNumber": "M-NA-Y202-MS"
+        },
+        {
+            "sku": "CMAP-PART-CHT-002",
+            "name": "C-MAP DISCOVER Inland Lakes Chart Card",
+            "description": "C-MAP DISCOVER chart card for inland lakes and rivers. Includes fishing contours and marina data.",
+            "category": "Chart Card",
+            "brand": "C-MAP",
+            "compatibleWith": ["HDS Live", "Elite FS", "Hook Reveal"],
+            "unitPrice": 129.99,
+            "cost": 65.00,
+            "partNumber": "M-NA-Y204-MS"
+        },
+        {
+            "sku": "CMAP-PART-GEN-001",
+            "name": "C-MAP Genesis Sonar Log SD Card 32GB",
+            "description": "32GB SD card pre-formatted for C-MAP Genesis sonar logging. Compatible with all Navico MFDs with SD slot.",
+            "category": "Storage",
+            "brand": "C-MAP",
+            "compatibleWith": ["HDS Live", "NSX", "NSS evo3S", "Zeus S"],
+            "unitPrice": 19.99,
+            "cost": 8.00,
+            "partNumber": "GENESIS-SD-32"
+        },
+        {
+            "_comment": "--- NORTHSTAR LEGACY PARTS ---",
+            "sku": "NST-PART-VHF-001",
+            "name": "Northstar VHF Antenna SO-239 Connector",
+            "description": "Replacement SO-239 antenna connector for legacy Northstar VHF radios. Fits models 960/961/965.",
+            "category": "VHF Accessory",
+            "brand": "Northstar",
+            "compatibleWith": ["Northstar 960", "Northstar 961", "Northstar 965"],
+            "unitPrice": 14.99,
+            "cost": 6.00,
+            "partNumber": "NST-960-ANT-01"
+        },
+        {
+            "sku": "NST-PART-CBL-001",
+            "name": "Northstar GPS Antenna Cable 5m",
+            "description": "5-meter GPS antenna extension cable for legacy Northstar GPS/chartplotter units.",
+            "category": "Cable",
+            "brand": "Northstar",
+            "compatibleWith": ["Northstar 952X", "Northstar 958XD"],
+            "unitPrice": 24.99,
+            "cost": 10.00,
+            "partNumber": "NST-GPS-EXT-5M"
+        },
+        {
+            "_comment": "--- UNIVERSAL / MULTI-BRAND SERVICE PARTS ---",
+            "sku": "NAV-PART-FUS-001",
+            "name": "Navico Network Cable NMEA 2000 T-Connector",
+            "description": "NMEA 2000 micro T-connector. Universal compatibility across Lowrance, Simrad, and B&G networks.",
+            "category": "Network",
+            "brand": "Navico Universal",
+            "compatibleWith": ["All NMEA 2000 compatible units"],
+            "unitPrice": 12.99,
+            "cost": 5.00,
+            "partNumber": "NAV-NMEA-T-001"
+        },
+        {
+            "sku": "NAV-PART-FUS-002",
+            "name": "Navico NMEA 2000 Power Cable with Fuse",
+            "description": "NMEA 2000 network power cable with inline 3A fuse. Required for network backbone power.",
+            "category": "Network",
+            "brand": "Navico Universal",
+            "compatibleWith": ["All NMEA 2000 networks"],
+            "unitPrice": 18.99,
+            "cost": 8.00,
+            "partNumber": "NAV-NMEA-PWR-F"
+        },
+        {
+            "sku": "NAV-PART-MEM-001",
+            "name": "Navico 16GB microSD Card (Official)",
+            "description": "Official Navico-branded 16GB microSD card. Pre-formatted for use with all Navico MFDs. Software updates and chart storage.",
+            "category": "Storage",
+            "brand": "Navico Universal",
+            "compatibleWith": ["HDS Live", "NSX", "Zeus S", "Elite FS", "Hook Reveal"],
+            "unitPrice": 14.99,
+            "cost": 6.00,
+            "partNumber": "NAV-SD-16-OFX"
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ascend_sapcontract — Emulates SAP EKKO/EKPO (Purchasing Contract Header/Item) -->
+<Entity>
+  <Name LocalizedName="SAP Contract (Demo)" OriginalName="ascend_sapcontract">ascend_sapcontract</Name>
+  <EntityInfo>
+    <entity Name="ascend_sapcontract">
+      <LocalizedNames><LocalizedName description="SAP Contract / Agreement (Demo)" languagecode="1033" /></LocalizedNames>
+      <LocalizedCollectionNames><LocalizedCollectionName description="SAP Contracts / Agreements (Demo)" languagecode="1033" /></LocalizedCollectionNames>
+      <Descriptions><Description description="Emulates SAP ECC 6.0 EKKO (document header) and EKPO (document item) for contracts and scheduling agreements. Also covers EORD (source list). DEMO DATA ONLY." languagecode="1033" /></Descriptions>
+      <attributes>
+        <attribute PhysicalName="ascend_sapcontractid"><Type>primarykey</Type><Name>ascend_sapcontractid</Name><LogicalName>ascend_sapcontractid</LogicalName></attribute>
+        <!-- EKKO.EBELN — Contract number -->
+        <attribute PhysicalName="ascend_ebeln"><Type>nvarchar</Type><Name>ascend_ebeln</Name><MaxLength>10</MaxLength><LocalizedNames><LocalizedName description="Contract Number (EBELN)" languagecode="1033" /></LocalizedNames><RequiredLevel>required</RequiredLevel></attribute>
+        <!-- EKKO.LIFNR — Vendor -->
+        <attribute PhysicalName="ascend_lifnr"><Type>nvarchar</Type><Name>ascend_lifnr</Name><MaxLength>10</MaxLength><LocalizedNames><LocalizedName description="Vendor (LIFNR)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Vendor name (display) -->
+        <attribute PhysicalName="ascend_vendorname"><Type>nvarchar</Type><Name>ascend_vendorname</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Vendor Name" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- EKKO.BSART — Document type -->
+        <attribute PhysicalName="ascend_bsart"><Type>nvarchar</Type><Name>ascend_bsart</Name><MaxLength>4</MaxLength><LocalizedNames><LocalizedName description="Document Type (BSART)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- EKKO.EKORG — Purchasing org -->
+        <attribute PhysicalName="ascend_ekorg"><Type>nvarchar</Type><Name>ascend_ekorg</Name><MaxLength>4</MaxLength><LocalizedNames><LocalizedName description="Purchasing Org (EKORG)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Material group (EKPO.MATKL) -->
+        <attribute PhysicalName="ascend_matkl"><Type>nvarchar</Type><Name>ascend_matkl</Name><MaxLength>9</MaxLength><LocalizedNames><LocalizedName description="Material Group (MATKL)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Contract value (EKPO.KTMNG × KTPNR) -->
+        <attribute PhysicalName="ascend_maxvalue"><Type>money</Type><Name>ascend_maxvalue</Name><LocalizedNames><LocalizedName description="Contract Max Value" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Valid from (EKKO.KDATB) -->
+        <attribute PhysicalName="ascend_kdatb"><Type>datetime</Type><Name>ascend_kdatb</Name><LocalizedNames><LocalizedName description="Valid From (KDATB)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Valid to (EKKO.KDATE) -->
+        <attribute PhysicalName="ascend_kdate"><Type>datetime</Type><Name>ascend_kdate</Name><LocalizedNames><LocalizedName description="Valid To (KDATE)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Active -->
+        <attribute PhysicalName="ascend_active"><Type>bit</Type><Name>ascend_active</Name><LocalizedNames><LocalizedName description="Active" languagecode="1033" /></LocalizedNames><DefaultValue>1</DefaultValue></attribute>
+        <attribute PhysicalName="ascend_datasource"><Type>nvarchar</Type><Name>ascend_datasource</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Data Source" languagecode="1033" /></LocalizedNames><DefaultValue>SAP ECC 6.0 (Demo via Dataverse)</DefaultValue></attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

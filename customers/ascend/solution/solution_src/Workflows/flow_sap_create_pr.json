@@ -1,0 +1,275 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2016-06-01/Microsoft.Logic.json",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "flowDisplayName": "Ascend: SAP Create PR (Demo \u2192 Dataverse)",
+    "description": "Creates a PR in Dataverse ascend_sappurchaserequisition and ascend_sappraccountassignment tables \u2014 emulating SAP EBAN + EBKN writes. Also validates vendor (LFA1), category (T023), GL (T030/SKA1), cost center (CSKS), contract (EKKO), and DoA (T16FS). In production, replace Dataverse writes with SAP BAPI_PR_CREATE calls.",
+    "sapTablesEmulated": [
+      "EBAN",
+      "EBKN",
+      "LFA1",
+      "T023",
+      "T030",
+      "CSKS",
+      "EKKO",
+      "T16FS"
+    ],
+    "demoMode": true,
+    "productionBAPI": "BAPI_PR_CREATE / ME51N transaction"
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Skills",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "vendor_id": {
+              "type": "string",
+              "description": "SAP Vendor ID (LIFNR)"
+            },
+            "vendor_name": {
+              "type": "string"
+            },
+            "item_description": {
+              "type": "string",
+              "description": "Short text (EBAN.TXZ01)"
+            },
+            "category_code": {
+              "type": "string",
+              "description": "Material group (MATKL)"
+            },
+            "gl_code": {
+              "type": "string",
+              "description": "GL account (SAKTO)"
+            },
+            "cadence": {
+              "type": "string",
+              "enum": [
+                "one-time",
+                "monthly",
+                "quarterly",
+                "yearly"
+              ]
+            },
+            "amount_per_period": {
+              "type": "number"
+            },
+            "periods": {
+              "type": "integer"
+            },
+            "cost_center": {
+              "type": "string",
+              "description": "CSKS.KOSTL"
+            },
+            "user_guid": {
+              "type": "string"
+            },
+            "user_name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "vendor_id",
+            "vendor_name",
+            "item_description",
+            "category_code",
+            "gl_code",
+            "cost_center",
+            "cadence",
+            "amount_per_period",
+            "periods"
+          ]
+        }
+      }
+    }
+  },
+  "actions": {
+    "DemoModeCheck": {
+      "type": "Compose",
+      "inputs": "\u26a0\ufe0f DEMO MODE: Writing to Dataverse ascend_sappurchaserequisition + ascend_sappraccountassignment (emulates SAP EBAN + EBKN). In production, call BAPI_PR_CREATE via SAP ERP connector."
+    },
+    "LookupCostCenter_Emulates_CSKS": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "ListRecords",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sapcostcenters",
+          "$filter": "ascend_kostl eq '@{triggerBody()?['cost_center']}' and ascend_active eq true",
+          "$select": "ascend_kostl,ascend_ktext,ascend_active"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "runAfter": {
+        "DemoModeCheck": [
+          "Succeeded"
+        ]
+      },
+      "description": "READ Dataverse ascend_sapcostcenter (emulates SAP CSKS table lookup)"
+    },
+    "LookupDoA_Emulates_T16FS": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "ListRecords",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sapreleasestrategy",
+          "$filter": "ascend_minthreshold le @{mul(triggerBody()?['amount_per_period'], triggerBody()?['periods'])} and ascend_maxthreshold ge @{mul(triggerBody()?['amount_per_period'], triggerBody()?['periods'])}",
+          "$select": "ascend_approverid,ascend_approvername,ascend_doalevel"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "runAfter": {
+        "LookupCostCenter_Emulates_CSKS": [
+          "Succeeded"
+        ]
+      },
+      "description": "READ Dataverse ascend_sapreleasestrategy (emulates SAP T16FS/T161F/T161G DoA evaluation)"
+    },
+    "LookupContract_Emulates_EKKO": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "ListRecords",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sapcontracts",
+          "$filter": "ascend_lifnr eq '@{triggerBody()?['vendor_id']}' and ascend_matkl eq '@{triggerBody()?['category_code']}' and ascend_active eq true",
+          "$select": "ascend_ebeln,ascend_maxvalue,ascend_kdate"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "runAfter": {
+        "LookupDoA_Emulates_T16FS": [
+          "Succeeded"
+        ]
+      },
+      "description": "READ Dataverse ascend_sapcontract (emulates SAP EKKO/EKPO/EORD agreement lookup)"
+    },
+    "GeneratePRNumber": {
+      "type": "Compose",
+      "inputs": "@concat('100', formatDateTime(utcNow(), 'yyMMddHHmm'))",
+      "runAfter": {
+        "LookupContract_Emulates_EKKO": [
+          "Succeeded"
+        ]
+      }
+    },
+    "CreatePR_Emulates_EBAN": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "CreateRecord",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sappurchaserequisitions",
+          "item": {
+            "ascend_name": "@outputs('GeneratePRNumber')",
+            "ascend_banfn": "@outputs('GeneratePRNumber')",
+            "ascend_lifnr": "@triggerBody()?['vendor_id']",
+            "ascend_vendorname": "@triggerBody()?['vendor_name']",
+            "ascend_matkl": "@triggerBody()?['category_code']",
+            "ascend_netvalue": "@mul(triggerBody()?['amount_per_period'], triggerBody()?['periods'])",
+            "ascend_amountperperiod": "@triggerBody()?['amount_per_period']",
+            "ascend_periods": "@triggerBody()?['periods']",
+            "ascend_glaccount": "@triggerBody()?['gl_code']",
+            "ascend_frgst": 100000,
+            "ascend_approverid": "@first(outputs('LookupDoA_Emulates_T16FS')?['body/value'])?['ascend_approverid']",
+            "ascend_approvername": "@first(outputs('LookupDoA_Emulates_T16FS')?['body/value'])?['ascend_approvername']",
+            "ascend_afnam": "@triggerBody()?['user_guid']",
+            "ascend_badat": "@utcNow()",
+            "ascend_contractnum": "@first(outputs('LookupContract_Emulates_EKKO')?['body/value'])?['ascend_ebeln']",
+            "ascend_datasource": "SAP ECC 6.0 (Demo via Dataverse)",
+            "ascend_demodisclaimer": "DEMO DATA ONLY \u2014 Emulates SAP EBAN write via BAPI_PR_CREATE. Not written to production SAP."
+          }
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "runAfter": {
+        "GeneratePRNumber": [
+          "Succeeded"
+        ]
+      },
+      "description": "WRITE to Dataverse ascend_sappurchaserequisition (emulates SAP BAPI_PR_CREATE \u2192 EBAN)"
+    },
+    "CreateAccountAssignment_Emulates_EBKN": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "CreateRecord",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sappraccountassignments",
+          "item": {
+            "ascend_name": "@{concat('EBKN-', outputs('GeneratePRNumber'), '-00010')}",
+            "ascend_banfn": "@outputs('GeneratePRNumber')",
+            "ascend_bnfpo": "00010",
+            "ascend_knttp": "K",
+            "ascend_sakto": "@triggerBody()?['gl_code']",
+            "ascend_kostl": "@triggerBody()?['cost_center']",
+            "ascend_pctdistrib": 100,
+            "ascend_datasource": "SAP ECC 6.0 (Demo via Dataverse)",
+            "ascend_demodisclaimer": "DEMO DATA ONLY \u2014 Emulates SAP EBKN account assignment write. Not written to production SAP."
+          }
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "runAfter": {
+        "CreatePR_Emulates_EBAN": [
+          "Succeeded"
+        ]
+      },
+      "description": "WRITE to Dataverse ascend_sappraccountassignment (emulates SAP EBKN account assignment)"
+    },
+    "BuildCreatePRResponse": {
+      "type": "Compose",
+      "inputs": {
+        "status": "created",
+        "pr_number": "@outputs('GeneratePRNumber')",
+        "approver_name": "@first(outputs('LookupDoA_Emulates_T16FS')?['body/value'])?['ascend_approvername']",
+        "approver_id": "@first(outputs('LookupDoA_Emulates_T16FS')?['body/value'])?['ascend_approverid']",
+        "contract_num": "@first(outputs('LookupContract_Emulates_EKKO')?['body/value'])?['ascend_ebeln']",
+        "sap_tables_written": [
+          "EBAN",
+          "EBKN"
+        ],
+        "data_source": "SAP ECC 6.0 (Demo via Dataverse)",
+        "demo_note": "DEMO: In production BAPI_PR_CREATE writes to SAP EBAN + EBKN and returns a real PR number from SAP"
+      },
+      "runAfter": {
+        "CreateAccountAssignment_Emulates_EBKN": [
+          "Succeeded"
+        ]
+      }
+    },
+    "RespondToCopilotStudio": {
+      "type": "Response",
+      "inputs": {
+        "statusCode": 200,
+        "body": "@outputs('BuildCreatePRResponse')",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "runAfter": {
+        "BuildCreatePRResponse": [
+          "Succeeded"
+        ]
+      }
+    }
+  }
+}

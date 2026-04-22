@@ -1,0 +1,15 @@
+mcs.metadata:
+  componentName: Conversation Start
+  description: This system topic triggers when the agent receives an Activity indicating the beginning of a new conversation. If you do not want the agent to initiate the conversation, disable this topic.
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SendActivity
+      id: sendMessage_M0LuhV
+      activity:
+        text:
+          - "👋 Welcome to **Navico Group Support**! I'm your AI assistant and I can help with:\n\n🔧 **Troubleshoot** a product issue (Simrad, Lowrance, B&G, C-MAP)\n📋 **Check warranty** status by serial number\n🔄 **Request an RMA** (Exchange, Repair, or Credit)\n📝 **Register** a new product for warranty activation\n🎓 **Check certification** status (dealers & installers)\n💬 **Talk to a specialist**\n\nHow can I help you today?"
+        speak:
+          - Welcome to Navico Group Support. I can help with product troubleshooting, warranty status, returns, product registration, and dealer certification. How can I help you today?

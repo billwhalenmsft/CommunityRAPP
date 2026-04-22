@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ascend_sapmaterialgroup — Emulates SAP T023/T023T (Material Groups) -->
+<Entity>
+  <Name LocalizedName="SAP Material Group (Demo)" OriginalName="ascend_sapmaterialgroup">ascend_sapmaterialgroup</Name>
+  <EntityInfo>
+    <entity Name="ascend_sapmaterialgroup">
+      <LocalizedNames><LocalizedName description="SAP Material Group (Demo)" languagecode="1033" /></LocalizedNames>
+      <LocalizedCollectionNames><LocalizedCollectionName description="SAP Material Groups (Demo)" languagecode="1033" /></LocalizedCollectionNames>
+      <Descriptions><Description description="Emulates SAP ECC 6.0 T023/T023T material group tables for procurement category classification. DEMO DATA ONLY." languagecode="1033" /></Descriptions>
+      <attributes>
+        <attribute PhysicalName="ascend_sapmaterialgroupid"><Type>primarykey</Type><Name>ascend_sapmaterialgroupid</Name><LogicalName>ascend_sapmaterialgroupid</LogicalName></attribute>
+        <!-- T023.MATKL -->
+        <attribute PhysicalName="ascend_matkl"><Type>nvarchar</Type><Name>ascend_matkl</Name><MaxLength>9</MaxLength><LocalizedNames><LocalizedName description="Material Group (MATKL)" languagecode="1033" /></LocalizedNames><RequiredLevel>required</RequiredLevel></attribute>
+        <!-- T023T.WGBEZ -->
+        <attribute PhysicalName="ascend_wgbez"><Type>nvarchar</Type><Name>ascend_wgbez</Name><MaxLength>20</MaxLength><LocalizedNames><LocalizedName description="Description (WGBEZ)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Derived GL account -->
+        <attribute PhysicalName="ascend_defaultgl"><Type>nvarchar</Type><Name>ascend_defaultgl</Name><MaxLength>10</MaxLength><LocalizedNames><LocalizedName description="Default GL Account" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Procurement type -->
+        <attribute PhysicalName="ascend_proctype"><Type>nvarchar</Type><Name>ascend_proctype</Name><MaxLength>50</MaxLength><LocalizedNames><LocalizedName description="Procurement Type" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Requires special approval -->
+        <attribute PhysicalName="ascend_specialapproval"><Type>bit</Type><Name>ascend_specialapproval</Name><LocalizedNames><LocalizedName description="Requires Special Approval" languagecode="1033" /></LocalizedNames><DefaultValue>0</DefaultValue></attribute>
+        <!-- Keywords for NLP matching -->
+        <attribute PhysicalName="ascend_keywords"><Type>nvarchar</Type><Name>ascend_keywords</Name><MaxLength>500</MaxLength><LocalizedNames><LocalizedName description="NLP Match Keywords" languagecode="1033" /></LocalizedNames></attribute>
+        <attribute PhysicalName="ascend_datasource"><Type>nvarchar</Type><Name>ascend_datasource</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Data Source" languagecode="1033" /></LocalizedNames><DefaultValue>SAP ECC 6.0 (Demo via Dataverse)</DefaultValue></attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

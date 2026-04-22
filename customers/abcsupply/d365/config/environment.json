@@ -1,0 +1,105 @@
+{
+    "environment": {
+        "name": "ABC Supply — Savage Branch Demo",
+        "url": "https://orgecbce8ef.crm.dynamics.com",
+        "apiVersion": "v9.2",
+        "note": "Update 'url' to the ABC Supply-specific D365 org once provisioned"
+    },
+    "demo": {
+        "customer": "ABC Supply",
+        "branch": "Savage, MN",
+        "industry": "Building Materials Distribution — Windows & Doors",
+        "brands": [
+            "ABC Supply",
+            "Andersen",
+            "Pella"
+        ],
+        "incumbent": "Smartsheet + Manual (copy/paste, Excel uploads, personal texting)",
+        "orgUrl": "https://orgecbce8ef.crm.dynamics.com",
+        "products": [
+            "D365 Customer Service Premium (with Telephony/Digital Messaging)",
+            "D365 Field Service",
+            "M365 Copilot",
+            "Copilot Studio Credits"
+        ],
+        "userLicenses": {
+            "csCoordinators": 2,
+            "csManager": 1,
+            "csAdditionalAdmin": 2,
+            "fieldServiceTechs": 3,
+            "totalPrimaryUsers": 6,
+            "insideSalesReps": 10
+        },
+        "personas": {
+            "manager": "Nick Super",
+            "coordinators": ["Josh Henriksen", "Aaron Dietz"],
+            "techs": ["Derek Olson", "Sam Rivera", "Chris Paulson"],
+            "heroCaller": "Mike Bergstrom",
+            "heroCallerAccount": "Andersen Exteriors Savage",
+            "heroCallerPhone": "+1 952-441-8823"
+        },
+        "customerTiers": {
+            "1": {
+                "label": "Tier 1 — Premier Contractor",
+                "priority": 8000,
+                "color": "#C8102E",
+                "description": "High-volume contractors, established ABC relationship"
+            },
+            "2": {
+                "label": "Tier 2 — Active Contractor",
+                "priority": 6000,
+                "color": "#E67E22",
+                "description": "Regular contractors, moderate volume"
+            },
+            "3": {
+                "label": "Tier 3 — Standard Contractor",
+                "priority": 10000,
+                "color": "#2980B9",
+                "description": "Occasional contractors and service customers"
+            },
+            "4": {
+                "label": "Tier 4 — Homeowner / End Customer",
+                "priority": 1000,
+                "color": "#7F8C8D",
+                "description": "Direct homeowner contact for scheduling/updates"
+            }
+        },
+        "hotWords": [
+            "Warranty",
+            "Water Damage",
+            "Emergency",
+            "Broken Glass",
+            "Safety",
+            "Legal",
+            "Complaint",
+            "Recall"
+        ],
+        "hotWordPriorityBoost": 8000,
+        "sla": {
+            "firstResponseMinutes": 240,
+            "resolutionMinutes": 2880,
+            "businessHoursStart": "07:30",
+            "businessHoursEnd": "17:00",
+            "workDays": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ]
+        },
+        "caseOrigins": {
+            "email": 2,
+            "phone": 1,
+            "web": 3
+        },
+        "workOrderVolume": {
+            "ytd2026": 209,
+            "prior6months2025": 282,
+            "projected2027": "1000-1500",
+            "note": "Scaling 5-7x over next 18 months — must support growth"
+        },
+        "agentCount": 6,
+        "fieldTechCount": 3
+    }
+}

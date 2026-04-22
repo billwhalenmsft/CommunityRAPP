@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navico — D365 Customer Service Competitive Demo Script</title>
+    <style>
+        :root {
+            --navico-blue: #003366;
+            --navico-teal: #00A99D;
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-green: #107C10;
+            --accent-orange: #D83B01;
+            --accent-purple: #5C2D91;
+            --accent-red: #A4262C;
+            --success: #107C10;
+            --warning: #FFB900;
+            --bg: #F3F2F1;
+            --card: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --radius: 10px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, var(--navico-blue) 0%, #004488 50%, var(--ms-blue) 100%);
+            color: white; padding: 50px 40px 40px; text-align: center; position: relative; overflow: hidden;
+        }
+        .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,169,157,0.15) 0%, transparent 60%); pointer-events: none; }
+        .hero h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 8px; }
+        .hero .subtitle { font-size: 1.2rem; opacity: 0.85; margin-bottom: 20px; }
+        .hero-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 6px 16px; font-size: 0.85rem; font-weight: 600; }
+        .badge.highlight { background: var(--navico-teal); border-color: var(--navico-teal); }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+
+        /* SECTION */
+        .section { background: var(--card); border-radius: var(--radius); padding: 28px; margin-bottom: 24px; box-shadow: var(--shadow); }
+        .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 2px solid var(--ms-blue-light); }
+        .section-icon { font-size: 1.6rem; }
+        .section-header h2 { font-size: 1.3rem; font-weight: 700; color: var(--navico-blue); }
+        .section-header .duration { margin-left: auto; background: var(--ms-blue); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+
+        /* PERSONAS */
+        .persona-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+        .persona-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; position: relative; }
+        .persona-card.hero-persona { border-color: var(--ms-blue); background: var(--ms-blue-light); }
+        .persona-card .persona-name { font-size: 1rem; font-weight: 700; color: var(--navico-blue); margin-bottom: 4px; }
+        .persona-card .persona-title { font-size: 0.8rem; color: var(--text-light); margin-bottom: 8px; }
+        .persona-card .persona-company { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+        .persona-card .persona-tier { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
+        .tier-pe { background: #6a0dad; color: white; }
+        .tier-pl { background: #e74c3c; color: white; }
+        .tier-ag { background: #d35400; color: white; }
+        .tier-cs { background: #3498db; color: white; }
+        .tier-b2c { background: #7f8c8d; color: white; }
+        .tier-agent { background: var(--ms-blue); color: white; }
+        .persona-detail { font-size: 0.82rem; color: var(--text-light); }
+
+        /* SCENARIO */
+        .scenario-card { border: 2px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; }
+        .scenario-header { padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
+        .scenario-header.voice { background: linear-gradient(135deg, #003366, #004d99); color: white; }
+        .scenario-header.chat  { background: linear-gradient(135deg, #00A99D, #007a75); color: white; }
+        .scenario-header.email { background: linear-gradient(135deg, #5C2D91, #7B52AB); color: white; }
+        .scenario-header.supervisor { background: linear-gradient(135deg, #D83B01, #C43200); color: white; }
+        .scenario-num { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+        .scenario-title { flex: 1; }
+        .scenario-title h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 2px; }
+        .scenario-title .meta { font-size: 0.8rem; opacity: 0.85; }
+        .scenario-time { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 4px 12px; font-size: 0.82rem; font-weight: 600; }
+        .scenario-body { padding: 20px; }
+
+        /* STEPS */
+        .step-list { list-style: none; }
+        .step-list li { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+        .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--ms-blue); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+        .step-content { flex: 1; }
+        .step-content .action { font-weight: 700; color: var(--navico-blue); margin-bottom: 4px; }
+        .step-content .talk-track { background: #F0F9FF; border-left: 3px solid var(--ms-blue); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.88rem; font-style: italic; color: var(--text); margin-bottom: 6px; }
+        .step-content .copilot-note { background: #EFF6E0; border-left: 3px solid var(--accent-green); padding: 6px 10px; border-radius: 0 6px 6px 0; font-size: 0.82rem; color: var(--accent-green); margin-bottom: 4px; }
+        .step-content .tech-note { background: #FFF8E1; border-left: 3px solid var(--warning); padding: 6px 10px; border-radius: 0 6px 6px 0; font-size: 0.82rem; color: #6d4c00; }
+
+        /* TIMING */
+        .timing-bar { display: flex; gap: 0; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+        .timing-seg { padding: 10px 16px; text-align: center; font-size: 0.78rem; font-weight: 600; }
+        .timing-seg.open { background: #003366; color: white; flex: 1.5; }
+        .timing-seg.s1   { background: #0078D4; color: white; flex: 2; }
+        .timing-seg.s2   { background: #00A99D; color: white; flex: 2; }
+        .timing-seg.s3   { background: #5C2D91; color: white; flex: 2; }
+        .timing-seg.s4   { background: #D83B01; color: white; flex: 1.5; }
+        .timing-seg.close { background: #107C10; color: white; flex: 1; }
+
+        /* OBJECTIONS */
+        .objection { background: #FEF0EC; border: 1px solid #FFCFC7; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+        .objection .q { font-weight: 700; color: var(--accent-orange); margin-bottom: 6px; font-size: 0.9rem; }
+        .objection .a { font-size: 0.88rem; color: var(--text); }
+        .objection .a::before { content: '→ '; font-weight: 700; color: var(--ms-blue); }
+
+        /* BEFORE/AFTER */
+        .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .ba-col { border-radius: 8px; padding: 16px; }
+        .ba-col.before { background: #FEF0EC; border: 1px solid #FFCFC7; }
+        .ba-col.after  { background: #EFF6E0; border: 1px solid #BAD9A2; }
+        .ba-col h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
+        .ba-col.before h4 { color: var(--accent-orange); }
+        .ba-col.after  h4 { color: var(--accent-green); }
+        .ba-col ul { list-style: none; }
+        .ba-col ul li { font-size: 0.83rem; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; gap: 8px; align-items: flex-start; }
+        .ba-col.before ul li::before { content: '✗'; color: var(--accent-orange); font-weight: 700; flex-shrink: 0; }
+        .ba-col.after  ul li::before { content: '✓'; color: var(--accent-green); font-weight: 700; flex-shrink: 0; }
+
+        /* COMPETITIVE */
+        .comp-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .comp-table th { background: var(--navico-blue); color: white; padding: 10px 14px; text-align: left; }
+        .comp-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); }
+        .comp-table tr:nth-child(even) td { background: var(--ms-blue-light); }
+        .win { color: var(--accent-green); font-weight: 700; }
+        .neutral { color: var(--text-light); }
+
+        /* TIPS */
+        .tip-box { background: var(--ms-blue-light); border: 1px solid #B0D0F0; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+        .tip-box.warn { background: #FFF8E1; border-color: var(--warning); }
+        .tip-box .tip-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; color: var(--ms-blue-dark); }
+        .tip-box.warn .tip-title { color: #6d4c00; }
+        .tip-box p { font-size: 0.84rem; }
+
+        /* CLOSE */
+        .close-card { background: linear-gradient(135deg, var(--navico-blue), var(--ms-blue)); color: white; border-radius: var(--radius); padding: 24px; text-align: center; margin-bottom: 20px; }
+        .close-card h3 { font-size: 1.2rem; margin-bottom: 12px; }
+        .close-card p { opacity: 0.9; font-size: 0.92rem; margin-bottom: 8px; }
+
+        @media (max-width: 700px) {
+            .ba-grid { grid-template-columns: 1fr; }
+            .persona-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>🚢 Navico Marine Electronics</h1>
+    <p class="subtitle">D365 Customer Service — Competitive Demo Script</p>
+    <div class="hero-badges">
+        <span class="badge highlight">Competitive vs. Salesforce</span>
+        <span class="badge">Omnichannel: Email · Chat · Voice</span>
+        <span class="badge">Copilot Agent Assist</span>
+        <span class="badge">Intelligent Routing</span>
+        <span class="badge">RMA &amp; Warranty Workflows</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- OVERVIEW -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">🎯</span>
+            <h2>Demo Overview</h2>
+            <span class="duration">~45 minutes total</span>
+        </div>
+        <p style="margin-bottom:16px;">Navico already uses D365 Customer Service — but only in a very basic way (email and phone, single queue, no routing intelligence, no Copilot). This demo shows them what the <em>modern</em> version of the platform looks like, and makes it impossible to unsee the gap vs. what they have today.</p>
+        <p style="margin-bottom:16px;"><strong>The core narrative:</strong> <em>"You've already made the right platform choice. Now let us show you what it actually looks like when it's fully deployed."</em></p>
+
+        <div class="timing-bar">
+            <div class="timing-seg open">Open &amp; Context<br>0–5 min</div>
+            <div class="timing-seg s1">Scenario 1<br>Voice 5–17 min</div>
+            <div class="timing-seg s2">Scenario 2<br>Chat 17–28 min</div>
+            <div class="timing-seg s3">Scenario 3<br>Email 28–37 min</div>
+            <div class="timing-seg s4">Scenario 4<br>Supervisor 37–43 min</div>
+            <div class="timing-seg close">Close<br>43–45</div>
+        </div>
+
+        <div class="ba-grid">
+            <div class="ba-col before">
+                <h4>Navico Today (Current State)</h4>
+                <ul>
+                    <li>1 queue — all cases regardless of brand or tier</li>
+                    <li>RingCentral phone — no screen pop, manual lookup</li>
+                    <li>Email + phone only, no chat or digital</li>
+                    <li>Managers manually categorize uncategorized cases</li>
+                    <li>ServiceTarget KB — agents manually search Q&amp;A</li>
+                    <li>No analytics dashboard, no supervisor insights</li>
+                    <li>No WFM, no NPS automation</li>
+                </ul>
+            </div>
+            <div class="ba-col after">
+                <h4>With Modern D365 CS</h4>
+                <ul>
+                    <li>Intelligent routing — brand, tier, skill-based</li>
+                    <li>Screen pop on every call — Customer 360 instantly</li>
+                    <li>Email + Chat + Voice unified in one workspace</li>
+                    <li>89%+ of cases auto-categorized by Copilot</li>
+                    <li>Copilot Agent Assist — KB in &lt;10 seconds</li>
+                    <li>Real-time Omnichannel Insights supervisor view</li>
+                    <li>NPS surveys auto-triggered on case close</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- PERSONAS -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">👥</span>
+            <h2>Demo Personas</h2>
+        </div>
+        <div class="persona-grid">
+            <div class="persona-card hero-persona">
+                <div class="persona-name">Emma Thompson</div>
+                <div class="persona-title">Customer Service Agent — Americas</div>
+                <div class="persona-company">Navico (Internal)</div>
+                <span class="persona-tier tier-agent">Demo Agent</span>
+                <div class="persona-detail">Primary demo persona. Handles Scenarios 1, 2 &amp; 3. Brand focus: Simrad + Lowrance. Skill Tier 2.</div>
+            </div>
+            <div class="persona-card hero-persona">
+                <div class="persona-name">Marco Rossi</div>
+                <div class="persona-title">Senior Technical Specialist — EMEA</div>
+                <div class="persona-company">Navico (Internal)</div>
+                <span class="persona-tier tier-agent">Demo Agent</span>
+                <div class="persona-detail">Escalation specialist. Handles RMA validation, B&amp;G sailing escalations. Tier 4 Product Expert.</div>
+            </div>
+            <div class="persona-card hero-persona">
+                <div class="persona-name">Sarah Mitchell</div>
+                <div class="persona-title">Customer Service Supervisor</div>
+                <div class="persona-company">Navico (Internal)</div>
+                <span class="persona-tier tier-agent">Demo Supervisor</span>
+                <div class="persona-detail">Scenario 4 persona. Shows Omnichannel Insights, queue analytics, real-time oversight.</div>
+            </div>
+            <div class="persona-card">
+                <div class="persona-name">Jake Harrington</div>
+                <div class="persona-title">Purchasing Manager</div>
+                <div class="persona-company">Atlantic Marine Supply Co.</div>
+                <span class="persona-tier tier-pe">Platinum Expert</span>
+                <div class="persona-detail">Scenario 1 (Voice). Calls in about Simrad NSX 3007 touchscreen failure. Fleet RMA Exchange request. Phone: +1 (651) 226-3398</div>
+            </div>
+            <div class="persona-card">
+                <div class="persona-name">Christine Delacroix</div>
+                <div class="persona-title">Service Manager</div>
+                <div class="persona-company">Euro Marine Distributors (EMEA)</div>
+                <span class="persona-tier tier-pe">Platinum Expert</span>
+                <div class="persona-detail">Scenario 2 (Chat). B&amp;G Triton2 erratic wind instrument — urgent, race season in 3 days. Chats from dealer portal.</div>
+            </div>
+            <div class="persona-card">
+                <div class="persona-name">Mike Torres</div>
+                <div class="persona-title">Recreational Fisherman</div>
+                <div class="persona-company">Registered B2C Consumer</div>
+                <span class="persona-tier tier-b2c">Consumer</span>
+                <div class="persona-detail">Scenario 3 (Email). Lowrance HDS-9 Live won't power on. 14-month-old unit, warranty valid. Email: mjtorres87@gmail.com</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENARIO 1: VOICE -->
+    <div class="scenario-card">
+        <div class="scenario-header voice">
+            <div class="scenario-num">1</div>
+            <div class="scenario-title">
+                <h3>📞 Voice: Inbound B2B Call — RMA Exchange Request</h3>
+                <div class="meta">Jake Harrington → Emma Thompson · Simrad NSX 3007 · Atlantic Marine Supply</div>
+            </div>
+            <div class="scenario-time">~12 min</div>
+        </div>
+        <div class="scenario-body">
+            <div class="tip-box">
+                <div class="tip-title">🎬 Setup: Before starting this scenario</div>
+                <p>Make sure Emma is signed into Customer Service workspace and the voice channel is active. Have the Atlantic Marine Supply account visible in a tab if needed as backup. Serial SIM-2024-NSX-10042 should be in product serials.</p>
+            </div>
+            <ol class="step-list">
+                <li>
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <div class="action">Inbound call rings — show the incoming call notification in Customer Service workspace</div>
+                        <div class="talk-track">"Right now, Emma is on shift and an inbound call is coming in. Before D365, Emma would have to answer, manually greet the caller, then start searching. Watch what happens instead."</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <div class="action">Accept the call — Screen Pop appears showing Atlantic Marine Supply Co., Jake Harrington, Platinum Expert tier badge</div>
+                        <div class="talk-track">"The moment Emma accepts this call, D365 has already done the heavy lifting. She can see Jake Harrington, Purchasing Manager at Atlantic Marine Supply — one of Navico's Platinum Expert distributors. She can see their tier, their recent cases, open orders, and warranty status. All before she's said hello."</div>
+                        <div class="copilot-note">✨ Copilot: Show screen pop data — Account Tier, Open Cases (2), Last Contact, Warranty Status for serial SIM-2024-NSX-10042</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <div class="action">Navigate to the pre-seeded hero case — "Simrad NSX 3007 — Touchscreen Unresponsive After Firmware Update"</div>
+                        <div class="talk-track">"Jake is calling about a Simrad NSX 3007 that lost touchscreen functionality after a firmware update. Emma opens the case — she can see the serial number, the warranty status, and the previous note from our tech team already flagging this as a known issue with firmware v3.8.1."</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <div class="action">Show Copilot Agent Assist panel — KB article KB-SIM-0042 is already suggested</div>
+                        <div class="talk-track">"And here's where it gets interesting. Copilot has already read the case description and pulled the most relevant KB article — Simrad NSX touchscreen recovery procedure. Emma didn't search for this. It appeared in her assist panel automatically."</div>
+                        <div class="copilot-note">✨ Copilot: Article KB-SIM-0042 suggested. Show 'Send to Customer' button — one click to email the article to Jake while still on the call.</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">5</div>
+                    <div class="step-content">
+                        <div class="action">Demonstrate serial/warranty lookup — confirm serial SIM-2024-NSX-10042, warranty valid until 2027</div>
+                        <div class="talk-track">"Emma checks the serial number Jake gives her — it matches what's in the system, and the warranty is valid for another year. This is the validation step that today takes 2-3 minutes of manual searching in their ERP. Here it's instant."</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">6</div>
+                    <div class="step-content">
+                        <div class="action">Recovery steps don't resolve the issue — change case type to RMA Exchange, route to Marco Rossi</div>
+                        <div class="talk-track">"The recovery procedure didn't work remotely. Emma changes the case type to RMA Exchange and routes it to Marco Rossi, our Simrad Tier 4 specialist. The case carries all the context — serial, warranty validation, prior notes. Marco picks it up knowing exactly what's needed."</div>
+                        <div class="copilot-note">✨ Copilot: Suggests 'RMA Exchange' case type based on case history. Shows routing recommendation to Simrad Tier 4 queue.</div>
+                    </div>
+                </li>
+            </ol>
+            <div class="tip-box warn">
+                <div class="tip-title">⚠️ If voice is not live — fallback talking point</div>
+                <p>"For today I'm going to simulate the screen pop by opening the account directly — but in a live environment, this screen pop fires automatically the moment the call connects. The exact same data, the exact same experience, just triggered by the phone ring instead."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENARIO 2: CHAT -->
+    <div class="scenario-card">
+        <div class="scenario-header chat">
+            <div class="scenario-num">2</div>
+            <div class="scenario-title">
+                <h3>💬 Chat: Platinum Expert EMEA Escalation</h3>
+                <div class="meta">Christine Delacroix → Marco Rossi · B&amp;G Triton2 · Euro Marine Distributors</div>
+            </div>
+            <div class="scenario-time">~11 min</div>
+        </div>
+        <div class="scenario-body">
+            <div class="tip-box">
+                <div class="tip-title">🎬 Setup: Chat widget</div>
+                <p>Navigate to the Navico dealer portal page (or use the chat widget test URL). Initiate a chat as Christine — use her account details in the chat pre-chat form. The case should auto-route to Marco's queue.</p>
+            </div>
+            <ol class="step-list">
+                <li>
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <div class="action">Show the chat widget on the dealer portal — Christine initiates a chat</div>
+                        <div class="talk-track">"One of the biggest gaps Navico mentioned is that they have no digital channels today. Their dealers have no way to chat — they pick up the phone or send an email. Here's what we're going to give Christine instead."</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <div class="action">Chat connects — Marco receives it in his Customer Service workspace. Show Christine's account card: Euro Marine Distributors, Platinum Expert, EMEA</div>
+                        <div class="talk-track">"Christine is a Platinum Expert. The moment her chat lands, the system knows that. It didn't go to a general queue — it went directly to Marco, the B&amp;G specialist, with a priority boost. The queue position for a Platinum Expert is not the same as a Standard dealer."</div>
+                        <div class="copilot-note">✨ Copilot: Priority boost applied based on Platinum Expert tier. Routed to B&amp;G sailing specialist queue.</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <div class="action">Christine describes the B&amp;G Triton2 wind instrument issue — Copilot surfaces KB-BG-0117 immediately</div>
+                        <div class="talk-track">"Christine types her issue — B&amp;G Triton2, erratic wind readings, race season in 3 days. Copilot reads that in real time and immediately pulls KB article BG-0117 — Triton2 AWA calibration procedure. This is what happens when your KB is connected to your AI instead of living in a separate system called 'Rusty Tech'."</div>
+                        <div class="copilot-note">✨ Copilot: KB-BG-0117 surfaced — B&amp;G Triton2 wind calibration. Suggested reply drafted for Marco with opening acknowledgment and urgency recognition.</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <div class="action">Marco uses the Copilot suggested reply — sends the calibration steps with one click</div>
+                        <div class="talk-track">"Marco reviews the suggested reply, confirms it's accurate, and sends it. He didn't type a word — and yet Christine got a professional, technically accurate, brand-appropriate response in under 60 seconds."</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">5</div>
+                    <div class="step-content">
+                        <div class="action">Issue not fully resolved via chat — Copilot generates case summary for escalation</div>
+                        <div class="talk-track">"The issue needs deeper investigation — possibly a sensor replacement. Marco needs to escalate. Watch Copilot generate the case summary: account, serial, issue description, steps already taken, urgency context. This handoff note used to take 5 minutes to write. Now it's one click."</div>
+                        <div class="copilot-note">✨ Copilot: Case Summary generated — account, serial BG-2024-TRI2-20011, issue, steps tried, urgency flag. Ready for escalation handoff.</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">6</div>
+                    <div class="step-content">
+                        <div class="action">Switch to Supervisor view — Sarah can see the Christine conversation in Omnichannel Insights live</div>
+                        <div class="talk-track">"And here's what Sarah, our supervisor, sees in real time. She can see that conversation. She can join it, monitor it, or reassign it. She's not finding out about this Platinum Expert issue 2 days later when Christine calls to complain."</div>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- SCENARIO 3: EMAIL -->
+    <div class="scenario-card">
+        <div class="scenario-header email">
+            <div class="scenario-num">3</div>
+            <div class="scenario-title">
+                <h3>📧 Email: B2C Consumer Warranty Claim (AI Triage)</h3>
+                <div class="meta">Mike Torres → Emma Thompson (auto-routed) · Lowrance HDS-9 Live</div>
+            </div>
+            <div class="scenario-time">~9 min</div>
+        </div>
+        <div class="scenario-body">
+            <ol class="step-list">
+                <li>
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <div class="action">Show the pre-seeded inbound email case — "My Lowrance HDS wont turn on"</div>
+                        <div class="talk-track">"This is the most common interaction at Navico's scale — a consumer emails in with an issue. Today someone reads that email, manually creates a case, manually looks up the product, manually checks warranty. Here's the alternative."</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <div class="action">Show the auto-created case — intent, product, serial, and warranty status already populated</div>
+                        <div class="talk-track">"AI read Mike's email. It detected the intent — warranty claim. It extracted the serial number from the plain text. It looked up that serial, confirmed the product is a Lowrance HDS-9 Live, and confirmed the warranty is active until February 2027. The case was created with all of that. Emma opens it cold and already knows everything."</div>
+                        <div class="copilot-note">✨ Copilot AI Triage: Intent = Warranty Claim, Product = Lowrance HDS-9 Live, Serial = LWR-2024-HDS-88821, Warranty = Active (expires 2027-02-14), Confidence = 97%</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <div class="action">Show Copilot's drafted response — full consumer reply with return instructions, ready to send</div>
+                        <div class="talk-track">"And here's Copilot's suggested reply. It's a full, professional consumer response with the next steps — prepaid shipping label, return instructions, turnaround time. Emma reads it, approves it, and clicks send. The whole thing took 45 seconds. For Mike, the experience is night and day compared to waiting for a manual email response."</div>
+                        <div class="copilot-note">✨ Copilot: Draft email ready — warranty confirmation, prepaid return instructions, 10-day turnaround. One-click send.</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <div class="action">Close the case — show NPS survey queued automatically</div>
+                        <div class="talk-track">"When Emma closes this case, an NPS survey is automatically queued for Mike. Navico mentioned they do ad hoc NPS surveys today — with D365 it's systematic on every case close. That's how you build a VOC program instead of just guessing."</div>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- SCENARIO 4: SUPERVISOR -->
+    <div class="scenario-card">
+        <div class="scenario-header supervisor">
+            <div class="scenario-num">4</div>
+            <div class="scenario-title">
+                <h3>📊 Supervisor View: Queue Analytics &amp; Team Intelligence</h3>
+                <div class="meta">Sarah Mitchell · Omnichannel Insights Dashboard</div>
+            </div>
+            <div class="scenario-time">~6 min</div>
+        </div>
+        <div class="scenario-body">
+            <ol class="step-list">
+                <li>
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <div class="action">Open Omnichannel Insights — show live queue health across email, chat, and voice</div>
+                        <div class="talk-track">"This is Sarah's world. Right now Navico's managers come in, pull up a list of uncategorized cases, and spend 30-40 minutes tagging cases that agents couldn't categorize because they were too generic. Sarah doesn't do that here."</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <div class="action">Show case volume by brand — Lowrance 44%, Simrad 31%, B&amp;G 18%, C-MAP 7%</div>
+                        <div class="talk-track">"Sarah can see the distribution across brands in real time. If B&amp;G volume spikes today because of a product issue, she knows immediately — and she can shift agents. That insight doesn't exist at all in the current setup."</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <div class="action">Show hot word alert — "Navigation Failure" case flagged and auto-bumped in queue</div>
+                        <div class="talk-track">"Here's a case with the words 'navigation failure' in it. The system automatically flagged it and bumped it to the top of the queue — that's a keyword that could mean a vessel is in a dangerous situation. No manager had to do that. The AI did."</div>
+                        <div class="copilot-note">✨ Hot words: Navigation Failure, Safety, Man Overboard, Emergency → auto +10,000 priority boost</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <div class="action">Show cases awaiting categorization: 3 (vs. 40+ in current state)</div>
+                        <div class="talk-track">"Remember Harry mentioned managers coming in to attach categories? Look at this — only 3 cases need manager review because Copilot auto-categorized the other 89%. That's hours of manager time back every single day."</div>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- COMPETITIVE NOTES -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">⚔️</span>
+            <h2>Competitive Notes — D365 CS vs. Salesforce Service Cloud</h2>
+        </div>
+        <table class="comp-table">
+            <tr><th>Capability</th><th>D365 Customer Service</th><th>Salesforce Service Cloud</th></tr>
+            <tr><td>Platform consolidation (Sales + Service)</td><td class="win">Single platform — native D365 Sales + CS</td><td class="neutral">Still two separate orgs; integration required</td></tr>
+            <tr><td>Copilot / AI agent assist</td><td class="win">Microsoft Copilot — built-in, no add-on cost at most tiers</td><td class="neutral">Einstein Copilot — additional license cost</td></tr>
+            <tr><td>Voice/telephony</td><td class="win">Azure Communication Services or CCaaS via CIF — no separate app</td><td class="neutral">Service Cloud Voice — Salesforce-hosted or BYOT</td></tr>
+            <tr><td>Omnichannel</td><td class="win">Email, Chat, Voice, Social all in one workspace</td><td class="neutral">Requires additional Digital Engagement licenses</td></tr>
+            <tr><td>ERP integration (Oracle / Dynamics AX)</td><td class="win">Native Dynamics AX/Finance integration; Oracle via connectors</td><td class="neutral">Third-party middleware required for both</td></tr>
+            <tr><td>Existing investment</td><td class="win">Navico already uses D365 CS — expansion, not replacement</td><td class="neutral">Full rip-and-replace of existing D365 CS</td></tr>
+            <tr><td>WFM</td><td class="win">Workforce Management available natively</td><td class="neutral">WFM via Salesforce Scheduler or third-party</td></tr>
+            <tr><td>Total cost of ownership</td><td class="win">One vendor, one contract, one admin team</td><td class="neutral">Add SFDC to existing D365 licenses = dual cost</td></tr>
+        </table>
+    </div>
+
+    <!-- OBJECTION HANDLING -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">💬</span>
+            <h2>Objection Handling</h2>
+        </div>
+        <div class="objection">
+            <div class="q">"We already have D365 CS and it doesn't do what you're showing."</div>
+            <div class="a">That's exactly the point. What you have today is the default out-of-box configuration. Everything you're seeing in this demo is in the same license you already own — omnichannel, Copilot, intelligent routing, analytics. The gap isn't the product, it's the configuration. We're here to close that gap.</div>
+        </div>
+        <div class="objection">
+            <div class="q">"We have 17 brands — this seems very complex to configure."</div>
+            <div class="a">We've built routing rules for 5 core brands today in about an hour. The model is templated — adding a brand means adding a queue and a routing rule. Once the first two or three are done, the rest take 15 minutes each. And you don't have to do all 17 at once — start with Lowrance, Simrad, and B&G where you have the most volume.</div>
+        </div>
+        <div class="objection">
+            <div class="q">"What about our Optimizely portal? Will this replace it?"</div>
+            <div class="a">Not necessarily — you can embed a D365 chat widget into your existing Optimizely portal without changing the portal itself. Your dealers keep the same URL and experience, they just get a live chat option and modern KB instead of ServiceTarget. It's an additive integration, not a replacement project.</div>
+        </div>
+        <div class="objection">
+            <div class="q">"RingCentral is our telephony provider — can we keep it?"</div>
+            <div class="a">Yes. D365 supports Channel Integration Framework which connects to RingCentral via their CIF adapter. You get the screen pop and embedded experience without changing your carrier contract or phone numbers. If you ever want to migrate to Azure Communication Services, that path is there too.</div>
+        </div>
+        <div class="objection">
+            <div class="q">"Salesforce is also pitching us — what's your differentiator?"</div>
+            <div class="a">The biggest differentiator is that you already own D365 CS and you'd be expanding what you have, not adding a second CRM. Salesforce would mean paying for both platforms — or ripping out D365 entirely, which creates risk and cost. Every capability you saw today is already in your existing license. The question isn't which platform — it's whether to finish what you started.</div>
+        </div>
+    </div>
+
+    <!-- CLOSE -->
+    <div class="close-card">
+        <h3>🏁 The Close</h3>
+        <p><em>"You made the right choice when you chose D365 Customer Service. What you've seen today is what fully deployed looks like. The platform is already there — we just need to turn it on."</em></p>
+        <p><strong>Recommended next step: 2-week rapid configuration sprint</strong> — Channels, routing, Copilot. Running in parallel with John's Sales workstream.</p>
+    </div>
+
+    <!-- NEXT STEPS -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">📋</span>
+            <h2>Recommended Next Steps</h2>
+        </div>
+        <ol style="margin-left:20px;">
+            <li style="margin-bottom:10px;"><strong>Technical discovery session</strong> — Review current D365 CS configuration, identify what's already deployed vs. what needs enabling</li>
+            <li style="margin-bottom:10px;"><strong>Omnichannel pilot</strong> — Start with email + chat (lower risk than voice). Connect to existing Optimizely portal.</li>
+            <li style="margin-bottom:10px;"><strong>Routing workshop</strong> — Map Navico's tier/brand/skill matrix to D365 Unified Routing workstreams</li>
+            <li style="margin-bottom:10px;"><strong>Copilot enablement</strong> — Enable Case Summary, Draft Email, Agent Assist — these are same-day configuration changes</li>
+            <li style="margin-bottom:10px;"><strong>Voice proof of concept</strong> — Connect RingCentral via CIF adapter, validate screen pop with 5 agents</li>
+        </ol>
+    </div>
+
+</div>
+</body>
+</html>

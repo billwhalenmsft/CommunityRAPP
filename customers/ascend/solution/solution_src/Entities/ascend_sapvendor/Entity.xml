@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ============================================================
+  ascend_sapvendor  —  Dataverse emulation of SAP ECC 6.0
+  Source tables: LFA1 (General), LFB1 (Company Code), LFM1 (Purchasing Org)
+  Demo label: "SAP ECC 6.0 (Demo via Dataverse)"
+  ============================================================
+-->
+<Entity>
+  <Name LocalizedName="SAP Vendor (Demo)" OriginalName="ascend_sapvendor">ascend_sapvendor</Name>
+  <EntityInfo>
+    <entity Name="ascend_sapvendor">
+      <LocalizedNames>
+        <LocalizedName description="SAP Vendor (Demo)" languagecode="1033" />
+      </LocalizedNames>
+      <LocalizedCollectionNames>
+        <LocalizedCollectionName description="SAP Vendors (Demo)" languagecode="1033" />
+      </LocalizedCollectionNames>
+      <Descriptions>
+        <Description description="Emulates SAP ECC 6.0 vendor master tables LFA1 (general), LFB1 (company code), LFM1 (purchasing org). All records are DEMO data — not connected to production SAP." languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <!-- Primary key -->
+        <attribute PhysicalName="ascend_sapvendorid">
+          <Type>primarykey</Type>
+          <Name>ascend_sapvendorid</Name>
+          <LogicalName>ascend_sapvendorid</LogicalName>
+          <DisplayMasks>ValidForAdvancedFind ValidForForm ValidForGrid</DisplayMasks>
+        </attribute>
+        <!-- SAP vendor number (LFA1.LIFNR) -->
+        <attribute PhysicalName="ascend_lifnr">
+          <Type>nvarchar</Type><Name>ascend_lifnr</Name><LogicalName>ascend_lifnr</LogicalName>
+          <MaxLength>10</MaxLength>
+          <LocalizedNames><LocalizedName description="SAP Vendor Number (LIFNR)" languagecode="1033" /></LocalizedNames>
+          <RequiredLevel>required</RequiredLevel>
+        </attribute>
+        <!-- Vendor name (LFA1.NAME1) -->
+        <attribute PhysicalName="ascend_name1">
+          <Type>nvarchar</Type><Name>ascend_name1</Name><LogicalName>ascend_name1</LogicalName>
+          <MaxLength>35</MaxLength>
+          <LocalizedNames><LocalizedName description="Vendor Name (NAME1)" languagecode="1033" /></LocalizedNames>
+          <RequiredLevel>required</RequiredLevel>
+        </attribute>
+        <!-- Company code (LFB1.BUKRS) -->
+        <attribute PhysicalName="ascend_bukrs">
+          <Type>nvarchar</Type><Name>ascend_bukrs</Name><LogicalName>ascend_bukrs</LogicalName>
+          <MaxLength>4</MaxLength>
+          <LocalizedNames><LocalizedName description="Company Code (BUKRS)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Purchasing org (LFM1.EKORG) -->
+        <attribute PhysicalName="ascend_ekorg">
+          <Type>nvarchar</Type><Name>ascend_ekorg</Name><LogicalName>ascend_ekorg</LogicalName>
+          <MaxLength>4</MaxLength>
+          <LocalizedNames><LocalizedName description="Purchasing Org (EKORG)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Blocked flag (LFA1.SPERR) -->
+        <attribute PhysicalName="ascend_sperr">
+          <Type>bit</Type><Name>ascend_sperr</Name><LogicalName>ascend_sperr</LogicalName>
+          <LocalizedNames><LocalizedName description="Vendor Blocked (SPERR)" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>0</DefaultValue>
+        </attribute>
+        <!-- Purchasing blocked (LFM1.SPERM) -->
+        <attribute PhysicalName="ascend_sperm">
+          <Type>bit</Type><Name>ascend_sperm</Name><LogicalName>ascend_sperm</LogicalName>
+          <LocalizedNames><LocalizedName description="Purchasing Block (SPERM)" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>0</DefaultValue>
+        </attribute>
+        <!-- Country (LFA1.LAND1) -->
+        <attribute PhysicalName="ascend_land1">
+          <Type>nvarchar</Type><Name>ascend_land1</Name><LogicalName>ascend_land1</LogicalName>
+          <MaxLength>3</MaxLength>
+          <LocalizedNames><LocalizedName description="Country (LAND1)" languagecode="1033" /></LocalizedNames>
+        </attribute>
+        <!-- Currency (LFM1.WAERS) -->
+        <attribute PhysicalName="ascend_waers">
+          <Type>nvarchar</Type><Name>ascend_waers</Name><LogicalName>ascend_waers</LogicalName>
+          <MaxLength>5</MaxLength>
+          <LocalizedNames><LocalizedName description="Currency (WAERS)" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>USD</DefaultValue>
+        </attribute>
+        <!-- Demo label field — always "SAP ECC 6.0 (Demo via Dataverse)" -->
+        <attribute PhysicalName="ascend_datasource">
+          <Type>nvarchar</Type><Name>ascend_datasource</Name><LogicalName>ascend_datasource</LogicalName>
+          <MaxLength>100</MaxLength>
+          <LocalizedNames><LocalizedName description="Data Source" languagecode="1033" /></LocalizedNames>
+          <DefaultValue>SAP ECC 6.0 (Demo via Dataverse)</DefaultValue>
+        </attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

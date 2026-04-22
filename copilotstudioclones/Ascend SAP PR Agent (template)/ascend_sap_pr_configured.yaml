@@ -1,0 +1,584 @@
+kind: BotDefinition
+entity:
+  accessControlPolicy: None
+  authenticationMode: None
+  authenticationTrigger: AsNeeded
+  configuration: {}
+  template: kickStartTemplate-1.0.0
+
+components:
+  # ─── SYSTEM TOPICS (preserved from kickstart template) ───────────────────
+
+  - kind: DialogComponent
+    managedProperties:
+      isCustomizable: false
+    displayName: Fallback
+    description: This system topic triggers when the user utterance does not match any existing topics.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: template-content.topic.Fallback
+    dialog:
+      beginDialog:
+        kind: OnUnknownIntent
+        id: main
+        actions:
+          - kind: ConditionGroup
+            id: conditionGroup_LktzXw
+            conditions:
+              - id: conditionItem_tlGIVo
+                condition: =System.FallbackCount < 3
+                actions:
+                  - kind: SendActivity
+                    id: sendMessage_QZreqo
+                    activity: I didn't quite understand that. Could you try rephrasing? You can ask me to create a PR, check PR status, approve a PR, look up a vendor, or cancel a PR.
+            elseActions:
+              - kind: BeginDialog
+                id: 5aXj5M
+                dialog: template-content.topic.Escalate
+
+  - kind: DialogComponent
+    managedProperties:
+      isCustomizable: false
+    displayName: Thank you
+    description: This topic triggers when the user says thank you.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: template-content.topic.Thankyou
+    dialog:
+      beginDialog:
+        kind: OnRecognizedIntent
+        id: main
+        intent:
+          displayName: Thank you
+          includeInOnSelectIntent: false
+          triggerQueries:
+            - thanks
+            - thank you
+            - thanks so much
+            - ty
+        actions:
+          - kind: SendActivity
+            id: sendMessage_9iz6v7
+            activity: You're welcome! Is there anything else I can help you with for SAP procurement?
+
+  - kind: DialogComponent
+    managedProperties:
+      isCustomizable: false
+    displayName: On Error
+    description: This system topic triggers when the agent encounters an error.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: template-content.topic.OnError
+    dialog:
+      beginDialog:
+        kind: OnError
+        id: main
+        actions:
+          - kind: SetVariable
+            id: setVariable_timestamp
+            variable: init:Topic.CurrentTime
+            value: =Text(Now(), DateTimeFormat.UTC)
+          - kind: ConditionGroup
+            id: condition_1
+            conditions:
+              - id: bL4wmY
+                condition: =System.Conversation.InTestMode = true
+                actions:
+                  - kind: SendActivity
+                    id: sendMessage_XJBYMo
+                    activity: |-
+                      Error Message: {System.Error.Message}
+                      Error Code: {System.Error.Code}
+                      Conversation Id: {System.Conversation.Id}
+                      Time (UTC): {Topic.CurrentTime}
+            elseActions:
+              - kind: SendActivity
+                id: sendMessage_dZ0gaF
+                activity:
+                  text:
+                    - |-
+                      An error has occurred. Please try again or contact your procurement team.
+                      Error code: {System.Error.Code}
+
+  - kind: DialogComponent
+    managedProperties:
+      isCustomizable: false
+    displayName: Sign in
+    description: This system topic triggers when the agent needs to sign in the user.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: template-content.topic.Signin
+    dialog:
+      beginDialog:
+        kind: OnSignIn
+        id: main
+        actions:
+          - kind: OAuthInput
+            id: gOjhZA
+            title: Login
+            text: To continue, please login
+
+  - kind: DialogComponent
+    managedProperties:
+      isCustomizable: false
+    displayName: Escalate
+    description: This system topic is triggered when the user indicates they would like to speak to a representative.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: template-content.topic.Escalate
+    dialog:
+      startBehavior: CancelOtherTopics
+      beginDialog:
+        kind: OnEscalate
+        id: main
+        intent:
+          displayName: Escalate
+          includeInOnSelectIntent: false
+          triggerQueries:
+            - Talk to representative
+            - Talk to a person
+            - I need help from a person
+            - Can I speak to a representative
+            - Connect me to a person
+        actions:
+          - kind: SendActivity
+            id: sendMessage_s39DCt
+            conversationOutcome: Escalated
+            activity: |-
+              For complex procurement issues, please contact the Ascend procurement team directly or open a ticket in ServiceNow.
+
+              Is there anything else I can help you with?
+
+  # ─── CONVERSATION START (customized welcome) ──────────────────────────────
+
+  - kind: DialogComponent
+    managedProperties:
+      isCustomizable: false
+    displayName: Conversation Start
+    description: Triggered at the start of a new conversation.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: template-content.topic.ConversationStart
+    dialog:
+      beginDialog:
+        kind: OnConversationStart
+        id: main
+        actions:
+          - kind: SendActivity
+            id: welcomeMsg
+            activity:
+              text:
+                - |-
+                  👋 Welcome to the **Ascend SAP Procurement Assistant**!
+
+                  I manage your full SAP ECC 6.0 Purchase Requisition lifecycle — directly from Teams. No SAP GUI needed.
+
+                  Here's what I can do:
+                  - 📋 **Create a PR** — raise a new purchase requisition in SAP
+                  - 📊 **Check PR status** — look up any PR by number (BANFN)
+                  - ✅ **Approve or reject** — act on PRs in your approval queue
+                  - ❌ **Cancel a PR** — cancel open requisitions
+                  - 🔍 **Vendor lookup** — check if a supplier is approved in SAP (LFA1)
+                  - 🔔 **Send reminders** — follow up on pending approvals
+
+                  **Try:** *"I need to raise a PR for $50K of industrial equipment"*
+
+  # ─── SAP CUSTOM TOPICS ────────────────────────────────────────────────────
+
+  - kind: DialogComponent
+    displayName: SAP Create PR
+    description: Guides user through creating a SAP Purchase Requisition (writes to EBAN + EBKN via Power Automate flow).
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: ascend.topic.SAPCreatePR
+    dialog:
+      beginDialog:
+        kind: OnRecognizedIntent
+        id: main
+        intent:
+          displayName: SAP Create PR
+          triggerQueries:
+            - I need to raise a purchase requisition
+            - create a PR
+            - I need to buy
+            - raise a PR
+            - new purchase req
+            - I want to order
+            - create purchase requisition
+            - I need to procure
+            - raise requisition
+            - submit a PR
+            - I need to purchase
+        actions:
+          - kind: SendActivity
+            id: ackCreate
+            activity:
+              text:
+                - I'll help you create a Purchase Requisition in SAP. Let me gather a few details.
+          - kind: Question
+            id: askDescription
+            alwaysPrompt: false
+            variable: init:Topic.ItemDescription
+            prompt: What item or service do you need? (This becomes the PR line description in SAP EBAN.TXZ01)
+            entity: StringPrebuiltEntity
+          - kind: Question
+            id: askVendor
+            alwaysPrompt: false
+            variable: init:Topic.VendorName
+            prompt: Which vendor should supply this? I'll verify they're approved in the SAP vendor master (LFA1).
+            entity: StringPrebuiltEntity
+          - kind: Question
+            id: askAmount
+            alwaysPrompt: false
+            variable: init:Topic.Amount
+            prompt: What's the total value in USD?
+            entity: MoneyPrebuiltEntity
+          - kind: Question
+            id: askCostCenter
+            alwaysPrompt: false
+            variable: init:Topic.CostCenter
+            prompt: Which cost center should this be charged to? (e.g. CC1001 Texas City Ops, CC1002 R&D)
+            entity: StringPrebuiltEntity
+          - kind: Question
+            id: askGLAccount
+            alwaysPrompt: false
+            variable: init:Topic.GLAccount
+            prompt: Which GL account? (e.g. 640010 for Machinery, 612345 for IT Software)
+            entity: StringPrebuiltEntity
+          - kind: SendActivity
+            id: confirmSummary
+            activity:
+              text:
+                - |-
+                  📋 **PR Summary — Please Confirm:**
+
+                  | Field | Value |
+                  |-------|-------|
+                  | **Item (TXZ01)** | {Topic.ItemDescription} |
+                  | **Vendor** | {Topic.VendorName} |
+                  | **Total Value** | {Topic.Amount} |
+                  | **Cost Center (KOSTL)** | {Topic.CostCenter} |
+                  | **GL Account (SAKTO)** | {Topic.GLAccount} |
+
+                  Shall I submit this PR to SAP?
+          - kind: Question
+            id: askConfirm
+            alwaysPrompt: false
+            variable: init:Topic.Confirmed
+            prompt: Confirm submission?
+            entity: BooleanPrebuiltEntity
+          - kind: ConditionGroup
+            id: checkConfirm
+            conditions:
+              - id: ifConfirmed
+                condition: =Topic.Confirmed = true
+                actions:
+                  - kind: SendActivity
+                    id: submitting
+                    activity:
+                      text:
+                        - ✅ Submitting your PR to SAP now...
+                  - kind: SendActivity
+                    id: successMsg
+                    activity:
+                      text:
+                        - |-
+                          ✅ **PR submitted to SAP!**
+
+                          Your PR has been created and routed to the appropriate approver based on your Delegation of Authority (DoA) level.
+
+                          Want me to send the approver a notification?
+            elseActions:
+              - kind: SendActivity
+                id: cancelMsg
+                activity:
+                  text:
+                    - No problem — PR cancelled. Let me know if you'd like to make changes and try again.
+
+  - kind: DialogComponent
+    displayName: SAP Get PR Status
+    description: Look up PR status by number, list user PRs, or show pending approvals.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: ascend.topic.SAPGetPRStatus
+    dialog:
+      beginDialog:
+        kind: OnRecognizedIntent
+        id: main
+        intent:
+          displayName: SAP Get PR Status
+          triggerQueries:
+            - check PR status
+            - what is the status of PR
+            - status of my PR
+            - show my PRs
+            - list my purchase requisitions
+            - pending approvals
+            - what PRs are waiting for my approval
+            - show me open PRs
+            - where is my PR
+            - what happened to PR
+        actions:
+          - kind: Question
+            id: askAction
+            alwaysPrompt: false
+            variable: init:Topic.StatusAction
+            prompt: What would you like to check?
+            entity:
+              kind: EmbeddedEntity
+              definition:
+                kind: ClosedListEntity
+                items:
+                  - id: by_number
+                    displayName: Look up a specific PR by number
+                  - id: list_user
+                    displayName: Show all my open PRs
+                  - id: pending_approvals
+                    displayName: Show PRs waiting for my approval
+          - kind: ConditionGroup
+            id: routeAction
+            conditions:
+              - id: ifByNumber
+                condition: =Topic.StatusAction = 'ascend.topic.SAPGetPRStatus.main.askAction'.'by_number'
+                actions:
+                  - kind: Question
+                    id: askPRNumber
+                    alwaysPrompt: false
+                    variable: init:Topic.PRNumber
+                    prompt: What's the PR number (BANFN)?
+                    entity: StringPrebuiltEntity
+                  - kind: SendActivity
+                    id: lookingUp
+                    activity:
+                      text:
+                        - Looking up PR {Topic.PRNumber} in SAP EBAN...
+              - id: ifListByUser
+                condition: =Topic.StatusAction = 'ascend.topic.SAPGetPRStatus.main.askAction'.'list_user'
+                actions:
+                  - kind: SendActivity
+                    id: listingPRs
+                    activity:
+                      text:
+                        - Retrieving your open Purchase Requisitions from SAP EBAN...
+              - id: ifPendingApprovals
+                condition: =Topic.StatusAction = 'ascend.topic.SAPGetPRStatus.main.askAction'.'pending_approvals'
+                actions:
+                  - kind: SendActivity
+                    id: listingApprovals
+                    activity:
+                      text:
+                        - |-
+                          Retrieving PRs awaiting your approval from SAP EBAN + T16FS...
+
+                          Say "approve PR [number]" or "reject PR [number]" to act on any of these.
+
+  - kind: DialogComponent
+    displayName: SAP Approve Reject PR
+    description: Approve or reject a purchase requisition — updates EBAN release indicator (FRGST).
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: ascend.topic.SAPApproveRejectPR
+    dialog:
+      beginDialog:
+        kind: OnRecognizedIntent
+        id: main
+        intent:
+          displayName: SAP Approve Reject PR
+          triggerQueries:
+            - approve PR
+            - reject PR
+            - I approve
+            - I reject
+            - approve purchase requisition
+            - approve the PR
+            - deny PR
+            - reject purchase requisition
+            - I want to approve
+        actions:
+          - kind: Question
+            id: askPRNumber
+            alwaysPrompt: false
+            variable: init:Topic.PRNumber
+            prompt: Which PR number (BANFN) would you like to approve or reject?
+            entity: StringPrebuiltEntity
+          - kind: Question
+            id: askDecision
+            alwaysPrompt: false
+            variable: init:Topic.ApprovalDecision
+            prompt: What is your decision for PR {Topic.PRNumber}?
+            entity:
+              kind: EmbeddedEntity
+              definition:
+                kind: ClosedListEntity
+                items:
+                  - id: Approve
+                    displayName: Approve
+                  - id: Reject
+                    displayName: Reject
+          - kind: Question
+            id: askComments
+            alwaysPrompt: false
+            variable: init:Topic.ApprovalComments
+            prompt: Any comments to include with your decision? (optional)
+            entity: StringPrebuiltEntity
+          - kind: SendActivity
+            id: processing
+            activity:
+              text:
+                - Processing your {Topic.ApprovalDecision} for PR {Topic.PRNumber}...
+          - kind: SendActivity
+            id: decisionConfirmed
+            activity:
+              text:
+                - |-
+                  ✅ **Decision recorded in SAP EBAN.**
+
+                  PR **{Topic.PRNumber}** has been **{Topic.ApprovalDecision}d**.
+
+                  The EBAN release indicator (FRGST) has been updated. The requester will be notified.
+
+  - kind: DialogComponent
+    displayName: SAP Cancel Edit PR
+    description: Cancel or edit a Purchase Requisition — updates EBAN deletion indicator.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: ascend.topic.SAPCancelEditPR
+    dialog:
+      beginDialog:
+        kind: OnRecognizedIntent
+        id: main
+        intent:
+          displayName: SAP Cancel Edit PR
+          triggerQueries:
+            - cancel PR
+            - cancel purchase requisition
+            - delete PR
+            - cancel my PR
+            - I want to cancel
+            - edit PR
+            - modify PR
+            - change PR
+            - update PR
+        actions:
+          - kind: Question
+            id: askPRNumber
+            alwaysPrompt: false
+            variable: init:Topic.PRNumber
+            prompt: Which PR number (BANFN) would you like to cancel or edit?
+            entity: StringPrebuiltEntity
+          - kind: Question
+            id: askCancelOrEdit
+            alwaysPrompt: false
+            variable: init:Topic.CancelAction
+            prompt: What would you like to do with PR {Topic.PRNumber}?
+            entity:
+              kind: EmbeddedEntity
+              definition:
+                kind: ClosedListEntity
+                items:
+                  - id: cancel
+                    displayName: Cancel the PR entirely
+                  - id: edit
+                    displayName: Edit / modify the PR
+          - kind: Question
+            id: askReason
+            alwaysPrompt: false
+            variable: init:Topic.CancelReason
+            prompt: What's the reason? (This is logged in the SAP audit trail)
+            entity: StringPrebuiltEntity
+          - kind: SendActivity
+            id: cancelConfirmed
+            activity:
+              text:
+                - |-
+                  ✅ **PR {Topic.PRNumber} has been updated.**
+
+                  The SAP EBAN deletion indicator has been set. The requester has been notified.
+
+  - kind: DialogComponent
+    displayName: SAP Vendor Lookup
+    description: Look up a vendor in the SAP vendor master (LFA1) to verify they are approved.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: ascend.topic.SAPVendorLookup
+    dialog:
+      beginDialog:
+        kind: OnRecognizedIntent
+        id: main
+        intent:
+          displayName: SAP Vendor Lookup
+          triggerQueries:
+            - vendor lookup
+            - is this vendor approved
+            - check vendor
+            - search for vendor
+            - approved supplier
+            - is Siemens approved
+            - find vendor
+            - vendor search
+            - supplier lookup
+            - is this supplier in SAP
+        actions:
+          - kind: Question
+            id: askVendorName
+            alwaysPrompt: false
+            variable: init:Topic.VendorSearchName
+            prompt: Which vendor would you like to look up in the SAP vendor master (LFA1)?
+            entity: StringPrebuiltEntity
+          - kind: SendActivity
+            id: vendorResult
+            activity:
+              text:
+                - |-
+                  🔍 Searching SAP vendor master (LFA1) for **{Topic.VendorSearchName}**...
+
+                  Results will show vendor status, purchasing org, and any purchasing blocks (SPERR/SPERM). Let me know if you'd like to create a PR with this vendor.
+
+  - kind: DialogComponent
+    displayName: SAP Send Reminder
+    description: Send an approval reminder to the approver for a pending PR.
+    shareContext: {}
+    state: Active
+    status: Active
+    schemaName: ascend.topic.SAPSendReminder
+    dialog:
+      beginDialog:
+        kind: OnRecognizedIntent
+        id: main
+        intent:
+          displayName: SAP Send Reminder
+          triggerQueries:
+            - send reminder
+            - remind approver
+            - follow up on PR
+            - chase the approver
+            - nudge approver
+            - PR has not been approved yet
+            - escalate PR
+            - reminder for PR
+        actions:
+          - kind: Question
+            id: askPRNumber
+            alwaysPrompt: false
+            variable: init:Topic.PRNumber
+            prompt: Which PR number (BANFN) needs a reminder sent to the approver?
+            entity: StringPrebuiltEntity
+          - kind: SendActivity
+            id: reminderSent
+            activity:
+              text:
+                - |-
+                  🔔 **Reminder sent!**
+
+                  The approver for PR **{Topic.PRNumber}** has been notified. If they haven't responded within 48 hours, let me know and I can escalate to their manager.

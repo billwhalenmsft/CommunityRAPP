@@ -60,3 +60,12 @@ McKinsey_Pipeline.pptx
 McKinsey_Quote.pptx
 McKinsey_Stats.pptx
 RAPP_McKinsey_Style.pptx
+
+# Demo config (contains tenant IDs, app IDs, org URLs)
+demo-config.local.json
+**/demo-config.local.json
+
+# Node build artifacts
+node_modules/
+dist/
+*.tsbuildinfo

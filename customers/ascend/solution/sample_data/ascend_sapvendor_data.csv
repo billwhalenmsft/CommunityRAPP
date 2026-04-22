@@ -1,0 +1,13 @@
+ascend_lifnr,ascend_name1,ascend_bukrs,ascend_ekorg,ascend_sperr,ascend_sperm,ascend_land1,ascend_waers,ascend_datasource,ascend_demodisclaimer
+V100001,Microsoft Corporation,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V100002,Microsoft Licensing LLC,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V100003,Microsoft Ireland Operations,1000,1000,false,false,IE,EUR,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V200001,Dell Technologies Inc,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V200002,Dell Financial Services,1000,1000,true,true,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Blocked vendor (SPERR=true). Demonstrates vendor exclusion logic.
+V300001,Amazon Web Services Inc,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V300002,Amazon Business Services,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V400001,Salesforce Inc,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V500001,SAP America Inc,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V600001,Accenture LLP,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V700001,Grainger Industrial Supply,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.
+V800001,CDW Government LLC,1000,1000,false,false,US,USD,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP LFA1/LFB1/LFM1. Not connected to production SAP.

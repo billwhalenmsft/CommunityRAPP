@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navico — D365 CS Demo Execution Guide</title>
+    <style>
+        :root {
+            --navico-blue: #003366;
+            --navico-teal: #00A99D;
+            --ms-blue: #0078D4;
+            --ms-blue-dark: #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-green: #107C10;
+            --accent-orange: #D83B01;
+            --accent-purple: #5C2D91;
+            --warning: #FFB900;
+            --danger: #A4262C;
+            --bg: #F3F2F1;
+            --card: #FFFFFF;
+            --text: #323130;
+            --text-light: #605E5C;
+            --border: #EDEBE9;
+            --radius: 10px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+        .hero {
+            background: linear-gradient(135deg, var(--navico-blue) 0%, #004488 60%, var(--navico-teal) 100%);
+            color: white; padding: 44px 40px 36px; text-align: center;
+        }
+        .hero h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; }
+        .hero .sub { font-size: 1.1rem; opacity: 0.85; margin-bottom: 18px; }
+        .hero-badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 5px 14px; font-size: 0.82rem; font-weight: 600; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+
+        .section { background: var(--card); border-radius: var(--radius); padding: 26px; margin-bottom: 22px; box-shadow: var(--shadow); }
+        .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid var(--ms-blue-light); }
+        .section-icon { font-size: 1.5rem; }
+        .section-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--navico-blue); }
+        .section-header .tag { margin-left: auto; background: var(--ms-blue); color: white; padding: 3px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+        .section-header .tag.warn { background: var(--accent-orange); }
+        .section-header .tag.green { background: var(--accent-green); }
+
+        /* CHECKLIST */
+        .checklist { list-style: none; }
+        .checklist li { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .checklist li:last-child { border-bottom: none; }
+        .check-box { width: 20px; height: 20px; border: 2px solid var(--ms-blue); border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+        .checklist .note { font-size: 0.8rem; color: var(--text-light); margin-top: 3px; }
+        .checklist .critical { color: var(--danger); font-weight: 700; }
+
+        /* ENV TABLE */
+        .env-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+        .env-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .env-table td:first-child { font-weight: 700; width: 220px; color: var(--navico-blue); }
+        .env-table tr:last-child td { border-bottom: none; }
+        .env-table code { background: var(--ms-blue-light); padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.84rem; }
+
+        /* SCENARIO CARDS (quick ref) */
+        .qr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+        .qr-card { border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); }
+        .qr-card.voice    { border-top: 4px solid var(--navico-blue); }
+        .qr-card.chat     { border-top: 4px solid var(--navico-teal); }
+        .qr-card.email    { border-top: 4px solid var(--accent-purple); }
+        .qr-card.super    { border-top: 4px solid var(--accent-orange); }
+        .qr-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+        .qr-card .qr-row { font-size: 0.82rem; margin-bottom: 5px; display: flex; gap: 8px; }
+        .qr-card .qr-label { font-weight: 700; color: var(--text-light); min-width: 65px; flex-shrink: 0; }
+        .qr-card .highlight { background: var(--ms-blue-light); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-top: 8px; color: var(--ms-blue-dark); font-weight: 600; }
+
+        /* ALERT BOXES */
+        .alert { border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; display: flex; gap: 12px; }
+        .alert.info  { background: var(--ms-blue-light); border: 1px solid #B0D0F0; }
+        .alert.warn  { background: #FFF8E1; border: 1px solid var(--warning); }
+        .alert.danger { background: #FEF0EC; border: 1px solid #FFCFC7; }
+        .alert.green { background: #EFF6E0; border: 1px solid #BAD9A2; }
+        .alert-icon { font-size: 1.3rem; flex-shrink: 0; }
+        .alert-body .title { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
+        .alert-body p { font-size: 0.84rem; }
+
+        /* TIMELINE */
+        .timeline { list-style: none; position: relative; padding-left: 20px; }
+        .timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+        .timeline li { position: relative; padding-left: 20px; margin-bottom: 14px; font-size: 0.88rem; }
+        .timeline li::before { content: ''; position: absolute; left: -14px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--ms-blue); border: 2px solid white; box-shadow: 0 0 0 2px var(--ms-blue); }
+        .timeline li .time { font-weight: 700; color: var(--ms-blue); margin-right: 6px; }
+
+        /* DATA TABLE */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+        .data-table th { background: var(--navico-blue); color: white; padding: 9px 12px; text-align: left; font-weight: 600; }
+        .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+        .data-table tr:nth-child(even) td { background: #FAFAFA; }
+        .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .pill.pe { background: #6a0dad; color: white; }
+        .pill.pl { background: #e74c3c; color: white; }
+        .pill.gd { background: #d35400; color: white; }
+        .pill.b2c { background: #7f8c8d; color: white; }
+
+        /* FALLBACK */
+        .fallback-card { background: #FEF0EC; border: 1px solid #FFCFC7; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+        .fallback-card .fallback-title { font-weight: 700; color: var(--accent-orange); font-size: 0.88rem; margin-bottom: 6px; }
+        .fallback-card p { font-size: 0.84rem; }
+
+        /* STATUS GRID */
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+        .status-item { border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+        .status-item .count { font-size: 2rem; font-weight: 700; color: var(--ms-blue); }
+        .status-item .label { font-size: 0.78rem; color: var(--text-light); }
+
+        @media (max-width: 600px) {
+            .qr-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>🚢 Navico — Demo Execution Guide</h1>
+    <p class="sub">D365 Customer Service · Competitive Demo vs. Salesforce</p>
+    <div class="hero-badges">
+        <span class="badge">Environment: orgecbce8ef.crm.dynamics.com</span>
+        <span class="badge">4 Scenarios · ~45 min</span>
+        <span class="badge">Competitive Bake-Off</span>
+        <span class="badge">Email · Chat · Voice</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- ENVIRONMENT DETAILS -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">🌐</span>
+            <h2>Environment Details</h2>
+        </div>
+        <table class="env-table">
+            <tr><td>D365 Environment</td><td><code>https://orgecbce8ef.crm.dynamics.com</code></td></tr>
+            <tr><td>Environment Name</td><td>Mfg Gold Template</td></tr>
+            <tr><td>Customer</td><td>Navico Group — Marine Electronics</td></tr>
+            <tr><td>Demo Type</td><td>Competitive Bake-Off (D365 CS vs. Salesforce Service Cloud)</td></tr>
+            <tr><td>Demo Presenter</td><td>Bill Whalen (D365 Customer Service) · John Kassar (D365 Sales)</td></tr>
+            <tr><td>Primary Personas</td><td>Emma Thompson (Agent) · Marco Rossi (Tech Specialist) · Sarah Mitchell (Supervisor)</td></tr>
+            <tr><td>Demo Agent Login</td><td>Log in as Emma Thompson for Scenarios 1–3; switch to Sarah Mitchell for Scenario 4</td></tr>
+            <tr><td>Brands in Demo</td><td>Simrad · B&amp;G · Lowrance · C-MAP · Northstar</td></tr>
+        </table>
+    </div>
+
+    <!-- DEMO DATA REFERENCE -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">📂</span>
+            <h2>Demo Data Reference</h2>
+        </div>
+        <div class="status-grid" style="margin-bottom:20px;">
+            <div class="status-item"><div class="count">8</div><div class="label">Accounts</div></div>
+            <div class="status-item"><div class="count">5</div><div class="label">Contacts</div></div>
+            <div class="status-item"><div class="count">11</div><div class="label">Products</div></div>
+            <div class="status-item"><div class="count">6</div><div class="label">Demo Cases</div></div>
+            <div class="status-item"><div class="count">6</div><div class="label">KB Articles</div></div>
+            <div class="status-item"><div class="count">5</div><div class="label">Quick Responses</div></div>
+        </div>
+
+        <h3 style="font-size:0.95rem; margin-bottom:10px; color:var(--navico-blue);">Key Hero Accounts</h3>
+        <table class="data-table">
+            <tr><th>Account</th><th>Tier</th><th>Region</th><th>Scenario</th></tr>
+            <tr><td>Atlantic Marine Supply Co.</td><td><span class="pill pe">Platinum Expert</span></td><td>Americas</td><td>Scenario 1 — Voice (Jake Harrington)</td></tr>
+            <tr><td>Euro Marine Distributors</td><td><span class="pill pe">Platinum Expert</span></td><td>EMEA</td><td>Scenario 2 — Chat (Christine Delacroix)</td></tr>
+            <tr><td>Freshwater Fishing Depot</td><td><span class="pill b2c">Consumer</span></td><td>Americas</td><td>Scenario 3 — Email (Mike Torres)</td></tr>
+            <tr><td>Pacific Coast Marine Group</td><td><span class="pill pl">Platinum</span></td><td>Americas</td><td>Queue / supporting data</td></tr>
+            <tr><td>Nordic Marine Supply</td><td><span class="pill pl">Platinum</span></td><td>EMEA</td><td>Queue / supporting data</td></tr>
+            <tr><td>Gulf Coast Marine Depot</td><td><span class="pill gd">Gold</span></td><td>Americas</td><td>Queue / supporting data</td></tr>
+        </table>
+
+        <h3 style="font-size:0.95rem; margin:18px 0 10px; color:var(--navico-blue);">Hero Serials (for demo lookup)</h3>
+        <table class="data-table">
+            <tr><th>Serial Number</th><th>Product</th><th>Account</th><th>Warranty</th></tr>
+            <tr><td><code>SIM-2024-NSX-10042</code></td><td>Simrad NSX 3007 Chartplotter</td><td>Atlantic Marine Supply</td><td>✅ Active (2027-04-15)</td></tr>
+            <tr><td><code>BG-2024-TRI2-20011</code></td><td>B&amp;G Triton2 Instrument Display</td><td>Euro Marine Distributors</td><td>✅ Active (2027-06-20)</td></tr>
+            <tr><td><code>LWR-2024-HDS-88821</code></td><td>Lowrance HDS-9 Live</td><td>Mike Torres (B2C)</td><td>✅ Active (2027-02-14)</td></tr>
+            <tr><td><code>LWR-2021-HDS-11001</code></td><td>Lowrance HDS Carbon 9</td><td>Freshwater Fishing Depot</td><td>❌ Expired (2024-04-01)</td></tr>
+            <tr><td><code>SIM-2022-GO-90001</code></td><td>Simrad GO7 XSE</td><td>—</td><td>❌ Expired (2025-06-01)</td></tr>
+        </table>
+    </div>
+
+    <!-- PRE-DEMO CHECKLIST -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">✅</span>
+            <h2>Pre-Demo Checklist (Day Before)</h2>
+            <span class="tag warn">Complete 24h before</span>
+        </div>
+        <ul class="checklist">
+            <li><div class="check-box"></div><div><strong>Run provisioning scripts</strong> to confirm demo data is in environment<div class="note"><code>.\Provision-NavicoDemo.ps1 -Action All</code> then <code>.\Provision-NavicoHeroCases.ps1 -Action All</code></div></div></li>
+            <li><div class="check-box"></div><div><strong>Verify 3 hero cases exist</strong> — search for "Simrad NSX 3007", "B&G Triton2", "Lowrance HDS-9 Live" in D365 cases</div></li>
+            <li><div class="check-box"></div><div><strong>Verify 6 KB articles published</strong> — check Knowledge Management in CS admin, confirm KB-SIM-0042, KB-BG-0117, KB-LWR-0088 are published</div></li>
+            <li><div class="check-box"></div><div><strong>Confirm customer tier field visible on cases</strong> — open Atlantic Marine Supply case and verify Platinum Expert tier badge shows<div class="note">If not visible, run <code>d365/scripts/13-TierField.ps1</code></div></div></li>
+            <li><div class="check-box"></div><div><strong>Test chat widget</strong> — navigate to demo portal URL, confirm chat button is visible and connects to CS workspace</div></li>
+            <li><div class="check-box"></div><div><strong class="critical">Test voice / screen pop</strong> — place a test call from Jake's number (+1 651-226-3398), confirm screen pop fires<div class="note">If voice is not available, prepare fallback talking point (see fallback section)</div></div></li>
+            <li><div class="check-box"></div><div><strong>Confirm Copilot Agent Assist enabled</strong> — open a case, check that the Copilot assist panel is visible on the right side of the case form<div class="note">Settings: Customer Service admin center → Productivity → Copilot</div></div></li>
+            <li><div class="check-box"></div><div><strong>Log in as Emma Thompson</strong> — confirm Emma can see the Omnichannel inbox, voice channel, and chat queues</div></li>
+            <li><div class="check-box"></div><div><strong>Log in as Sarah Mitchell</strong> — confirm Sarah can open Omnichannel Insights dashboard</div></li>
+            <li><div class="check-box"></div><div><strong>Coordinate with John Kassar</strong> — confirm demo flow handoff points (Sales context feeds into Service context)</div></li>
+        </ul>
+    </div>
+
+    <!-- DAY-OF CHECKLIST -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">🚀</span>
+            <h2>Day-Of Setup (30 min before demo)</h2>
+            <span class="tag">30 min prep</span>
+        </div>
+        <ul class="checklist">
+            <li><div class="check-box"></div><div><strong>Open D365 in Chrome — incognito or cleared cache</strong><div class="note">Avoid browser autofill interfering with demo fields</div></div></li>
+            <li><div class="check-box"></div><div><strong>Open Customer Service workspace as Emma Thompson</strong></div></li>
+            <li><div class="check-box"></div><div><strong>Pre-open these tabs:</strong>
+                <div class="note">
+                    Tab 1: Customer Service workspace (Emma logged in)<br>
+                    Tab 2: Atlantic Marine Supply Co. account record (for voice fallback)<br>
+                    Tab 3: Hero case — "Simrad NSX 3007 — Touchscreen Unresponsive"<br>
+                    Tab 4: Dealer portal with chat widget (for Scenario 2 customer side)<br>
+                    Tab 5: Omnichannel Insights dashboard (Sarah's view)
+                </div>
+            </div></li>
+            <li><div class="check-box"></div><div><strong>Silence all notifications</strong> — phone on do not disturb, Teams notifications off</div></li>
+            <li><div class="check-box"></div><div><strong>Set screen resolution to 1920x1080</strong> — D365 workspace renders best at full HD</div></li>
+            <li><div class="check-box"></div><div><strong>If presenting via Teams</strong> — share the Chrome window (not entire desktop) to avoid accidental tab reveals</div></li>
+            <li><div class="check-box"></div><div><strong>Have backup screenshots ready</strong> — screen pop, Copilot suggest panel, Omnichannel Insights<div class="note">Keep in a PowerPoint deck as fallback if live demo fails</div></div></li>
+        </ul>
+    </div>
+
+    <!-- SCENARIO QUICK REFERENCE -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">🗂️</span>
+            <h2>Scenario Quick Reference</h2>
+        </div>
+        <div class="qr-grid">
+            <div class="qr-card voice">
+                <h4>📞 Scenario 1 — Voice</h4>
+                <div class="qr-row"><span class="qr-label">Who:</span>Jake Harrington</div>
+                <div class="qr-row"><span class="qr-label">Account:</span>Atlantic Marine Supply</div>
+                <div class="qr-row"><span class="qr-label">Tier:</span>Platinum Expert</div>
+                <div class="qr-row"><span class="qr-label">Issue:</span>Simrad NSX 3007 touchscreen</div>
+                <div class="qr-row"><span class="qr-label">Serial:</span>SIM-2024-NSX-10042</div>
+                <div class="qr-row"><span class="qr-label">KB:</span>KB-SIM-0042</div>
+                <div class="qr-row"><span class="qr-label">Outcome:</span>RMA Exchange → Marco</div>
+                <div class="highlight">⏱ ~12 min · Channel: Phone</div>
+            </div>
+            <div class="qr-card chat">
+                <h4>💬 Scenario 2 — Chat</h4>
+                <div class="qr-row"><span class="qr-label">Who:</span>Christine Delacroix</div>
+                <div class="qr-row"><span class="qr-label">Account:</span>Euro Marine Distributors</div>
+                <div class="qr-row"><span class="qr-label">Tier:</span>Platinum Expert (EMEA)</div>
+                <div class="qr-row"><span class="qr-label">Issue:</span>B&amp;G Triton2 AWA erratic</div>
+                <div class="qr-row"><span class="qr-label">Serial:</span>BG-2024-TRI2-20011</div>
+                <div class="qr-row"><span class="qr-label">KB:</span>KB-BG-0117</div>
+                <div class="qr-row"><span class="qr-label">Outcome:</span>Case summary → escalation</div>
+                <div class="highlight">⏱ ~11 min · Channel: Chat</div>
+            </div>
+            <div class="qr-card email">
+                <h4>📧 Scenario 3 — Email AI</h4>
+                <div class="qr-row"><span class="qr-label">Who:</span>Mike Torres</div>
+                <div class="qr-row"><span class="qr-label">Type:</span>B2C Registered Consumer</div>
+                <div class="qr-row"><span class="qr-label">Issue:</span>Lowrance HDS-9 won't power on</div>
+                <div class="qr-row"><span class="qr-label">Serial:</span>LWR-2024-HDS-88821</div>
+                <div class="qr-row"><span class="qr-label">KB:</span>KB-LWR-0088</div>
+                <div class="qr-row"><span class="qr-label">Outcome:</span>Warranty confirmed + Copilot draft</div>
+                <div class="highlight">⏱ ~9 min · Channel: Email</div>
+            </div>
+            <div class="qr-card super">
+                <h4>📊 Scenario 4 — Supervisor</h4>
+                <div class="qr-row"><span class="qr-label">Who:</span>Sarah Mitchell</div>
+                <div class="qr-row"><span class="qr-label">View:</span>Omnichannel Insights</div>
+                <div class="qr-row"><span class="qr-label">Show:</span>Queue health, brand split</div>
+                <div class="qr-row"><span class="qr-label">Show:</span>Hot word alert</div>
+                <div class="qr-row"><span class="qr-label">Show:</span>Cases awaiting categorization: 3</div>
+                <div class="qr-row"><span class="qr-label">Show:</span>SLA compliance by tier</div>
+                <div class="highlight">⏱ ~6 min · Dashboard</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEMO FLOW TIMELINE -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">⏱️</span>
+            <h2>Demo Flow &amp; Timing</h2>
+        </div>
+        <ul class="timeline">
+            <li><span class="time">0:00–0:05</span><strong>Opening — Set context.</strong> "You already have D365 CS. This is what fully deployed looks like." Brief before/after contrast. Connect to John's Sales context.</li>
+            <li><span class="time">0:05–0:17</span><strong>Scenario 1 — Voice.</strong> Jake calls in. Screen pop. Customer 360. Serial lookup. KB suggest. Route to Marco.</li>
+            <li><span class="time">0:17–0:28</span><strong>Scenario 2 — Chat.</strong> Christine chats from portal. Priority routing. Copilot KB surfaces instantly. Case summary for escalation.</li>
+            <li><span class="time">0:28–0:37</span><strong>Scenario 3 — Email AI.</strong> Mike's email auto-triaged. Case auto-created. Copilot draft response. NPS queued on close.</li>
+            <li><span class="time">0:37–0:43</span><strong>Scenario 4 — Supervisor.</strong> Sarah's dashboard. Queue by brand. Hot word alert. 3 cases vs. 40+ uncategorized. SLA compliance.</li>
+            <li><span class="time">0:43–0:45</span><strong>Close.</strong> "You've already made the right choice. We just need to finish what you started." Recommend next steps. Invite questions.</li>
+        </ul>
+    </div>
+
+    <!-- FALLBACK OPTIONS -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">🛟</span>
+            <h2>Fallback Options</h2>
+            <span class="tag warn">Have these ready</span>
+        </div>
+        <div class="fallback-card">
+            <div class="fallback-title">If voice / screen pop isn't live</div>
+            <p>Open Atlantic Marine Supply account directly. Point to the account record and say: <em>"In a live call, this entire record would have appeared automatically as the phone rang — before I said hello. I'm opening it manually today, but the data and the experience are identical."</em> Then continue the scenario from the account record.</p>
+        </div>
+        <div class="fallback-card">
+            <div class="fallback-title">If Copilot Agent Assist panel isn't showing KB articles</div>
+            <p>Open the KB article manually from the Knowledge Management section. Say: <em>"Let me show you the article that would have appeared here — and in a fully configured environment, Copilot pulls this automatically."</em> Show the article content, then continue.</p>
+        </div>
+        <div class="fallback-card">
+            <div class="fallback-title">If chat widget isn't loading on portal</div>
+            <p>Switch to showing the chat widget from inside Customer Service workspace (test conversation). Alternatively, use a screenshot to illustrate the widget on the portal page and focus the discussion on the routing and Copilot assist experience that follows.</p>
+        </div>
+        <div class="fallback-card">
+            <div class="fallback-title">If Omnichannel Insights has no data</div>
+            <p>Use the Navico-branded screenshot from <code>demo-assets/</code> as a reference slide. Narrate what each metric represents and tie back to their specific pain points (manual categorization, 1 queue, no visibility).</p>
+        </div>
+    </div>
+
+    <!-- POST-DEMO NEXT STEPS -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">📋</span>
+            <h2>Post-Demo Follow-Up</h2>
+            <span class="tag green">Action items</span>
+        </div>
+
+        <div class="alert info">
+            <span class="alert-icon">💡</span>
+            <div class="alert-body">
+                <div class="title">Within 24 hours</div>
+                <p>Send recap email with: (1) summary of what was shown, (2) before/after comparison table, (3) proposed next step (technical discovery or rapid config sprint), (4) D365 CS license comparison vs. Salesforce cost estimate.</p>
+            </div>
+        </div>
+
+        <div class="alert green">
+            <span class="alert-icon">✅</span>
+            <div class="alert-body">
+                <div class="title">Recommended Next Steps (propose these in the meeting)</div>
+                <p>1. Technical discovery — review their current D365 CS config (what's on, what's not)<br>
+                2. Omnichannel pilot — email + chat for 5 agents, 2 brands, 4 weeks<br>
+                3. Routing workshop — map Navico's tier/brand/skill matrix to Unified Routing<br>
+                4. Copilot enablement — same-day config, no code required<br>
+                5. Voice PoC — RingCentral via CIF adapter, screen pop for 5 agents</p>
+            </div>
+        </div>
+
+        <div class="alert warn">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-body">
+                <div class="title">Key objections to be prepared for</div>
+                <p>"We already have D365 CS and it doesn't work like that" → It does with proper configuration — same license.<br>
+                "We're also looking at Salesforce" → You already own D365. Adding SFDC = dual cost + migration risk.<br>
+                "17 brands is complex" → Start with top 3 by volume. Template is repeatable — 15 min per additional brand.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANUAL D365 CONFIG REQUIRED -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">⚙️</span>
+            <h2>Manual D365 Config Required (Post-Script)</h2>
+            <span class="tag warn">Not scripted</span>
+        </div>
+        <div class="alert danger">
+            <span class="alert-icon">🔧</span>
+            <div class="alert-body">
+                <div class="title">These steps require the CS Admin Center — cannot be automated</div>
+                <p>Complete these before running the demo. Estimated setup time: 2–3 hours.</p>
+            </div>
+        </div>
+        <ul class="checklist">
+            <li><div class="check-box"></div><div><strong>Omnichannel workstreams</strong> — create Email, Chat, and Voice workstreams in CS Admin Center → Workstreams</div></li>
+            <li><div class="check-box"></div><div><strong>Queues</strong> — create: Simrad Queue, B&amp;G Queue, Lowrance Queue, C-MAP Queue, Platinum Expert Queue, General Queue</div></li>
+            <li><div class="check-box"></div><div><strong>Routing rules</strong> — configure B2B tier routing (Platinum Expert → Platinum Expert Queue), brand routing (Simrad cases → Simrad Queue), hot word priority boost</div></li>
+            <li><div class="check-box"></div><div><strong>Chat widget</strong> — publish to demo portal page. Ensure pre-chat form collects Account Number for auto-identification</div></li>
+            <li><div class="check-box"></div><div><strong>Voice channel</strong> — configure Teams voice or ACS channel; map Jake's demo number to Atlantic Marine Supply account</div></li>
+            <li><div class="check-box"></div><div><strong>Copilot features</strong> — CS Admin Center → Copilot → Enable: Case Summary, Draft Email, Agent Assist, Real-time translation</div></li>
+            <li><div class="check-box"></div><div><strong>Customer tier field</strong> — run <code>d365/scripts/13-TierField.ps1</code> to add tier badge to case and account forms</div></li>
+        </ul>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+    "environment": {
+        "name": "Master CE Mfg",
+        "url": "https://orgecbce8ef.crm.dynamics.com",
+        "apiVersion": "v9.2",
+        "type": "Production",
+        "releaseCycle": "Standard Release",
+        "role": "prod",
+        "notes": "Production environment on Standard Release cycle. MCAPS-managed. Based on Demo Hub Sales & Service Template."
+    },
+    "customer": {
+        "name": "Mfg CoE",
+        "project": "Bills Demo Manager",
+        "industry": "Manufacturing (Cross-Industry)",
+        "regions": ["US"]
+    },
+    "demoHub": {
+        "template": "Dynamics-365-Customer-Experience-and-Service-Demo",
+        "catalog": "https://bizappsdemos.microsoft.com/templateDetail?templateName=Dynamics-365-Customer-Experience-and-Service-Demo&category=",
+        "notes": "Base template from Microsoft Demo Hub. Custom work layered on top."
+    }
+}

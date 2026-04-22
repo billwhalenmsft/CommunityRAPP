@@ -79,6 +79,11 @@ class D365DemoPrepAgent(BasicAgent):
                             "generate_demo_data",
                             "generate_demo_assets",
                             "orchestrate_full_setup",
+                            "run_customer_provisioner",
+                            "enrich_timelines",
+                            "backfill_brand_logos",
+                            "demo_readiness_report",
+                            "list_actions",
                         ],
                     },
                     "customer_name": {
@@ -105,6 +110,18 @@ class D365DemoPrepAgent(BasicAgent):
                         "type": "array",
                         "items": {"type": "integer"},
                         "description": "List of step numbers to run for orchestrate_full_setup (default: [1,2,3,4,5,6,7,8])",
+                    },
+                    "ps_script": {
+                        "type": "string",
+                        "description": "Name of customer-specific PowerShell script (e.g. 'Provision-NavicoDemo.ps1', 'Provision-NavicoExtended.ps1', 'Provision-NavicoHeroCases.ps1', 'Add-NavicoTimelineEnrichment.ps1'). Used with run_customer_provisioner.",
+                    },
+                    "ps_action": {
+                        "type": "string",
+                        "description": "Action parameter to pass to the PS script (e.g. 'All', 'BrandLogo', 'HeroCases', 'Cleanup'). Passed as -Action flag.",
+                    },
+                    "ps_from_step": {
+                        "type": "integer",
+                        "description": "For 00-Setup.ps1: start from this step number (-From flag).",
                     },
                 },
                 "required": ["action"],
@@ -160,6 +177,31 @@ class D365DemoPrepAgent(BasicAgent):
                     kwargs.get("steps_to_run"),
                     kwargs.get("dry_run", False),
                 )
+            elif action == "run_customer_provisioner":
+                return self._run_customer_provisioner(
+                    kwargs.get("customer_name"),
+                    kwargs.get("ps_script"),
+                    kwargs.get("ps_action"),
+                    kwargs.get("dry_run", False),
+                )
+            elif action == "enrich_timelines":
+                return self._run_customer_provisioner(
+                    kwargs.get("customer_name"),
+                    "Add-NavicoTimelineEnrichment.ps1",
+                    None,
+                    kwargs.get("dry_run", False),
+                )
+            elif action == "backfill_brand_logos":
+                return self._run_customer_provisioner(
+                    kwargs.get("customer_name"),
+                    "Provision-NavicoExtended.ps1",
+                    "BrandLogo",
+                    kwargs.get("dry_run", False),
+                )
+            elif action == "demo_readiness_report":
+                return self._demo_readiness_report(kwargs.get("customer_name"))
+            elif action == "list_actions":
+                return self._list_actions()
             else:
                 return f"Unknown action: {action}"
         except Exception as e:
@@ -762,3 +804,156 @@ class D365DemoPrepAgent(BasicAgent):
         results.append(f"File: {demo_assets_dir / 'demo-execution-guide.html'}")
 
         return "\n".join(results)
+
+    # ------------------------------------------------------------------
+    # NEW: Customer-specific provisioner + readiness report
+    # ------------------------------------------------------------------
+
+    def _run_customer_provisioner(
+        self,
+        customer_name: str,
+        ps_script: str,
+        ps_action: str = None,
+        dry_run: bool = False,
+    ) -> str:
+        """Run a customer-specific PowerShell provisioner script directly."""
+        if not customer_name:
+            return "Error: customer_name is required."
+        if not ps_script:
+            return "Error: ps_script is required (e.g. 'Provision-NavicoDemo.ps1')."
+
+        customer_d365_dir = CUSTOMERS_DIR / customer_name / "d365"
+        script_path = customer_d365_dir / ps_script
+
+        if not script_path.exists():
+            script_path = customer_d365_dir / "scripts" / ps_script
+            if not script_path.exists():
+                available = [p.name for p in customer_d365_dir.glob("*.ps1")]
+                return (
+                    f"Script '{ps_script}' not found.\n"
+                    f"Available in {customer_d365_dir}:\n" +
+                    "\n".join(f"  - {n}" for n in sorted(available))
+                )
+
+        cmd = ["pwsh", "-ExecutionPolicy", "Bypass", "-File", str(script_path)]
+        if ps_action:
+            cmd += ["-Action", ps_action]
+
+        if dry_run:
+            cmd_str = " ".join(cmd)
+            return f"**Dry Run** — Would execute:\n```\n{cmd_str}\n```"
+
+        try:
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=600,
+                cwd=str(customer_d365_dir),
+            )
+            output = result.stdout
+            if len(output) > 3000:
+                output = "...(truncated)...\n" + output[-3000:]
+            if result.returncode != 0:
+                err = result.stderr[-1000:] if result.stderr else "No stderr"
+                return f"Script failed (exit {result.returncode}):\n{err}\n\nOutput:\n{output}"
+            return f"**{ps_script}** completed successfully:\n\n{output}"
+        except subprocess.TimeoutExpired:
+            return f"Script timed out after 600s: {ps_script}"
+        except Exception as e:
+            return f"Error running {ps_script}: {e}"
+
+    def _demo_readiness_report(self, customer_name: str) -> str:
+        """Generate a full demo readiness checklist based on known Navico/CS demo requirements."""
+        if not customer_name:
+            return "Error: customer_name is required."
+
+        customer_d365_dir = CUSTOMERS_DIR / customer_name / "d365"
+        config_dir = customer_d365_dir / "config"
+        demo_assets_dir = customer_d365_dir / "demo-assets"
+
+        checks = []
+
+        # File-based checks
+        file_checks = [
+            (config_dir / "environment.json",  "environment.json config"),
+            (config_dir / "demo-data.json",    "demo-data.json data"),
+            (demo_assets_dir / f"{customer_name}_demo_unified.html", "Unified demo guide HTML"),
+        ]
+        for path, label in file_checks:
+            exists = path.exists()
+            checks.append(("FILE", label, exists, str(path) if not exists else ""))
+
+        # Script checks
+        script_checks = [
+            f"Provision-{customer_name.capitalize()}Demo.ps1",
+            f"Provision-{customer_name.capitalize()}HeroCases.ps1",
+            f"Provision-{customer_name.capitalize()}Extended.ps1",
+            f"Add-{customer_name.capitalize()}TimelineEnrichment.ps1",
+        ]
+        for script in script_checks:
+            exists = (customer_d365_dir / script).exists()
+            checks.append(("SCRIPT", script, exists, ""))
+
+        # Build report
+        lines = [f"## Demo Readiness Report — {customer_name}\n"]
+        passed = sum(1 for _, _, ok, _ in checks if ok)
+        total = len(checks)
+
+        for kind, label, ok, note in checks:
+            icon = "✅" if ok else "❌"
+            line = f"{icon} [{kind}] {label}"
+            if not ok and note:
+                line += f"\n     → Missing: {note}"
+            lines.append(line)
+
+        lines.append(f"\n**{passed}/{total} checks passed**")
+        if passed == total:
+            lines.append("Environment is ready to demo!")
+        else:
+            lines.append(f"{total - passed} items need attention before the demo.")
+
+        lines.append("\n### Quick Commands to Fix Missing Items")
+        lines.append("```")
+        lines.append(f"# Run full provisioning:")
+        lines.append(f"D365DemoPrep action=run_customer_provisioner, customer_name={customer_name}, ps_script=Provision-{customer_name.capitalize()}Demo.ps1, ps_action=All")
+        lines.append(f"# Enrich timelines:")
+        lines.append(f"D365DemoPrep action=enrich_timelines, customer_name={customer_name}")
+        lines.append(f"# Backfill brand logos:")
+        lines.append(f"D365DemoPrep action=backfill_brand_logos, customer_name={customer_name}")
+        lines.append("```")
+
+        return "\n".join(lines)
+
+    def _list_actions(self) -> str:
+        """Return a formatted list of all available actions with descriptions."""
+        actions = [
+            ("list_customers",            "List all customers with D365 configs in this RAPP instance"),
+            ("get_config",                "Return the full environment.json config for a customer"),
+            ("validate_environment",      "Check the live D365 org has expected accounts/cases/KB articles"),
+            ("provision_data",            "Create core demo records (accounts, contacts) via Dataverse API"),
+            ("run_powershell",            "Run a numbered provisioning step (01-25) from d365/scripts/"),
+            ("run_customer_provisioner",  "Run a customer-specific PS script (e.g. Provision-NavicoDemo.ps1)"),
+            ("enrich_timelines",          "Seed rich email/note/call timeline history on hero cases"),
+            ("backfill_brand_logos",      "Re-stamp brand logo URLs on all customer asset records"),
+            ("generate_config_from_inputs","Create environment.json + demo-data.json stub from input schema"),
+            ("generate_demo_data",        "Use GPT-4o to generate realistic demo data JSON"),
+            ("generate_demo_assets",      "Generate HTML demo execution guide + supporting assets"),
+            ("orchestrate_full_setup",    "End-to-end: config → data → provision → assets → validate"),
+            ("demo_readiness_report",     "Checklist of file/script presence and D365 data readiness"),
+            ("list_actions",              "Show this help list"),
+        ]
+        lines = ["## D365DemoPrep — Available Actions\n"]
+        for name, desc in actions:
+            lines.append(f"**{name}**\n  {desc}\n")
+        lines.append("---\n")
+        lines.append("**Example — set up Navico from scratch:**")
+        lines.append("```")
+        lines.append("D365DemoPrep action=run_customer_provisioner, customer_name=navico, ps_script=Provision-NavicoDemo.ps1, ps_action=All")
+        lines.append("D365DemoPrep action=run_customer_provisioner, customer_name=navico, ps_script=Provision-NavicoHeroCases.ps1, ps_action=All")
+        lines.append("D365DemoPrep action=run_customer_provisioner, customer_name=navico, ps_script=Provision-NavicoExtended.ps1, ps_action=All")
+        lines.append("D365DemoPrep action=enrich_timelines, customer_name=navico")
+        lines.append("D365DemoPrep action=backfill_brand_logos, customer_name=navico")
+        lines.append("D365DemoPrep action=demo_readiness_report, customer_name=navico")
+        lines.append("```")
+        return "\n".join(lines)

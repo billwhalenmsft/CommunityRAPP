@@ -100,6 +100,11 @@ Fees Carrier pays when a trailer sits in a yard without being unloaded on time. 
 | **Schedule Builder** | Dock capacity view + assign/auto-schedule interface |
 | **Communications** | Auto-draft email to Kenco, TSP contact list, reschedule log |
 
+### Code App (Local Execution Notes)
+- The React code app demo now seeds **16 mock trailers** for local execution.
+- Dataset includes mixed schedule states (`Scheduled`, `Confirmed`, `Unscheduled`, `Rescheduled`, `Overflow`) to better exercise KPI cards, exception tracking, and dock timeline.
+- If the UI shows limited rows, restart local dev/preview (`npm run dev` or `npm run preview`) and refresh the browser.
+
 ### Power Automate Flows (spec in `flows/flows.yaml`)
 | Flow | When It Runs |
 |------|-------------|

@@ -1,0 +1,44 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: SAP Vendor Lookup
+    triggerQueries:
+      - vendor lookup
+      - is this vendor approved
+      - check vendor
+      - search for vendor
+      - approved supplier
+      - is Siemens approved
+      - find vendor
+      - vendor search
+      - supplier lookup
+      - is this supplier in SAP
+
+  actions:
+    - kind: Question
+      id: askVendorName
+      alwaysPrompt: false
+      variable: init:Topic.VendorSearchName
+      prompt:
+        text: Which vendor would you like to look up in the SAP vendor master (LFA1)?
+      entity: StringPrebuiltEntity
+
+    - kind: InvokeFlowAction
+      id: callVendorLookupFlow
+      displayName: SAP Vendor Lookup Flow
+      inputs:
+        - name: vendor_name
+          value: =Topic.VendorSearchName
+
+    - kind: SendActivity
+      id: vendorResult
+      activity:
+        text: >-
+          🔍 **SAP Vendor Master (LFA1) Results for "${Topic.VendorSearchName}":**
+
+
+          The results show vendor status, purchasing org, and any purchasing
+          blocks (SPERR/SPERM). Let me know if you'd like to create a PR with
+          one of these vendors.

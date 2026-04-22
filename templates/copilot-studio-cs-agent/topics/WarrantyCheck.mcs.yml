@@ -1,0 +1,115 @@
+kind: AdaptiveDialog
+modelDescription: Helps customers check warranty status by serial number and explains coverage options.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - check warranty
+      - warranty status
+      - is my product under warranty
+      - warranty expired
+      - coverage
+      - still covered
+      - when does warranty end
+      - how long is my warranty
+
+  actions:
+    - kind: SendActivity
+      id: intro
+      activity:
+        text:
+          - "I can help you check your warranty status. I'll need your **product serial number** — you can find it on the product label or in the device settings."
+
+    - kind: Question
+      id: askSerial
+      property: Topic.SerialNumber
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What is the serial number?"
+
+    - kind: SendActivity
+      id: lookupInfo
+      activity:
+        text:
+          - "Let me look up serial number **{Topic.SerialNumber}**...\n\nHere's general warranty information while I search:\n\n📋 **Standard Warranty** — typically covers manufacturing defects and component failure from the date of purchase\n🔒 **What's covered** — defects in materials and workmanship under normal use\n❌ **Not covered** — physical damage, misuse, unauthorized modifications, or normal wear\n\nFor your exact warranty dates and coverage, I recommend connecting with a specialist who can pull up your asset record. Would you like to:\n\n1️⃣ **Connect with a specialist** to confirm exact dates and coverage\n2️⃣ **Learn about extended warranty options**\n3️⃣ **Start a return or exchange request**"
+
+    - kind: Question
+      id: askNext
+      property: Topic.NextStep
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What would you like to do next?"
+      entity:
+        displayName: Next Step
+      choices:
+        - value: specialist
+          synonyms:
+            - connect
+            - specialist
+            - agent
+            - confirm dates
+            - "1"
+        - value: extended
+          synonyms:
+            - extended warranty
+            - options
+            - upgrade
+            - extend
+            - "2"
+        - value: return
+          synonyms:
+            - return
+            - exchange
+            - RMA
+            - repair
+            - replace
+            - "3"
+
+    - kind: ConditionGroup
+      id: routeNext
+      conditions:
+        - id: toSpecialist
+          condition: =Topic.NextStep = "specialist"
+          actions:
+            - kind: TransferToAgent
+              id: warrantyTransfer
+              activity:
+                text: "Customer wants warranty status confirmation for serial {Topic.SerialNumber}. Please look up the Customer Asset record and confirm warranty dates and coverage."
+              context:
+                EscalationReason: "Warranty status inquiry"
+                SerialNumber: "{Topic.SerialNumber}"
+
+        - id: toExtended
+          condition: =Topic.NextStep = "extended"
+          actions:
+            - kind: SendActivity
+              id: extendedInfo
+              activity:
+                text:
+                  - "Extended warranty options vary by product and region. Common options include:\n\n📦 **Extended Warranty** — extends standard coverage beyond the original period\n⭐ **Premium Service Plans** — priority support, expedited replacements, and enhanced coverage\n🏢 **Fleet/Enterprise Coverage** (B2B) — blanket warranty for all registered units under your account\n\nTo discuss options specific to your product, I'll connect you with a specialist."
+            - kind: TransferToAgent
+              id: extendedTransfer
+              activity:
+                text: "Customer interested in extended warranty options for serial {Topic.SerialNumber}."
+              context:
+                EscalationReason: "Extended warranty inquiry"
+                SerialNumber: "{Topic.SerialNumber}"
+
+        - id: toReturn
+          condition: =Topic.NextStep = "return"
+          actions:
+            - kind: SendActivity
+              id: returnInfo
+              activity:
+                text:
+                  - "We typically offer these return/exchange options:\n\n🔄 **Exchange** — swap a defective unit for a replacement\n💰 **Credit/Refund** — receive a credit to your account\n🔧 **Repair** — ship to a service center for repair and return\n\nTo process a return, I'll need to connect you with a support specialist who can validate the warranty and create the return authorization. Let me transfer you now."
+            - kind: TransferToAgent
+              id: returnTransfer
+              activity:
+                text: "Customer wants to initiate a return/exchange for serial {Topic.SerialNumber}. Warranty validation needed."
+              context:
+                EscalationReason: "Return/exchange request"
+                SerialNumber: "{Topic.SerialNumber}"

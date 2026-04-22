@@ -97,10 +97,10 @@ $area = $xml.SiteMap.Area
 $xml.SiteMap.Area.Group | Where-Object { $_.Id -match "erac" } | ForEach-Object {
     $area.RemoveChild($_) | Out-Null
 }
-foreach ($group in $area.Group) {
-    $group.SubArea | Where-Object { $_.Entity -match "erac_" } | ForEach-Object {
-        $group.RemoveChild($_) | Out-Null
-    }
+foreach ($group in @($area.Group)) {
+    if (-not $group) { continue }
+    $subs = @($group.SubArea) | Where-Object { $_ -and $_.PSObject.Properties['Entity'] -and ($_.Entity -match "erac_") }
+    foreach ($s in $subs) { $group.RemoveChild($s) | Out-Null }
 }
 
 # Helper: create SubArea element

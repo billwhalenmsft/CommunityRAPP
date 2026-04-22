@@ -1,0 +1,5 @@
+ascend_frggr,ascend_frgst,ascend_doalevel,ascend_approverrole,ascend_approverid,ascend_approvername,ascend_backupapproverid,ascend_minthreshold,ascend_maxthreshold,ascend_bukrs,ascend_datasource,ascend_demodisclaimer
+01,L1,L1,Line Manager,U001,Jane Doe,U002,0.00,5000.00,1000,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP T16FS/T161F/T161G/T161H/T161S release strategies for DoA. Not connected to production SAP.
+01,L2,L2,Department Director,U002,John Smith,U003,5001.00,25000.00,1000,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP T16FS/T161F/T161G/T161H/T161S release strategies for DoA. Not connected to production SAP.
+01,L3,L3,VP Finance,U003,Susan Lee,U004,25001.00,100000.00,1000,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP T16FS/T161F/T161G/T161H/T161S release strategies for DoA. Not connected to production SAP.
+01,L4,L4,CFO Office,U004,CFO Office,U004,100001.00,99999999.00,1000,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP T16FS/T161F/T161G/T161H/T161S release strategies for DoA. Not connected to production SAP.

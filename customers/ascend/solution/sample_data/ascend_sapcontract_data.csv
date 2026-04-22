@@ -1,0 +1,6 @@
+ascend_ebeln,ascend_lifnr,ascend_vendorname,ascend_bsart,ascend_ekorg,ascend_matkl,ascend_maxvalue,ascend_kdatb,ascend_kdate,ascend_active,ascend_datasource,ascend_demodisclaimer
+4500012345,V100002,Microsoft Licensing LLC,MK,1000,ITSOFT,500000.00,2024-01-01,2027-12-31,true,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP EKKO/EKPO contract master. Not connected to production SAP.
+4500012346,V300001,Amazon Web Services Inc,MK,1000,ITSOFT,250000.00,2024-06-01,2026-12-31,true,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP EKKO/EKPO contract master. Not connected to production SAP.
+4500012347,V200001,Dell Technologies Inc,MK,1000,ITHW,150000.00,2023-01-01,2025-12-31,true,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP EKKO/EKPO contract master. Not connected to production SAP.
+4500012348,V500001,SAP America Inc,MK,1000,ITSVC,100000.00,2024-01-01,2026-06-30,true,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP EKKO/EKPO contract master. Not connected to production SAP.
+4500009999,V600001,Accenture LLP,MK,1000,CONSLT,75000.00,2022-01-01,2024-01-01,false,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Deliberately expired to demonstrate expired contract detection.

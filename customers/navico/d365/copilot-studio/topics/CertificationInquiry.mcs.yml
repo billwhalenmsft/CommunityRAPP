@@ -1,0 +1,103 @@
+kind: AdaptiveDialog
+modelDescription: Helps B2B partners check dealer certification status and learn about the certification program.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - certification status
+      - dealer certification
+      - am I certified
+      - installer certification
+      - certification program
+      - get certified
+      - renew certification
+      - certification expired
+      - training program
+
+  actions:
+    - kind: SendActivity
+      id: intro
+      activity:
+        text:
+          - "I can help with the Navico Dealer Certification Program! Are you looking to:\n\n🎓 **Check existing certification status**\n📝 **Enroll in a new certification**\n🔄 **Renew an expiring certification**\n❓ **Learn about the program**"
+
+    - kind: Question
+      id: askAction
+      property: Topic.CertAction
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Which would you like help with?"
+      entity:
+        displayName: Certification Action
+      choices:
+        - value: check
+          synonyms:
+            - check status
+            - my status
+            - am I certified
+            - current level
+        - value: enroll
+          synonyms:
+            - enroll
+            - sign up
+            - get certified
+            - new certification
+        - value: renew
+          synonyms:
+            - renew
+            - renewal
+            - expiring
+            - about to expire
+        - value: learn
+          synonyms:
+            - learn
+            - what is it
+            - program details
+            - benefits
+
+    - kind: ConditionGroup
+      id: routeCertAction
+      conditions:
+        - id: checkStatus
+          condition: =Topic.CertAction = "check"
+          actions:
+            - kind: SendActivity
+              id: checkMsg
+              activity:
+                text:
+                  - "To check your certification status, I'll need to connect you with a specialist who can look up your contact record. They can confirm:\n\n• Your current certification level\n• Certification date and expiration\n• Any upcoming renewal deadlines\n• Your account's overall certified personnel count\n\nLet me transfer you now."
+            - kind: TransferToAgent
+              id: checkTransfer
+              activity:
+                text: "B2B customer requesting certification status check. Look up Contact record > Certifications field. Also check account-level certified personnel count."
+              context:
+                EscalationReason: "Certification status check"
+
+        - id: enrollNew
+          condition: =Topic.CertAction = "enroll"
+          actions:
+            - kind: SendActivity
+              id: enrollMsg
+              activity:
+                text:
+                  - "Great choice! The Navico Certification Program has 3 levels:\n\n🥉 **Basic Certified**\n• Online training modules + exam (80% to pass)\n• Benefits: dealer pricing, standard support access\n\n🥈 **Advanced Certified**\n• Product-specific training + hands-on assessment (85% to pass)\n• Benefits: priority support queue, advanced exchange eligibility\n\n🥇 **Expert Certified**\n• Multi-brand training + field assessment (90% to pass)\n• Benefits: Tier 4 direct access, System Assembly Assurance authority, beta firmware\n• Requires annual renewal\n\nTo get started, visit the **Navico Certification Portal** where all training and testing is delivered. When you complete the exam, it automatically creates a tracked case in our system.\n\nWould you like me to connect you with a specialist for enrollment assistance, or do you have other questions?"
+
+        - id: renewCert
+          condition: =Topic.CertAction = "renew"
+          actions:
+            - kind: SendActivity
+              id: renewMsg
+              activity:
+                text:
+                  - "For certification renewals, here's what to know:\n\n📅 **Expiration timeline:**\n• Basic & Advanced: expire after 12 months\n• Expert: expires after 24 months\n• Renewal notifications sent 60 days before expiration\n\n🔄 **Renewal process:**\n• Complete the latest training module on the portal\n• Pass a shortened renewal exam\n• If within 90-day grace period after expiration: renewal still available\n• If past 90 days: full re-certification required\n\n⚠️ **Important:** Expired certifications may affect your account's support tier and access to dealer programs.\n\nWould you like me to connect you with a specialist to check your renewal status?"
+
+        - id: learnProgram
+          condition: =Topic.CertAction = "learn"
+          actions:
+            - kind: SendActivity
+              id: learnMsg
+              activity:
+                text:
+                  - "The **Navico Dealer Certification Program** is designed for dealers, distributors, and professional installers. Here's the overview:\n\n**Why get certified?**\n• Elevated support access and priority routing\n• Access to dealer pricing and programs\n• System Assembly Assurance authority (Expert level)\n• Beta firmware and early access to new products\n• Professional credibility with your customers\n\n**Three levels:** Basic → Advanced → Expert\n\n**How it works:**\n1. Access training on the Navico Certification Portal\n2. Complete the required modules for your target level\n3. Pass the exam (scores: 80% Basic, 85% Advanced, 90% Expert)\n4. Certification is recorded on your contact profile in our system\n5. Your support routing is automatically updated for priority access\n\nIs there anything specific about the program you'd like to know more about?"

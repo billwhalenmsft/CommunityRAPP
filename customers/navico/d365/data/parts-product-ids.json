@@ -1,0 +1,140 @@
+{
+  "LWR-PART-MNT-001": {
+    "category": "Mount",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 49.99,
+    "id": "60a34b8b-8933-f111-88b4-7c1e52143136"
+  },
+  "SIM-PART-CBL-001": {
+    "category": "Cable",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 34.99,
+    "id": "1a424b89-8933-f111-88b4-6045bda80a72"
+  },
+  "LWR-PART-XDR-001": {
+    "category": "Transducer",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 199.99,
+    "id": "261e8386-8933-f111-88b4-7c1e520a58a1"
+  },
+  "NAV-PART-FUS-002": {
+    "category": "Network",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 18.99,
+    "id": "e9762790-8933-f111-88b4-7ced8dceb26a"
+  },
+  "NAV-PART-MEM-001": {
+    "category": "Storage",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 14.99,
+    "id": "21e7628f-8933-f111-88b4-6045bda80a72"
+  },
+  "BNG-PART-WND-001": {
+    "category": "Wind Sensor",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 699.99,
+    "id": "cf36b58f-8933-f111-88b4-7ced8dceb433"
+  },
+  "CMAP-PART-GEN-001": {
+    "category": "Storage",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 19.99,
+    "id": "f4e6628f-8933-f111-88b4-6045bda80a72"
+  },
+  "LWR-PART-XDR-002": {
+    "category": "Transducer",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 349.99,
+    "id": "cd414b89-8933-f111-88b4-6045bda80a72"
+  },
+  "BNG-PART-DSP-001": {
+    "category": "Display",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 149.99,
+    "id": "a3762790-8933-f111-88b4-7ced8dceb26a"
+  },
+  "NST-PART-CBL-001": {
+    "category": "Cable",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 24.99,
+    "id": "cf762790-8933-f111-88b4-7ced8dceb26a"
+  },
+  "BNG-PART-MNT-001": {
+    "category": "Mount",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 64.99,
+    "id": "ac762790-8933-f111-88b4-7ced8dceb26a"
+  },
+  "SIM-PART-AP-001": {
+    "category": "Autopilot",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 399.99,
+    "id": "59d4278a-8933-f111-88b4-7ced8dceb26a"
+  },
+  "SIM-PART-VHF-001": {
+    "category": "VHF Accessory",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 79.99,
+    "id": "7d90b28c-8933-f111-88b4-7ced8d18c8d7"
+  },
+  "BNG-PART-CBL-001": {
+    "category": "Cable",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 44.99,
+    "id": "a9762790-8933-f111-88b4-7ced8dceb26a"
+  },
+  "NAV-PART-FUS-001": {
+    "category": "Network",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 12.99,
+    "id": "e3762790-8933-f111-88b4-7ced8dceb26a"
+  },
+  "CMAP-PART-CHT-002": {
+    "category": "Chart Card",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 129.99,
+    "id": "f0e6628f-8933-f111-88b4-6045bda80a72"
+  },
+  "LWR-PART-CBL-001": {
+    "category": "Cable",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 29.99,
+    "id": "22d4278a-8933-f111-88b4-7ced8dceb26a"
+  },
+  "SIM-PART-XDR-001": {
+    "category": "Transducer",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 249.99,
+    "id": "12424b89-8933-f111-88b4-6045bda80a72"
+  },
+  "SIM-PART-RAD-001": {
+    "category": "Cable",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 89.99,
+    "id": "14424b89-8933-f111-88b4-6045bda80a72"
+  },
+  "LWR-PART-ANT-001": {
+    "category": "Antenna",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 149.99,
+    "id": "36d4278a-8933-f111-88b4-7ced8dceb26a"
+  },
+  "CMAP-PART-CHT-001": {
+    "category": "Chart Card",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 149.99,
+    "id": "75a34b8b-8933-f111-88b4-7c1e52143136"
+  },
+  "LWR-PART-CVR-001": {
+    "category": "Accessory",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 24.99,
+    "id": "63a34b8b-8933-f111-88b4-7c1e52143136"
+  },
+  "NST-PART-VHF-001": {
+    "category": "VHF Accessory",
+    "priceListId": "462b3d28-8933-f111-88b4-7ced8dceb26a",
+    "price": 14.99,
+    "id": "0437b58f-8933-f111-88b4-7ced8dceb433"
+  }
+}

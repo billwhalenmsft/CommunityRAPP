@@ -1,0 +1,11 @@
+kind: AdaptiveDialog
+modelDescription: Greets the customer when they start a conversation on the Navico support portal.
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SendActivity
+      id: welcomeMessage
+      activity:
+        text:
+          - "👋 Welcome to **Navico Group Support**! I'm your AI assistant and I can help with:\n\n🔧 **Troubleshoot** a product issue\n📋 **Check warranty** status\n🔄 **Request an RMA** (Exchange, Repair, or Credit)\n📝 **Register** a new product\n🎓 **Check certification** status (dealers & installers)\n\nHow can I help you today?"

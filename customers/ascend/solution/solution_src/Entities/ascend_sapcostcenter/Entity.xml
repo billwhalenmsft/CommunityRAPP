@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ascend_sapcostcenter — Emulates SAP CSKS (Cost Center Master) -->
+<Entity>
+  <Name LocalizedName="SAP Cost Center (Demo)" OriginalName="ascend_sapcostcenter">ascend_sapcostcenter</Name>
+  <EntityInfo>
+    <entity Name="ascend_sapcostcenter">
+      <LocalizedNames><LocalizedName description="SAP Cost Center (Demo)" languagecode="1033" /></LocalizedNames>
+      <LocalizedCollectionNames><LocalizedCollectionName description="SAP Cost Centers (Demo)" languagecode="1033" /></LocalizedCollectionNames>
+      <Descriptions><Description description="Emulates SAP ECC 6.0 CSKS (cost center master data). DEMO DATA ONLY." languagecode="1033" /></Descriptions>
+      <attributes>
+        <attribute PhysicalName="ascend_sapcostcenterid"><Type>primarykey</Type><Name>ascend_sapcostcenterid</Name><LogicalName>ascend_sapcostcenterid</LogicalName></attribute>
+        <!-- CSKS.KOSTL -->
+        <attribute PhysicalName="ascend_kostl"><Type>nvarchar</Type><Name>ascend_kostl</Name><MaxLength>10</MaxLength><LocalizedNames><LocalizedName description="Cost Center (KOSTL)" languagecode="1033" /></LocalizedNames><RequiredLevel>required</RequiredLevel></attribute>
+        <!-- CSKS.BUKRS -->
+        <attribute PhysicalName="ascend_bukrs"><Type>nvarchar</Type><Name>ascend_bukrs</Name><MaxLength>4</MaxLength><LocalizedNames><LocalizedName description="Company Code (BUKRS)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- CSKS.DATBI — Valid to date -->
+        <attribute PhysicalName="ascend_datbi"><Type>datetime</Type><Name>ascend_datbi</Name><LocalizedNames><LocalizedName description="Valid To (DATBI)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Description -->
+        <attribute PhysicalName="ascend_ktext"><Type>nvarchar</Type><Name>ascend_ktext</Name><MaxLength>40</MaxLength><LocalizedNames><LocalizedName description="Description (KTEXT)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Active flag -->
+        <attribute PhysicalName="ascend_active"><Type>bit</Type><Name>ascend_active</Name><LocalizedNames><LocalizedName description="Active" languagecode="1033" /></LocalizedNames><DefaultValue>1</DefaultValue></attribute>
+        <!-- Responsible person -->
+        <attribute PhysicalName="ascend_verak"><Type>nvarchar</Type><Name>ascend_verak</Name><MaxLength>20</MaxLength><LocalizedNames><LocalizedName description="Responsible Person (VERAK)" languagecode="1033" /></LocalizedNames></attribute>
+        <attribute PhysicalName="ascend_datasource"><Type>nvarchar</Type><Name>ascend_datasource</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Data Source" languagecode="1033" /></LocalizedNames><DefaultValue>SAP ECC 6.0 (Demo via Dataverse)</DefaultValue></attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

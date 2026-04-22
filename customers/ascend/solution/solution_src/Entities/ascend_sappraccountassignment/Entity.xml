@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ascend_sappraccountassignment — Emulates SAP EBKN (PR Account Assignment) -->
+<Entity>
+  <Name LocalizedName="SAP PR Account Assignment (Demo)" OriginalName="ascend_sappraccountassignment">ascend_sappraccountassignment</Name>
+  <EntityInfo>
+    <entity Name="ascend_sappraccountassignment">
+      <LocalizedNames><LocalizedName description="SAP PR Account Assignment (Demo)" languagecode="1033" /></LocalizedNames>
+      <LocalizedCollectionNames><LocalizedCollectionName description="SAP PR Account Assignments (Demo)" languagecode="1033" /></LocalizedCollectionNames>
+      <Descriptions><Description description="Emulates SAP ECC 6.0 EBKN table (PR account assignment: GL, cost center, order, WBS). DEMO DATA ONLY." languagecode="1033" /></Descriptions>
+      <attributes>
+        <attribute PhysicalName="ascend_sappraccountassignmentid"><Type>primarykey</Type><Name>ascend_sappraccountassignmentid</Name><LogicalName>ascend_sappraccountassignmentid</LogicalName></attribute>
+        <!-- PR number (FK to EBAN) -->
+        <attribute PhysicalName="ascend_banfn"><Type>nvarchar</Type><Name>ascend_banfn</Name><MaxLength>10</MaxLength><LocalizedNames><LocalizedName description="PR Number (BANFN)" languagecode="1033" /></LocalizedNames></attribute>
+        <attribute PhysicalName="ascend_bnfpo"><Type>nvarchar</Type><Name>ascend_bnfpo</Name><MaxLength>5</MaxLength><LocalizedNames><LocalizedName description="PR Item (BNFPO)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Account assignment category (EBKN.KNTTP) -->
+        <attribute PhysicalName="ascend_knttp"><Type>nvarchar</Type><Name>ascend_knttp</Name><MaxLength>1</MaxLength><LocalizedNames><LocalizedName description="Account Assignment Cat. (KNTTP)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- GL account (EBKN.SAKTO) -->
+        <attribute PhysicalName="ascend_sakto"><Type>nvarchar</Type><Name>ascend_sakto</Name><MaxLength>10</MaxLength><LocalizedNames><LocalizedName description="GL Account (SAKTO)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Cost center (EBKN.KOSTL) -->
+        <attribute PhysicalName="ascend_kostl"><Type>nvarchar</Type><Name>ascend_kostl</Name><MaxLength>10</MaxLength><LocalizedNames><LocalizedName description="Cost Center (KOSTL)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Internal order (EBKN.AUFNR) -->
+        <attribute PhysicalName="ascend_aufnr"><Type>nvarchar</Type><Name>ascend_aufnr</Name><MaxLength>12</MaxLength><LocalizedNames><LocalizedName description="Internal Order (AUFNR)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- WBS element (EBKN.PS_PSP_PNR) -->
+        <attribute PhysicalName="ascend_pspnr"><Type>nvarchar</Type><Name>ascend_pspnr</Name><MaxLength>24</MaxLength><LocalizedNames><LocalizedName description="WBS Element (PS_PSP_PNR)" languagecode="1033" /></LocalizedNames></attribute>
+        <!-- Distribution percentage -->
+        <attribute PhysicalName="ascend_pctdistrib"><Type>decimal</Type><Name>ascend_pctdistrib</Name><LocalizedNames><LocalizedName description="Distribution %" languagecode="1033" /></LocalizedNames><DefaultValue>100</DefaultValue></attribute>
+        <attribute PhysicalName="ascend_datasource"><Type>nvarchar</Type><Name>ascend_datasource</Name><MaxLength>100</MaxLength><LocalizedNames><LocalizedName description="Data Source" languagecode="1033" /></LocalizedNames><DefaultValue>SAP ECC 6.0 (Demo via Dataverse)</DefaultValue></attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

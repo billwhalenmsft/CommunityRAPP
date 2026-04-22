@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABC Supply Savage — D365 CS + Field Service Demo</title>
+    <style>
+        :root {
+            --abc-red:       #C8102E;
+            --abc-red-dark:  #9E0B23;
+            --abc-gray:      #333333;
+            --ms-blue:       #0078D4;
+            --ms-blue-dark:  #005A9E;
+            --ms-blue-light: #DEECF9;
+            --accent-green:  #107C10;
+            --accent-orange: #D83B01;
+            --accent-purple: #5C2D91;
+            --accent-teal:   #008575;
+            --accent-red:    #A4262C;
+            --bg:            #FAFAFA;
+            --card-bg:       #FFFFFF;
+            --text:          #323130;
+            --text-light:    #605E5C;
+            --border:        #EDEBE9;
+            --shadow:        0 2px 8px rgba(0,0,0,0.08);
+            --shadow-hover:  0 4px 16px rgba(0,0,0,0.12);
+            --radius:        12px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg, #C8102E 0%, #9E0B23 50%, #333333 100%);
+            color:white; padding:50px 40px 40px; text-align:center; position:relative; overflow:hidden;
+        }
+        .hero::before {
+            content:'ABC SUPPLY'; position:absolute; top:15px; left:30px;
+            font-size:1.6rem; font-weight:800; letter-spacing:4px; opacity:0.9;
+        }
+        .hero::after {
+            content:''; position:absolute; bottom:0; left:0; right:0; height:4px;
+            background:linear-gradient(90deg,#C8102E,#666,#C8102E);
+        }
+        .hero h1 { font-size:2.1rem; font-weight:600; letter-spacing:-0.5px; margin-bottom:6px; }
+        .hero .subtitle { font-size:1.05rem; opacity:0.92; font-weight:300; margin-bottom:16px; }
+        .hero .meta { display:flex; justify-content:center; gap:28px; font-size:0.88rem; opacity:0.88; flex-wrap:wrap; }
+        .hero .meta span { display:flex; align-items:center; gap:6px; }
+        .hero-badge {
+            display:inline-block; background:var(--abc-red); color:white; border-radius:20px;
+            padding:6px 20px; font-size:0.78rem; font-weight:700; margin-top:14px;
+            letter-spacing:0.8px; text-transform:uppercase;
+        }
+
+        /* ── Container ── */
+        .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+        /* ── Section label ── */
+        .section-label {
+            font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px;
+            color:var(--abc-red); margin-top:48px; margin-bottom:12px;
+        }
+
+        /* ── Pre-flight ── */
+        .preflight {
+            background:linear-gradient(135deg,#E8F5E9 0%,#F1F8F2 100%);
+            border-left:4px solid var(--accent-green); border-radius:0 var(--radius) var(--radius) 0; padding:24px 28px; margin:24px 0;
+        }
+        .preflight h3 { font-size:1rem; font-weight:700; color:var(--accent-green); margin-bottom:12px; }
+        .preflight ul { font-size:0.88rem; color:#2E5A30; line-height:2; padding-left:20px; }
+        .preflight li { margin-bottom:2px; }
+        .preflight code { background:rgba(0,0,0,0.08); padding:2px 6px; border-radius:4px; font-family:monospace; font-size:0.82rem; }
+
+        /* ── Collapsible sections ── */
+        .exec-section {
+            background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow);
+            margin:20px 0; border-left:5px solid var(--abc-red); transition:box-shadow 0.2s; overflow:hidden;
+        }
+        .exec-section:hover { box-shadow:var(--shadow-hover); }
+        .exec-header { display:flex; align-items:center; gap:16px; padding:22px 24px; cursor:pointer; user-select:none; }
+        .exec-header:hover { background:rgba(200,16,46,0.03); }
+        .exec-number { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; color:white; flex-shrink:0; }
+        .exec-header-text { flex:1; }
+        .exec-header-text h3 { font-size:1.15rem; font-weight:600; margin-bottom:2px; }
+        .exec-header-text .exec-purpose { font-size:0.85rem; color:var(--text-light); font-style:italic; }
+        .exec-time { font-size:0.78rem; font-weight:600; color:var(--text-light); background:var(--bg); padding:4px 12px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
+        .exec-expand { font-size:1.2rem; color:var(--text-light); transition:transform 0.3s; flex-shrink:0; }
+        .exec-section.open .exec-expand { transform:rotate(180deg); }
+        .exec-body { max-height:0; overflow:hidden; transition:max-height 0.5s ease; }
+        .exec-section.open .exec-body { max-height:50000px; }
+        .exec-content { padding:0 24px 28px 82px; }
+
+        /* ── Step blocks ── */
+        .step-block { margin:16px 0; padding:16px 20px; background:#F8F9FA; border-radius:8px; border-left:3px solid var(--abc-red); }
+        .step-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:inline-block; padding:2px 10px; border-radius:4px; color:white; }
+        .step-label.tell       { background:#C8102E; }
+        .step-label.show       { background:#0078D4; }
+        .step-label.say        { background:#D83B01; }
+        .step-label.click      { background:#005A9E; }
+        .step-label.tip        { background:#FFB900; color:#5D4510; }
+        .step-label.caution    { background:#A4262C; }
+        .step-label.copilot    { background:#5C2D91; }
+        .step-label.transition { background:#605E5C; }
+        .step-label.voice      { background:#107C10; }
+        .step-label.chat       { background:#008575; }
+        .step-label.sms        { background:#008575; }
+        .step-label.field      { background:#D83B01; }
+        .step-text { font-size:0.9rem; line-height:1.6; }
+        .step-text em { color:var(--accent-orange); font-style:normal; font-weight:600; }
+        .step-text .click-path { font-family:monospace; background:rgba(200,16,46,0.1); color:var(--abc-red); padding:2px 7px; border-radius:4px; font-size:0.82rem; white-space:nowrap; }
+
+        /* ── Talk track ── */
+        .talk-track {
+            background:white; border:1px solid #E0E0E0; border-radius:8px;
+            padding:16px 20px; margin:10px 0; font-style:italic; font-size:0.88rem; line-height:1.65; color:#444; position:relative;
+        }
+        .talk-track::before { content:'\201C'; font-size:3rem; color:var(--abc-red); position:absolute; top:-8px; left:10px; font-style:normal; opacity:0.5; }
+        .talk-track p { padding-left:24px; }
+
+        /* ── TST wrapper ── */
+        .tst-wrapper { border:2px solid #E0E0E0; border-radius:10px; margin:20px 0; overflow:hidden; }
+        .tst-header {
+            background:linear-gradient(135deg,#C8102E,#9E0B23); color:white;
+            padding:8px 16px; font-size:0.72rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+        }
+        .tst-body { padding:16px 20px; }
+
+        /* ── Sub-topic headers ── */
+        .sub-header { margin:28px 0 10px; font-size:1.02rem; font-weight:600; color:var(--abc-red); display:flex; align-items:center; gap:8px; }
+        .sub-header.show-sub  { color:var(--ms-blue); }
+        .sub-header.field-sub { color:var(--accent-orange); }
+        .sub-header.sms-sub   { color:var(--accent-teal); }
+        .sub-header.cop-sub   { color:var(--accent-purple); }
+
+        /* ── Callouts ── */
+        .callout { border-radius:8px; padding:14px 18px; margin:12px 0; font-size:0.85rem; line-height:1.5; }
+        .callout.warning  { background:#FFF4CE; border-left:3px solid #FFB900; color:#5D4510; }
+        .callout.critical { background:#FDE7E9; border-left:3px solid var(--accent-red); color:#5D1015; }
+        .callout.success  { background:#E8F5E9; border-left:3px solid var(--accent-green); color:#2E5A30; }
+        .callout.info     { background:var(--ms-blue-light); border-left:3px solid var(--ms-blue); color:#003A6E; }
+        .callout.roi      { background:linear-gradient(135deg,#E8F5E9 0%,#F1F8E9 100%); border-left:4px solid #2E7D32; color:#1B5E20; }
+        .callout strong   { font-weight:700; }
+
+        /* ── Data reference tables ── */
+        .ref-table { width:100%; border-collapse:collapse; margin:12px 0; font-size:0.82rem; }
+        .ref-table th { background:#F3F2F1; font-weight:600; text-align:left; padding:8px 12px; border-bottom:2px solid #D2D0CE; white-space:nowrap; }
+        .ref-table td { padding:7px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+        .ref-table tr:last-child td { border-bottom:none; }
+        .ref-table tbody tr:hover { background:#F9F9F9; }
+        .ref-table code { font-family:monospace; font-size:0.76rem; background:#F0F0F0; padding:2px 6px; border-radius:3px; color:#333; }
+
+        /* ── Story block ── */
+        .story-block {
+            background:linear-gradient(135deg,#FFF0F1 0%,#FFF5F0 100%);
+            border-left:4px solid var(--abc-red); border-radius:0 var(--radius) var(--radius) 0; padding:24px 28px; margin:24px 0;
+        }
+        .story-block h3 { font-size:1rem; font-weight:700; color:var(--abc-red); margin-bottom:12px; }
+        .story-block p  { font-size:0.88rem; margin-bottom:8px; }
+        .story-block ul { font-size:0.88rem; padding-left:22px; margin-bottom:8px; }
+        .story-block li { margin-bottom:4px; }
+
+        /* ── Timing bar ── */
+        .timing-bar { display:flex; gap:0; margin:28px 0 12px; border-radius:8px; overflow:hidden; height:8px; }
+        .timing-bar .t-seg { height:100%; }
+
+        /* ── NAV ── */
+        .nav-toggle {
+            position:fixed; top:16px; left:16px; z-index:9998; width:44px; height:44px;
+            border:none; border-radius:8px; background:var(--abc-red); color:white;
+            font-size:1.4rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.2); transition:background 0.15s,transform 0.15s;
+        }
+        .nav-toggle:hover { background:var(--abc-red-dark); transform:scale(1.05); }
+        .nav-toggle.open  { background:var(--abc-gray); }
+        .side-nav-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:9999; }
+        .side-nav-backdrop.visible { display:block; }
+        .side-nav {
+            position:fixed; top:0; left:0; width:320px; height:100vh; background:white; z-index:10000;
+            transform:translateX(-100%); transition:transform 0.25s ease; display:flex; flex-direction:column;
+            box-shadow:4px 0 20px rgba(0,0,0,0.15);
+        }
+        .side-nav.open { transform:translateX(0); }
+        .side-nav-header {
+            padding:18px 20px 14px; background:linear-gradient(135deg,var(--abc-red),#9E0B23);
+            color:white; font-size:0.82rem; font-weight:600; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+        }
+        .side-nav-pin {
+            background:none; border:1px solid rgba(255,255,255,0.5); color:white; border-radius:4px;
+            padding:2px 8px; font-size:0.68rem; cursor:pointer; letter-spacing:0.5px; text-transform:uppercase; font-weight:700;
+        }
+        .side-nav-pin:hover { background:rgba(255,255,255,0.15); }
+        .side-nav-pin.pinned { background:var(--abc-gray); border-color:var(--abc-gray); }
+        .side-nav-body { flex:1; overflow-y:auto; padding:10px 0; }
+        .side-nav-group { padding:10px 18px 4px; font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-light); }
+        .side-nav-item { display:flex; align-items:center; gap:10px; padding:7px 18px; font-size:0.8rem; color:var(--text); text-decoration:none; cursor:pointer; transition:background 0.15s; border-left:3px solid transparent; }
+        .side-nav-item:hover { background:#F3F2F1; }
+        .side-nav-item.active { background:#FDE7E9; border-left-color:var(--abc-red); font-weight:600; }
+        .side-nav-num { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.68rem; color:white; flex-shrink:0; }
+        .side-nav-label { line-height:1.3; }
+        body.nav-pinned .container { margin-left:340px; }
+        body.nav-pinned .hero { padding-left:340px; }
+        body.nav-pinned .side-nav { box-shadow:1px 0 3px rgba(0,0,0,0.08); }
+        body.nav-pinned .side-nav-backdrop { display:none !important; }
+        body.nav-pinned .nav-toggle { left:330px; }
+
+        /* ── Context panel ── */
+        .context-panel {
+            position:fixed; top:80px; right:16px; width:300px; max-height:calc(100vh - 100px);
+            overflow-y:auto; background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.1);
+            border:1px solid var(--border); z-index:500; font-size:0.78rem; transition:opacity 0.2s;
+        }
+        .context-panel-header {
+            position:sticky; top:0; background:var(--abc-red); color:white; padding:12px 16px;
+            font-weight:600; font-size:0.82rem; border-radius:12px 12px 0 0; display:flex; align-items:center; gap:8px; z-index:1;
+        }
+        .context-panel-body { padding:12px 16px 16px; }
+        .ctx-section { display:none; }
+        .ctx-section.active { display:block; }
+        .ctx-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-light); margin:12px 0 6px 0; }
+        .ctx-label:first-child { margin-top:0; }
+        .ctx-item { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f3f2f1; }
+        .ctx-item:last-child { border-bottom:none; }
+        .ctx-key { color:var(--text-light); font-size:0.72rem; }
+        .ctx-val { font-weight:600; color:var(--text); font-size:0.72rem; text-align:right; max-width:60%; }
+        .ctx-val code { background:#f3f2f1; padding:1px 5px; border-radius:4px; font-size:0.68rem; }
+        .ctx-pill { display:inline-block; padding:1px 8px; border-radius:10px; font-size:0.65rem; font-weight:600; }
+        .ctx-pill-tier1  { background:#FDE7E9; color:#9E0B23; }
+        .ctx-pill-tier2  { background:#FFF4CE; color:#856404; }
+        .ctx-pill-tier3  { background:#CCE5FF; color:#004085; }
+        .ctx-pill-green  { background:#D4EDDA; color:#155724; }
+        body.ctx-panel-open .container { max-width:900px; margin-right:340px; }
+        @media (max-width:1400px) { .context-panel { width:260px; right:10px; } body.ctx-panel-open .container { margin-right:290px; } }
+        @media (max-width:1100px) { .context-panel { display:none; } }
+
+        /* ── Border helpers ── */
+        .border-voice  { border-left-color:var(--accent-green); }
+        .border-phone  { border-left-color:var(--abc-red); }
+        .border-field  { border-left-color:var(--accent-orange); }
+        .border-sms    { border-left-color:var(--accent-teal); }
+        .border-cop    { border-left-color:var(--accent-purple); }
+        .border-close  { border-left-color:var(--abc-gray); }
+        .bg-phone  { background:var(--abc-red); }
+        .bg-field  { background:var(--accent-orange); }
+        .bg-sms    { background:var(--accent-teal); }
+        .bg-email  { background:var(--ms-blue); }
+        .bg-cop    { background:var(--accent-purple); }
+        .bg-close  { background:var(--abc-gray); }
+        .bg-setup  { background:var(--accent-green); }
+
+        /* ── Competitive table ── */
+        .comp-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.82rem; }
+        .comp-table th { padding:10px 14px; text-align:left; font-weight:700; font-size:0.8rem; }
+        .comp-table th:first-child { background:#F3F2F1; color:var(--text); }
+        .comp-table th.d365-col    { background:var(--ms-blue); color:white; }
+        .comp-table th.ss-col      { background:#888; color:white; }
+        .comp-table td { padding:9px 14px; border-bottom:1px solid var(--border); vertical-align:top; }
+        .comp-table td:first-child { font-weight:600; background:#FAFAFA; }
+        .comp-win  { color:var(--accent-green); font-weight:700; }
+        .comp-lose { color:#888; }
+
+        footer { text-align:center; padding:40px 20px; font-size:0.75rem; color:var(--text-light); border-top:1px solid var(--border); margin-top:60px; }
+
+        @media (max-width:900px) {
+            .side-nav { width:280px; } body.nav-pinned .container { margin-left:300px; }
+            body.nav-pinned .hero { padding-left:300px; } body.nav-pinned .nav-toggle { left:290px; }
+            .exec-content { padding:0 16px 24px 16px; }
+        }
+        @media print {
+            .nav-toggle,.side-nav,.side-nav-backdrop,.context-panel { display:none !important; }
+            body.nav-pinned .container { margin-left:auto; } body.nav-pinned .hero { padding-left:50px; }
+            .exec-section { break-inside:avoid; } .exec-body { max-height:none !important; overflow:visible !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV TOGGLE -->
+<button class="nav-toggle" id="navToggle" aria-label="Open navigation">&#9776;</button>
+<div class="side-nav-backdrop" id="navBackdrop"></div>
+<div class="side-nav" id="sideNav">
+    <div class="side-nav-header">
+        <strong>&#9776; Demo Sections</strong>
+        <button class="side-nav-pin" id="navPin">PIN</button>
+    </div>
+    <div class="side-nav-body" id="navBody"></div>
+</div>
+
+<!-- CONTEXT DATA PANEL -->
+<div class="context-panel" id="ctxPanel">
+    <div class="context-panel-header">
+        <span>📋</span><span id="ctxTitle">Demo Data</span>
+        <span style="margin-left:auto;cursor:pointer;font-size:0.9rem;" onclick="document.getElementById('ctxPanel').style.display='none';">✕</span>
+    </div>
+    <div class="context-panel-body">
+        <div class="ctx-section active" id="ctx-setup">
+            <div class="ctx-label">Environment</div>
+            <div class="ctx-item"><span class="ctx-key">D365 Org</span><span class="ctx-val"><code>orgecbce8ef</code></span></div>
+            <div class="ctx-item"><span class="ctx-key">Field Service</span><span class="ctx-val"><code>Enabled on same org</code></span></div>
+            <div class="ctx-label">Hero Caller</div>
+            <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Mike Bergstrom</span></div>
+            <div class="ctx-item"><span class="ctx-key">Phone</span><span class="ctx-val"><code>952-441-8823</code></span></div>
+            <div class="ctx-item"><span class="ctx-key">Account</span><span class="ctx-val">Andersen Exteriors Savage</span></div>
+            <div class="ctx-item"><span class="ctx-key">Tier</span><span class="ctx-val"><span class="ctx-pill ctx-pill-tier1">Tier 1 — Premier</span></span></div>
+        </div>
+        <div class="ctx-section" id="ctx-voice">
+            <div class="ctx-label">Caller</div>
+            <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Mike Bergstrom</span></div>
+            <div class="ctx-item"><span class="ctx-key">Phone</span><span class="ctx-val"><code>952-441-8823</code></span></div>
+            <div class="ctx-item"><span class="ctx-key">Account</span><span class="ctx-val">Andersen Exteriors Savage</span></div>
+            <div class="ctx-item"><span class="ctx-key">Tier</span><span class="ctx-val"><span class="ctx-pill ctx-pill-tier1">Tier 1 — Premier</span></span></div>
+            <div class="ctx-label">Open Work Orders</div>
+            <div class="ctx-item"><span class="ctx-key">WO-2026-001</span><span class="ctx-val" style="font-size:0.65rem;">Seal Failure — Parts on Order</span></div>
+            <div class="ctx-item"><span class="ctx-key">WO-2026-004</span><span class="ctx-val" style="font-size:0.65rem;">Balance Spring — Pending Assign</span></div>
+            <div class="ctx-label">KB to Surface</div>
+            <div class="ctx-item"><span class="ctx-key">Article</span><span class="ctx-val"><code>KA-ABC-001</code></span></div>
+        </div>
+        <div class="ctx-section" id="ctx-dispatch">
+            <div class="ctx-label">Work Order</div>
+            <div class="ctx-item"><span class="ctx-key">Ref</span><span class="ctx-val"><code>WO-2026-002</code></span></div>
+            <div class="ctx-item"><span class="ctx-key">Account</span><span class="ctx-val">Pella Pro Contractors MN</span></div>
+            <div class="ctx-item"><span class="ctx-key">Issue</span><span class="ctx-val" style="font-size:0.65rem;">Operator Mechanism Failure</span></div>
+            <div class="ctx-item"><span class="ctx-key">Part</span><span class="ctx-val"><code>PART-OPR-MEC — In Stock</code></span></div>
+            <div class="ctx-label">Dispatch</div>
+            <div class="ctx-item"><span class="ctx-key">Tech</span><span class="ctx-val">Derek Olson</span></div>
+            <div class="ctx-item"><span class="ctx-key">Scheduled</span><span class="ctx-val">Thu Apr 10 · 10am</span></div>
+            <div class="ctx-label">Homeowner</div>
+            <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">James Paulsen</span></div>
+            <div class="ctx-item"><span class="ctx-key">SMS</span><span class="ctx-val"><code>952-555-0387</code></span></div>
+        </div>
+        <div class="ctx-section" id="ctx-field">
+            <div class="ctx-label">Tech</div>
+            <div class="ctx-item"><span class="ctx-key">Name</span><span class="ctx-val">Derek Olson</span></div>
+            <div class="ctx-item"><span class="ctx-key">Mobile</span><span class="ctx-val"><code>612-555-0301</code></span></div>
+            <div class="ctx-item"><span class="ctx-key">App</span><span class="ctx-val">D365 Field Service Mobile</span></div>
+            <div class="ctx-label">WO-2026-001 (Hero)</div>
+            <div class="ctx-item"><span class="ctx-key">Serial</span><span class="ctx-val"><code>AND-CAS-2024-SAV-0042</code></span></div>
+            <div class="ctx-item"><span class="ctx-key">Address</span><span class="ctx-val">Sarah Kowalski, Prior Lake</span></div>
+            <div class="ctx-label">Required Docs</div>
+            <div class="ctx-item"><span class="ctx-key">Pre Photo</span><span class="ctx-val"><span class="ctx-pill ctx-pill-tier1">Required</span></span></div>
+            <div class="ctx-item"><span class="ctx-key">Post Photo</span><span class="ctx-val"><span class="ctx-pill ctx-pill-tier1">Required</span></span></div>
+            <div class="ctx-item"><span class="ctx-key">Checklist</span><span class="ctx-val">7 items</span></div>
+        </div>
+        <div class="ctx-section" id="ctx-reference">
+            <div class="ctx-label">Hero Work Orders</div>
+            <div class="ctx-item"><span class="ctx-key">WO-2026-001</span><span class="ctx-val" style="font-size:0.65rem;">Andersen Casement — Seal Failure</span></div>
+            <div class="ctx-item"><span class="ctx-key">WO-2026-002</span><span class="ctx-val" style="font-size:0.65rem;">Pella Slider — Operator Failure</span></div>
+            <div class="ctx-label">Key Contacts</div>
+            <div class="ctx-item"><span class="ctx-key">Mike B.</span><span class="ctx-val">Andersen Exteriors (Tier 1)</span></div>
+            <div class="ctx-item"><span class="ctx-key">Tyler S.</span><span class="ctx-val">Pella Pro Contractors (Tier 2)</span></div>
+            <div class="ctx-item"><span class="ctx-key">Sarah K.</span><span class="ctx-val">Homeowner — SMS updates</span></div>
+            <div class="ctx-label">Quick Links</div>
+            <div class="ctx-item"><span class="ctx-key">D365</span><span class="ctx-val"><a href="https://orgecbce8ef.crm.dynamics.com" target="_blank" style="color:var(--abc-red);">Open →</a></span></div>
+            <div class="ctx-item"><span class="ctx-key">Field Service</span><span class="ctx-val"><a href="https://orgecbce8ef.crm.dynamics.com/main.aspx?app=fieldservice" target="_blank" style="color:var(--abc-red);">Open →</a></span></div>
+            <div class="ctx-item"><span class="ctx-key">Copilot Studio</span><span class="ctx-val"><a href="https://copilotstudio.microsoft.com" target="_blank" style="color:var(--abc-red);">Open →</a></span></div>
+        </div>
+    </div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+    <h1>ABC Supply Savage Branch — D365 CS + Field Service Demo</h1>
+    <p class="subtitle">Replacing Smartsheet &amp; Manual Dispatch &nbsp;·&nbsp; Omnichannel + CTI + Field Service + Copilot</p>
+    <div class="meta">
+        <span>🎯 Windows &amp; Doors Service Operation</span>
+        <span>👤 You are <strong>Josh</strong> (Service Coordinator)</span>
+        <span>⏱ 60 min</span>
+    </div>
+    <div class="hero-badge">Discovery Demo — ABC Supply Savage Branch</div>
+</header>
+
+<div class="container">
+
+    <!-- TIMING BAR -->
+    <p class="section-label">Session Timing (60 min)</p>
+    <div class="timing-bar">
+        <div class="t-seg" style="flex:5;  background:var(--accent-green);"  title="Setup & Story ~5 min"></div>
+        <div class="t-seg" style="flex:15; background:var(--abc-red);"       title="Phone Screen Pop ~15 min"></div>
+        <div class="t-seg" style="flex:10; background:var(--ms-blue);"       title="Web Form → Case Intake ~10 min"></div>
+        <div class="t-seg" style="flex:12; background:var(--accent-orange);" title="Dispatch + Field Service ~12 min"></div>
+        <div class="t-seg" style="flex:10; background:#008575;"              title="Tech Mobile + Completion ~10 min"></div>
+        <div class="t-seg" style="flex:8;  background:var(--accent-purple);" title="Parts Tracking + Copilot ~8 min"></div>
+        <div class="t-seg" style="flex:0;  background:var(--abc-gray);"      title="Close ~0 min (run long as needed)"></div>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:0.72rem;color:var(--text-light);margin-bottom:24px;">
+        <span>🟢 Setup (5m)</span>
+        <span>🔴 Phone Screen Pop (15m)</span>
+        <span>🔷 Web Form Intake (10m)</span>
+        <span>🟠 Dispatch + Field Service (12m)</span>
+        <span>💬 Tech Mobile + Completion (10m)</span>
+        <span>🟣 Parts + Copilot (8m)</span>
+        <span>⬛ Close</span>
+    </div>
+
+    <!-- THE STORY -->
+    <div class="story-block">
+        <h3>📖 The Demo Story — A Day in the Life at ABC Supply Savage</h3>
+        <p><strong>Setting:</strong> You are <em>Josh Henriksen</em>, one of two service coordinators at ABC Supply's Savage Branch. You and Aaron run all service intake, scheduling, and dispatch for a 3-tech field team serving window and door contractors across the south metro Twin Cities. Today you're running everything out of <strong>D365 Customer Service + Field Service</strong> — a far cry from the Smartsheet + copy/paste + personal texts that run the operation today.</p>
+        <p><strong>The Challenge ABC Supply has today:</strong></p>
+        <ul>
+            <li>Service requests come in by phone, email, and a web form — each goes into Smartsheet manually</li>
+            <li>No screen pop when contractors call — you're looking up their info while they wait</li>
+            <li>Dispatch is all manual — texts from personal phones, no schedule visibility</li>
+            <li>Parts status calls flood the phones — no proactive notifications to customers</li>
+            <li>Techs carry no documentation standard — photos are optional, paper-based</li>
+            <li>No completion report — contractors get a phone call, homeowners get nothing</li>
+            <li>Anticipating 5x growth in 2027 — cannot scale this on Smartsheet</li>
+        </ul>
+        <p><strong>Today you will see:</strong> How D365 CS + Field Service unifies the entire work order lifecycle — from first call to completion report — with zero copy/paste, automated SMS, and mobile-first field tech tools.</p>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PRE-DEMO SETUP                               -->
+    <!-- ============================================ -->
+    <p class="section-label">Pre-Demo Setup</p>
+
+    <div class="exec-section" id="section-setup" style="border-left-color:var(--accent-green);">
+        <div class="exec-header" onclick="toggleSection(this)">
+            <div class="exec-number bg-setup">✓</div>
+            <div class="exec-header-text">
+                <h3>✅ Pre-Flight Checklist</h3>
+                <div class="exec-purpose">Complete this 15 minutes before the demo begins</div>
+            </div>
+            <div class="exec-time">15 min before</div>
+            <div class="exec-expand">▼</div>
+        </div>
+        <div class="exec-body"><div class="exec-content">
+            <div class="preflight">
+                <h3>✅ Pre-Flight Checklist (15 min before demo)</h3>
+                <ul>
+                    <li><strong>Run provisioning (if not done):</strong></li>
+                    <li>&emsp;<code>cd customers\abcsupply\d365</code></li>
+                    <li>&emsp;<code>.\Run-ABCSupplyDemoSetup.ps1 -Phase All</code></li>
+                    <li>&emsp;Then manually publish KB articles in D365 UI</li>
+                    <li><strong>Browser tabs (Edge recommended):</strong></li>
+                    <li>&emsp;Tab 1: D365 CS Workspace — <code>https://orgecbce8ef.crm.dynamics.com</code></li>
+                    <li>&emsp;Tab 2: D365 Field Service — <code>orgecbce8ef.crm.dynamics.com</code> → Field Service app</li>
+                    <li>&emsp;Tab 3: Copilot Studio — <code>copilotstudio.microsoft.com</code></li>
+                    <li><strong>In D365 CS Workspace verify:</strong></li>
+                    <li>&emsp;Presence status set to <strong>"Available"</strong> (green dot)</li>
+                    <li>&emsp;Omnichannel panel showing Phone, Email, and Chat channels</li>
+                    <li><strong>Confirm hero records loaded:</strong></li>
+                    <li>&emsp;Mike Bergstrom (Andersen Exteriors Savage) — confirm <strong>2 open work orders</strong></li>
+                    <li>&emsp;Tyler Schroeder (Pella Pro Contractors MN) — confirm Operator case visible</li>
+                    <li>&emsp;Sarah Kowalski (homeowner) — linked to WO-2026-001</li>
+                    <li><strong>Field Service — Schedule Board open in Tab 2:</strong></li>
+                    <li>&emsp;Confirm Derek Olson visible as available resource</li>
+                    <li>&emsp;Confirm WO-2026-002 in unscheduled work orders list</li>
+                    <li><strong>Quick tip:</strong> Open the right-panel context data (📋) for each scenario as you go — key data at a glance</li>
+                </ul>
+            </div>
+
+            <div class="callout info">
+                <strong>Demo org note:</strong> Currently using shared demo org <code>orgecbce8ef.crm.dynamics.com</code>. Update <code>customers/abcsupply/d365/config/environment.json</code> when a dedicated ABC Supply org is provisioned.
+            </div>
+
+            <p class="section-label" style="margin-top:20px;">Hero Records Quick Reference</p>
+            <table class="ref-table">
+                <thead><tr><th>Work Order</th><th>Account</th><th>Contact / Homeowner</th><th>Issue</th><th>Status</th></tr></thead>
+                <tbody>
+                    <tr><td><code>WO-2026-001</code></td><td>Andersen Exteriors Savage</td><td>Mike Bergstrom / Sarah Kowalski</td><td>Casement seal failure — water intrusion</td><td><span style="color:var(--accent-orange);font-weight:700;">Parts on Order</span></td></tr>
+                    <tr><td><code>WO-2026-002</code></td><td>Pella Pro Contractors MN</td><td>Tyler Schroeder / James Paulsen</td><td>Slider operator mechanism stripped</td><td><span style="color:var(--ms-blue);font-weight:700;">Tech Dispatched Thu</span></td></tr>
+                    <tr><td><code>WO-2026-003</code></td><td>Prairie Windows &amp; Doors</td><td>Debra Haugen</td><td>12-unit screen replacement</td><td><span style="color:var(--accent-green);font-weight:700;">Pending Sign-Off</span></td></tr>
+                    <tr><td><code>WO-2026-004</code></td><td>Andersen Exteriors Savage</td><td>Mike Bergstrom</td><td>Casement balance spring broken</td><td><span style="color:var(--abc-red);font-weight:700;">New — Needs Dispatch</span></td></tr>
+                </tbody>
+            </table>
+        </div></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SCENARIO 1: PHONE SCREEN POP + CTI           -->
+    <!-- ============================================ -->
+    <p class="section-label">Demo Scenarios</p>
+
+    <div class="exec-section border-phone" id="section-voice">
+        <div class="exec-header" onclick="toggleSection(this); switchCtx('ctx-voice');">
+            <div class="exec-number bg-phone">1</div>
+            <div class="exec-header-text">
+                <h3>📞 Inbound Phone Call — Screen Pop &amp; Case Management</h3>
+                <div class="exec-purpose">CTI screen pop · Open work orders surface instantly · Copilot Agent Assist</div>
+            </div>
+            <div class="exec-time">~15 min</div>
+            <div class="exec-expand">▼</div>
+        </div>
+        <div class="exec-body"><div class="exec-content">
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Pain Today</div>
+                <div class="tst-body">
+                    <div class="step-block">
+                        <span class="step-label tell">TELL</span>
+                        <div class="step-text">When a contractor calls ABC Supply today, <em>Josh is looking up their info in Smartsheet while they're talking</em>. He has to search by name, scroll through rows, and try to identify open work orders — all while taking notes on a sticky pad. If it's a new caller, he's starting from scratch. Meanwhile the contractor is waiting on hold or repeating information they've already given.</div>
+                    </div>
+                    <div class="talk-track"><p>"Nick, imagine your coordinators answering the phone already knowing who's calling, seeing all their open work orders, and having everything ready before the contractor says their name. That's what a screen pop does — and it's one of the biggest efficiency wins we're going to show you today."</p></div>
+                </div>
+            </div>
+
+            <div class="sub-header show-sub">📺 SHOW — Screen Pop in Action</div>
+
+            <div class="step-block">
+                <span class="step-label voice">VOICE</span>
+                <div class="step-text"><strong>Simulate the inbound call:</strong> Have someone dial the demo CTI number, or walk through the notification appearing. The number <code>952-441-8823</code> (Mike Bergstrom, Andersen Exteriors Savage) should trigger a screen pop notification in the Omnichannel workspace.</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label click">CLICK</span>
+                <div class="step-text">Accept the incoming call notification. Show how the workspace <strong>immediately opens Mike Bergstrom's record</strong> — account, tier, contact history, and open work orders all visible before Josh says a word.<br><br>
+                Point out: <em>Tier 1 — Premier Contractor</em> badge. "This tells Josh immediately this is one of his top accounts — highest priority."</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label show">SHOW</span>
+                <div class="step-text">Navigate to <span class="click-path">Related → Cases</span> (or it shows inline). Show <strong>two open work orders</strong> for Mike:<br>
+                — <code>WO-2026-001</code> Casement seal failure (Parts on Order)<br>
+                — <code>WO-2026-004</code> Balance spring broken (New)<br><br>
+                "Josh can see exactly where each job stands without touching Smartsheet."</div>
+            </div>
+
+            <div class="callout roi">
+                <strong>💡 ROI Point:</strong> Screen pop eliminates 2-3 minutes per call of manual lookup. At 15 inbound calls/day × 2 coordinators, that's <strong>45-90 minutes reclaimed daily</strong> — plus a dramatically better customer experience.
+            </div>
+
+            <div class="sub-header cop-sub">🤖 Copilot Agent Assist — KB Surface</div>
+
+            <div class="step-block">
+                <span class="step-label copilot">COPILOT</span>
+                <div class="step-text">While on the call, Mike asks: "What's the status on the seal kit for the Prior Lake job?" Show Copilot Agent Assist panel surfacing <strong>KB article KA-ABC-001</strong> (Window Seal Failure — Warranty Process) and WO-2026-001 timeline.<br><br>
+                Click into WO-2026-001 to show the <strong>full activity timeline</strong> — initial call, tech assessment, parts order, 7-day check-in, parts received, scheduling.</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label say">SAY</span>
+                <div class="step-text">"Notice Josh doesn't have to ask Mike to repeat anything. The entire history is right here — who called, what the tech found, when parts were ordered, and what the last communication was. That's the full work order history ABC Supply told us they want to see."</div>
+            </div>
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Value</div>
+                <div class="tst-body">
+                    <div class="talk-track"><p>"Today, Josh has to look that up in Smartsheet, maybe call the warehouse to check on parts, then call Mike back. In D365, the answer is already on his screen before Mike finishes asking the question. Every interaction is logged automatically — no sticky notes, no Smartsheet rows to update."</p></div>
+                    <div class="callout roi"><strong>ROI:</strong> Screen pop + case history = ~2 min saved per call × 15 calls/day = <strong>30 min/day per coordinator</strong>. At 2027 volume projections (1,000+ WOs/year), this scales linearly — Smartsheet does not.</div>
+                </div>
+            </div>
+
+        </div></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SCENARIO 2: WEB FORM → CASE INTAKE           -->
+    <!-- ============================================ -->
+
+    <div class="exec-section border-email" id="section-intake">
+        <div class="exec-header" onclick="toggleSection(this); switchCtx('ctx-setup');">
+            <div class="exec-number bg-email">2</div>
+            <div class="exec-header-text">
+                <h3>📋 Web Form → Auto-Case Creation &amp; Email Linking</h3>
+                <div class="exec-purpose">Replacing SmartSheet forms · Auto-notifications · Email linked to WO record</div>
+            </div>
+            <div class="exec-time">~10 min</div>
+            <div class="exec-expand">▼</div>
+        </div>
+        <div class="exec-body"><div class="exec-content">
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Pain Today</div>
+                <div class="tst-body">
+                    <div class="step-block">
+                        <span class="step-label tell">TELL</span>
+                        <div class="step-text">Today, ABC's two web forms (Smartsheet) submit to a spreadsheet. Josh or Aaron checks the sheet, manually creates a Smartsheet row for the job, and then manually emails the contractor, homeowner, and sales rep. <em>Every email is a copy/paste exercise.</em> If the customer emails back questions, those replies sit in Outlook — disconnected from the Smartsheet row entirely.</div>
+                    </div>
+                    <div class="talk-track"><p>"Nick, when we asked about linking emails to work orders — this is exactly what D365 solves. Every email your team sends or receives related to a case is automatically linked to that case record. No hunting through Outlook, no forwarding emails to yourself. It's all in one place."</p></div>
+                </div>
+            </div>
+
+            <div class="sub-header show-sub">📺 SHOW — Auto-Case from Web/Email</div>
+
+            <div class="step-block">
+                <span class="step-label show">SHOW</span>
+                <div class="step-text">Navigate to <span class="click-path">Customer Service Hub → Cases → My Active Cases</span>. Show the queue view — open work orders for today, organized by tier/priority. Compare: "This replaces your Smartsheet — and it updates itself."</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label click">CLICK</span>
+                <div class="step-text">Open <strong>WO-2026-001</strong> (Andersen Casement — Seal Failure). Walk through the case form:<br>
+                — Customer: Andersen Exteriors Savage (Tier 1 — Premier, sales rep Larry Sullivan shown)<br>
+                — Origin: Phone · Priority: High · Status: In Progress<br>
+                — Description: Full intake notes<br>
+                — Timeline: scroll to show the full activity log</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label show">SHOW</span>
+                <div class="step-text">Expand the <strong>Timeline</strong> on the case. Show each logged activity: the intake call, the tech's assessment task, the parts order, the 7-day check-in SMS, parts received, and scheduling confirmation. "This is the full story of this job — in one record."</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label copilot">COPILOT</span>
+                <div class="step-text">Click <strong>Copilot → Summarize Case</strong>. Show how Copilot generates a natural-language summary of the case history. "Nick, this is what your coordinators will see instead of scrolling through 8 rows in Smartsheet."</div>
+            </div>
+
+            <div class="callout info">
+                <strong>Email Linking Demo Tip:</strong> If you have a configured queue email (<code>service@abcsupply-demo.com</code>), send a test email and show it auto-creating a case and appearing in the queue. Otherwise, show an existing case with linked email activities in the timeline.
+            </div>
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Value</div>
+                <div class="tst-body">
+                    <div class="talk-track"><p>"What you're seeing is the end of the 'copy/paste to Smartsheet' workflow. A form submits, a case is created, the right people are notified automatically, and every email back and forth is linked to the record. Josh doesn't have to do any of that manually — he just works the cases."</p></div>
+                    <div class="callout roi"><strong>ROI:</strong> At ~400 work orders/year, eliminating manual Smartsheet entry saves <strong>10-15 min per WO = 65-100 hours/year</strong>. Plus zero missed updates, no lost email threads, full audit trail.</div>
+                </div>
+            </div>
+
+        </div></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SCENARIO 3: DISPATCH + FIELD SERVICE + SMS   -->
+    <!-- ============================================ -->
+
+    <div class="exec-section border-field" id="section-dispatch">
+        <div class="exec-header" onclick="toggleSection(this); switchCtx('ctx-dispatch');">
+            <div class="exec-number bg-field">3</div>
+            <div class="exec-header-text">
+                <h3>🗓️ Dispatch &amp; Scheduling — Schedule Board + Automated SMS</h3>
+                <div class="exec-purpose">Field Service schedule board · "Where's my tech?" · Homeowner SMS automation</div>
+            </div>
+            <div class="exec-time">~12 min</div>
+            <div class="exec-expand">▼</div>
+        </div>
+        <div class="exec-body"><div class="exec-content">
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Pain Today</div>
+                <div class="tst-body">
+                    <div class="step-block">
+                        <span class="step-label tell">TELL</span>
+                        <div class="step-text">Today, dispatch is <em>fully manual</em>. Josh or Aaron decides which tech to send, texts them from their personal phone, then manually texts the homeowner an appointment time. There's no visibility into tech schedules beyond a mental model and a Smartsheet row. When a homeowner asks "when will your tech show up?" — Josh has to call or text Derek, get an ETA, and relay it back.</div>
+                    </div>
+                    <div class="talk-track"><p>"Nick mentioned wanting something like a 'pizza tracker' — knowing where your tech is, when they'll arrive, automated updates. That's exactly what Field Service gives you. And none of it requires Josh or Aaron to send a single manual text."</p></div>
+                </div>
+            </div>
+
+            <div class="sub-header show-sub">📺 SHOW — Schedule Board</div>
+
+            <div class="step-block">
+                <span class="step-label click">CLICK</span>
+                <div class="step-text">Switch to Tab 2 — Field Service app. Navigate to <span class="click-path">Field Service → Schedule Board</span>. Show the board with:<br>
+                — Derek Olson visible as a resource (availability, working hours)<br>
+                — <code>WO-2026-002</code> (Pella Slider) in the unscheduled work orders panel on the right<br>
+                "This is a visual map of who is available, what needs to be dispatched, and where things stand."</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label show">SHOW</span>
+                <div class="step-text">Drag WO-2026-002 onto Derek Olson's schedule for Thursday 10am. Show the work order status automatically updating to "Scheduled." Point out the part confirmation: <code>PART-OPR-MEC</code> in stock — no wait needed.</div>
+            </div>
+
+            <div class="callout success">
+                <strong>Copilot Scheduling Agent tip:</strong> If Schedule Optimization is configured, show the "Suggest" button — Copilot can recommend the optimal tech based on location, skills, and availability. For ABC's smaller team, this is even more valuable as they scale to 1,000+ WOs in 2027.
+            </div>
+
+            <div class="sub-header sms-sub">📱 SHOW — Automated Homeowner SMS</div>
+
+            <div class="step-block">
+                <span class="step-label sms">SMS</span>
+                <div class="step-text">Show (or describe) the automated SMS flow triggered when the work order is scheduled:<br><br>
+                <em>To homeowner James Paulsen:</em> <code>"ABC Supply scheduled for Thu Apr 10 between 9-11am. Tech: Derek Olson. Reply C to confirm or call 952-894-0100 to reschedule."</code><br><br>
+                "This goes out automatically — Josh doesn't touch it. No personal phone, no manual text."</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label sms">SMS</span>
+                <div class="step-text">Show the day-of en-route SMS (Power Automate trigger when Derek marks "En Route" in Field Service mobile):<br><br>
+                <em>To homeowner:</em> <code>"Derek is 18 min away. ETA 10:06am."</code><br><br>
+                "This is the 'where's my tech?' experience Nick asked for. It's automatic — no coordinator involvement at all."</div>
+            </div>
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Value</div>
+                <div class="tst-body">
+                    <div class="talk-track"><p>"Today your coordinators are the relay for everything — Josh calls Derek, Derek texts back an ETA, Josh calls the homeowner, homeowner calls back asking about the part. In D365 Field Service, that entire chain is automated. Josh dispatches once, and the system handles every communication milestone automatically."</p></div>
+                    <div class="callout roi"><strong>ROI:</strong> Automated SMS eliminates ~3-4 manual communication touchpoints per work order. At 400 WOs/year, that's <strong>1,200-1,600 manual actions eliminated annually</strong>. Scales to zero additional labor at 1,500 WOs/year.</div>
+                </div>
+            </div>
+
+        </div></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SCENARIO 4: FIELD TECH MOBILE                -->
+    <!-- ============================================ -->
+
+    <div class="exec-section border-field" id="section-field">
+        <div class="exec-header" onclick="toggleSection(this); switchCtx('ctx-field');">
+            <div class="exec-number bg-field">4</div>
+            <div class="exec-header-text">
+                <h3>📱 Field Service Mobile — Tech Onsite Experience</h3>
+                <div class="exec-purpose">Time tracking · Inspection checklist · Pre/post photos · Auto completion report</div>
+            </div>
+            <div class="exec-time">~10 min</div>
+            <div class="exec-expand">▼</div>
+        </div>
+        <div class="exec-body"><div class="exec-content">
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Pain Today</div>
+                <div class="tst-body">
+                    <div class="step-block">
+                        <span class="step-label tell">TELL</span>
+                        <div class="step-text">Today, ABC's techs work from memory and paper. Derek might take photos on his personal phone if he remembers. Drive time and onsite time are estimated — nobody's tracking it precisely. When a job is done, Josh calls the contractor to let them know, and the homeowner usually hears nothing unless the contractor calls them. There's no formal completion report — and if there's a warranty dispute, there's no documentation to point to.</div>
+                    </div>
+                    <div class="talk-track"><p>"Nick mentioned wanting pre and post photos automatically sent to contractors when a job is complete. Derek said he'd be happy using an app that keeps track of his time and tasks. The Field Service mobile app does all of this — and it works offline in homes with no wifi."</p></div>
+                </div>
+            </div>
+
+            <div class="sub-header show-sub">📺 SHOW — Field Service Mobile App</div>
+
+            <div class="step-block">
+                <span class="step-label field">FIELD</span>
+                <div class="step-text"><strong>On a tablet or phone (or screen-share):</strong> Open the Field Service mobile app signed in as Derek Olson. Show his work order list for the day — <code>WO-2026-001</code> at top (Priority High).<br><br>
+                Navigate into WO-2026-001 and show: customer info, site address (Prior Lake), product serial <code>AND-CAS-2024-SAV-0042</code>, and the job instructions already populated from the case.</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label click">CLICK</span>
+                <div class="step-text">Walk through the <strong>travel flow</strong>: Derek taps "Traveling" → time stamp captured, status updates to "En Route" in D365 (which triggers the homeowner SMS shown in Scenario 3). Drive time clock starts automatically.<br><br>
+                Then tap "On Site" → onsite clock starts, en route clock stops. <strong>Job costing begins accumulating automatically.</strong></div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label field">FIELD</span>
+                <div class="step-text">Show <strong>pre-work photo capture</strong>: Derek taps + Photo → captures image of the damaged seal and water damage area. Photo is attached to the work order automatically. "No emailing photos to himself, no uploading from personal phone later."</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label show">SHOW</span>
+                <div class="step-text">Open the <strong>Inspection Checklist</strong> (7 items per KA-ABC-005). Walk through: frame condition, glass condition, seal/weatherstrip, hardware operation, installation plumb/level, interior trim, customer walkthrough.<br><br>
+                "This is the standardized inspection ABC doesn't have today. If there's ever a warranty dispute — Derek completed a 7-point inspection, and every item is timestamped and on record."</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label field">FIELD</span>
+                <div class="step-text">Tap <strong>"Complete Work Order"</strong>: post-work photo captured, time log finalized (drive: 28 min / onsite: 1h 22min), parts used (PART-SEAL-KIT × 1) confirmed. Work order status updates to "Completed" in D365 — visible to Josh and Aaron in real time.</div>
+            </div>
+
+            <div class="sub-header show-sub">📧 Auto Completion Report</div>
+
+            <div class="step-block">
+                <span class="step-label copilot">COPILOT</span>
+                <div class="step-text">On case close, show the auto-generated <strong>Completion Report email</strong> that D365 sends to:<br>
+                — Mike Bergstrom at Andersen Exteriors (contractor)<br>
+                — Sarah Kowalski (homeowner)<br>
+                — Larry Sullivan (ABC sales rep for this account)<br><br>
+                Report includes: work order details, tech name, parts used (<code>PART-SEAL-KIT — 1 unit</code>), total labor time, drive time, pre and post photos side by side, and inspection checklist results.</div>
+            </div>
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Value</div>
+                <div class="tst-body">
+                    <div class="talk-track"><p>"Derek gets a better-looking work process — no paperwork, no forgetting to take photos. Mike the contractor gets a professional completion report the moment the job is done. Sarah the homeowner gets confirmation that her house is taken care of. And Nick has job costing data for every work order — drive time, onsite time, parts used — automatically."</p></div>
+                    <div class="callout roi"><strong>ROI:</strong> Auto-completion report eliminates 1 manual call per WO. Photo documentation reduces warranty dispute exposure. Drive/onsite time tracking enables true <strong>job costing</strong> — something ABC cannot do today at all.</div>
+                </div>
+            </div>
+
+        </div></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SCENARIO 5: PARTS TRACKING + COPILOT ASSIST  -->
+    <!-- ============================================ -->
+
+    <div class="exec-section border-sms" id="section-parts">
+        <div class="exec-header" onclick="toggleSection(this); switchCtx('ctx-setup');">
+            <div class="exec-number bg-sms">5</div>
+            <div class="exec-header-text">
+                <h3>📦 Parts Tracking &amp; Proactive Status — No More Status Calls</h3>
+                <div class="exec-purpose">Parts order milestones · Automated SMS touchpoints · Copilot status assist</div>
+            </div>
+            <div class="exec-time">~8 min</div>
+            <div class="exec-expand">▼</div>
+        </div>
+        <div class="exec-body"><div class="exec-content">
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Pain Today</div>
+                <div class="tst-body">
+                    <div class="step-block">
+                        <span class="step-label tell">TELL</span>
+                        <div class="step-text">When ABC orders a part from a manufacturer — especially a custom component with a 3-4 week lead time — the homeowner and contractor are in the dark. They don't know if the part was ordered, when it's arriving, or whether anyone remembers their job exists. The result: <em>inbound calls all day</em> asking "where are we on my window?" — pulling Josh and Aaron off real work.</div>
+                    </div>
+                    <div class="talk-track"><p>"Nick said keeping everyone informed throughout the whole process is a core goal. That's not just a nice-to-have — it's the reason his phone is ringing constantly with status update calls. If we can proactively communicate at every milestone, those calls go down dramatically."</p></div>
+                </div>
+            </div>
+
+            <div class="sub-header sms-sub">📱 SHOW — Parts Milestone Notifications</div>
+
+            <div class="step-block">
+                <span class="step-label show">SHOW</span>
+                <div class="step-text">Open <strong>WO-2026-001</strong> timeline. Walk through the automated SMS touchpoints already in the case history:<br><br>
+                1. <em>Parts Ordered:</em> <code>"Your window parts have been ordered. ETA approximately 12 business days. Work Order: WO-2026-001."</code><br>
+                2. <em>Day 7 Check-in:</em> <code>"Hi Sarah, your window parts are on track. We'll contact you when they arrive to schedule installation."</code><br>
+                3. <em>Parts Received:</em> <code>"Great news — your parts arrived! We will call tomorrow to schedule."</code><br><br>
+                "Sarah never had to call. She received three proactive updates automatically — and didn't have to wonder whether her job was forgotten."</div>
+            </div>
+
+            <div class="step-block">
+                <span class="step-label copilot">COPILOT</span>
+                <div class="step-text">Show Copilot Agent Assist on WO-2026-001. If a coordinator wants to draft a custom update email, type: <em>"Draft a status email to Sarah Kowalski on the seal kit order."</em> Copilot pulls the case context and drafts a professional email using the timeline data. One click to send.</div>
+            </div>
+
+            <div class="callout info">
+                <strong>Future — Self-Service Agent:</strong> Parts status check prompts like "What's the status of my window repair?" can be handled by a Copilot Studio agent via SMS or web chat — deflecting calls entirely. Relevant for ABC's 2027 volume goals.
+            </div>
+
+            <div class="tst-wrapper">
+                <div class="tst-header">⬛ TELL — The Value</div>
+                <div class="tst-body">
+                    <div class="talk-track"><p>"You told us that reducing inbound update calls is one of your top goals. The math is simple: if we can replace 3-4 inbound status calls per work order with automated outbound touchpoints — at 400 WOs a year today, that's potentially 1,200-1,600 fewer calls. At 1,500 WOs in 2027, the impact is enormous. And Josh and Aaron are free to focus on jobs that actually need them."</p></div>
+                    <div class="callout roi"><strong>ROI:</strong> Proactive notifications targeting 40-50% reduction in inbound status calls = <strong>20-30 hours/month freed up per coordinator</strong>. At scale to 1,500 WOs/year, this is the difference between hiring more people and not.</div>
+                </div>
+            </div>
+
+        </div></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- COMPETITIVE CLOSE                            -->
+    <!-- ============================================ -->
+
+    <div class="exec-section border-close" id="section-close">
+        <div class="exec-header" onclick="toggleSection(this); switchCtx('ctx-reference');">
+            <div class="exec-number bg-close">6</div>
+            <div class="exec-header-text">
+                <h3>🏆 Competitive Close — D365 vs Smartsheet + Manual</h3>
+                <div class="exec-purpose">Recap the gaps · ROI summary · Growth readiness · Next steps</div>
+            </div>
+            <div class="exec-time">~10 min</div>
+            <div class="exec-expand">▼</div>
+        </div>
+        <div class="exec-body"><div class="exec-content">
+
+            <table class="comp-table">
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th class="ss-col">Smartsheet + Manual Today</th>
+                        <th class="d365-col">D365 CS + Field Service</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Phone intake — contractor calling in</td><td class="comp-lose">Manual Smartsheet lookup while on call</td><td class="comp-win">✅ Screen pop — customer record instant</td></tr>
+                    <tr><td>Email → work order linkage</td><td class="comp-lose">Emails in Outlook, disconnected from rows</td><td class="comp-win">✅ Emails auto-linked to case timeline</td></tr>
+                    <tr><td>Work order from web form</td><td class="comp-lose">Manual row creation after form submit</td><td class="comp-win">✅ Auto-case + auto-notification on submit</td></tr>
+                    <tr><td>Dispatch / scheduling</td><td class="comp-lose">Manual texts from personal phones</td><td class="comp-win">✅ Schedule board + drag-to-assign</td></tr>
+                    <tr><td>Homeowner "Where's my tech?"</td><td class="comp-lose">Josh calls Derek, relays ETA manually</td><td class="comp-win">✅ Automated en-route SMS with live ETA</td></tr>
+                    <tr><td>Drive time + onsite time tracking</td><td class="comp-lose">Estimated / not tracked</td><td class="comp-win">✅ Auto-tracked in Field Service mobile</td></tr>
+                    <tr><td>Inspection checklists</td><td class="comp-lose">No standard — memory + paper</td><td class="comp-win">✅ Digital 7-point checklist, timestamped</td></tr>
+                    <tr><td>Pre/post photos</td><td class="comp-lose">Personal phone, optional</td><td class="comp-win">✅ Required, auto-attached to work order</td></tr>
+                    <tr><td>Completion report to contractor</td><td class="comp-lose">Manual phone call from coordinator</td><td class="comp-win">✅ Auto-emailed on case close w/ photos</td></tr>
+                    <tr><td>Parts order milestone notifications</td><td class="comp-lose">None — customers call in for status</td><td class="comp-win">✅ Automated SMS at every milestone</td></tr>
+                    <tr><td>Scale to 1,500 WOs in 2027</td><td class="comp-lose">More people, more Smartsheet rows</td><td class="comp-win">✅ Same headcount, zero additional process</td></tr>
+                    <tr><td>Copilot AI assistance</td><td class="comp-lose">None</td><td class="comp-win">✅ Case summary, KB assist, draft emails</td></tr>
+                </tbody>
+            </table>
+
+            <div class="step-block">
+                <span class="step-label say">SAY</span>
+                <div class="step-text">"Nick, you said you want something more connected that you can grow with, and that Smartsheet has too much duct tape. That's exactly the problem this solves. Everything you saw today exists as out-of-the-box capability in D365 Customer Service Premium and Field Service — your team can be running on this in a matter of weeks, not months."</div>
+            </div>
+
+            <div class="sub-header">📊 Suggested Next Steps</div>
+            <div class="callout success">
+                <strong>Recommended Phase 1 Scope (what to put in front of Nick):</strong><br>
+                ✅ D365 CS Premium — 6 users (2 coordinators + 1 manager + 2 ops admin + 1 buffer)<br>
+                ✅ Field Service — 3 tech licenses + 1 coordinator view<br>
+                ✅ Omnichannel: Phone (CTI) + Email + SMS channel<br>
+                ✅ Case Management Agent (CS Premium Copilot)<br>
+                ✅ Field Service Mobile app for 3 techs<br>
+                ✅ Power Automate flows: SMS milestones, completion report auto-email<br>
+                ✅ M365 Copilot for Nick + coordinators<br>
+                ✅ Go-live target: 60-90 days from contract
+            </div>
+
+            <div class="callout warning">
+                <strong>Phase 2 (post go-live discussion items):</strong><br>
+                🔲 Power Pages portal for contractor/homeowner self-service status<br>
+                🔲 Copilot Studio SMS status bot ("text your case # for an update")<br>
+                🔲 D365 Sales for inside sales + quote management<br>
+                🔲 Subcontractor dispatch portal (Field Service external workers)<br>
+                🔲 Sample management tracking (minimal — could be a simple Power App)<br>
+                🔲 Agility integration via Power Automate connector
+            </div>
+
+            <div class="callout roi">
+                <strong>Rough ROI Summary for Nick:</strong><br>
+                • 30-60 min/day per coordinator reclaimed from manual tasks<br>
+                • 40-50% reduction in inbound status calls (estimated)<br>
+                • Full job costing data (something they have zero visibility into today)<br>
+                • 5x volume growth supported with same headcount<br>
+                • Professional contractor/homeowner experience → retention and referrals<br>
+                • One platform instead of Smartsheet + Outlook + personal texts + Excel
+            </div>
+
+        </div></div>
+    </div>
+
+</div>
+
+<footer>
+    ABC Supply Savage Branch — D365 CS + Field Service Demo Guide &nbsp;·&nbsp;
+    Org: <code>orgecbce8ef.crm.dynamics.com</code> &nbsp;·&nbsp;
+    Generated by CommunityRAPP · D365 Demo Setup Skill
+</footer>
+
+<script>
+    // ── Section collapse toggle ──
+    function toggleSection(header) {
+        const section = header.closest('.exec-section');
+        section.classList.toggle('open');
+    }
+
+    // ── Context panel switcher ──
+    function switchCtx(id) {
+        document.querySelectorAll('.ctx-section').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(id);
+        if (target) { target.classList.add('active'); }
+        const titles = {
+            'ctx-setup':     'Demo Data',
+            'ctx-voice':     'Phone / Screen Pop',
+            'ctx-dispatch':  'Dispatch / SMS',
+            'ctx-field':     'Field Tech Mobile',
+            'ctx-reference': 'Quick Reference'
+        };
+        const titleEl = document.getElementById('ctxTitle');
+        if (titleEl && titles[id]) titleEl.textContent = titles[id];
+    }
+
+    // ── Side nav toggle ──
+    const navToggle   = document.getElementById('navToggle');
+    const sideNav     = document.getElementById('sideNav');
+    const navBackdrop = document.getElementById('navBackdrop');
+    const navPin      = document.getElementById('navPin');
+    let isPinned = false;
+
+    navToggle.addEventListener('click', () => {
+        if (isPinned) { unpin(); return; }
+        sideNav.classList.toggle('open');
+        navBackdrop.classList.toggle('visible');
+        navToggle.classList.toggle('open');
+    });
+    navBackdrop.addEventListener('click', () => {
+        sideNav.classList.remove('open');
+        navBackdrop.classList.remove('visible');
+        navToggle.classList.remove('open');
+    });
+    navPin.addEventListener('click', () => {
+        if (!isPinned) {
+            isPinned = true; navPin.classList.add('pinned'); navPin.textContent = 'UNPIN';
+            document.body.classList.add('nav-pinned');
+            navBackdrop.classList.remove('visible');
+            sideNav.classList.add('open');
+        } else { unpin(); }
+    });
+    function unpin() {
+        isPinned = false; navPin.classList.remove('pinned'); navPin.textContent = 'PIN';
+        document.body.classList.remove('nav-pinned');
+        sideNav.classList.remove('open'); navToggle.classList.remove('open');
+    }
+
+    // ── Auto-build side nav from DOM ──
+    function buildNav() {
+        const body = document.getElementById('navBody');
+        const sections = document.querySelectorAll('.exec-section');
+        const groups = {
+            'section-setup':    { group:'Setup', icon:'✅' },
+            'section-voice':    { group:'Scenarios', icon:'📞' },
+            'section-intake':   { group:'Scenarios', icon:'📋' },
+            'section-dispatch': { group:'Scenarios', icon:'🗓️' },
+            'section-field':    { group:'Scenarios', icon:'📱' },
+            'section-parts':    { group:'Scenarios', icon:'📦' },
+            'section-close':    { group:'Close', icon:'🏆' }
+        };
+        let lastGroup = '';
+        let num = 0;
+        sections.forEach(sec => {
+            const id = sec.id;
+            const meta = groups[id] || { group:'Other', icon:'▸' };
+            const title = sec.querySelector('h3')?.textContent?.replace(/^[^\w]+/, '').trim() || id;
+            const bgClass = sec.querySelector('.exec-number')?.className?.match(/bg-\w+/)?.[0] || 'bg-setup';
+            if (meta.group !== lastGroup) {
+                const grpEl = document.createElement('div');
+                grpEl.className = 'side-nav-group';
+                grpEl.textContent = meta.group;
+                body.appendChild(grpEl);
+                lastGroup = meta.group;
+            }
+            const item = document.createElement('div');
+            item.className = 'side-nav-item';
+            item.innerHTML = `<span class="side-nav-num ${bgClass}">${num === 0 ? '✓' : num}</span><span class="side-nav-label">${title.substring(0,42)}</span>`;
+            item.addEventListener('click', () => {
+                sec.classList.add('open');
+                sec.scrollIntoView({ behavior:'smooth', block:'start' });
+                if (!isPinned) {
+                    sideNav.classList.remove('open');
+                    navBackdrop.classList.remove('visible');
+                    navToggle.classList.remove('open');
+                }
+            });
+            body.appendChild(item);
+            num++;
+        });
+    }
+    buildNav();
+
+    // ── Scroll-based active highlight ──
+    const navItems = document.querySelectorAll('.side-nav-item');
+    const sectionEls = document.querySelectorAll('.exec-section');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sectionEls.forEach(s => {
+            if (window.scrollY >= s.offsetTop - 120) current = s.id;
+        });
+        navItems.forEach((item, i) => {
+            item.classList.toggle('active', sectionEls[i]?.id === current);
+        });
+    });
+</script>
+</body>
+</html>

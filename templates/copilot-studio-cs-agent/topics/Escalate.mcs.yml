@@ -1,0 +1,33 @@
+kind: AdaptiveDialog
+modelDescription: Handles escalation to a live support agent via Omnichannel with conversation context.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - talk to a person
+      - speak to an agent
+      - live agent
+      - human agent
+      - I need a real person
+      - connect me to support
+      - escalate
+      - transfer to agent
+      - this isn't helping
+      - I want to talk to someone
+      - can I speak with someone
+      - get me a representative
+
+  actions:
+    - kind: SendActivity
+      id: escalateMessage
+      activity:
+        text:
+          - "I'll connect you with a support specialist right away. They'll have our full conversation history so you won't need to repeat anything.\n\nPlease hold while I transfer you..."
+
+    - kind: TransferToAgent
+      id: transferToAgent
+      activity:
+        text: "Customer requested live agent assistance. Review the conversation transcript above for context."
+      context:
+        EscalationReason: "Customer requested live agent"

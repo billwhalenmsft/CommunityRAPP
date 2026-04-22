@@ -1,0 +1,5 @@
+node_modules/
+artifacts/
+sample/slides.html
+sample/slides.pptx
+sample/slides.pdf

@@ -4,15 +4,45 @@
 .DESCRIPTION
     Provides reusable functions for authenticating and interacting with
     Dataverse Web API via pac CLI token acquisition.
+    
+    The target environment can be set before importing this module by defining
+    $env:DATAVERSE_URL, or by calling Set-DataverseUrl after import.
+    Defaults to orgecbce8ef.crm.dynamics.com when not specified.
 #>
 
 # ============================================================
 # Configuration
 # ============================================================
-$script:DataverseBaseUrl = "https://orgecbce8ef.crm.dynamics.com"
+$script:DataverseBaseUrl = if ($env:DATAVERSE_URL) { $env:DATAVERSE_URL.TrimEnd('/') } else { "https://orgecbce8ef.crm.dynamics.com" }
 $script:ApiVersion = "v9.2"
 $script:ApiUrl = "$($script:DataverseBaseUrl)/api/data/$($script:ApiVersion)"
 $script:AuthToken = $null
+
+function Set-DataverseUrl {
+    <#
+    .SYNOPSIS
+        Changes the target Dataverse environment URL at runtime.
+    .PARAMETER Url
+        Full org URL, e.g. https://org6feab6b5.crm.dynamics.com
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Url
+    )
+    $script:DataverseBaseUrl = $Url.TrimEnd('/')
+    $script:ApiUrl = "$($script:DataverseBaseUrl)/api/data/$($script:ApiVersion)"
+    $script:AuthToken = $null   # force re-auth against new org
+    Write-Host "Dataverse target set to $($script:DataverseBaseUrl)" -ForegroundColor Cyan
+}
+
+function Get-DataverseUrl {
+    <#
+    .SYNOPSIS
+        Returns the current Dataverse base URL.
+    #>
+    return $script:DataverseBaseUrl
+}
 
 function Connect-Dataverse {
     <#
@@ -32,9 +62,6 @@ function Connect-Dataverse {
     $token = & az account get-access-token --resource $script:DataverseBaseUrl --query accessToken -o tsv 2>$null
     if (-not $token) {
         $token = & az account get-access-token --resource "$($script:DataverseBaseUrl)/" --query accessToken -o tsv 2>$null
-    }
-    if (-not $token) {
-        $token = & az account get-access-token --resource "https://orgecbce8ef.crm.dynamics.com" --query accessToken -o tsv 2>$null
     }
 
     $ErrorActionPreference = $oldEAP
@@ -95,7 +122,7 @@ function Invoke-DataverseGet {
     }
 
     try {
-        $response = Invoke-RestMethod -Uri $url -Method Get -Headers $headers -ErrorAction Stop
+        $response = Invoke-RestMethod -Uri $url -Method Get -Headers $headers -ErrorAction Stop -TimeoutSec 30
         # Use comma operator to prevent PS 5.1 pipeline from unwrapping single-element arrays
         if ($null -ne $response.value) {
             return , $response.value
@@ -131,7 +158,7 @@ function Invoke-DataversePost {
     $jsonBody = $Body | ConvertTo-Json -Depth 10
 
     try {
-        $response = Invoke-WebRequest -Uri $url -Method Post -Headers $headers -Body $jsonBody -UseBasicParsing -ErrorAction Stop
+        $response = Invoke-WebRequest -Uri $url -Method Post -Headers $headers -Body $jsonBody -UseBasicParsing -ErrorAction Stop -TimeoutSec 30
         
         # Try parsing the response body first (if Prefer: return=representation is set)
         if ($response.Content) {
@@ -287,6 +314,8 @@ function Get-DataverseApiUrl {
 }
 
 Export-ModuleMember -Function @(
+    'Set-DataverseUrl',
+    'Get-DataverseUrl',
     'Connect-Dataverse',
     'Get-DataverseHeaders',
     'Get-DataverseApiUrl',

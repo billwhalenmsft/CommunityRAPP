@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrier Developer Quickstart | VS Code + GitHub Copilot</title>
+  <style>
+    :root {
+      --blue: #0b5cab;
+      --blue-dark: #083b6b;
+      --blue-light: #edf5fd;
+      --teal: #0a7c86;
+      --teal-light: #e7f7f8;
+      --gold: #c88700;
+      --gold-light: #fff4d6;
+      --green: #177245;
+      --green-light: #e7f6ed;
+      --red: #b42318;
+      --gray-900: #1f2937;
+      --gray-700: #4b5563;
+      --gray-500: #6b7280;
+      --gray-300: #d1d5db;
+      --gray-100: #f3f4f6;
+      --white: #ffffff;
+      --shadow: 0 10px 30px rgba(8, 59, 107, 0.08);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --max-width: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--gray-900);
+      background:
+        radial-gradient(circle at top right, rgba(10, 124, 134, 0.08), transparent 28%),
+        linear-gradient(180deg, #f8fbff 0%, #f7f9fc 100%);
+      line-height: 1.6;
+    }
+
+    a { color: var(--blue); }
+
+    .hero {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 60%, #1678c8 100%);
+      color: var(--white);
+      padding: 48px 24px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -120px -120px auto;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-inner,
+    .nav-inner,
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      opacity: 0.82;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1;
+      max-width: 860px;
+    }
+
+    .hero-subtitle {
+      margin: 0 0 22px;
+      max-width: 760px;
+      font-size: 1.05rem;
+      opacity: 0.95;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--white);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(11, 92, 171, 0.08);
+    }
+
+    .nav-inner {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 0 24px;
+    }
+
+    .nav a {
+      white-space: nowrap;
+      text-decoration: none;
+      padding: 14px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-700);
+      border-bottom: 3px solid transparent;
+    }
+
+    .nav a:hover {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+
+    .page {
+      padding: 28px 24px 72px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .summary-card {
+      background: var(--white);
+      border: 1px solid rgba(11, 92, 171, 0.1);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+
+    .summary-card .label {
+      font-size: 12px;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .summary-card .value {
+      font-size: 1.8rem;
+      line-height: 1.1;
+      font-weight: 700;
+      color: var(--blue-dark);
+      margin-bottom: 6px;
+    }
+
+    .summary-card .detail {
+      font-size: 14px;
+      color: var(--gray-700);
+    }
+
+    .section {
+      margin-top: 34px;
+    }
+
+    .section h2 {
+      font-size: 1.55rem;
+      margin: 0 0 14px;
+      color: var(--blue-dark);
+    }
+
+    .section-intro {
+      margin: 0 0 18px;
+      color: var(--gray-700);
+      max-width: 860px;
+    }
+
+    .panel {
+      background: var(--white);
+      border: 1px solid rgba(11, 92, 171, 0.1);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .highlight {
+      background: linear-gradient(180deg, var(--blue-light), #f9fcff);
+      border-left: 5px solid var(--blue);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .checklist,
+    .flat-list,
+    .number-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .checklist li,
+    .flat-list li,
+    .number-list li {
+      margin-bottom: 8px;
+    }
+
+    .phase-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .phase {
+      background: var(--gray-100);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      border: 1px solid rgba(11, 92, 171, 0.08);
+    }
+
+    .phase strong {
+      display: block;
+      color: var(--blue-dark);
+      margin-bottom: 8px;
+    }
+
+    .prompt-card {
+      border: 1px solid rgba(10, 124, 134, 0.16);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .prompt-card + .prompt-card {
+      margin-top: 16px;
+    }
+
+    .prompt-header {
+      background: var(--teal-light);
+      color: var(--teal);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      overflow-x: auto;
+      background: #0f172a;
+      color: #dbeafe;
+      font-size: 13px;
+      line-height: 1.55;
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    code.inline {
+      background: var(--gray-100);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.94em;
+    }
+
+    .callout-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .callout {
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 1px solid transparent;
+    }
+
+    .callout.good {
+      background: var(--green-light);
+      border-color: rgba(23, 114, 69, 0.18);
+    }
+
+    .callout.warn {
+      background: var(--gold-light);
+      border-color: rgba(200, 135, 0, 0.2);
+    }
+
+    .callout h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .asset-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .asset-table th,
+    .asset-table td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: top;
+    }
+
+    .asset-table th {
+      background: var(--blue-dark);
+      color: var(--white);
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .asset-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--gray-700);
+    }
+
+    @media (max-width: 720px) {
+      .hero {
+        padding: 38px 18px 28px;
+      }
+
+      .page {
+        padding: 22px 18px 56px;
+      }
+
+      .panel,
+      .summary-card {
+        padding: 18px;
+      }
+    }
+
+    @media print {
+      .nav { display: none; }
+      .page { padding-top: 8px; }
+      body { background: #fff; }
+      .panel,
+      .summary-card,
+      .prompt-card,
+      .asset-table {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Carrier Developer Enablement</div>
+      <h1>Build with VS Code and GitHub Copilot the Same Way We Built the Trailer Prioritization Experience</h1>
+      <p class="hero-subtitle">A practical quickstart for Carrier developers who want to use GitHub Copilot in VS Code to move from idea to working business solution with the same fast, iterative workflow used in this engagement.</p>
+      <div class="hero-meta">
+        <div class="chip">Audience: Carrier developers</div>
+        <div class="chip">Format: Customer-friendly setup guide</div>
+        <div class="chip">Focus: Fast iteration, quality, business alignment</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#start">Start Here</a>
+      <a href="#setup">Setup</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#prompts">Prompt Templates</a>
+      <a href="#quality">Quality Bar</a>
+      <a href="#week1">Week 1 Plan</a>
+      <a href="#assets">Project Assets</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section class="summary-grid" id="start">
+      <div class="summary-card">
+        <div class="label">Goal</div>
+        <div class="value">Ship faster</div>
+        <div class="detail">Use Copilot to move from business ask to working feature without losing quality.</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Working Style</div>
+        <div class="value">Vibe coding</div>
+        <div class="detail">Short feedback loops, concrete prompts, immediate validation, and docs updated in the same pass.</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Team Pattern</div>
+        <div class="value">Pair and iterate</div>
+        <div class="detail">One developer drives in VS Code, one reviewer checks business fit and prompt quality.</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">First Result</div>
+        <div class="value">1 week</div>
+        <div class="detail">Enough time to get set up, improve one workflow, and run a business-facing demo.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>What this guide is for</h2>
+      <div class="panel highlight">
+        <p class="section-intro" style="margin-bottom:0;">This guide helps your team recreate the same development motion used in the Trailer Prioritization work: clear business framing, practical prompts, focused implementation, validation after each meaningful change, and polished customer-ready output at the end.</p>
+      </div>
+    </section>
+
+    <section class="section" id="setup">
+      <h2>1. One-time setup</h2>
+      <p class="section-intro">A developer should be able to complete this once and be ready to start building in about 15 to 20 minutes.</p>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>What you need</h3>
+          <ul class="checklist">
+            <li>A GitHub account with GitHub Copilot enabled</li>
+            <li>Visual Studio Code, latest stable version</li>
+            <li>Node.js LTS for web application work</li>
+            <li>Python 3.11 or later for Python and automation work</li>
+            <li>Access to the project repository in GitHub</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Install in VS Code</h3>
+          <ol class="number-list">
+            <li>Install VS Code.</li>
+            <li>Install these extensions: GitHub Copilot, GitHub Copilot Chat, ESLint, Prettier, and Python.</li>
+            <li>Sign in to GitHub from VS Code.</li>
+            <li>Open Copilot Chat and ask it to summarize the current folder to confirm it is active.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="prompt-card" style="margin-top: 18px;">
+        <div class="prompt-header">Recommended first terminal commands</div>
+        <pre>git clone https://github.com/&lt;your-org&gt;/&lt;your-repo&gt;.git
+cd &lt;your-repo&gt;</pre>
+      </div>
+    </section>
+
+    <section class="section" id="workflow">
+      <h2>2. The vibe-coding workflow</h2>
+      <p class="section-intro">This is the exact development loop to follow for each change. The point is not to ask Copilot for generic ideas. The point is to give it a clear outcome and keep momentum through fast validation.</p>
+      <div class="phase-list">
+        <div class="phase">
+          <strong>1. Frame the business goal</strong>
+          Start with the outcome. Example: reduce manual trailer scheduling effort and improve OTIF-driven prioritization.
+        </div>
+        <div class="phase">
+          <strong>2. Give Copilot a concrete task</strong>
+          Include the files, users, constraints, and what “done” means.
+        </div>
+        <div class="phase">
+          <strong>3. Ask it to implement</strong>
+          Prefer direct edits and validation over long explanations.
+        </div>
+        <div class="phase">
+          <strong>4. Validate immediately</strong>
+          Run the build, tests, or app preview after each meaningful change.
+        </div>
+        <div class="phase">
+          <strong>5. Update docs in the same pass</strong>
+          Keep setup notes, demo notes, and technical documentation aligned with the current behavior.
+        </div>
+        <div class="phase">
+          <strong>6. Package for the business</strong>
+          End with one technical artifact and one business-friendly artifact.
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="prompts">
+      <h2>3. Prompt templates your team can reuse</h2>
+      <p class="section-intro">These are intentionally concrete. The better the scope, the better the result.</p>
+
+      <div class="prompt-card">
+        <div class="prompt-header">Feature build prompt</div>
+        <pre>Implement [feature] in [path/file].
+Context:
+- Business goal: [goal]
+- Users: [personas]
+- Constraints: [performance/security/style]
+Do the work end-to-end:
+1) Edit code
+2) Run validation
+3) Update related docs
+4) Summarize changes with file references</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-header">UI improvement prompt</div>
+        <pre>Refactor this UI to be clearer for operations users.
+Keep the same functionality, improve hierarchy, spacing, labels, and responsive behavior.
+Then run a production build and report any issues fixed.</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-header">Data realism prompt</div>
+        <pre>Expand local mock data so demos feel realistic.
+Add enough records for meaningful KPIs and status variety.
+Update docs to match the seeded dataset and verify build.</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-header">Bug fix prompt</div>
+        <pre>Fix this runtime issue: [paste error].
+Find root cause, patch only what is needed, validate, and explain why the fix works.</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-header">Customer collateral prompt</div>
+        <pre>Create a customer-friendly how-to based on what we built.
+Audience: business + developer stakeholders.
+Output: clear steps, glossary, rollout plan, and next actions.</pre>
+      </div>
+    </section>
+
+    <section class="section" id="quality">
+      <h2>4. Definition of done</h2>
+      <div class="callout-row">
+        <div class="callout good">
+          <h3>Before a task is complete</h3>
+          <ul class="flat-list">
+            <li>The app runs without runtime errors.</li>
+            <li>The build succeeds.</li>
+            <li>The user-facing flow is easy to follow.</li>
+            <li>The docs match the current behavior.</li>
+            <li>Another developer can continue from the notes you leave behind.</li>
+          </ul>
+        </div>
+        <div class="callout warn">
+          <h3>Common mistakes to avoid</h3>
+          <ul class="flat-list">
+            <li>Using vague prompts with no clear scope.</li>
+            <li>Making large changes without validating between steps.</li>
+            <li>Updating code but forgetting the docs.</li>
+            <li>Sending technical detail to the business without business context.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>5. Recommended team operating model</h2>
+      <div class="panel">
+        <p class="section-intro">For the first two or three weeks, use a two-person pairing model.</p>
+        <ul class="flat-list">
+          <li><strong>Driver:</strong> works in VS Code with Copilot and implements the change.</li>
+          <li><strong>Reviewer:</strong> checks business alignment, tests behavior, and improves the prompts.</li>
+        </ul>
+        <p style="margin: 14px 0 8px; font-weight: 700; color: var(--blue-dark);">Suggested daily rhythm</p>
+        <ul class="flat-list">
+          <li>15 minutes: choose one business outcome.</li>
+          <li>60 to 90 minutes: implement one small vertical slice.</li>
+          <li>15 minutes: demo it and capture follow-ups.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="week1">
+      <h2>6. First-week starter plan</h2>
+      <div class="phase-list">
+        <div class="phase"><strong>Day 1</strong>Local setup, environment validation, run the current app, and read the engagement guide end-to-end.</div>
+        <div class="phase"><strong>Day 2</strong>Make one low-risk UI improvement and capture before-and-after screenshots.</div>
+        <div class="phase"><strong>Day 3</strong>Add one data or scoring enhancement and update docs to reflect the change.</div>
+        <div class="phase"><strong>Day 4</strong>Improve one operational workflow such as notifications, exception handling, or scheduling UX.</div>
+        <div class="phase"><strong>Day 5</strong>Dry-run a customer demo and finalize next-sprint recommendations.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>7. What to share with business partners every sprint</h2>
+      <div class="panel">
+        <ul class="flat-list">
+          <li>What changed, in plain language.</li>
+          <li>Why it matters to the business, such as OTIF, cycle time, manual effort, or service level.</li>
+          <li>Evidence, such as screenshots, demo steps, and metrics.</li>
+          <li>Decision requests for the next sprint.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="assets">
+      <h2>8. Related project assets</h2>
+      <table class="asset-table">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>customers/carrier/docs/carrier-trailer-prioritization-engagement-guide.html</td>
+            <td>Business and demo narrative for the Trailer Prioritization use case.</td>
+          </tr>
+          <tr>
+            <td>customers/carrier/docs/carrier-trailer-prioritization-engagement-guide.md</td>
+            <td>Markdown version of the engagement guide for editing and reuse.</td>
+          </tr>
+          <tr>
+            <td>customers/carrier/demos/carrier_trailer_prioritization_demo.json</td>
+            <td>Step-by-step demo script with talk track structure.</td>
+          </tr>
+          <tr>
+            <td>customers/carrier/d365/trailer-prioritization/README.md</td>
+            <td>Implementation details, architecture, and deployment guidance.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="footer-note">This guide is intended to help Carrier developers get productive quickly with VS Code and GitHub Copilot while staying aligned to business outcomes and delivery quality.</p>
+    </section>
+  </main>
+</body>
+</html>

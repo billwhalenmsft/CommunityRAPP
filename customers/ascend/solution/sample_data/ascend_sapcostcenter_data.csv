@@ -1,0 +1,9 @@
+ascend_kostl,ascend_bukrs,ascend_datbi,ascend_ktext,ascend_active,ascend_verak,ascend_datasource,ascend_demodisclaimer
+100100,1000,2099-12-31,Corporate IT,true,John Smith,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP CSKS cost center master. Not connected to production SAP.
+100200,1000,2099-12-31,IT Operations,true,Jane Doe,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP CSKS cost center master. Not connected to production SAP.
+100300,1000,2099-12-31,Finance & Accounting,true,Susan Lee,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP CSKS cost center master. Not connected to production SAP.
+100400,1000,2099-12-31,Human Resources,true,Tom Brown,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP CSKS cost center master. Not connected to production SAP.
+100500,1000,2099-12-31,Sales & Marketing,true,Amy Chen,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP CSKS cost center master. Not connected to production SAP.
+100600,1000,2099-12-31,Engineering R&D,true,Mike Davis,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP CSKS cost center master. Not connected to production SAP.
+100700,1000,2099-12-31,Supply Chain,true,Linda Park,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Emulates SAP CSKS cost center master. Not connected to production SAP.
+999999,1000,2020-12-31,INACTIVE TEST CENTER,false,SYSTEM,SAP ECC 6.0 (Demo via Dataverse),DEMO DATA ONLY — Deliberately inactive to demonstrate cost center validation error handling.

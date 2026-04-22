@@ -1,0 +1,193 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Approve or Reject PR
+    triggerQueries:
+      - approve PR
+      - approve purchase requisition
+      - reject PR
+      - reject purchase requisition
+      - I want to approve a PR
+      - I want to reject a PR
+      - deny PR
+      - decline PR
+      - approve requisition
+      - show PRs waiting for my approval
+      - what PRs need my approval
+      - pending approvals
+      - PRs awaiting approval
+
+  actions:
+    # ---------------------------------------------------------------
+    # Determine if this is an approve, reject, or list request
+    # ---------------------------------------------------------------
+    - kind: SetVariable
+      id: detectAction
+      variable: init:approvalAction
+      value: =if(toLower(System.Activity.Text) contains "reject" or toLower(System.Activity.Text) contains "deny" or toLower(System.Activity.Text) contains "decline", "reject", if(toLower(System.Activity.Text) contains "approve", "approve", "list"))
+
+    - kind: SetVariable
+      id: extractPRNumber
+      variable: init:prNumberMentioned
+      value: =if(matchesPattern(System.Activity.Text, "\\d{7,10}"), regexMatch(System.Activity.Text, "\\d{7,10}"), "")
+
+    # ---------------------------------------------------------------
+    # List pending approvals
+    # ---------------------------------------------------------------
+    - kind: ConditionGroup
+      id: actionRouter
+      conditions:
+        - id: listPending
+          condition: =System.ConversationData.approvalAction = "list" or length(System.ConversationData.prNumberMentioned) = 0
+          actions:
+            - kind: InvokeFlowAction
+              id: getPendingApprovals
+              input:
+                binding:
+                  approver_guid: =System.User.Id
+              output:
+                binding:
+                  pendingResult: =flow.response
+              flowName: flow_sap_get_pr_status
+
+            - kind: SendMessage
+              id: showPending
+              message: =json(System.ConversationData.pendingResult).message
+
+            - kind: ConditionGroup
+              id: noPendingCheck
+              conditions:
+                - id: noPending
+                  condition: =json(System.ConversationData.pendingResult).status = "no_pending"
+                  actions:
+                    - kind: EndDialog
+                      id: endNoPending
+
+            # Ask which PR to action
+            - kind: Question
+              id: askWhichPR
+              variable: init:prToAction
+              prompt:
+                text: "Which PR would you like to approve or reject? Please provide the PR number."
+              entity: StringPrebuiltEntity
+
+            - kind: SetVariable
+              id: setPRNumber
+              variable: init:prNumberMentioned
+              value: =regexMatch(System.ConversationData.prToAction, "\\d{7,10}")
+
+            - kind: Question
+              id: askApproveOrReject
+              variable: init:approvalDecision
+              prompt:
+                text: "Would you like to approve or reject PR {System.ConversationData.prNumberMentioned}?"
+              entity: StringPrebuiltEntity
+
+            - kind: SetVariable
+              id: setAction
+              variable: init:approvalAction
+              value: =if(toLower(System.ConversationData.approvalDecision) contains "reject" or toLower(System.ConversationData.approvalDecision) contains "deny", "reject", "approve")
+
+    # ---------------------------------------------------------------
+    # Handle rejection — require reason
+    # ---------------------------------------------------------------
+    - kind: ConditionGroup
+      id: rejectReasonCheck
+      conditions:
+        - id: needsReason
+          condition: =System.ConversationData.approvalAction = "reject"
+          actions:
+            - kind: SetVariable
+              id: extractReason
+              variable: init:rejectionReason
+              value: =if(toLower(System.Activity.Text) contains "reason:", split(System.Activity.Text, "reason:")[1], "")
+
+            - kind: ConditionGroup
+              id: reasonProvided
+              conditions:
+                - id: noReason
+                  condition: =length(trim(System.ConversationData.rejectionReason)) = 0
+                  actions:
+                    - kind: Question
+                      id: askReason
+                      variable: init:rejectionReason
+                      prompt:
+                        text: "Please provide a reason for rejecting PR {System.ConversationData.prNumberMentioned}."
+                      entity: StringPrebuiltEntity
+
+    # ---------------------------------------------------------------
+    # Validate approver authority before executing
+    # ---------------------------------------------------------------
+    - kind: ConditionGroup
+      id: executeDecision
+      conditions:
+        - id: doApprove
+          condition: =System.ConversationData.approvalAction = "approve"
+          actions:
+            - kind: InvokeFlowAction
+              id: approvePRFlow
+              input:
+                binding:
+                  pr_number:      =System.ConversationData.prNumberMentioned
+                  approver_guid:  =System.User.Id
+                  approver_name:  =System.User.DisplayName
+              output:
+                binding:
+                  approveResult: =flow.response
+              flowName: flow_sap_approve_pr
+
+            - kind: ConditionGroup
+              id: approveResultCheck
+              conditions:
+                - id: approveUnauthorized
+                  condition: =json(System.ConversationData.approveResult).status = "unauthorized"
+                  actions:
+                    - kind: SendMessage
+                      id: unauthorizedMsg
+                      message: =json(System.ConversationData.approveResult).message
+
+                - id: approveAlreadyDone
+                  condition: =json(System.ConversationData.approveResult).status = "already_processed"
+                  actions:
+                    - kind: SendMessage
+                      id: alreadyDoneMsg
+                      message: =json(System.ConversationData.approveResult).message
+
+                - id: approveSuccess
+                  condition: =json(System.ConversationData.approveResult).status = "approved"
+                  actions:
+                    - kind: SendMessage
+                      id: approveSuccessMsg
+                      message: =json(System.ConversationData.approveResult).message
+
+                - id: approveFailed
+                  condition: =json(System.ConversationData.approveResult).status = "sap_update_failed"
+                  actions:
+                    - kind: SendMessage
+                      id: approveFailedMsg
+                      message: "There was a system error updating SAP. Please try again or contact your procurement administrator."
+
+        - id: doReject
+          condition: =System.ConversationData.approvalAction = "reject"
+          actions:
+            - kind: InvokeFlowAction
+              id: rejectPRFlow
+              input:
+                binding:
+                  pr_number:        =System.ConversationData.prNumberMentioned
+                  approver_guid:    =System.User.Id
+                  approver_name:    =System.User.DisplayName
+                  rejection_reason: =System.ConversationData.rejectionReason
+              output:
+                binding:
+                  rejectResult: =flow.response
+              flowName: flow_sap_approve_pr
+
+            - kind: SendMessage
+              id: rejectResultMsg
+              message: =json(System.ConversationData.rejectResult).message
+
+    - kind: EndDialog
+      id: endTopic

@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "flowDisplayName": "Ascend: SAP Cancel/Edit PR (Demo \u2192 Dataverse)",
+    "description": "Cancels or edits a PR in Dataverse \u2014 emulating SAP EBAN + EBKN updates. In production, use ME52N (edit) or BAPI_PR_CHANGE (cancel/edit) via SAP ERP connector.",
+    "sapTablesEmulated": [
+      "EBAN",
+      "EBKN"
+    ],
+    "demoMode": true,
+    "productionBAPI": "BAPI_PR_CHANGE / ME52N"
+  },
+  "triggers": {
+    "manual": {
+      "type": "Request",
+      "kind": "Skills",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "cancel",
+                "edit"
+              ]
+            },
+            "pr_number": {
+              "type": "string"
+            },
+            "user_guid": {
+              "type": "string"
+            },
+            "pr_updates": {
+              "type": "object",
+              "description": "Fields to update for edit action"
+            }
+          },
+          "required": [
+            "action",
+            "pr_number",
+            "user_guid"
+          ]
+        }
+      }
+    }
+  },
+  "actions": {
+    "GetPR_ForEligibilityCheck_Emulates_EBAN": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "ListRecords",
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+        },
+        "parameters": {
+          "entityName": "ascend_sappurchaserequisitions",
+          "$filter": "ascend_banfn eq '@{triggerBody()?['pr_number']}'",
+          "$select": "ascend_sappurchaserequisitionid,ascend_frgst,ascend_locked,ascend_afnam"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "description": "READ Dataverse (emulates SAP EBAN lock/status check before cancel or edit)"
+    },
+    "EligibilityCheck": {
+      "type": "If",
+      "expression": {
+        "or": [
+          {
+            "equals": [
+              "@first(outputs('GetPR_ForEligibilityCheck_Emulates_EBAN')?['body/value'])?['ascend_frgst']",
+              100001
+            ]
+          },
+          {
+            "equals": [
+              "@first(outputs('GetPR_ForEligibilityCheck_Emulates_EBAN')?['body/value'])?['ascend_locked']",
+              true
+            ]
+          }
+        ]
+      },
+      "actions": {
+        "RespondBlocked": {
+          "type": "Response",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "status": "action_blocked",
+              "severity": "blocking",
+              "message": "This PR has already been approved or is locked in SAP and cannot be modified.",
+              "data_source": "SAP ECC 6.0 (Demo via Dataverse)"
+            }
+          }
+        }
+      },
+      "else": {
+        "actions": {
+          "ExecuteCancelOrEdit": {
+            "type": "Switch",
+            "expression": "@triggerBody()?['action']",
+            "cases": {
+              "cancel": {
+                "actions": {
+                  "CancelPR_Emulates_EBAN_Write": {
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "shared_commondataserviceforapps",
+                        "operationId": "UpdateRecord",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                      },
+                      "parameters": {
+                        "entityName": "ascend_sappurchaserequisitions",
+                        "recordId": "@first(outputs('GetPR_ForEligibilityCheck_Emulates_EBAN')?['body/value'])?['ascend_sappurchaserequisitionid']",
+                        "item": {
+                          "ascend_frgst": 100003
+                        }
+                      },
+                      "authentication": "@parameters('$authentication')"
+                    },
+                    "description": "WRITE Dataverse (emulates SAP EBAN FRGST=cancelled \u2014 ME52N L-line deletion or BAPI_PR_CHANGE)"
+                  }
+                },
+                "case": "cancel"
+              },
+              "edit": {
+                "actions": {
+                  "EditPR_Emulates_EBAN_EBKN_Write": {
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "shared_commondataserviceforapps",
+                        "operationId": "UpdateRecord",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                      },
+                      "parameters": {
+                        "entityName": "ascend_sappurchaserequisitions",
+                        "recordId": "@first(outputs('GetPR_ForEligibilityCheck_Emulates_EBAN')?['body/value'])?['ascend_sappurchaserequisitionid']",
+                        "item": "@triggerBody()?['pr_updates']"
+                      },
+                      "authentication": "@parameters('$authentication')"
+                    },
+                    "description": "WRITE Dataverse (emulates SAP EBAN/EBKN update \u2014 ME52N change / BAPI_PR_CHANGE)"
+                  }
+                },
+                "case": "edit"
+              }
+            }
+          },
+          "RespondSuccess": {
+            "type": "Response",
+            "inputs": {
+              "statusCode": 200,
+              "body": {
+                "status": "@concat(triggerBody()?['action'], 'led')",
+                "pr_number": "@triggerBody()?['pr_number']",
+                "sap_tables_written": [
+                  "EBAN",
+                  "EBKN"
+                ],
+                "data_source": "SAP ECC 6.0 (Demo via Dataverse)",
+                "demo_note": "DEMO: In production uses BAPI_PR_CHANGE or ME52N via SAP ERP connector"
+              },
+              "headers": {
+                "Content-Type": "application/json"
+              }
+            },
+            "runAfter": {
+              "ExecuteCancelOrEdit": [
+                "Succeeded"
+              ]
+            }
+          }
+        }
+      },
+      "runAfter": {
+        "GetPR_ForEligibilityCheck_Emulates_EBAN": [
+          "Succeeded"
+        ]
+      }
+    }
+  }
+}

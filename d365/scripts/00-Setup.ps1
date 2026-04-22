@@ -107,41 +107,87 @@ Write-Host "  pac auth: Connected" -ForegroundColor DarkGray
 Write-Host ""
 
 # ============================================================
-# Define steps
+# Define steps — ORDER IS A DEPENDENCY CONTRACT, do not change
+#
+# PHASE 1 — Foundation (no dependencies)
+#   1  Accounts
+#   2  Contacts           (needs accounts)
+#   3  Products           (needs unit group)
+#   3a Parts/Products     (conditional — needs parts-catalog.json)
+#   4  Case Config        (field/form config, no data deps)
+#   5  Queues             (no data deps)
+#   6  SLAs               (no data deps)
+#
+# PHASE 2 — Rich Data (depends on Foundation)
+#   8  Knowledge Articles (needs products for linking)
+#   9  Entitlements       (needs accounts)
+#   26 Customer Assets    (needs accounts + products)
+#   10 Routing            (needs queues)
+#   11 Classification     (needs case config)
+#   12 Queue Visuals      (needs queues)
+#   13 Tier Field         (needs case config)
+#   20 Order Management   (needs accounts + products)
+#   21 Shipment Tracking  (needs orders)
+#   22 Customer Intent Agent (needs routing)
+#   23 Workforce Mgmt     (no data deps)
+#
+# PHASE 3 — Cases LAST (needs all above to be linked properly)
+#   7  Demo Cases         (needs accounts, contacts, entitlements, assets)
+#   32 Link Cases→Assets  (needs cases + assets)
+#   30 Post-Entitlements  (needs cases + entitlements)
+#   29 Call Pop           (needs cases + contacts)
+#
+# PHASE 4 — Channels & Portal (no case deps)
+#   14 Portal
+#   15 Chat Widget
+#   16 KB Page
+#   17 Phone Scenario
+#   18 Chat Scenario
+#   19 Portal Hero Users
 # ============================================================
 $steps = @(
-    @{ num = 1; name = "Accounts"; script = "01-Accounts.ps1" },
-    @{ num = 2; name = "Contacts"; script = "02-Contacts.ps1" },
-    @{ num = 3; name = "Products"; script = "03-Products.ps1" },
-    @{ num = 3.5; name = "Parts Products"; script = "03a-PartsProducts.ps1"; conditional = $true },
-    @{ num = 4; name = "Case Config"; script = "04-CaseConfig.ps1" },
-    @{ num = 5; name = "Queues"; script = "05-Queues.ps1" },
-    @{ num = 6; name = "SLAs"; script = "06-SLAs.ps1" },
-    @{ num = 7; name = "Demo Cases"; script = "07-DemoCases.ps1" },
-    @{ num = 8; name = "Knowledge Articles"; script = "08-KnowledgeArticles.ps1" },
-    @{ num = 9; name = "Entitlements"; script = "09-Entitlements.ps1" },
-    @{ num = 10; name = "Routing"; script = "10-Routing.ps1" },
-    @{ num = 11; name = "Classification"; script = "11-Classification.ps1" },
-    @{ num = 12; name = "Queue Visuals"; script = "12-QueueAndVisuals.ps1" },
-    @{ num = 13; name = "Tier Field"; script = "13-TierField.ps1" },
-    @{ num = 14; name = "Portal"; script = "14-Portal.ps1" },
-    @{ num = 15; name = "Chat Widget"; script = "15-ChatWidget.ps1" },
-    @{ num = 16; name = "KB Page"; script = "16-KBPage.ps1" },
-    @{ num = 17; name = "Phone Scenario"; script = "17-PhoneScenario.ps1" },
-    @{ num = 18; name = "Chat Scenario"; script = "18-ChatScenario.ps1" },
-    @{ num = 19; name = "Portal Hero Users"; script = "19-PortalHeroUsers.ps1" },
-    @{ num = 20; name = "Order Management"; script = "20-OrderMgmt.ps1" },
-    @{ num = 21; name = "Shipment Tracking"; script = "21-ShipmentTracking.ps1" },
-    @{ num = 22; name = "Customer Intent Agent"; script = "22-CustomerIntentAgent.ps1" },
-    @{ num = 23; name = "Workforce Management"; script = "23-WFM.ps1" },
-    @{ num = 29; name = "Call Pop Notification"; script = "29-CallPopNotification.ps1" }
+    # ── PHASE 1: Foundation ──────────────────────────────────
+    @{ num = 1;    name = "Accounts";              script = "01-Accounts.ps1" },
+    @{ num = 2;    name = "Contacts";              script = "02-Contacts.ps1" },
+    @{ num = 3;    name = "Products";              script = "03-Products.ps1" },
+    @{ num = 3.5;  name = "Parts Products";        script = "03a-PartsProducts.ps1"; conditional = $true },
+    @{ num = 4;    name = "Case Config";           script = "04-CaseConfig.ps1" },
+    @{ num = 5;    name = "Queues";                script = "05-Queues.ps1" },
+    @{ num = 6;    name = "SLAs";                  script = "06-SLAs.ps1" },
+
+    # ── PHASE 2: Rich Data (depends on Foundation) ───────────
+    @{ num = 8;    name = "Knowledge Articles";    script = "08-KnowledgeArticles.ps1" },
+    @{ num = 9;    name = "Entitlements";          script = "09-Entitlements.ps1" },
+    @{ num = 26;   name = "Customer Assets";       script = "26-CustomerAssets.ps1" },
+    @{ num = 10;   name = "Routing";               script = "10-Routing.ps1" },
+    @{ num = 11;   name = "Classification";        script = "11-Classification.ps1" },
+    @{ num = 12;   name = "Queue Visuals";         script = "12-QueueAndVisuals.ps1" },
+    @{ num = 13;   name = "Tier Field";            script = "13-TierField.ps1" },
+    @{ num = 20;   name = "Order Management";      script = "20-OrderMgmt.ps1" },
+    @{ num = 21;   name = "Shipment Tracking";     script = "21-ShipmentTracking.ps1" },
+    @{ num = 22;   name = "Customer Intent Agent"; script = "22-CustomerIntentAgent.ps1" },
+    @{ num = 23;   name = "Workforce Management";  script = "23-WFM.ps1" },
+
+    # ── PHASE 3: Cases LAST ──────────────────────────────────
+    @{ num = 7;    name = "Demo Cases";            script = "07-DemoCases.ps1" },
+    @{ num = 32;   name = "Link Cases to Assets";  script = "32-LinkCasesToAssets.ps1" },
+    @{ num = 30;   name = "Post Entitlements";     script = "30-Entitlements.ps1" },
+    @{ num = 29;   name = "Call Pop Notification"; script = "29-CallPopNotification.ps1" },
+
+    # ── PHASE 4: Channels & Portal ───────────────────────────
+    @{ num = 14;   name = "Portal";                script = "14-Portal.ps1" },
+    @{ num = 15;   name = "Chat Widget";           script = "15-ChatWidget.ps1" },
+    @{ num = 16;   name = "KB Page";               script = "16-KBPage.ps1" },
+    @{ num = 17;   name = "Phone Scenario";        script = "17-PhoneScenario.ps1" },
+    @{ num = 18;   name = "Chat Scenario";         script = "18-ChatScenario.ps1" },
+    @{ num = 19;   name = "Portal Hero Users";     script = "19-PortalHeroUsers.ps1" }
 )
 
 # Filter steps
 if ($Only -gt 0) {
     $steps = $steps | Where-Object { $_.num -eq $Only }
     if ($steps.Count -eq 0) {
-        throw "Invalid step number: $Only. Valid: 1-23, 29 (use 3.5 for Parts Products)."
+        throw "Invalid step number: $Only. Valid: 1-32 (see step list above; use 3.5 for Parts Products)."
     }
 } elseif ($From -gt 1) {
     $steps = $steps | Where-Object { $_.num -ge $From }
@@ -184,8 +230,10 @@ foreach ($s in $steps) {
     }
 
     try {
-        # Pass -Customer for scripts that accept it (03a-PartsProducts)
-        if ($s.script -eq "03a-PartsProducts.ps1") {
+        # Probe whether script accepts -Customer; pass it if so.
+        # All new scripts should accept -Customer. Legacy scripts may not.
+        $scriptCmd = Get-Command $scriptPath
+        if ($scriptCmd.Parameters.ContainsKey('Customer')) {
             & $scriptPath -Customer $Customer
         } else {
             & $scriptPath

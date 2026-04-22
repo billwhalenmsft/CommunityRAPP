@@ -1,0 +1,11 @@
+kind: AdaptiveDialog
+modelDescription: Greets the customer when they start a conversation on the support portal.
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SendActivity
+      id: welcomeMessage
+      activity:
+        text:
+          - "👋 Welcome to **Customer Support**! I'm your AI assistant and I can help with:\n\n🔧 **Troubleshoot** a product issue\n📋 **Check warranty** status\n🔄 **Request a return** or exchange\n📝 **Register** a new product\n💬 **Talk to a specialist**\n\nHow can I help you today?"

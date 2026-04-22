@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.24.10827"
+  SolutionPackageVersion="9.2"
+  languagecode="1033"
+  generatedBy="CRMExport"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SolutionManifest>
+    <UniqueName>AscendProcurementAgent</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="Ascend Procurement Agent" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Phase 6 Upstream Procurement Agent for Ascend. SAP ECC 6.0 Dataverse emulation tables for Purchase Requisition lifecycle." languagecode="1033" />
+    </Descriptions>
+    <Version>1.0.0.0</Version>
+    <Managed>0</Managed>
+    <Publisher>
+      <UniqueName>AscendPublisher</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Ascend" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="Ascend publisher" languagecode="1033" />
+      </Descriptions>
+      <EMailAddress>admin@ascend.com</EMailAddress>
+      <SupportingWebsiteUrl>https://www.ascend.com</SupportingWebsiteUrl>
+      <CustomizationPrefix>ascend</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>10000</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true" />
+          <County xsi:nil="true" />
+          <Country xsi:nil="true" />
+          <Fax xsi:nil="true" />
+          <FreightTermsCode xsi:nil="true" />
+          <ImportSequenceNumber xsi:nil="true" />
+          <Latitude xsi:nil="true" />
+          <Line1 xsi:nil="true" />
+          <Line2 xsi:nil="true" />
+          <Line3 xsi:nil="true" />
+          <Longitude xsi:nil="true" />
+          <Name xsi:nil="true" />
+          <PostalCode xsi:nil="true" />
+          <PostOfficeBox xsi:nil="true" />
+          <PrimaryContactName xsi:nil="true" />
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true" />
+          <Telephone1 xsi:nil="true" />
+          <Telephone2 xsi:nil="true" />
+          <Telephone3 xsi:nil="true" />
+          <TimeZoneRuleVersionNumber xsi:nil="true" />
+          <UPSZone xsi:nil="true" />
+          <UTCOffset xsi:nil="true" />
+          <WebSiteURL xsi:nil="true" />
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="ascend_sapvendor" behavior="0" />
+      <RootComponent type="1" schemaName="ascend_sappurchaserequisition" behavior="0" />
+      <RootComponent type="1" schemaName="ascend_sappraccountassignment" behavior="0" />
+      <RootComponent type="1" schemaName="ascend_sapmaterialgroup" behavior="0" />
+      <RootComponent type="1" schemaName="ascend_sapcostcenter" behavior="0" />
+      <RootComponent type="1" schemaName="ascend_sapglaccount" behavior="0" />
+      <RootComponent type="1" schemaName="ascend_sapcontract" behavior="0" />
+      <RootComponent type="1" schemaName="ascend_sapreleasestrategy" behavior="0" />
+    </RootComponents>
+    <MissingDependencies />
+  </SolutionManifest>
+</ImportExportXml>
