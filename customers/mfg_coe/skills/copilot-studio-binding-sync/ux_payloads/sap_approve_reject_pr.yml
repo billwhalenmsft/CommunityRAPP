@@ -1,0 +1,11 @@
+topic: SAP Approve Reject PR
+target_action_ids:
+  - decisionConfirmed
+markdown: |
+  **Approval Update — `${Topic.PRNumber}`**
+
+  - **Decision:** ${Topic.ApprovalDecision}
+  - **Actioned by:** ${Topic.approver_name}
+  - **Comments:** ${Topic.ApprovalComments}
+
+  [View in SAP](https://sap.example.com/pr/${Topic.PRNumber})

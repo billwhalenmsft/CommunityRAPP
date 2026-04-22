@@ -1,0 +1,63 @@
+topic: SAP Get PR Status
+target_action_ids:
+  - showPRResult
+markdown: |
+  **PR Status — `${Topic.PRNumber}`**
+
+  | Field | Value |
+  |---|---|
+  | **Vendor** | ${Topic.vendor_name} (`${Topic.vendor_number}`) |
+  | **Amount** | ${Topic.total_amount} |
+  | **Requestor** | ${Topic.requestor_name} |
+  | **Approver** | ${Topic.approver_name} |
+  | **Submitted** | ${Topic.submitted_date} |
+  | **Cost Center** | `${Topic.cost_center}` |
+  | **Status** | ${Topic.status} |
+
+  [View in SAP](https://sap.example.com/pr/${Topic.PRNumber})
+adaptive_card:
+  $schema: http://adaptivecards.io/schemas/adaptive-card.json
+  type: AdaptiveCard
+  version: '1.5'
+  body:
+    - type: TextBlock
+      text: '**PR `${Topic.PRNumber}`**'
+      size: Medium
+      weight: Bolder
+      wrap: true
+    - type: TextBlock
+      text: ${Topic.status}
+      color: Warning
+      wrap: true
+    - type: FactSet
+      facts:
+        - title: Vendor
+          value: ${Topic.vendor_name}
+        - title: Amount
+          value: ${Topic.total_amount}
+        - title: Requestor
+          value: ${Topic.requestor_name}
+        - title: Approver
+          value: ${Topic.approver_name}
+        - title: Submitted
+          value: ${Topic.submitted_date}
+        - title: Cost Center
+          value: ${Topic.cost_center}
+  actions:
+    - type: Action.OpenUrl
+      title: View in SAP
+      url: https://sap.example.com/pr/${Topic.PRNumber}
+    - type: Action.Submit
+      title: Approve
+      style: positive
+      data:
+        route_topic: SAP Approve Reject PR
+        pr_number: ${Topic.PRNumber}
+        decision: Approve
+    - type: Action.Submit
+      title: Reject
+      style: destructive
+      data:
+        route_topic: SAP Approve Reject PR
+        pr_number: ${Topic.PRNumber}
+        decision: Reject

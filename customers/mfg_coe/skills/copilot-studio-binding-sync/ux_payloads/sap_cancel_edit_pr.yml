@@ -1,0 +1,11 @@
+topic: SAP Cancel Edit PR
+target_action_ids:
+  - cancelConfirmed
+markdown: |
+  **PR Update Complete — `${Topic.PRNumber}`**
+
+  - **Action:** ${Topic.CancelAction}
+  - **Reason:** ${Topic.CancelReason}
+  - **Status:** ⚠️ Updated in SAP
+
+  [View in SAP](https://sap.example.com/pr/${Topic.PRNumber})

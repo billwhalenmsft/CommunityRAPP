@@ -1,0 +1,45 @@
+topic: SAP List My PRs
+target_action_ids:
+  - showListResult
+markdown: |
+  **My Purchase Requisitions**
+
+  ${Topic.pr_list_markdown}
+
+  [Open SAP PR workspace](https://sap.example.com/pr)
+adaptive_card:
+  $schema: http://adaptivecards.io/schemas/adaptive-card.json
+  type: AdaptiveCard
+  version: '1.5'
+  body:
+    - type: TextBlock
+      text: '**My PRs (${Topic.pr_count})**'
+      wrap: true
+      weight: Bolder
+    - type: Container
+      $data: ${Topic.results}
+      separator: true
+      items:
+        - type: ColumnSet
+          columns:
+            - type: Column
+              width: stretch
+              items:
+                - type: TextBlock
+                  text: '**`${ascend_banfn}`** • ${ascend_vendorname}'
+                  wrap: true
+                - type: TextBlock
+                  text: '${ascend_netvalue}'
+                  spacing: None
+                  isSubtle: true
+            - type: Column
+              width: auto
+              items:
+                - type: TextBlock
+                  text: ${ascend_frgst}
+                  color: Warning
+                  horizontalAlignment: Right
+  actions:
+    - type: Action.OpenUrl
+      title: View in SAP
+      url: https://sap.example.com/pr/${Topic.PRNumber}

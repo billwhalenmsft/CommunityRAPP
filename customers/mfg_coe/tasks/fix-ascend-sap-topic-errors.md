@@ -20,7 +20,7 @@ Copilot Studio agent **"Ascend SAP Procurement Agent"** has 8 topics calling 6 P
 
 | Topic | botcomponentid | Errors | Status |
 |---|---|---|---|
-| SAP Vendor Lookup | `1d9231c3-...` | 0 | ✅ baseline — DO NOT TOUCH |
+| SAP Vendor Lookup | `1d9231c3-...` | 0 | ✅ baseline — now included in UX pass |
 | SAP Create PR | `219231c3-...` | 4 | needs fix |
 | SAP Get PR Status | `239231c3-...` | 1 | needs fix |
 | SAP Approve Reject PR | `259231c3-...` | 2 | needs fix |
@@ -65,6 +65,9 @@ python customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.py
 
 # Apply PATCH operations to Dataverse
 python customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.py --apply
+
+# Apply Issue #49 UX payloads (markdown + adaptive cards)
+python customers/mfg_coe/skills/copilot-studio-binding-sync/binding_sync.py --apply-ux
 ```
 
 ## Don't

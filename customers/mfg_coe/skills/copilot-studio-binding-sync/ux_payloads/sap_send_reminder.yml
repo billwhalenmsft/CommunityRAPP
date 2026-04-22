@@ -1,0 +1,11 @@
+topic: SAP Send Reminder
+target_action_ids:
+  - reminderSent
+markdown: |
+  **🔔 Reminder Sent — `${Topic.PRNumber}`**
+
+  - **Approver:** ${Topic.approver_name}
+  - **Channel:** ${Topic.reminder_channel}
+  - **Status:** ${Topic.reminder_status}
+
+  [View in SAP](https://sap.example.com/pr/${Topic.PRNumber})

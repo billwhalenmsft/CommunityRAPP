@@ -1,0 +1,49 @@
+topic: SAP Pending Approvals
+target_action_ids:
+  - showApprovalsResult
+markdown: |
+  **Pending Approvals**
+
+  ${Topic.pending_approvals_markdown}
+
+  Say **Approve PR `10012345`** or **Reject PR `10012345`**.
+adaptive_card:
+  $schema: http://adaptivecards.io/schemas/adaptive-card.json
+  type: AdaptiveCard
+  version: '1.5'
+  body:
+    - type: TextBlock
+      text: '**PRs awaiting approval (${Topic.pr_count})**'
+      wrap: true
+      weight: Bolder
+    - type: Container
+      $data: ${Topic.results}
+      separator: true
+      items:
+        - type: TextBlock
+          text: '**`${ascend_banfn}`** • ${ascend_vendorname}'
+          wrap: true
+        - type: FactSet
+          facts:
+            - title: Amount
+              value: ${ascend_netvalue}
+            - title: Requestor
+              value: ${ascend_afnam}
+            - title: Submitted
+              value: ${ascend_badat}
+        - type: ActionSet
+          actions:
+            - type: Action.Submit
+              title: Approve
+              style: positive
+              data:
+                route_topic: SAP Approve Reject PR
+                pr_number: ${ascend_banfn}
+                decision: Approve
+            - type: Action.Submit
+              title: Reject
+              style: destructive
+              data:
+                route_topic: SAP Approve Reject PR
+                pr_number: ${ascend_banfn}
+                decision: Reject

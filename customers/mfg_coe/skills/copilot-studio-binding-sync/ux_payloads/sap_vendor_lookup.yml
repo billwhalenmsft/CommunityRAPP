@@ -1,0 +1,43 @@
+topic: SAP Vendor Lookup
+target_action_ids:
+  - vendorResult
+markdown: |
+  **Vendor Profile — `${Topic.vendor_number}`**
+
+  | Field | Value |
+  |---|---|
+  | **Vendor Name** | ${Topic.vendor_name} |
+  | **Status** | ${Topic.status} |
+  | **Payment Terms** | ${Topic.payment_terms} |
+  | **Spend YTD** | ${Topic.spend_ytd} |
+
+  [Open vendor in SAP](https://sap.example.com/vendor/${Topic.vendor_number})
+adaptive_card:
+  $schema: http://adaptivecards.io/schemas/adaptive-card.json
+  type: AdaptiveCard
+  version: '1.5'
+  body:
+    - type: TextBlock
+      text: '**Vendor `${Topic.vendor_number}`**'
+      wrap: true
+      weight: Bolder
+      size: Medium
+    - type: TextBlock
+      text: '${Topic.vendor_name}'
+      wrap: true
+    - type: FactSet
+      facts:
+        - title: Status
+          value: ${Topic.status}
+        - title: Payment Terms
+          value: ${Topic.payment_terms}
+        - title: Spend YTD
+          value: ${Topic.spend_ytd}
+        - title: Company Code
+          value: ${Topic.company_code}
+        - title: Purchasing Org
+          value: ${Topic.purchasing_org}
+  actions:
+    - type: Action.OpenUrl
+      title: View in SAP
+      url: https://sap.example.com/vendor/${Topic.vendor_number}

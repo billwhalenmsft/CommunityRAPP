@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import pathlib
 import re
 import subprocess
 import sys
@@ -30,6 +31,7 @@ ASCEND_BROKEN_TOPICS = {
 }
 BASELINE_TOPIC_NAME = "SAP Vendor Lookup"
 FLOW_TOOL_NAME_PREFIX = "Ascend: SAP "
+UX_PAYLOADS_DIR = pathlib.Path(__file__).resolve().parent / "ux_payloads"
 OUTPUT_RENAMES = {
     "total_value": "total_amount",
     "status_label": "status",
@@ -258,9 +260,89 @@ def should_patch_topic(topic_name: str) -> bool:
     return topic_name == BASELINE_TOPIC_NAME or topic_name in ASCEND_BROKEN_TOPICS
 
 
-def run(org_url: str, bot_id: str, dry_run: bool) -> None:
+def _find_send_activity_actions(obj: Any) -> List[Dict[str, Any]]:
+    found: List[Dict[str, Any]] = []
+
+    def _walk(node: Any) -> None:
+        if isinstance(node, dict):
+            if node.get("kind") == "SendActivity":
+                found.append(node)
+            for value in node.values():
+                _walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                _walk(item)
+
+    _walk(obj)
+    return found
+
+
+def _load_ux_payloads(payload_dir: pathlib.Path = UX_PAYLOADS_DIR) -> Dict[str, Dict[str, Any]]:
+    payloads: Dict[str, Dict[str, Any]] = {}
+    if not payload_dir.exists():
+        return payloads
+
+    for file_path in sorted(payload_dir.iterdir()):
+        if file_path.suffix.lower() not in {".yml", ".yaml", ".json"}:
+            continue
+        raw = file_path.read_text(encoding="utf-8")
+        payload = json.loads(raw) if file_path.suffix.lower() == ".json" else yaml.safe_load(raw)
+        if not isinstance(payload, dict):
+            continue
+        topic_name = payload.get("topic")
+        if isinstance(topic_name, str) and topic_name.strip():
+            payloads[topic_name.strip()] = payload
+    return payloads
+
+
+def _apply_ux_payload(raw_yaml: str, payload: Dict[str, Any]) -> Tuple[str, bool]:
+    doc = yaml.safe_load(raw_yaml)
+    if doc is None or not isinstance(doc, dict):
+        return raw_yaml, False
+
+    before = json.dumps(doc, sort_keys=True, default=str)
+    markdown = payload.get("markdown")
+    adaptive_card = payload.get("adaptive_card")
+    target_ids = payload.get("target_action_ids")
+
+    send_actions = _find_send_activity_actions(doc)
+    if isinstance(target_ids, str):
+        target_ids = [target_ids]
+    if isinstance(target_ids, list) and target_ids:
+        targets = [a for a in send_actions if a.get("id") in target_ids]
+    else:
+        targets = []
+    if not targets:
+        targets = [send_actions[-1]] if send_actions else []
+
+    for action in targets:
+        activity = action.get("activity")
+        if not isinstance(activity, dict):
+            activity = {}
+            action["activity"] = activity
+
+        if isinstance(markdown, str):
+            activity["text"] = markdown
+
+        if isinstance(adaptive_card, dict):
+            activity["attachments"] = [
+                {
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "content": adaptive_card,
+                }
+            ]
+
+    after = json.dumps(doc, sort_keys=True, default=str)
+    changed = before != after
+    if not changed:
+        return raw_yaml, False
+    return yaml.safe_dump(doc, sort_keys=False, allow_unicode=True, width=200), True
+
+
+def run(org_url: str, bot_id: str, dry_run: bool, apply_ux: bool = False) -> None:
     token = get_access_token(org_url)
     headers = build_headers(token)
+    ux_payloads = _load_ux_payloads() if apply_ux else {}
 
     topics = list_botcomponents(
         org_url,
@@ -276,6 +358,7 @@ def run(org_url: str, bot_id: str, dry_run: bool) -> None:
 
     topics_inspected = 0
     topics_changed = 0
+    ux_topics_changed = 0
     tools_changed = 0
 
     for topic in topics:
@@ -286,6 +369,12 @@ def run(org_url: str, bot_id: str, dry_run: bool) -> None:
         current_data = topic.get("data") or ""
         try:
             new_data, changed = normalize_topic_yaml(current_data)
+            ux_changed = False
+            if apply_ux:
+                payload = ux_payloads.get(name)
+                if payload:
+                    new_data, ux_changed = _apply_ux_payload(new_data, payload)
+            changed = changed or ux_changed
         except Exception as ex:
             print(f"[WARN] Failed to normalize topic '{name}': {ex}")
             continue
@@ -293,6 +382,8 @@ def run(org_url: str, bot_id: str, dry_run: bool) -> None:
         if not changed:
             continue
         topics_changed += 1
+        if apply_ux and ux_changed:
+            ux_topics_changed += 1
         print(f"[PATCH] Topic: {name}")
         if not dry_run:
             patch_component_data(org_url, headers, topic["botcomponentid"], new_data)
@@ -312,6 +403,7 @@ def run(org_url: str, bot_id: str, dry_run: bool) -> None:
     print(f"mode: {mode}")
     print(f"topics_inspected: {topics_inspected}")
     print(f"topic_patches: {topics_changed}")
+    print(f"ux_topic_patches: {ux_topics_changed}")
     print(f"flow_tool_patches: {tools_changed}")
 
 
@@ -320,6 +412,11 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     parser.add_argument("--org-url", default=os.getenv("COPILOT_STUDIO_ORG_URL"))
     parser.add_argument("--bot-id", default=os.getenv("COPILOT_STUDIO_BOT_ID"))
     parser.add_argument("--apply", action="store_true", help="Apply PATCH calls. Default is dry-run.")
+    parser.add_argument(
+        "--apply-ux",
+        action="store_true",
+        help="Apply UX payloads from ux_payloads/ and PATCH topic data (implies apply mode).",
+    )
     args = parser.parse_args(argv)
     if not args.org_url or not args.bot_id:
         parser.error(
@@ -330,7 +427,10 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
 def main(argv: List[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    run(org_url=args.org_url, bot_id=args.bot_id, dry_run=not args.apply)
+    if args.apply_ux and not args.apply:
+        print("[INFO] --apply-ux selected; running in APPLY mode (PATCH calls enabled).")
+    dry_run = not (args.apply or args.apply_ux)
+    run(org_url=args.org_url, bot_id=args.bot_id, dry_run=dry_run, apply_ux=args.apply_ux)
     return 0
 
 

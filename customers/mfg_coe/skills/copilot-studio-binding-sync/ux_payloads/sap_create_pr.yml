@@ -1,0 +1,15 @@
+topic: SAP Create PR
+target_action_ids:
+  - successMsg
+markdown: |
+  **✅ PR Created — `${Topic.pr_number}`**
+
+  | Field | Value |
+  |---|---|
+  | **Vendor** | ${Topic.vendor_name} (`${Topic.vendor_number}`) |
+  | **Amount** | ${Topic.total_amount} |
+  | **Requestor** | ${Topic.requestor_name} |
+  | **Approver** | ${Topic.approver_name} |
+  | **Status** | ⏳ Pending Approval |
+
+  [View in SAP](https://sap.example.com/pr/${Topic.pr_number})
