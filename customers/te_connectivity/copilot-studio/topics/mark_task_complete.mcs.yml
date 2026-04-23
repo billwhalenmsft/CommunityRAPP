@@ -1,0 +1,169 @@
+kind: AdaptiveDialog
+modelDescription: Marks a freight exception task as complete in Microsoft Planner when a booking agent has resolved the exception with the freight forwarder.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: MarkTaskComplete
+    triggerQueries:
+      - mark task as done
+      - mark task complete
+      - close task
+      - resolve exception
+      - exception resolved
+      - mark TASK as done
+      - I've resolved this
+      - close this exception
+      - mark it complete
+      - done with this task
+      - task completed
+      - resolved the booking
+      - exception handled
+
+  actions:
+    - kind: SendActivity
+      id: markIntro
+      activity:
+        text:
+          - "I can close a resolved exception in the Freight Booking Exceptions Planner. I'll need the Task ID to update it."
+
+    - kind: Question
+      id: askTaskId
+      property: Topic.TaskId
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What is the Task ID? (e.g. TASK-001, TASK-005 — you can find this in the Planner board or from your shift briefing)"
+
+    - kind: SendActivity
+      id: confirmPending
+      activity:
+        text:
+          - "Marking **{Topic.TaskId}** as complete in Planner... one moment."
+
+    - kind: InvokeFlowAction
+      id: markTaskDone
+      flowId: freight-mark-complete-flow
+      input:
+        action: !power-fx "mark_task_complete"
+        task_id: !power-fx Topic.TaskId
+      output:
+        Topic.MarkResult: result
+
+    - kind: ConditionGroup
+      id: checkMarkResult
+      conditions:
+        - id: successfulClose
+          condition: =Topic.MarkResult.success = true
+          actions:
+            - kind: SendActivity
+              id: successMsg
+              activity:
+                text:
+                  - "✅ **Task Closed Successfully!**\n\n**Task ID:** {Topic.MarkResult.task_id}\n**Title:** {Topic.MarkResult.task_title}\n**Completed at:** {Topic.MarkResult.completed_at}\n\nThe exception has been marked complete in the **Freight Booking Exceptions** Planner. Your queue totals have been updated.\n\nWell done resolving this one! 🎉"
+
+        - id: taskNotFound
+          condition: =Topic.MarkResult.success = false
+          actions:
+            - kind: SendActivity
+              id: notFoundMsg
+              activity:
+                text:
+                  - "⚠️ I couldn't find Task **{Topic.TaskId}** in the Planner.\n\nThis could mean:\n• The Task ID may be incorrect (check capitalization: TASK-001)\n• The task has already been marked complete\n• The task may not exist in the Freight Booking Exceptions plan\n\nAvailable open tasks are listed in your shift briefing. Would you like me to pull that up?"
+
+            - kind: Question
+              id: askRetry
+              property: Topic.RetryAction
+              interruptionPolicy:
+                allowInterruption: true
+              prompt:
+                text: "Would you like to try again with a different Task ID?"
+              entity:
+                displayName: Retry
+              choices:
+                - value: yes
+                  synonyms:
+                    - yes
+                    - try again
+                    - retry
+                    - different ID
+                - value: briefing
+                  synonyms:
+                    - briefing
+                    - show queue
+                    - show tasks
+                - value: no
+                  synonyms:
+                    - no
+                    - cancel
+                    - done
+
+            - kind: ConditionGroup
+              id: retryRoute
+              conditions:
+                - id: retryYes
+                  condition: =Topic.RetryAction = "yes"
+                  actions:
+                    - kind: BeginDialog
+                      id: retryMarkComplete
+                      dialogId: MarkTaskComplete
+
+                - id: gotoBriefing
+                  condition: =Topic.RetryAction = "briefing"
+                  actions:
+                    - kind: BeginDialog
+                      id: startBriefing
+                      dialogId: ShiftStartBriefing
+
+    - kind: Question
+      id: askAfterClose
+      property: Topic.AfterClose
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Would you like to close another task or see your updated queue?"
+      entity:
+        displayName: After Close
+      choices:
+        - value: another
+          synonyms:
+            - another
+            - close another
+            - more tasks
+            - "1"
+        - value: queue
+          synonyms:
+            - queue
+            - briefing
+            - updated queue
+            - "2"
+        - value: done
+          synonyms:
+            - done
+            - nothing
+            - all done
+            - "3"
+
+    - kind: ConditionGroup
+      id: afterCloseRoute
+      conditions:
+        - id: closeAnother
+          condition: =Topic.AfterClose = "another"
+          actions:
+            - kind: BeginDialog
+              id: anotherClose
+              dialogId: MarkTaskComplete
+
+        - id: seeQueue
+          condition: =Topic.AfterClose = "queue"
+          actions:
+            - kind: BeginDialog
+              id: goQueue
+              dialogId: ShiftStartBriefing
+
+      elseActions:
+        - kind: SendActivity
+          id: allDone
+          activity:
+            text:
+              - "Great work! Your exception queue is being updated in Planner. Let me know when you need me next."

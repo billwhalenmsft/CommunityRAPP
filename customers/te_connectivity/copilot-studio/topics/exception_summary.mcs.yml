@@ -1,0 +1,271 @@
+kind: AdaptiveDialog
+modelDescription: Provides filtered exception summary views from the Freight Booking Exceptions Planner board — by priority, age, or bucket type (Missing Info, Documentation, Clarification).
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: ExceptionSummary
+    triggerQueries:
+      - show me all high priority exceptions
+      - what's high priority
+      - show high priority
+      - what's aged
+      - aged exceptions
+      - overdue tasks
+      - exceptions over 24 hours
+      - show documentation exceptions
+      - show missing info exceptions
+      - show clarification exceptions
+      - exception summary
+      - what's my backlog
+      - show all exceptions
+      - how many are overdue
+      - what exceptions need action
+
+  actions:
+    - kind: SendActivity
+      id: summaryIntro
+      activity:
+        text:
+          - "I can show you a filtered view of the exception board. What would you like to see?"
+
+    - kind: Question
+      id: askFilterType
+      property: Topic.FilterType
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Which view would you like?"
+      entity:
+        displayName: Filter Type
+      choices:
+        - value: high_priority
+          synonyms:
+            - high priority
+            - urgent
+            - critical
+            - red
+            - "1"
+        - value: aged_24h
+          synonyms:
+            - aged
+            - over 24 hours
+            - 24h
+            - old
+            - aging
+            - "2"
+        - value: aged_48h
+          synonyms:
+            - aged 48
+            - over 48 hours
+            - 48h
+            - critically aged
+            - "3"
+        - value: missing_info
+          synonyms:
+            - missing info
+            - missing information
+            - missing details
+            - "4"
+        - value: documentation
+          synonyms:
+            - documentation
+            - documents
+            - invoice
+            - certificate
+            - "5"
+        - value: clarification
+          synonyms:
+            - clarification
+            - schedule change
+            - confirm
+            - "6"
+        - value: all
+          synonyms:
+            - all
+            - everything
+            - all exceptions
+            - "7"
+
+    - kind: ConditionGroup
+      id: routeFilter
+      conditions:
+        - id: filterHighPriority
+          condition: =Topic.FilterType = "high_priority"
+          actions:
+            - kind: InvokeFlowAction
+              id: getHighPriority
+              flowId: freight-exception-summary-flow
+              input:
+                action: !power-fx "get_exception_summary"
+                filter_type: !power-fx "high_priority"
+              output:
+                Topic.SummaryResult: result
+
+        - id: filterAged24
+          condition: =Topic.FilterType = "aged_24h"
+          actions:
+            - kind: InvokeFlowAction
+              id: getAged24
+              flowId: freight-exception-summary-flow
+              input:
+                action: !power-fx "get_exception_summary"
+                filter_type: !power-fx "aged_24h"
+              output:
+                Topic.SummaryResult: result
+
+        - id: filterAged48
+          condition: =Topic.FilterType = "aged_48h"
+          actions:
+            - kind: InvokeFlowAction
+              id: getAged48
+              flowId: freight-exception-summary-flow
+              input:
+                action: !power-fx "get_exception_summary"
+                filter_type: !power-fx "aged_48h"
+              output:
+                Topic.SummaryResult: result
+
+        - id: filterMissingInfo
+          condition: =Topic.FilterType = "missing_info"
+          actions:
+            - kind: InvokeFlowAction
+              id: getMissingInfo
+              flowId: freight-exception-summary-flow
+              input:
+                action: !power-fx "get_exception_summary"
+                filter_type: !power-fx "by_bucket"
+                bucket_name: !power-fx "Missing Info"
+              output:
+                Topic.SummaryResult: result
+
+        - id: filterDocumentation
+          condition: =Topic.FilterType = "documentation"
+          actions:
+            - kind: InvokeFlowAction
+              id: getDocumentation
+              flowId: freight-exception-summary-flow
+              input:
+                action: !power-fx "get_exception_summary"
+                filter_type: !power-fx "by_bucket"
+                bucket_name: !power-fx "Documentation"
+              output:
+                Topic.SummaryResult: result
+
+        - id: filterClarification
+          condition: =Topic.FilterType = "clarification"
+          actions:
+            - kind: InvokeFlowAction
+              id: getClarification
+              flowId: freight-exception-summary-flow
+              input:
+                action: !power-fx "get_exception_summary"
+                filter_type: !power-fx "by_bucket"
+                bucket_name: !power-fx "Clarification"
+              output:
+                Topic.SummaryResult: result
+
+      elseActions:
+        - kind: InvokeFlowAction
+          id: getAll
+          flowId: freight-exception-summary-flow
+          input:
+            action: !power-fx "get_exception_summary"
+            filter_type: !power-fx "all"
+          output:
+            Topic.SummaryResult: result
+
+    - kind: ConditionGroup
+      id: displaySummary
+      conditions:
+        - id: hasResults
+          condition: =Topic.SummaryResult.total > 0
+          actions:
+            - kind: SendActivity
+              id: showSummaryHeader
+              activity:
+                text:
+                  - "📊 **{Topic.SummaryResult.filter}** — {Topic.SummaryResult.total} exception(s)\n\nHere's the list, sorted by priority and age:"
+
+            - kind: ForEachLoop
+              id: listSummaryTasks
+              listVariable: Topic.SummaryResult.tasks
+              currentItem: Topic.SummaryTask
+              actions:
+                - kind: SendActivity
+                  id: showSummaryTask
+                  activity:
+                    text:
+                      - "{Topic.SummaryTask.priority = 'High' ? '🔴' : '🟡'} **{Topic.SummaryTask.id}** — {Topic.SummaryTask.title}\n• Forwarder: {Topic.SummaryTask.forwarder} | Bucket: {Topic.SummaryTask.bucket}\n• Age: {Topic.SummaryTask.age_hours}h{Topic.SummaryTask.overdue ? ' ⚠️ OVERDUE' : ''} | Booking: {Topic.SummaryTask.booking_id}\n• {Topic.SummaryTask.description}"
+
+      elseActions:
+        - kind: SendActivity
+          id: noResults
+          activity:
+            text:
+              - "✅ No exceptions match that filter right now. Your queue may be in good shape for that category!\n\nWould you like to check a different filter or see the full briefing?"
+
+    - kind: ConditionGroup
+      id: urgencyWarning
+      conditions:
+        - id: criticalWarning
+          condition: =Topic.SummaryResult.total > 0 && (Topic.FilterType = "aged_48h" || Topic.FilterType = "high_priority")
+          actions:
+            - kind: SendActivity
+              id: urgencyNote
+              activity:
+                text:
+                  - "⚠️ **Action Required:** These exceptions require immediate attention. Recommend contacting the relevant forwarder(s) directly to resolve before the next check-in."
+
+    - kind: Question
+      id: askAfterSummary
+      property: Topic.AfterSummary
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Would you like to look up a specific task or mark one as complete?"
+      entity:
+        displayName: After Summary
+      choices:
+        - value: lookup
+          synonyms:
+            - look up
+            - find task
+            - lookup
+            - search
+            - "1"
+        - value: complete
+          synonyms:
+            - complete
+            - mark done
+            - close task
+            - "2"
+        - value: done
+          synonyms:
+            - done
+            - nothing
+            - "3"
+
+    - kind: ConditionGroup
+      id: summaryFollowUp
+      conditions:
+        - id: goToLookup
+          condition: =Topic.AfterSummary = "lookup"
+          actions:
+            - kind: BeginDialog
+              id: startLookupFromSummary
+              dialogId: TaskLookup
+
+        - id: goToComplete
+          condition: =Topic.AfterSummary = "complete"
+          actions:
+            - kind: BeginDialog
+              id: startCompleteFromSummary
+              dialogId: MarkTaskComplete
+
+      elseActions:
+        - kind: SendActivity
+          id: summaryDone
+          activity:
+            text:
+              - "Got it. I'm here whenever you need me!"

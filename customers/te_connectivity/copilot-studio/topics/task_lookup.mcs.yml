@@ -1,0 +1,185 @@
+kind: AdaptiveDialog
+modelDescription: Looks up freight exception tasks in the Planner board by booking ID (BKG-YYYY-NNNNN) or freight forwarder name. Returns task details including priority, bucket, age, and description.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: TaskLookup
+    triggerQueries:
+      - find tasks for booking
+      - look up booking
+      - show me tasks from
+      - find exceptions for
+      - what's the status of booking
+      - search for booking
+      - find tasks from Kuehne Nagel
+      - find tasks from DHL
+      - find tasks from Panalpina
+      - find tasks from Geodis
+      - find tasks from DB Schenker
+      - tasks for shipment
+      - what tasks do we have for
+
+  actions:
+    - kind: SendActivity
+      id: lookupIntro
+      activity:
+        text:
+          - "I can search the Freight Booking Exceptions Planner for you. I can look up by **Booking ID** (e.g. BKG-2024-00341) or by **Freight Forwarder name** (e.g. Kuehne+Nagel, DHL Freight)."
+
+    - kind: Question
+      id: askSearchType
+      property: Topic.SearchType
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What would you like to search by?"
+      entity:
+        displayName: Search Type
+      choices:
+        - value: booking_id
+          synonyms:
+            - booking
+            - booking ID
+            - BKG
+            - booking number
+            - shipment ID
+            - shipment
+            - "1"
+        - value: forwarder
+          synonyms:
+            - forwarder
+            - freight forwarder
+            - carrier
+            - company
+            - name
+            - "2"
+
+    - kind: ConditionGroup
+      id: routeSearch
+      conditions:
+        - id: searchByBooking
+          condition: =Topic.SearchType = "booking_id"
+          actions:
+            - kind: Question
+              id: askBookingId
+              property: Topic.BookingId
+              interruptionPolicy:
+                allowInterruption: true
+              prompt:
+                text: "What is the Booking ID? (format: BKG-YYYY-NNNNN, e.g. BKG-2024-00341)"
+
+            - kind: InvokeFlowAction
+              id: lookupByBooking
+              flowId: freight-task-lookup-flow
+              input:
+                action: !power-fx "lookup_tasks"
+                booking_id: !power-fx Topic.BookingId
+              output:
+                Topic.LookupResult: result
+
+        - id: searchByForwarder
+          condition: =Topic.SearchType = "forwarder"
+          actions:
+            - kind: Question
+              id: askForwarderName
+              property: Topic.ForwarderName
+              interruptionPolicy:
+                allowInterruption: true
+              prompt:
+                text: "What is the freight forwarder name? (e.g. Kuehne+Nagel, DHL Freight, Panalpina, Geodis, DB Schenker)"
+
+            - kind: InvokeFlowAction
+              id: lookupByForwarder
+              flowId: freight-task-lookup-flow
+              input:
+                action: !power-fx "lookup_tasks"
+                forwarder_name: !power-fx Topic.ForwarderName
+              output:
+                Topic.LookupResult: result
+
+    - kind: ConditionGroup
+      id: displayResults
+      conditions:
+        - id: foundTasks
+          condition: =Topic.LookupResult.count > 0
+          actions:
+            - kind: SendActivity
+              id: showResults
+              activity:
+                text:
+                  - "🔍 Found **{Topic.LookupResult.count} task(s)**:\n\nHere are the matching exceptions from the Planner board."
+
+            - kind: ForEachLoop
+              id: listTasks
+              listVariable: Topic.LookupResult.tasks
+              currentItem: Topic.CurrentTask
+              actions:
+                - kind: SendActivity
+                  id: showTask
+                  activity:
+                    text:
+                      - "**{Topic.CurrentTask.id}** {Topic.CurrentTask.priority = 'High' ? '🔴 HIGH PRIORITY' : '🟡 Medium'}\n📂 Bucket: {Topic.CurrentTask.bucket}\n🏢 Forwarder: {Topic.CurrentTask.forwarder}\n📦 Booking: {Topic.CurrentTask.booking_id}\n🚢 Shipment: {Topic.CurrentTask.shipment_id}\n⏰ Age: {Topic.CurrentTask.age_hours}h{Topic.CurrentTask.overdue ? ' ⚠️ OVERDUE' : ''}\n\n📝 {Topic.CurrentTask.description}"
+
+      elseActions:
+        - kind: SendActivity
+          id: notFound
+          activity:
+            text:
+              - "I couldn't find any open exceptions matching your search. This could mean:\n\n✅ The task has already been resolved and marked complete\n📭 No exception has been received for this booking yet\n🔤 Check the spelling/format (Booking IDs are BKG-YYYY-NNNNN)\n\nWould you like to try a different search or see all open exceptions?"
+
+    - kind: Question
+      id: askAfterLookup
+      property: Topic.AfterLookup
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Would you like to mark any of these tasks as complete, or do another search?"
+      entity:
+        displayName: After Lookup
+      choices:
+        - value: mark_complete
+          synonyms:
+            - mark complete
+            - close it
+            - done
+            - resolve
+            - complete
+            - "1"
+        - value: new_search
+          synonyms:
+            - search again
+            - another search
+            - different booking
+            - "2"
+        - value: no_thanks
+          synonyms:
+            - no thanks
+            - that's all
+            - nothing
+            - exit
+            - "3"
+
+    - kind: ConditionGroup
+      id: afterLookupRoute
+      conditions:
+        - id: goMarkComplete
+          condition: =Topic.AfterLookup = "mark_complete"
+          actions:
+            - kind: BeginDialog
+              id: startMarkComplete
+              dialogId: MarkTaskComplete
+
+        - id: goNewSearch
+          condition: =Topic.AfterLookup = "new_search"
+          actions:
+            - kind: BeginDialog
+              id: startNewSearch
+              dialogId: TaskLookup
+
+      elseActions:
+        - kind: SendActivity
+          id: closeSearch
+          activity:
+            text:
+              - "No problem. Let me know if you need anything else!"

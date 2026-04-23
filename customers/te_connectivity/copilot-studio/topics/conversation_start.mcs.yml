@@ -1,0 +1,11 @@
+kind: AdaptiveDialog
+modelDescription: Welcomes Booking Agents and Team Leaders when they start a conversation with the Freight Control Tower agent in Microsoft Teams or Copilot Studio.
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SendActivity
+      id: welcomeMessage
+      activity:
+        text:
+          - "👋 Welcome to the **Freight Control Tower**!\n\nI'm FreightBot, your AI assistant for managing freight forwarder exceptions at TE Connectivity.\n\n📋 **Shift Briefing** — \"Give me the shift briefing\"\n🔍 **Task Lookup** — \"Find tasks for booking BKG-2024-00322\"\n✅ **Mark Complete** — \"Mark TASK-001 as done\"\n📊 **Exception Summary** — \"Show me all high priority exceptions\"\n\nI monitor the **admin@ inbox** automatically — new forwarder emails are triaged into the **Freight Booking Exceptions** Planner without any manual work.\n\nHow can I help you today?"
