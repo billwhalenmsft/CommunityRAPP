@@ -1,0 +1,86 @@
+{
+  "project": "Freight Booking Email Control Tower",
+  "customer": "TE Connectivity",
+  "personas": [
+    {
+      "id": "PERSONA-001",
+      "name": "Sarah Chen",
+      "role": "Team Leader",
+      "shift": "Day (06:00–14:00 CET)",
+      "primaryGoal": "Start-of-shift visibility — know the full exception queue in 2 minutes, re-prioritize agents, escalate anything aged",
+      "painPoints": [
+        "Wastes 20–30 min at shift start scanning inboxes",
+        "Never sure if night shift handled critical items",
+        "No easy way to see what's aged without digging through Outlook"
+      ],
+      "typicalUtterances": [
+        "Give me the shift briefing",
+        "What's aged over 24 hours?",
+        "Show high priority exceptions",
+        "What came in overnight?",
+        "How many open tasks do we have?"
+      ],
+      "successLooksLike": "Opens Teams, asks FreightBot for briefing, gets full picture in seconds, assigns tasks to Alex and Marcus"
+    },
+    {
+      "id": "PERSONA-002",
+      "name": "Alex Rodriguez",
+      "role": "Booking Agent",
+      "shift": "Day (08:00–16:30 CET)",
+      "primaryGoal": "Work exceptions efficiently from Planner rather than hunting through inbox — resolve tasks, communicate with forwarders, close loop",
+      "painPoints": [
+        "Loses track of which bookings have open queries",
+        "Unclear ownership when multiple agents share an inbox",
+        "Forgets to follow up after going into meetings"
+      ],
+      "typicalUtterances": [
+        "Find tasks for booking BKG-2024-00341",
+        "Mark TASK-003 as done",
+        "Any exceptions from DHL?",
+        "What's my task list right now?",
+        "Show me the documentation bucket"
+      ],
+      "successLooksLike": "Starts day from Planner task list, uses FreightBot to search by booking ID, marks tasks complete after resolving with forwarder"
+    },
+    {
+      "id": "PERSONA-003",
+      "name": "Marcus Webb",
+      "role": "Night Shift Booking Agent",
+      "shift": "Night (22:00–06:00 CET)",
+      "primaryGoal": "Monitor for urgent overnight exceptions from APAC forwarders, hand off cleanly to day shift",
+      "painPoints": [
+        "APAC forwarders send high volumes overnight when EU/US teams are offline",
+        "Hard to judge urgency without context — misses penalty-risk items",
+        "Handoff notes are ad hoc and often incomplete"
+      ],
+      "typicalUtterances": [
+        "Any urgent exceptions tonight?",
+        "What came in from Geodis or DB Schenker?",
+        "Show me the APAC tasks",
+        "What do I need to hand off to day shift?",
+        "Mark TASK-007 complete"
+      ],
+      "successLooksLike": "Uses FreightBot at start of night shift to get APAC exception list, handles what he can, leaves aged/critical ones flagged for Sarah in the morning"
+    },
+    {
+      "id": "PERSONA-004",
+      "name": "James Liu",
+      "role": "Logistics Manager",
+      "shift": "Business hours — ad hoc",
+      "primaryGoal": "Spot-check exception volume trends, understand root causes, report upward on on-time performance risk",
+      "painPoints": [
+        "No consolidated view of exception patterns across forwarders",
+        "Can't easily quantify the impact of missed responses",
+        "Relies on ad hoc spreadsheets from team leads"
+      ],
+      "typicalUtterances": [
+        "How many exceptions were opened this week?",
+        "Which forwarder is causing the most exceptions?",
+        "What's our average response time?",
+        "Show me the escalation summary"
+      ],
+      "note": "Phase 1 — FreightBot will deflect detailed analytics to Phase 2 Power BI. In Phase 1, can only show current open task counts.",
+      "successLooksLike": "Phase 2: reviews weekly exception report in Power BI generated from Planner data"
+    }
+  ]
+}

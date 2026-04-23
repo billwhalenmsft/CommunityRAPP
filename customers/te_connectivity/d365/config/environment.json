@@ -1,0 +1,146 @@
+{
+  "environment": {
+    "name": "TE Connectivity M365 Sandbox",
+    "tenant": "D365DemoTSCE30330346.onmicrosoft.com",
+    "tenantId": "daa9e2eb-aaf1-46a8-a37e-3fd2e5821cb6",
+    "apiVersion": "v1.0",
+    "graphEndpoint": "https://graph.microsoft.com/v1.0",
+    "note": "All credentials must be supplied via environment variables or Azure Key Vault. Never hardcode tenant IDs, client IDs, or secrets in this file."
+  },
+  "customer": {
+    "name": "TE Connectivity Ltd",
+    "project": "Freight Booking Email Control Tower",
+    "industry": "Electronic Components Manufacturing / Global Supply Chain",
+    "regions": ["Americas", "EMEA", "APAC"],
+    "note": "Phase 1 demo/sandbox environment. No live SAP TMS integration. M365 tooling only.",
+    "currentState": {
+      "emailInbox": "admin@ shared mailbox (demo)",
+      "currentProcess": "Manual inbox monitoring and ad-hoc exception tracking",
+      "painPoints": [
+        "No single source of truth for open freight exceptions",
+        "Exception ownership is unclear across shift handoffs",
+        "No SLA/aging visibility — forwarders escalate before team acts",
+        "Manual classification errors lead to wrong routing",
+        "Night/weekend shift gaps cause missed handoffs",
+        "No priority-based sorting — high-penalty exceptions buried in inbox"
+      ]
+    },
+    "targetState": {
+      "emailInbox": "admin@D365DemoTSCE30330346.onmicrosoft.com",
+      "taskBoard": "Microsoft Planner — Freight Booking Exceptions",
+      "buckets": ["Missing Info", "Documentation", "Clarification"],
+      "automationEngine": "Copilot Studio Agent Flows",
+      "conversationalInterface": "FreightBot in Microsoft Teams"
+    }
+  },
+  "logistics": {
+    "freightForwarders": [
+      {
+        "name": "Kuehne+Nagel",
+        "email_domain": "kuehne-nagel-demo.com",
+        "region": "EMEA",
+        "contact": "dispatch@kuehne-nagel-demo.com"
+      },
+      {
+        "name": "DHL Freight",
+        "email_domain": "dhl-freight-demo.com",
+        "region": "Americas",
+        "contact": "ops@dhl-freight-demo.com"
+      },
+      {
+        "name": "Panalpina",
+        "email_domain": "panalpina-demo.com",
+        "region": "EMEA",
+        "contact": "bookings@panalpina-demo.com"
+      },
+      {
+        "name": "Geodis",
+        "email_domain": "geodis-demo.com",
+        "region": "APAC",
+        "contact": "freight@geodis-demo.com"
+      },
+      {
+        "name": "DB Schenker",
+        "email_domain": "db-schenker-demo.com",
+        "region": "APAC",
+        "contact": "escalations@db-schenker-demo.com"
+      }
+    ],
+    "exceptionBuckets": {
+      "Missing Info": {
+        "description": "Shipper details, consignee information, packing lists, addresses, contacts",
+        "keywords": ["missing", "need", "provide", "required", "require", "please send", "shipper address", "notify party"],
+        "plannerBucketId": "1fdZLmi0EEqIK0V8zIKUDGUACt-C"
+      },
+      "Documentation": {
+        "description": "Commercial invoices, certificates of origin, BoL corrections, HS code issues",
+        "keywords": ["document", "invoice", "commercial invoice", "packing list", "bill of lading", "certificate of origin", "customs", "hs code"],
+        "plannerBucketId": "3wQJhbv4pUK1EuIfAANQimUABPdL"
+      },
+      "Clarification": {
+        "description": "Schedule changes, vessel substitutions, ETD/ETA changes, booking confirmations",
+        "keywords": ["clarify", "confirm", "schedule change", "carrier change", "vessel substitution", "etd", "eta"],
+        "plannerBucketId": "UYCexKlXoE6K6iHOollmNGUANUMD"
+      }
+    },
+    "priorityKeywords": {
+      "High": ["urgent", "penalty", "demurrage", "missed cutoff", "hot shipment", "expedite", "hold", "critical", "asap"],
+      "Medium": []
+    },
+    "sla": {
+      "acknowledgementHours": 4,
+      "resolutionHours": 24,
+      "escalationHours": 48,
+      "businessHoursStart": "08:00",
+      "businessHoursEnd": "18:00",
+      "timezone": "CET",
+      "workDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    }
+  },
+  "m365Config": {
+    "plannerPlanName": "Freight Booking Exceptions",
+    "plannerPlanId": "zA0MFq0KmEeB38Tf8NL_s2UACcuC",
+    "plannerGroupId": "5ebf02e8-740a-4fd2-ac2a-02c999d71905",
+    "mailboxAddress": "admin@D365DemoTSCE30330346.onmicrosoft.com",
+    "mailboxAlias": "admin",
+    "teamsChannelName": "Freight Ops — Exception Alerts",
+    "copilotStudioAgentId": "b8afc09d-343f-f111-bec6-70a8a59a411e",
+    "dataverseSolutionId": "71b72c7d-343f-f111-bec6-70a8a59a411e",
+    "dataverseSolutionUniqueName": "TEConnectivityFreightBooking",
+    "note": "Planner provisioned 2026-04-23. FreightBot published 2026-04-23."
+  },
+  "personas": {
+    "agents": [
+      {
+        "name": "Sarah Chen",
+        "role": "Team Leader",
+        "focus": "Shift oversight, exception escalation, SLA monitoring, team briefings"
+      },
+      {
+        "name": "Alex Rodriguez",
+        "role": "Booking Agent",
+        "focus": "Exception resolution, forwarder communication, task management"
+      },
+      {
+        "name": "Marcus Webb",
+        "role": "Night Shift Booking Agent",
+        "focus": "Overnight exception monitoring, handoff documentation"
+      }
+    ]
+  },
+  "phaseRoadmap": {
+    "phase1": {
+      "status": "In Progress — Demo/Sandbox",
+      "scope": ["Email auto-triage to Planner", "Shift briefing topic", "Task lookup topic", "Mark complete topic", "Exception summary topic"],
+      "notIncluded": ["Automated email replies", "SAP/TMS integration", "Power BI dashboard", "Multi-user task assignment"]
+    },
+    "phase2": {
+      "status": "Planned",
+      "scope": ["Automated forwarder acknowledgement email", "SAP booking ID validation", "Power BI aging dashboard", "Teams adaptive card alerts for overdue tasks"]
+    },
+    "phase3": {
+      "status": "Future",
+      "scope": ["Real-time TMS integration", "Predictive exception detection", "SLA breach proactive alerting", "Cross-forwarder performance analytics"]
+    }
+  }
+}

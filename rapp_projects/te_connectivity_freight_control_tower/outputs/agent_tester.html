@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreightBot — TE Connectivity Freight Control Tower Agent Tester</title>
+  <style>
+    :root {
+      --primary: #0078D4;
+      --primary-dark: #005a9e;
+      --accent: #E3008C;
+      --success: #107C10;
+      --warning: #FFB900;
+      --error: #D13438;
+      --high: #D13438;
+      --medium: #FF8C00;
+      --surface: #F3F2F1;
+      --bg: #FAF9F8;
+      --card: #FFFFFF;
+      --border: #EDEBE9;
+      --text: #323130;
+      --text-muted: #605E5C;
+      --radius: 8px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #003087 0%, #0078D4 60%, #00b4d8 100%);
+      color: white;
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .header-icon {
+      font-size: 40px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 8px 12px;
+    }
+    .header-text h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+    .header-text p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+    .header-badge {
+      margin-left: auto;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 0;
+      flex: 1;
+    }
+
+    /* ── Left Panel: Controls ── */
+    .controls-panel {
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-section { display: flex; flex-direction: column; gap: 8px; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .scenario-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .scenario-btn:hover { background: #e8f4fd; border-color: var(--primary); color: var(--primary); }
+    .scenario-btn.active { background: #e8f4fd; border-color: var(--primary); color: var(--primary); font-weight: 600; }
+    .scenario-btn .scenario-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-right: 6px;
+    }
+    .tag-high { background: #fde8e8; color: var(--high); }
+    .tag-medium { background: #fff4e5; color: var(--medium); }
+    .tag-auto { background: #e8f4fd; color: var(--primary); }
+
+    .quick-input-group { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+    input, select, textarea {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--surface);
+      color: var(--text);
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: var(--radius);
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-danger { background: var(--error); color: white; }
+    .btn-success { background: var(--success); color: white; }
+
+    /* ── Right Panel: Chat + Dashboard ── */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 82px);
+    }
+
+    /* Dashboard bar */
+    .dashboard-bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+    .metric-card .metric-val {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .metric-card .metric-label { font-size: 11px; color: var(--text-muted); }
+    .metric-card.urgent { border-left: 4px solid var(--high); }
+    .metric-card.warning { border-left: 4px solid var(--warning); }
+    .metric-card.info { border-left: 4px solid var(--primary); }
+    .metric-card.ok { border-left: 4px solid var(--success); }
+
+    /* Chat area */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .message {
+      display: flex;
+      gap: 12px;
+      max-width: 720px;
+    }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .message .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    .message.bot .avatar { background: linear-gradient(135deg, #003087, #0078D4); color: white; }
+    .message.user .avatar { background: #6B2FA0; color: white; font-size: 13px; }
+    .message .bubble {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-width: 100%;
+    }
+    .message.bot .bubble {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top-left-radius: 2px;
+    }
+    .message.user .bubble {
+      background: var(--primary);
+      color: white;
+      border-top-right-radius: 2px;
+    }
+    .message .bubble strong { font-weight: 700; }
+    .message .timestamp {
+      font-size: 11px;
+      color: var(--text-muted);
+      align-self: flex-end;
+      padding-bottom: 4px;
+      white-space: nowrap;
+    }
+
+    /* Task cards inline in chat */
+    .task-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      margin: 4px 0;
+      font-size: 13px;
+      border-left: 4px solid var(--border);
+    }
+    .task-card.high { border-left-color: var(--high); }
+    .task-card.medium { border-left-color: var(--medium); }
+
+    /* Chat input bar */
+    .chat-input-bar {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .chat-input-bar input {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      background: var(--surface);
+    }
+    .chat-input-bar input:focus { background: white; border-color: var(--primary); }
+    .send-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .send-btn:hover { background: var(--primary-dark); }
+
+    /* Task board */
+    .task-board {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      max-height: 260px;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .task-board-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .task-board-header h3 { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    .task-tile {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-left: 4px solid var(--border);
+    }
+    .task-tile.high { border-left-color: var(--high); }
+    .task-tile.medium { border-left-color: var(--medium); }
+    .task-tile.complete { opacity: 0.5; text-decoration: line-through; }
+    .task-tile:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+    .task-tile .task-id { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+    .task-tile .task-title { font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+    .task-tile .task-meta { color: var(--text-muted); font-size: 11px; }
+    .task-tile .task-overdue { color: var(--high); font-weight: 700; }
+    .priority-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+    .dot-high { background: var(--high); }
+    .dot-medium { background: var(--medium); }
+
+    /* Typing indicator */
+    .typing-dots { display: flex; gap: 4px; padding: 8px 4px; }
+    .typing-dots span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: bounce 1.2s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--success);
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+      display: none;
+    }
+    @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } }
+
+    @media (max-width: 900px) {
+      .main { grid-template-columns: 1fr; }
+      .controls-panel { display: none; }
+      .right-panel { height: calc(100vh - 82px); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">🚢</div>
+  <div class="header-text">
+    <h1>Freight Control Tower</h1>
+    <p>TE Connectivity · FreightBot · Freight Booking Exception Manager</p>
+  </div>
+  <div class="header-badge">Demo Mode · Phase 1</div>
+</header>
+
+<div class="main">
+
+  <!-- Left: Controls -->
+  <div class="controls-panel">
+
+    <div class="panel-section">
+      <div class="section-label">📋 Demo Scenarios</div>
+      <button class="scenario-btn active" onclick="runScenario('briefing')">
+        <span class="scenario-tag tag-high">SHIFT</span>
+        Shift Start Briefing
+      </button>
+      <button class="scenario-btn" onclick="runScenario('lookup_booking')">
+        <span class="scenario-tag tag-medium">LOOKUP</span>
+        Find Task by Booking ID
+      </button>
+      <button class="scenario-btn" onclick="runScenario('lookup_forwarder')">
+        <span class="scenario-tag tag-medium">LOOKUP</span>
+        Find Tasks by Forwarder
+      </button>
+      <button class="scenario-btn" onclick="runScenario('high_priority')">
+        <span class="scenario-tag tag-high">HIGH</span>
+        All High Priority Exceptions
+      </button>
+      <button class="scenario-btn" onclick="runScenario('aged')">
+        <span class="scenario-tag tag-high">AGED</span>
+        Aged Exceptions (>24h)
+      </button>
+      <button class="scenario-btn" onclick="runScenario('mark_complete')">
+        <span class="scenario-tag tag-medium">✓</span>
+        Mark Task Complete
+      </button>
+      <button class="scenario-btn" onclick="runScenario('classify_email')">
+        <span class="scenario-tag tag-auto">AI</span>
+        Classify Incoming Email
+      </button>
+      <button class="scenario-btn" onclick="runScenario('help')">
+        <span class="scenario-tag tag-auto">?</span>
+        Help / What can you do?
+      </button>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">🔍 Quick Lookup</div>
+      <div class="quick-input-group">
+        <label>Booking ID</label>
+        <input type="text" id="quickBookingId" placeholder="e.g. BKG-2024-00322" value="BKG-2024-00322" />
+      </div>
+      <button class="btn btn-primary" onclick="quickLookup('booking')">🔎 Find by Booking</button>
+      <div class="quick-input-group">
+        <label>Forwarder Name</label>
+        <input type="text" id="quickForwarder" placeholder="e.g. DB Schenker" value="DB Schenker" />
+      </div>
+      <button class="btn btn-primary" onclick="quickLookup('forwarder')">🔎 Find by Forwarder</button>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">✅ Mark Task Complete</div>
+      <div class="quick-input-group">
+        <label>Task ID</label>
+        <select id="quickTaskId">
+          <option value="TASK-001">TASK-001 — Missing shipper addr. (Kuehne+Nagel)</option>
+          <option value="TASK-002">TASK-002 — Invoice correction (DHL Freight)</option>
+          <option value="TASK-003">TASK-003 — Schedule change (Panalpina)</option>
+          <option value="TASK-004">TASK-004 — Packing list (Geodis) ⚠️ OVERDUE</option>
+          <option value="TASK-005" selected>TASK-005 — Cert of Origin (DB Schenker)</option>
+        </select>
+      </div>
+      <button class="btn btn-success" onclick="markTaskComplete()">✅ Mark Complete</button>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">📧 Email Classifier</div>
+      <div class="quick-input-group">
+        <label>Email Subject</label>
+        <input type="text" id="emailSubject" placeholder="Email subject..." value="URGENT — Missing shipper address for BKG-2024-00341" />
+      </div>
+      <div class="quick-input-group">
+        <label>Email Body (excerpt)</label>
+        <textarea id="emailBody" placeholder="Email body...">We are MISSING the complete shipper address. Missed vessel cutoff with penalty demurrage charges if not resolved today. Booking BKG-2024-00341, shipment TE-SHP-112233.</textarea>
+      </div>
+      <div class="quick-input-group">
+        <label>From Address</label>
+        <input type="text" id="emailFrom" placeholder="from@forwarder.com" value="dispatch@kuehne-nagel-demo.com" />
+      </div>
+      <button class="btn btn-secondary" onclick="classifyEmail()">🤖 Classify Email</button>
+    </div>
+
+    <button class="btn btn-secondary" onclick="clearChat()">🗑️ Clear Chat</button>
+  </div>
+
+  <!-- Right: Chat + Task Board -->
+  <div class="right-panel">
+
+    <!-- Dashboard metrics bar -->
+    <div class="dashboard-bar">
+      <div class="metric-card urgent">
+        <span class="metric-val" id="metricOpen">5</span>
+        <span class="metric-label">Open Exceptions</span>
+      </div>
+      <div class="metric-card urgent">
+        <span class="metric-val" id="metricHigh">2</span>
+        <span class="metric-label">🔴 High Priority</span>
+      </div>
+      <div class="metric-card warning">
+        <span class="metric-val" id="metricAged24">2</span>
+        <span class="metric-label">⏰ Aged >24h</span>
+      </div>
+      <div class="metric-card warning">
+        <span class="metric-val" id="metricAged48">1</span>
+        <span class="metric-label">⚠️ Aged >48h</span>
+      </div>
+      <div class="metric-card info">
+        <span class="metric-val">2</span>
+        <span class="metric-label">📋 Missing Info</span>
+      </div>
+      <div class="metric-card info">
+        <span class="metric-val">2</span>
+        <span class="metric-label">📄 Documentation</span>
+      </div>
+      <div class="metric-card ok">
+        <span class="metric-val">1</span>
+        <span class="metric-label">❓ Clarification</span>
+      </div>
+    </div>
+
+    <!-- Chat messages -->
+    <div class="chat-area" id="chatArea">
+      <div class="message bot">
+        <div class="avatar">🚢</div>
+        <div>
+          <div class="bubble">👋 Hello! I'm <strong>FreightBot</strong>, your Freight Control Tower AI assistant for TE Connectivity.
+
+I can help you with:
+📋 <strong>Shift briefing</strong> — queue status, aged exceptions, top priorities
+🔍 <strong>Task lookup</strong> — find exceptions by booking ID or forwarder
+✅ <strong>Mark complete</strong> — close resolved exceptions in Planner
+📊 <strong>Exception summary</strong> — filtered views by priority, age, or bucket
+
+How can I help you today?</div>
+          <div class="timestamp">Just now</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat input -->
+    <div class="chat-input-bar">
+      <input
+        type="text"
+        id="chatInput"
+        placeholder="Type a message... (try: 'Give me the shift briefing' or 'Show high priority exceptions')"
+        onkeydown="if(event.key === 'Enter') sendMessage()"
+      />
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+
+    <!-- Live Task Board -->
+    <div class="task-board">
+      <div class="task-board-header">
+        <h3>📌 Planner: Freight Booking Exceptions</h3>
+        <button class="btn btn-secondary" style="font-size:11px;padding:4px 10px;" onclick="refreshBoard()">↻ Refresh</button>
+      </div>
+      <div class="task-grid" id="taskGrid"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Demo Data ─────────────────────────────────────────────────────────────────
+const TASKS = [
+  { id: "TASK-001", title: "URGENT — Missing shipper address — BKG-2024-00341", bucket: "Missing Info", priority: "High", ageHours: 26, overdue: true, forwarder: "Kuehne+Nagel", bookingId: "BKG-2024-00341", shipmentId: "TE-SHP-112233", status: "open", description: "Missing shipper address and contact. Demurrage penalty risk." },
+  { id: "TASK-002", title: "Commercial Invoice correction — BKG-2024-00298", bucket: "Documentation", priority: "Medium", ageHours: 18, overdue: false, forwarder: "DHL Freight", bookingId: "BKG-2024-00298", shipmentId: "TE-SHP-109876", status: "open", description: "Incorrect HS code. Customs broker flagged. Cannot clear." },
+  { id: "TASK-003", title: "Schedule change — confirm BKG-2024-00355", bucket: "Clarification", priority: "Medium", ageHours: 8, overdue: false, forwarder: "Panalpina", bookingId: "BKG-2024-00355", shipmentId: "TE-SHP-113344", status: "open", description: "MSC AMBRA → MSC ELISA. ETD 11-Nov → 14-Nov. Confirm." },
+  { id: "TASK-004", title: "Packing list required — BKG-2024-00317", bucket: "Missing Info", priority: "Medium", ageHours: 52, overdue: true, forwarder: "Geodis", bookingId: "BKG-2024-00317", shipmentId: "TE-SHP-110045", status: "open", description: "Packing list needed for customs declaration." },
+  { id: "TASK-005", title: "URGENT — Certificate of Origin — BKG-2024-00322", bucket: "Documentation", priority: "High", ageHours: 5, overdue: false, forwarder: "DB Schenker", bookingId: "BKG-2024-00322", shipmentId: "TE-SHP-110567", status: "open", description: "ON HOLD at Shanghai. Certificate of Origin missing. USD 250/day penalty." },
+];
+
+// ── Scenario responses ────────────────────────────────────────────────────────
+const SCENARIOS = {
+  briefing: {
+    userMsg: "Give me the shift briefing",
+    botResponse: () => {
+      const open = TASKS.filter(t => t.status === "open");
+      const high = open.filter(t => t.priority === "High");
+      const aged24 = open.filter(t => t.ageHours >= 24);
+      const aged48 = open.filter(t => t.ageHours >= 48);
+      const overdue = open.filter(t => t.overdue);
+      const top5 = [...open].sort((a, b) => {
+        if (a.overdue !== b.overdue) return a.overdue ? -1 : 1;
+        if (a.priority !== b.priority) return a.priority === "High" ? -1 : 1;
+        return b.ageHours - a.ageHours;
+      }).slice(0, 5);
+      return `📋 **Shift Briefing** — ${new Date().toLocaleTimeString()}\n\n**Exception Queue Summary:**\n• Total Open: ${open.length}\n• 🔴 High Priority: ${high.length}\n• ⏰ Aged >24h: ${aged24.length}\n• ⚠️ Aged >48h: ${aged48.length}\n• 🚨 Overdue: ${overdue.length}\n\n🪣 Missing Info: 2 | Documentation: 2 | Clarification: 1\n\n**Top 5 by Priority / Age:**\n${top5.map((t, i) => `${i+1}. ${t.priority === 'High' ? '🔴' : '🟡'} ${t.id} — ${t.title.substring(0, 50)}...\n   Forwarder: ${t.forwarder} | Age: ${t.ageHours}h${t.overdue ? ' ⚠️ OVERDUE' : ''}`).join('\n\n')}\n\nWould you like details on a specific task or to see all high-priority exceptions?`;
+    }
+  },
+  lookup_booking: {
+    userMsg: "Find tasks for booking BKG-2024-00322",
+    botResponse: () => {
+      const t = TASKS.find(t => t.bookingId === "BKG-2024-00322");
+      return `🔍 Found **1 task** for booking BKG-2024-00322:\n\n**${t.id}** ${t.priority === 'High' ? '🔴 HIGH PRIORITY' : '🟡 Medium'}\n📂 Bucket: ${t.bucket}\n🚢 Shipment: ${t.shipmentId}\n🏢 Forwarder: ${t.forwarder}\n⏰ Age: ${t.ageHours}h${t.overdue ? ' ⚠️ OVERDUE' : ''}\n\n📝 ${t.description}\n\nWould you like to mark this task as complete?`;
+    }
+  },
+  lookup_forwarder: {
+    userMsg: "Show me tasks from Geodis",
+    botResponse: () => {
+      const results = TASKS.filter(t => t.forwarder.toLowerCase().includes("geodis") && t.status === "open");
+      return `🔍 Found **${results.length} task(s)** for forwarder: Geodis\n\n${results.map(t => `**${t.id}** ${t.priority === 'High' ? '🔴' : '🟡'} ${t.priority}\n📂 ${t.bucket} | Booking: ${t.bookingId}\n⏰ Age: ${t.ageHours}h${t.overdue ? ' ⚠️ OVERDUE' : ''}\n${t.description}`).join('\n\n')}`;
+    }
+  },
+  high_priority: {
+    userMsg: "Show me all high priority exceptions",
+    botResponse: () => {
+      const tasks = TASKS.filter(t => t.priority === "High" && t.status === "open");
+      return `🔴 **High Priority Exceptions** — ${tasks.length} open:\n\n${tasks.map(t => `**${t.id}** — ${t.title}\n• Forwarder: ${t.forwarder} | Bucket: ${t.bucket}\n• Age: ${t.ageHours}h${t.overdue ? ' ⚠️ OVERDUE' : ''}\n• Risk: ${t.description}`).join('\n\n')}\n\nBoth require immediate action. Would you like details on either?`;
+    }
+  },
+  aged: {
+    userMsg: "What exceptions are aged over 24 hours?",
+    botResponse: () => {
+      const tasks = TASKS.filter(t => t.ageHours >= 24 && t.status === "open").sort((a, b) => b.ageHours - a.ageHours);
+      return `⏰ **Exceptions Aged >24h** — ${tasks.length} tasks:\n\n${tasks.map(t => `**${t.id}** ${t.priority === 'High' ? '🔴' : '🟡'} — ${t.title}\n• Age: **${t.ageHours}h** ${t.overdue ? '⚠️ OVERDUE' : ''}\n• Forwarder: ${t.forwarder} | Bucket: ${t.bucket}`).join('\n\n')}\n\n⚠️ ${tasks.filter(t => t.ageHours >= 48).length} task(s) have exceeded 48h and are critically aged.`;
+    }
+  },
+  mark_complete: {
+    userMsg: "Mark TASK-005 as done",
+    botResponse: () => {
+      const task = TASKS.find(t => t.id === "TASK-005");
+      if (task) task.status = "complete";
+      updateMetrics();
+      renderTaskBoard();
+      return `✅ **TASK-005 has been marked complete** in the Freight Booking Exceptions Planner.\n\n**Task:** URGENT — Certificate of Origin missing — BKG-2024-00322 — DB Schenker\n**Completed at:** ${new Date().toLocaleTimeString()}\n\nThe task board has been updated. Is there anything else you need?`;
+    }
+  },
+  classify_email: {
+    userMsg: "Classify this email: URGENT — Missing shipper address for BKG-2024-00341",
+    botResponse: () => {
+      return `🤖 **AI Email Classification Result:**\n\n📧 Subject: URGENT — Missing shipper address for BKG-2024-00341\n📤 From: dispatch@kuehne-nagel-demo.com\n\n**Classification:**\n• 🔴 Priority: **HIGH** (detected keywords: "URGENT", "penalty", "demurrage")\n• 🪣 Bucket: **Missing Info** (detected: "MISSING", "address")\n• 📦 Booking ID: **BKG-2024-00341** (auto-parsed)\n• 🚢 Shipment ID: **TE-SHP-112233** (auto-parsed)\n\n**Suggested Planner Task:**\n• Title: URGENT — Missing shipper address for BKG-2024-00341 — Kuehne+Nagel\n• Bucket: Missing Info\n• Priority: High (value: 2)\n• Due date: +24h from now\n\nTask has been created in Planner. ✅`;
+    }
+  },
+  help: {
+    userMsg: "What can you do?",
+    botResponse: () => {
+      return `👋 I'm **FreightBot**, your Freight Booking Control Tower AI assistant.\n\nHere's what I can help with:\n\n📋 **Shift Briefing**\n"Give me the shift briefing" — Exception queue summary with totals, aged tasks, and top 5 priority items\n\n🔍 **Task Lookup**\n"Find tasks for booking BKG-2024-00341" — Search by booking ID\n"Show me tasks from Kuehne+Nagel" — Search by forwarder name\n\n✅ **Mark Complete**\n"Mark TASK-001 as done" — Close an exception in Planner\n\n📊 **Exception Summary**\n"Show me all high priority exceptions" — Filtered by priority\n"What's aged over 24 hours?" — Aging report\n"Show me Documentation exceptions" — Filter by bucket\n\n🤖 **Auto-Triage (Background)**\nI automatically classify incoming emails and create Planner tasks — no manual triage needed!\n\nHow can I help you right now?`;
+    }
+  }
+};
+
+// ── Chat Engine ───────────────────────────────────────────────────────────────
+function addMessage(text, role) {
+  const area = document.getElementById('chatArea');
+  const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+
+  const avatar = role === 'bot'
+    ? '<div class="avatar">🚢</div>'
+    : '<div class="avatar">TA</div>';
+
+  div.innerHTML = `
+    ${role === 'bot' ? avatar : ''}
+    <div>
+      <div class="bubble">${text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</div>
+      <div class="timestamp">${now}</div>
+    </div>
+    ${role === 'user' ? avatar : ''}
+  `;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function addTyping() {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'message bot';
+  div.id = 'typingIndicator';
+  div.innerHTML = `<div class="avatar">🚢</div><div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function botReply(text) {
+  addTyping();
+  setTimeout(() => {
+    removeTyping();
+    addMessage(text, 'bot');
+  }, 900 + Math.random() * 600);
+}
+
+function runScenario(key) {
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const sc = SCENARIOS[key];
+  if (!sc) return;
+  addMessage(sc.userMsg, 'user');
+  const response = typeof sc.botResponse === 'function' ? sc.botResponse() : sc.botResponse;
+  botReply(response);
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMessage(text, 'user');
+
+  // Simple intent matching for demo
+  const lower = text.toLowerCase();
+  if (lower.includes('briefing') || lower.includes('queue') || lower.includes('shift')) {
+    botReply(SCENARIOS.briefing.botResponse());
+  } else if (lower.includes('high priority') || lower.includes('urgent') || lower.includes('critical')) {
+    botReply(SCENARIOS.high_priority.botResponse());
+  } else if (lower.includes('aged') || lower.includes('>24') || lower.includes('24h') || lower.includes('overdue')) {
+    botReply(SCENARIOS.aged.botResponse());
+  } else if (lower.match(/bkg-\d{4}-\d{5}/)) {
+    const bookingId = lower.match(/bkg-\d{4}-\d{5}/)[0].toUpperCase();
+    const task = TASKS.find(t => t.bookingId.toLowerCase() === bookingId.toLowerCase() && t.status === 'open');
+    if (task) {
+      botReply(`🔍 Found task for **${bookingId}**:\n\n**${task.id}** ${task.priority === 'High' ? '🔴 HIGH' : '🟡 Medium'}\n📂 Bucket: ${task.bucket}\n🚢 Shipment: ${task.shipmentId}\n🏢 Forwarder: ${task.forwarder}\n⏰ Age: ${task.ageHours}h${task.overdue ? ' ⚠️ OVERDUE' : ''}\n\n📝 ${task.description}`);
+    } else {
+      botReply(`No open task found for booking ${bookingId}. It may have already been resolved or the ID may be incorrect.`);
+    }
+  } else if (lower.includes('mark') && lower.includes('done') || lower.includes('mark') && lower.includes('complete') || lower.includes('close task')) {
+    const match = lower.match(/task-\d{3}/);
+    if (match) {
+      const taskId = match[0].toUpperCase();
+      const task = TASKS.find(t => t.id === taskId);
+      if (task) {
+        task.status = 'complete';
+        updateMetrics();
+        renderTaskBoard();
+        botReply(`✅ **${taskId} marked complete** in Planner.\n\n**Task:** ${task.title}\n**Completed:** ${new Date().toLocaleTimeString()}\n\nAnything else I can help with?`);
+        showToast(`✅ ${taskId} marked complete!`);
+      } else {
+        botReply(`I couldn't find task ${taskId.toUpperCase()}. Available tasks: ${TASKS.filter(t => t.status === 'open').map(t => t.id).join(', ')}`);
+      }
+    } else {
+      botReply(SCENARIOS.mark_complete.botResponse());
+    }
+  } else if (lower.includes('help') || lower.includes('what can you do') || lower.includes('capabilities')) {
+    botReply(SCENARIOS.help.botResponse());
+  } else if (lower.includes('documentation') || lower.includes('missing info') || lower.includes('clarification')) {
+    const bucket = lower.includes('documentation') ? 'Documentation' : lower.includes('missing info') ? 'Missing Info' : 'Clarification';
+    const tasks = TASKS.filter(t => t.bucket === bucket && t.status === 'open');
+    botReply(`📂 **${bucket} Exceptions** — ${tasks.length} open:\n\n${tasks.map(t => `**${t.id}** — ${t.title}\n• Forwarder: ${t.forwarder} | Age: ${t.ageHours}h${t.overdue ? ' ⚠️ OVERDUE' : ''}`).join('\n\n')}`);
+  } else {
+    botReply(`I'm not sure I understood that. Here are some things you can ask me:\n\n• "Give me the shift briefing"\n• "Find tasks for booking BKG-2024-00322"\n• "Show me high priority exceptions"\n• "What's aged over 24 hours?"\n• "Mark TASK-001 as done"\n• "What can you do?"\n\nHow can I help?`);
+  }
+}
+
+function quickLookup(type) {
+  const val = type === 'booking'
+    ? document.getElementById('quickBookingId').value.trim()
+    : document.getElementById('quickForwarder').value.trim();
+  if (!val) return;
+  const msg = type === 'booking' ? `Find tasks for booking ${val}` : `Show tasks from ${val}`;
+  addMessage(msg, 'user');
+
+  const tasks = type === 'booking'
+    ? TASKS.filter(t => t.bookingId.toLowerCase().includes(val.toLowerCase()) && t.status === 'open')
+    : TASKS.filter(t => t.forwarder.toLowerCase().includes(val.toLowerCase()) && t.status === 'open');
+
+  if (!tasks.length) {
+    botReply(`No open tasks found for ${type === 'booking' ? 'booking' : 'forwarder'}: **${val}**`);
+    return;
+  }
+  botReply(`🔍 Found **${tasks.length} task(s)** for ${type === 'booking' ? 'booking' : 'forwarder'}: ${val}\n\n${tasks.map(t => `**${t.id}** ${t.priority === 'High' ? '🔴' : '🟡'} ${t.priority}\n📂 ${t.bucket} | Booking: ${t.bookingId}\n🏢 ${t.forwarder} | Age: ${t.ageHours}h${t.overdue ? ' ⚠️ OVERDUE' : ''}\n${t.description}`).join('\n\n')}`);
+}
+
+function markTaskComplete() {
+  const id = document.getElementById('quickTaskId').value;
+  const task = TASKS.find(t => t.id === id);
+  if (!task || task.status === 'complete') {
+    showToast(`⚠️ ${id} is already complete or not found`, true);
+    return;
+  }
+  addMessage(`Mark ${id} as done`, 'user');
+  task.status = 'complete';
+  updateMetrics();
+  renderTaskBoard();
+  botReply(`✅ **${id} marked complete** in Planner.\n\n**Task:** ${task.title}\n**Completed:** ${new Date().toLocaleTimeString()}\n\nAnything else I can help with?`);
+  showToast(`✅ ${id} marked complete!`);
+}
+
+function classifyEmail() {
+  const subject = document.getElementById('emailSubject').value;
+  const body = document.getElementById('emailBody').value;
+  const from = document.getElementById('emailFrom').value;
+  if (!subject && !body) return;
+  addMessage(`Classify email: "${subject.substring(0, 60)}..."`, 'user');
+
+  const lower = (subject + ' ' + body).toLowerCase();
+  const isHigh = ['urgent', 'penalty', 'demurrage', 'critical', 'hold', 'expedite', 'asap'].some(k => lower.includes(k));
+  const isDoc = ['invoice', 'certificate', 'packing list', 'bol', 'document', 'hs code'].some(k => lower.includes(k));
+  const isMissing = ['missing', 'need', 'provide', 'required', 'require'].some(k => lower.includes(k));
+  const bucket = isDoc ? 'Documentation' : isMissing ? 'Missing Info' : 'Clarification';
+  const bkgMatch = (subject + ' ' + body).match(/BKG-\d{4}-\d{5}/i);
+  const shipMatch = (subject + ' ' + body).match(/TE-SHP-\d{6}/i);
+  const forwarder = from.includes('@') ? from.split('@')[1].split('-demo')[0].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Unknown Forwarder';
+
+  botReply(`🤖 **AI Classification Result:**\n\n📧 Subject: ${subject}\n📤 From: ${from}\n\n**Classification:**\n• ${isHigh ? '🔴 Priority: **HIGH**' : '🟡 Priority: **Medium**'} (keywords: ${isHigh ? '"URGENT", "penalty", "demurrage"' : 'no high-priority keywords'})\n• 🪣 Bucket: **${bucket}**\n• 📦 Booking ID: **${bkgMatch ? bkgMatch[0] : 'Not detected'}**\n• 🚢 Shipment ID: **${shipMatch ? shipMatch[0] : 'Not detected'}**\n\n**Suggested Planner Task:**\n• Title: ${subject.substring(0, 80)} — ${forwarder}\n• Bucket: ${bucket}\n• Priority: ${isHigh ? 'High (value: 2)' : 'Medium (value: 5)'}\n• Due: +24h from now\n\n✅ Task queued for creation in Planner "Freight Booking Exceptions".`);
+}
+
+function clearChat() {
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  botReply("Chat cleared! How can I help you today?");
+}
+
+// ── Task Board ────────────────────────────────────────────────────────────────
+function renderTaskBoard() {
+  const grid = document.getElementById('taskGrid');
+  grid.innerHTML = '';
+  TASKS.forEach(task => {
+    const div = document.createElement('div');
+    div.className = `task-tile ${task.priority.toLowerCase()} ${task.status === 'complete' ? 'complete' : ''}`;
+    div.title = task.description;
+    div.onclick = () => lookupTaskById(task.id);
+    div.innerHTML = `
+      <div class="task-id">${task.id} · ${task.bucket}</div>
+      <div class="task-title">
+        <span class="priority-dot dot-${task.priority.toLowerCase()}"></span>
+        ${task.title.substring(0, 55)}${task.title.length > 55 ? '...' : ''}
+      </div>
+      <div class="task-meta">
+        ${task.forwarder}<br>
+        ${task.status === 'complete' ? '✅ Complete' : task.overdue ? `<span class="task-overdue">⚠️ ${task.ageHours}h OVERDUE</span>` : `${task.ageHours}h ago`}
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function lookupTaskById(id) {
+  addMessage(`Find task ${id}`, 'user');
+  const task = TASKS.find(t => t.id === id);
+  botReply(`📌 **${task.id}** — ${task.priority === 'High' ? '🔴 HIGH' : '🟡 Medium'}\n\n📂 Bucket: ${task.bucket}\n🏢 Forwarder: ${task.forwarder}\n📦 Booking: ${task.bookingId}\n🚢 Shipment: ${task.shipmentId}\n⏰ Age: ${task.ageHours}h${task.overdue ? ' ⚠️ OVERDUE' : ''}\n✉️ Status: ${task.status}\n\n📝 ${task.description}`);
+}
+
+function refreshBoard() {
+  renderTaskBoard();
+  updateMetrics();
+  showToast('📌 Task board refreshed');
+}
+
+// ── Metrics ───────────────────────────────────────────────────────────────────
+function updateMetrics() {
+  const open = TASKS.filter(t => t.status === 'open');
+  document.getElementById('metricOpen').textContent = open.length;
+  document.getElementById('metricHigh').textContent = open.filter(t => t.priority === 'High').length;
+  document.getElementById('metricAged24').textContent = open.filter(t => t.ageHours >= 24).length;
+  document.getElementById('metricAged48').textContent = open.filter(t => t.ageHours >= 48).length;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, warning = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.background = warning ? 'var(--warning)' : 'var(--success)';
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderTaskBoard();
+updateMetrics();
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+{
+  "project": "Freight Booking Email Control Tower",
+  "customer": "TE Connectivity",
+  "agent": "FreightBot",
+  "scenarios": [
+    {
+      "id": "SCENARIO-001",
+      "name": "Shift Start Briefing — Normal Queue",
+      "persona": "Sarah Chen (Team Leader)",
+      "utterances": [
+        "Give me the shift briefing",
+        "What's my exception queue?",
+        "Morning briefing please",
+        "What do I have on my plate today?"
+      ],
+      "setup": "5 open tasks: 2 high priority (aged >24h), 1 medium (aged 12h), 2 medium (aged 4h)",
+      "expectedResponse": "Summary: 5 open exceptions — 2 high priority, 2 aged >24h. Top items: [TASK-001 DHL urgent penalty risk], [TASK-002 Kuehne+Nagel missing packing list]",
+      "passCriteria": "Returns correct task counts, highlights aged/high-priority items, lists top 5"
+    },
+    {
+      "id": "SCENARIO-002",
+      "name": "Shift Start Briefing — Clean Queue",
+      "persona": "Sarah Chen (Team Leader)",
+      "utterances": [
+        "Give me the shift briefing",
+        "What exceptions are open?"
+      ],
+      "setup": "0 open tasks",
+      "expectedResponse": "Good news — no open exceptions right now. All tasks resolved. 🟢",
+      "passCriteria": "Correctly identifies empty queue, positive tone"
+    },
+    {
+      "id": "SCENARIO-003",
+      "name": "Task Lookup by Booking ID",
+      "persona": "Alex Rodriguez (Booking Agent)",
+      "utterances": [
+        "Find tasks for booking BKG-2024-00341",
+        "Any exceptions for BKG-2024-00341?",
+        "Look up booking BKG-2024-00341"
+      ],
+      "setup": "TASK-003 exists with booking reference BKG-2024-00341 in description",
+      "expectedResponse": "Found 1 task for BKG-2024-00341: [TASK-003] Geodis — Clarification: Vessel substitution on SCL→MIA leg. Created 6 hours ago. Medium priority.",
+      "passCriteria": "Finds correct task, returns booking ID, forwarder, description, age"
+    },
+    {
+      "id": "SCENARIO-004",
+      "name": "Task Lookup by Forwarder",
+      "persona": "Alex Rodriguez (Booking Agent)",
+      "utterances": [
+        "Show me all tasks from DHL",
+        "Any DHL exceptions?",
+        "Tasks from Kuehne+Nagel"
+      ],
+      "setup": "2 DHL tasks open, 1 Kuehne+Nagel task open",
+      "expectedResponse": "2 open tasks from DHL Freight: [TASK-001] Missing shipper address — High — 26h old. [TASK-004] HS code correction — Medium — 3h old.",
+      "passCriteria": "Filters by forwarder name, returns all matching tasks with priority and age"
+    },
+    {
+      "id": "SCENARIO-005",
+      "name": "Mark Task Complete",
+      "persona": "Alex Rodriguez (Booking Agent)",
+      "utterances": [
+        "Mark TASK-003 as done",
+        "Close task TASK-001",
+        "I've resolved TASK-005"
+      ],
+      "setup": "TASK-003 is open",
+      "expectedResponse": "✅ TASK-003 marked complete. Booking BKG-2024-00341 exception resolved.",
+      "passCriteria": "Confirms task ID before marking done, confirms closure, no double-close errors"
+    },
+    {
+      "id": "SCENARIO-006",
+      "name": "High Priority Exception Filter",
+      "persona": "Sarah Chen (Team Leader)",
+      "utterances": [
+        "Show me all high priority exceptions",
+        "What's critical right now?",
+        "Any urgent tasks?"
+      ],
+      "setup": "2 High tasks, 3 Medium tasks",
+      "expectedResponse": "2 high priority exceptions: [TASK-001] DHL — Penalty risk on BKG-2024-00339 — 26h aged. [TASK-002] Panalpina — Missed cutoff documentation — 18h aged.",
+      "passCriteria": "Returns only High priority tasks, sorted by age descending"
+    },
+    {
+      "id": "SCENARIO-007",
+      "name": "Aged Exceptions Filter",
+      "persona": "Sarah Chen (Team Leader)",
+      "utterances": [
+        "What's aged over 24 hours?",
+        "Show me tasks older than a day",
+        "Any overdue exceptions?"
+      ],
+      "setup": "TASK-001 is 26h old, TASK-002 is 50h old (escalation needed)",
+      "expectedResponse": "2 exceptions aged >24h: [TASK-002] 50h — ⚠️ ESCALATION THRESHOLD BREACHED — Panalpina. [TASK-001] 26h — DHL urgent penalty.",
+      "passCriteria": "Correctly identifies aged tasks, flags 48h+ as escalation breach"
+    },
+    {
+      "id": "SCENARIO-008",
+      "name": "Email Auto-Triage (Agent Flow Test)",
+      "persona": "System (automated)",
+      "utterances": [],
+      "setup": "Demo email arrives in admin@ mailbox: Subject: 'RE: Booking BKG-2024-00341 — Missing packing list' Body: 'Hi, please provide the packing list for the above shipment before the cutoff.'",
+      "expectedResponse": "Planner task created: Title='Kuehne+Nagel — Missing packing list [BKG-2024-00341]', Bucket='Missing Info', Priority=Medium, Due=+24h",
+      "passCriteria": "Task created with correct bucket, extracts booking ID, sets 24h due date"
+    },
+    {
+      "id": "SCENARIO-009",
+      "name": "Help / Onboarding",
+      "persona": "New User",
+      "utterances": [
+        "What can you do?",
+        "Help",
+        "How do I use this?"
+      ],
+      "expectedResponse": "FreightBot helps you manage freight booking exceptions. I can: give you a shift briefing, look up tasks by booking or forwarder, mark tasks complete, and show filtered exception views.",
+      "passCriteria": "Lists all 5 capabilities clearly, suggests a starter action"
+    },
+    {
+      "id": "SCENARIO-010",
+      "name": "Out of Scope Graceful Deflection",
+      "persona": "Alex Rodriguez (Booking Agent)",
+      "utterances": [
+        "Send an email to DHL for me",
+        "Update the SAP booking",
+        "What's the ETD for vessel Maersk Sentosa?"
+      ],
+      "expectedResponse": "I can't do that in Phase 1 — I handle exception task management in Planner. For SAP updates or sending emails, use your standard tools. Is there an exception task I can help with?",
+      "passCriteria": "Gracefully declines out-of-scope requests, redirects to in-scope capabilities"
+    }
+  ]
+}

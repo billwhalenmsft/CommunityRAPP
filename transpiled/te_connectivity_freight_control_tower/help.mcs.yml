@@ -1,0 +1,91 @@
+kind: AdaptiveDialog
+modelDescription: Explains the Freight Control Tower agent capabilities, how to use it, and what the background Agent Flow automation does for Booking Agents and Team Leaders.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: HelpCapabilities
+    triggerQueries:
+      - help
+      - what can you do
+      - what can you help with
+      - how do I use you
+      - capabilities
+      - how does this work
+      - what is freight bot
+      - show me what you can do
+      - what are my options
+      - instructions
+
+  actions:
+    - kind: SendActivity
+      id: helpMessage
+      activity:
+        text:
+          - "👋 I'm **FreightBot** — the Freight Control Tower AI for TE Connectivity Transportation Operations.\n\nHere's what I can help with:\n\n---\n\n📋 **Shift Briefing**\nGet a full queue summary at the start of your shift.\n> Try: *\"Give me the shift briefing\"* or *\"What's my exception queue?\"*\n\n🔍 **Task Lookup**\nSearch for specific exceptions by Booking ID or forwarder name.\n> Try: *\"Find tasks for booking BKG-2024-00341\"* or *\"Show me tasks from Kuehne+Nagel\"*\n\n✅ **Mark Task Complete**\nClose a resolved exception in Planner with one message.\n> Try: *\"Mark TASK-005 as done\"* or *\"Close task TASK-001\"*\n\n📊 **Exception Summary**\nGet filtered views of the exception board.\n> Try: *\"Show me all high priority exceptions\"*\n> Try: *\"What exceptions are aged over 24 hours?\"*\n> Try: *\"Show me Documentation exceptions\"*\n\n---\n\n🤖 **Background Automation (Agent Flow)**\nI also monitor your **admin@ inbox** automatically. When a freight forwarder email arrives:\n1. I classify it as Missing Info, Documentation, or Clarification\n2. I detect urgency keywords (URGENT, penalty, demurrage) for priority\n3. I create a Planner task in **Freight Booking Exceptions** with the booking ID and +24h due date\n4. No manual inbox monitoring needed!\n\n---\n\n⚠️ **Phase 1 Limitations**\n• I can't reply to forwarder emails directly (coming in Phase 2)\n• No SAP/TMS integration yet (Phase 2)\n• All exception data is from the Freight Booking Exceptions Planner\n\nWhat would you like to do?"
+
+    - kind: Question
+      id: askAfterHelp
+      property: Topic.HelpFollowUp
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "Where would you like to start?"
+      entity:
+        displayName: Help Follow Up
+      choices:
+        - value: briefing
+          synonyms:
+            - briefing
+            - shift briefing
+            - queue
+            - "1"
+        - value: lookup
+          synonyms:
+            - lookup
+            - find task
+            - search
+            - "2"
+        - value: summary
+          synonyms:
+            - summary
+            - exceptions
+            - "3"
+        - value: nothing
+          synonyms:
+            - nothing
+            - thanks
+            - got it
+            - close
+            - "4"
+
+    - kind: ConditionGroup
+      id: helpRoute
+      conditions:
+        - id: toBriefing
+          condition: =Topic.HelpFollowUp = "briefing"
+          actions:
+            - kind: BeginDialog
+              id: goToBriefing
+              dialogId: ShiftStartBriefing
+
+        - id: toLookup
+          condition: =Topic.HelpFollowUp = "lookup"
+          actions:
+            - kind: BeginDialog
+              id: goToLookup
+              dialogId: TaskLookup
+
+        - id: toSummary
+          condition: =Topic.HelpFollowUp = "summary"
+          actions:
+            - kind: BeginDialog
+              id: goToSummary
+              dialogId: ExceptionSummary
+
+      elseActions:
+        - kind: SendActivity
+          id: helpDone
+          activity:
+            text:
+              - "No problem! I'm here whenever you need me. Just ask!"

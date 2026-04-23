@@ -1,0 +1,309 @@
+{
+  "demo_name": "TE Connectivity Freight Booking Control Tower",
+  "version": "1.0.0",
+  "customer": "TE Connectivity Ltd",
+  "use_case": "Freight Booking Email Control Tower with Task-Based Exception Management",
+  "agent_name": "Freight Control Tower (FreightBot)",
+  "persona_users": ["Booking Agents", "Team Leaders"],
+  "created_by": "RAPP Pipeline — CommunityRAPP",
+  "phase": "Phase 1 — Demo/Sandbox",
+
+  "demo_setup": {
+    "email_inbox": "admin@[sandbox-tenant].onmicrosoft.com",
+    "planner_plan": "Freight Booking Exceptions",
+    "planner_buckets": ["Missing Info", "Documentation", "Clarification"],
+    "teams_channel": "Freight Ops — Exception Alerts",
+    "note": "Provision the Planner plan and buckets before running the demo. Seed the 5 sample emails from the forwarder_emails section below."
+  },
+
+  "forwarder_emails": [
+    {
+      "id": "EMAIL-001",
+      "from": "dispatch@kuehne-nagel-demo.com",
+      "to": "admin@[sandbox-tenant].onmicrosoft.com",
+      "subject": "URGENT — Missing shipper address for BKG-2024-00341",
+      "received_at": "2024-11-10T07:45:00Z",
+      "body": "Dear team,\n\nWe are unable to proceed with booking BKG-2024-00341 for shipment TE-SHP-112233 departing Rotterdam next Tuesday.\n\nWe are MISSING the complete shipper address and contact details. This will cause a missed vessel cutoff with penalty demurrage charges if not resolved by 17:00 CET today.\n\nPlease provide the following immediately:\n- Complete shipper company name\n- Full street address\n- Contact name and phone number\n- VAT / EORI number\n\nBest regards,\nKuehne+Nagel Dispatch Team",
+      "expected_classification": {
+        "priority": "High",
+        "bucket": "Missing Info",
+        "booking_id": "BKG-2024-00341",
+        "shipment_id": "TE-SHP-112233"
+      },
+      "expected_planner_task": {
+        "title": "URGENT — Missing shipper address for BKG-2024-00341 — Kuehne+Nagel",
+        "bucket": "Missing Info",
+        "priority": "High",
+        "priority_value": 2,
+        "due_hours_from_now": 24
+      }
+    },
+    {
+      "id": "EMAIL-002",
+      "from": "ops@dhl-freight-demo.com",
+      "to": "admin@[sandbox-tenant].onmicrosoft.com",
+      "subject": "Commercial Invoice correction needed — BKG-2024-00298",
+      "received_at": "2024-11-10T09:30:00Z",
+      "body": "Hi,\n\nThe commercial invoice for booking BKG-2024-00298 has an incorrect HS code for the connector assemblies.\n\nThe customs broker has flagged this and will not clear the shipment (TE-SHP-109876) until the HS code is corrected from 8544.42.9000 to 8536.90.8500.\n\nPlease send the corrected commercial invoice document at your earliest convenience.\n\nRegards,\nDHL Freight Operations",
+      "expected_classification": {
+        "priority": "Medium",
+        "bucket": "Documentation",
+        "booking_id": "BKG-2024-00298",
+        "shipment_id": "TE-SHP-109876"
+      },
+      "expected_planner_task": {
+        "title": "Commercial Invoice correction needed — BKG-2024-00298 — DHL Freight",
+        "bucket": "Documentation",
+        "priority": "Medium",
+        "priority_value": 5,
+        "due_hours_from_now": 24
+      }
+    },
+    {
+      "id": "EMAIL-003",
+      "from": "bookings@panalpina-demo.com",
+      "to": "admin@[sandbox-tenant].onmicrosoft.com",
+      "subject": "Schedule change — please confirm BKG-2024-00355",
+      "received_at": "2024-11-10T11:00:00Z",
+      "body": "Dear TE Connectivity,\n\nPlease clarify and confirm the new departure arrangements for booking BKG-2024-00355 (shipment TE-SHP-113344).\n\nThe original vessel MSC AMBRA (V.24114) has been substituted with MSC ELISA (V.24115) with ETD now 14-Nov instead of the original 11-Nov departure.\n\nDo you wish to:\na) Keep the booking on MSC ELISA with the new ETD of 14-Nov\nb) Transfer the booking to the next available departure on 18-Nov\nc) Cancel the booking\n\nPlease confirm your preference by 14:00 CET today.\n\nKind regards,\nPanalpina Bookings Team",
+      "expected_classification": {
+        "priority": "Medium",
+        "bucket": "Clarification",
+        "booking_id": "BKG-2024-00355",
+        "shipment_id": "TE-SHP-113344"
+      },
+      "expected_planner_task": {
+        "title": "Schedule change — please confirm BKG-2024-00355 — Panalpina",
+        "bucket": "Clarification",
+        "priority": "Medium",
+        "priority_value": 5,
+        "due_hours_from_now": 24
+      }
+    },
+    {
+      "id": "EMAIL-004",
+      "from": "freight@geodis-demo.com",
+      "to": "admin@[sandbox-tenant].onmicrosoft.com",
+      "subject": "Packing list required for BKG-2024-00317",
+      "received_at": "2024-11-08T14:20:00Z",
+      "body": "Hello,\n\nWe require the packing list for shipment TE-SHP-110045, booking BKG-2024-00317.\n\nThis is needed before we can complete the export customs declaration. Without it, we cannot proceed and the shipment will miss the vessel loading window.\n\nPlease provide the packing list document as soon as possible.\n\nThank you,\nGeodis Freight Team",
+      "expected_classification": {
+        "priority": "Medium",
+        "bucket": "Missing Info",
+        "booking_id": "BKG-2024-00317",
+        "shipment_id": "TE-SHP-110045"
+      },
+      "expected_planner_task": {
+        "title": "Packing list required for BKG-2024-00317 — Geodis",
+        "bucket": "Missing Info",
+        "priority": "Medium",
+        "priority_value": 5,
+        "due_hours_from_now": 24
+      }
+    },
+    {
+      "id": "EMAIL-005",
+      "from": "escalations@db-schenker-demo.com",
+      "to": "admin@[sandbox-tenant].onmicrosoft.com",
+      "subject": "URGENT — Certificate of Origin missing — BKG-2024-00322 — HOLD",
+      "received_at": "2024-11-10T13:15:00Z",
+      "body": "URGENT ESCALATION\n\nShipment TE-SHP-110567 (booking BKG-2024-00322) is currently on HOLD at the port of Shanghai because the Certificate of Origin is missing from the documentation set.\n\nA penalty fee of USD 250 per day will be applied for each day the shipment remains on hold.\n\nThis is a critical shipment for a key end customer with a delivery commitment.\n\nPlease expedite the Certificate of Origin IMMEDIATELY and send it to: customs-shanghai@db-schenker-demo.com\n\nTime is critical.\n\nDB Schenker Escalations Team",
+      "expected_classification": {
+        "priority": "High",
+        "bucket": "Documentation",
+        "booking_id": "BKG-2024-00322",
+        "shipment_id": "TE-SHP-110567"
+      },
+      "expected_planner_task": {
+        "title": "URGENT — Certificate of Origin missing — BKG-2024-00322 — DB Schenker",
+        "bucket": "Documentation",
+        "priority": "High",
+        "priority_value": 2,
+        "due_hours_from_now": 24
+      }
+    }
+  ],
+
+  "demo_scenarios": [
+    {
+      "id": "SCENARIO-01",
+      "title": "Shift Start Briefing — Team Leader Morning Check-In",
+      "persona": "Team Leader — Morning shift start",
+      "description": "Team Leader Sarah opens Teams and asks FreightBot for the daily exception briefing before the shift meeting.",
+      "conversation": [
+        {
+          "speaker": "User",
+          "message": "Good morning FreightBot, give me the shift briefing"
+        },
+        {
+          "speaker": "FreightBot",
+          "message": "Good morning! Here's your Freight Exception Queue as of 07:30:\n\n📋 **Exception Board Summary**\n• **Total Open:** 5 exceptions\n• 🔴 **High Priority:** 2 (TASK-001, TASK-005)\n• ⏰ **Aged >24h:** 2 exceptions (TASK-001 is 26h, TASK-004 is 52h)\n• ⚠️ **Aged >48h:** 1 exception (TASK-004 — OVERDUE)\n• 🪣 Missing Info: 2 | Documentation: 2 | Clarification: 1\n\n**Top 5 by Priority/Age:**\n1. 🔴 TASK-004 — Packing list required BKG-2024-00317 (Geodis) — **52h OVERDUE**\n2. 🔴 TASK-001 — URGENT Missing shipper address BKG-2024-00341 (Kuehne+Nagel) — 26h overdue\n3. 🔴 TASK-005 — URGENT Certificate of Origin BKG-2024-00322 (DB Schenker) — 5h\n4. 🟡 TASK-002 — Invoice correction BKG-2024-00298 (DHL Freight) — 18h\n5. 🟡 TASK-003 — Schedule change BKG-2024-00355 (Panalpina) — 8h\n\nWould you like me to look up a specific task or show all high-priority exceptions?"
+        }
+      ],
+      "demo_talking_points": [
+        "Zero inbox monitoring — exceptions surfaced automatically as Planner tasks",
+        "Instant aging visibility — team leader sees 2 overdue tasks before shift meeting",
+        "Priority ordering prevents critical items being buried",
+        "Works in Teams chat — no need to switch to Planner manually"
+      ]
+    },
+    {
+      "id": "SCENARIO-02",
+      "title": "Task Lookup by Booking ID",
+      "persona": "Booking Agent — Looking up a specific shipment",
+      "description": "Booking Agent Alex receives a call from DB Schenker about BKG-2024-00322 and quickly looks it up via FreightBot.",
+      "conversation": [
+        {
+          "speaker": "User",
+          "message": "Find tasks for booking BKG-2024-00322"
+        },
+        {
+          "speaker": "FreightBot",
+          "message": "I found **1 task** for booking BKG-2024-00322:\n\n**TASK-005** 🔴 High Priority\n📂 Bucket: Documentation\n🚢 Shipment: TE-SHP-110567\n🏢 Forwarder: DB Schenker\n📅 Created: 5 hours ago | Due in: 19 hours\n\n**Description:** Shipment ON HOLD at Shanghai port. Certificate of Origin missing. Daily penalty fees accruing. Critical customer shipment.\n\nWould you like to mark this task as complete once resolved?"
+        }
+      ],
+      "demo_talking_points": [
+        "Natural language lookup — no need to know the task ID",
+        "Forwarder name and shipment ID parsed automatically from email",
+        "Context delivered instantly — agent knows the full situation before picking up the phone"
+      ]
+    },
+    {
+      "id": "SCENARIO-03",
+      "title": "Mark Task Complete",
+      "persona": "Booking Agent — Resolving an exception",
+      "description": "Booking Agent Alex resolves the Certificate of Origin for DB Schenker and marks the task complete.",
+      "conversation": [
+        {
+          "speaker": "User",
+          "message": "Mark TASK-005 as done"
+        },
+        {
+          "speaker": "FreightBot",
+          "message": "✅ **TASK-005 has been marked complete** in the Freight Booking Exceptions Planner.\n\n**Task:** URGENT — Certificate of Origin missing — BKG-2024-00322 — DB Schenker\n**Completed at:** Today at 14:22\n\nGreat work resolving this one! Is there anything else you need?"
+        }
+      ],
+      "demo_talking_points": [
+        "One-line task closure — no need to navigate to Planner manually",
+        "Audit trail maintained — completed_at timestamp recorded",
+        "Exception closed in 2 messages — streamlined resolution workflow"
+      ]
+    },
+    {
+      "id": "SCENARIO-04",
+      "title": "High Priority Exception Summary",
+      "persona": "Team Leader — Exception escalation review",
+      "description": "Team Leader wants to see all high-priority exceptions before a forwarder call.",
+      "conversation": [
+        {
+          "speaker": "User",
+          "message": "Show me all high priority exceptions"
+        },
+        {
+          "speaker": "FreightBot",
+          "message": "Here are all **2 High Priority** open exceptions:\n\n🔴 **TASK-001** — URGENT Missing shipper address — BKG-2024-00341\n• Forwarder: Kuehne+Nagel | Bucket: Missing Info | **26h OVERDUE**\n• Risk: Missed vessel cutoff + demurrage charges\n\n🔴 **TASK-005** — URGENT Certificate of Origin — BKG-2024-00322\n• Forwarder: DB Schenker | Bucket: Documentation | 5h\n• Risk: Shipment ON HOLD at Shanghai, USD 250/day penalty\n\nBoth require immediate action. Would you like me to look up the details of either task?"
+        }
+      ],
+      "demo_talking_points": [
+        "Exception triage in seconds — filter directly to what matters most",
+        "Risk context included — agent explains WHY it's high priority",
+        "Team leader can immediately direct resources to the right issues"
+      ]
+    },
+    {
+      "id": "SCENARIO-05",
+      "title": "Email Auto-Triage (Agent Flow Demo)",
+      "persona": "Demo presenter — showing the background automation",
+      "description": "Show the Agent Flow triggering on a new email and creating the Planner task automatically.",
+      "agent_flow_steps": [
+        "1. New email arrives in admin@ mailbox from freight@geodis-demo.com",
+        "2. Agent Flow trigger fires (Office 365 — When a new email arrives)",
+        "3. CS Generative AI classifies: Medium priority, Missing Info bucket, BKG-2024-00317 parsed",
+        "4. Planner task created: 'Packing list required for BKG-2024-00317 — Geodis'",
+        "5. Due date set: +24 hours from email received",
+        "6. Task appears in FreightBot's shift briefing immediately"
+      ],
+      "demo_talking_points": [
+        "Zero human effort to classify and route the exception",
+        "Booking ID and shipment ID parsed automatically from email body",
+        "Priority set based on keywords — 'urgent' and 'penalty' keywords drive High priority",
+        "Team leader sees the task in the next shift briefing within seconds of email arrival"
+      ]
+    }
+  ],
+
+  "agent_flow_definition": {
+    "name": "Freight Exception Email to Planner Task",
+    "trigger": {
+      "type": "When a new email arrives (V3)",
+      "connector": "Office 365 Outlook",
+      "mailbox": "admin@[sandbox-tenant].onmicrosoft.com",
+      "folder": "Inbox",
+      "include_attachments": false
+    },
+    "steps": [
+      {
+        "step": 1,
+        "action": "AI Classification",
+        "description": "Use CS Generative AI or keyword rules to classify email",
+        "output_variables": ["priority", "bucket", "booking_id", "shipment_id", "forwarder_name"]
+      },
+      {
+        "step": 2,
+        "action": "Condition — Is this a freight exception?",
+        "description": "Check if email contains freight-related keywords; skip if not applicable"
+      },
+      {
+        "step": 3,
+        "action": "Get Planner Plan ID",
+        "description": "Get the ID of the 'Freight Booking Exceptions' plan",
+        "connector": "Microsoft Planner",
+        "action_type": "List my plans (V3)"
+      },
+      {
+        "step": 4,
+        "action": "Get Bucket ID",
+        "description": "Get the bucket ID for the classified bucket name",
+        "connector": "Microsoft Planner",
+        "action_type": "List buckets (V3)"
+      },
+      {
+        "step": 5,
+        "action": "Create Planner task",
+        "connector": "Microsoft Planner",
+        "action_type": "Create a task (V3)",
+        "fields": {
+          "title": "@{triggerOutputs()?['body/subject']} — @{variables('forwarder_name')}",
+          "plan_id": "@{variables('planId')}",
+          "bucket_id": "@{variables('bucketId')}",
+          "due_date_time": "@{addHours(utcNow(), 24)}",
+          "priority": "@{if(equals(variables('priority'), 'High'), 2, 5)}",
+          "description": "@{concat(first(body(triggerOutputs()?['body/body'], 500)), '\n\nBooking: ', variables('booking_id'), ' | Shipment: ', variables('shipment_id'))}"
+        }
+      }
+    ]
+  },
+
+  "planner_task_mapping": {
+    "priority_values": {
+      "Urgent": 1,
+      "High": 2,
+      "Medium": 5,
+      "Low": 9
+    },
+    "bucket_names": ["Missing Info", "Documentation", "Clarification"],
+    "plan_name": "Freight Booking Exceptions",
+    "note": "Create this plan in Microsoft Planner before running the demo. Note the plan ID for the Agent Flow configuration."
+  },
+
+  "credentials_note": "All credentials, tenant IDs, and mailbox addresses must be configured via environment variables or the Agent Flow connection settings. Never hardcode credentials in flow definitions or agent code.",
+
+  "phase_2_roadmap": [
+    "Automated email reply to forwarder acknowledging exception receipt",
+    "SAP TMS integration to validate booking IDs against live ERP data",
+    "Power BI dashboard for exception aging trends and forwarder performance",
+    "Teams adaptive card notifications for overdue exceptions",
+    "Multi-user task assignment (assign to specific booking agent)",
+    "SLA alerting when task approaches due date"
+  ]
+}

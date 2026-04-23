@@ -1,0 +1,196 @@
+{
+  "agent": {
+    "name": "Freight Control Tower",
+    "displayName": "Freight Control Tower",
+    "internalName": "FreightBot",
+    "description": "AI-powered freight booking exception management agent for TE Connectivity Transportation Operations. Monitors inbound forwarder emails, auto-triages to Microsoft Planner, and provides conversational shift briefings and exception management.",
+    "version": "1.0.0",
+    "language": "en-us",
+    "authenticationMode": "integrated",
+    "icon": "🚢",
+    "createdBy": "RAPP Pipeline — CommunityRAPP",
+    "customer": "TE Connectivity Ltd",
+    "phase": "Phase 1 — Demo/Sandbox"
+  },
+
+  "copilotStudio": {
+    "schemaVersion": "2.0",
+    "orchestrationType": "Generative",
+    "generativeAnswersEnabled": true,
+    "contentModeration": "Medium",
+    "optInUseLatestModels": true,
+    "agentFlowsEnabled": true,
+    "topicList": [
+      {
+        "id": "conversation_start",
+        "displayName": "Conversation Start",
+        "file": "conversation_start.mcs.yml",
+        "type": "system",
+        "description": "Welcome message when user opens a chat"
+      },
+      {
+        "id": "shift_start_briefing",
+        "displayName": "Shift Start Briefing",
+        "file": "shift_start_briefing.mcs.yml",
+        "type": "intent",
+        "priority": 1,
+        "description": "Exception queue summary with aging and top 5 priority tasks"
+      },
+      {
+        "id": "task_lookup",
+        "displayName": "Task Lookup",
+        "file": "task_lookup.mcs.yml",
+        "type": "intent",
+        "priority": 2,
+        "description": "Search Planner tasks by booking ID or forwarder name"
+      },
+      {
+        "id": "mark_task_complete",
+        "displayName": "Mark Task Complete",
+        "file": "mark_task_complete.mcs.yml",
+        "type": "intent",
+        "priority": 3,
+        "description": "Close a resolved exception in Planner"
+      },
+      {
+        "id": "exception_summary",
+        "displayName": "Exception Summary",
+        "file": "exception_summary.mcs.yml",
+        "type": "intent",
+        "priority": 4,
+        "description": "Filtered exception views by priority, age, or bucket"
+      },
+      {
+        "id": "help",
+        "displayName": "Help / Capabilities",
+        "file": "help.mcs.yml",
+        "type": "intent",
+        "priority": 5,
+        "description": "Agent capabilities guide and onboarding"
+      }
+    ]
+  },
+
+  "agentFlows": [
+    {
+      "name": "Freight Exception Email to Planner Task",
+      "displayName": "Freight Exception Auto-Triage",
+      "description": "Triggers on new email in admin@ mailbox. Classifies exception type and priority using keyword rules. Creates Microsoft Planner task in Freight Booking Exceptions plan.",
+      "trigger": {
+        "connector": "Office 365 Outlook",
+        "type": "When a new email arrives (V3)",
+        "mailbox": "admin@[sandbox-tenant].onmicrosoft.com",
+        "folder": "Inbox"
+      },
+      "steps": [
+        "Extract subject, body, and sender from email",
+        "Classify priority: High if urgent/penalty/demurrage/expedite keywords detected",
+        "Classify bucket: Documentation | Missing Info | Clarification based on keywords",
+        "Parse Booking ID (BKG-YYYY-NNNNN) and Shipment ID (TE-SHP-NNNNNN) from email body",
+        "Get Planner Plan ID for 'Freight Booking Exceptions'",
+        "Get Bucket ID for classified bucket name",
+        "Create Planner task with title, description, priority value, bucket, and +24h due date"
+      ],
+      "m365Connectors": [
+        "Office 365 Outlook — When a new email arrives (V3)",
+        "Microsoft Planner — Get plans in a group (V3)",
+        "Microsoft Planner — List buckets (V3)",
+        "Microsoft Planner — Create a task (V3)"
+      ],
+      "note": "This flow must be created as a Copilot Studio Agent Flow (not standalone Power Automate). Connection authentication uses the agent's configured M365 identity."
+    }
+  ],
+
+  "channels": {
+    "microsoftTeams": {
+      "enabled": true,
+      "teamsApp": "FreightBot",
+      "recommendedChannel": "Freight Ops — Exception Alerts"
+    },
+    "copilotStudioWebchat": {
+      "enabled": true
+    },
+    "m365Copilot": {
+      "enabled": false,
+      "note": "Enable in Phase 2 after Microsoft 365 Copilot licensing is confirmed"
+    }
+  },
+
+  "conversationStarters": [
+    { "title": "Shift briefing", "text": "Give me the shift briefing" },
+    { "title": "High priority exceptions", "text": "Show me all high priority exceptions" },
+    { "title": "Find a task", "text": "Find tasks for booking BKG-2024-00322" },
+    { "title": "Aged exceptions", "text": "What exceptions are aged over 24 hours?" },
+    { "title": "Help", "text": "What can you help me with?" }
+  ],
+
+  "deploymentChecklist": [
+    {
+      "step": 1,
+      "title": "Provision M365 sandbox tenant",
+      "details": "Confirm M365 E5 or equivalent sandbox with Teams, Planner, and Outlook"
+    },
+    {
+      "step": 2,
+      "title": "Create admin@ mailbox",
+      "details": "Create shared mailbox admin@[tenant].onmicrosoft.com for freight exceptions"
+    },
+    {
+      "step": 3,
+      "title": "Create Planner plan",
+      "details": "Create 'Freight Booking Exceptions' plan with 3 buckets: Missing Info, Documentation, Clarification"
+    },
+    {
+      "step": 4,
+      "title": "Note Planner IDs",
+      "details": "Record the Planner plan ID and bucket IDs — needed for Agent Flow configuration"
+    },
+    {
+      "step": 5,
+      "title": "Create Copilot Studio agent",
+      "details": "Create new agent in Copilot Studio, paste freight_control_tower_agent.mcs.yml settings"
+    },
+    {
+      "step": 6,
+      "title": "Import topics",
+      "details": "Paste each .mcs.yml topic into Copilot Studio topic editor (code view)"
+    },
+    {
+      "step": 7,
+      "title": "Create Agent Flow",
+      "details": "Create Agent Flow inside Copilot Studio (not standalone PA). Configure Outlook + Planner connectors"
+    },
+    {
+      "step": 8,
+      "title": "Seed sample emails",
+      "details": "Send the 5 sample forwarder emails to admin@ to test the Agent Flow and Planner task creation"
+    },
+    {
+      "step": 9,
+      "title": "Test topics in CS canvas",
+      "details": "Test all 5 topics: shift briefing, lookup, mark complete, summary, help"
+    },
+    {
+      "step": 10,
+      "title": "Deploy to Teams",
+      "details": "Publish agent and add to TE Connectivity Freight Ops team channel"
+    }
+  ],
+
+  "sourceFiles": {
+    "agentYaml": "transpiled/te_connectivity_freight_control_tower/freight_control_tower_agent.mcs.yml",
+    "topics": [
+      "transpiled/te_connectivity_freight_control_tower/conversation_start.mcs.yml",
+      "transpiled/te_connectivity_freight_control_tower/shift_start_briefing.mcs.yml",
+      "transpiled/te_connectivity_freight_control_tower/task_lookup.mcs.yml",
+      "transpiled/te_connectivity_freight_control_tower/mark_task_complete.mcs.yml",
+      "transpiled/te_connectivity_freight_control_tower/exception_summary.mcs.yml",
+      "transpiled/te_connectivity_freight_control_tower/help.mcs.yml"
+    ],
+    "pythonAgent": "rapp_projects/te_connectivity_freight_control_tower/outputs/freight_booking_agent.py",
+    "demoJson": "rapp_projects/te_connectivity_freight_control_tower/outputs/freight_booking_demo.json",
+    "agentTester": "rapp_projects/te_connectivity_freight_control_tower/outputs/agent_tester.html",
+    "useCase": "rapp_projects/te_connectivity_freight_control_tower/inputs/use_case.md",
+    "environmentConfig": "customers/te_connectivity/d365/config/environment.json"
+  }
+}

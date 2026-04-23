@@ -1,0 +1,126 @@
+kind: AdaptiveDialog
+modelDescription: Provides the shift start briefing for Booking Agents and Team Leaders — total open exceptions, aged counts, high priority, and top 5 tasks by priority and age.
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: ShiftStartBriefing
+    triggerQueries:
+      - shift briefing
+      - what's my exception queue
+      - give me the shift briefing
+      - morning briefing
+      - exception queue
+      - what's open
+      - how many exceptions
+      - queue status
+      - what do I have today
+      - daily briefing
+
+  actions:
+    - kind: SendActivity
+      id: briefingIntro
+      activity:
+        text:
+          - "Let me pull your exception queue from the Freight Booking Exceptions Planner..."
+
+    - kind: InvokeFlowAction
+      id: getShiftBriefing
+      flowId: freight-briefing-flow
+      input:
+        action: !power-fx "get_shift_briefing"
+      output:
+        Topic.BriefingResult: result
+
+    - kind: ConditionGroup
+      id: checkBriefingResult
+      conditions:
+        - id: hasResults
+          condition: =!IsBlank(Topic.BriefingResult)
+          actions:
+            - kind: SendActivity
+              id: sendBriefing
+              activity:
+                text:
+                  - "📋 **Freight Exception Queue — Shift Briefing**\n\n**Total Open:** {Topic.BriefingResult.total_open} exceptions\n🔴 **High Priority:** {Topic.BriefingResult.high_priority_count}\n⏰ **Aged >24h:** {Topic.BriefingResult.aged_over_24h}\n⚠️ **Aged >48h:** {Topic.BriefingResult.aged_over_48h}\n🚨 **Overdue:** {Topic.BriefingResult.overdue_count}\n\n🪣 **By Bucket:**\n• Missing Info: {Topic.BriefingResult.buckets.Missing_Info}\n• Documentation: {Topic.BriefingResult.buckets.Documentation}\n• Clarification: {Topic.BriefingResult.buckets.Clarification}"
+
+            - kind: SendActivity
+              id: sendTop5
+              activity:
+                text:
+                  - "**Top 5 Exceptions by Priority / Age:**\n\nI'll list them ranked by urgency — overdue first, then high priority, then oldest."
+
+      elseActions:
+        - kind: SendActivity
+          id: noTasks
+          activity:
+            text:
+              - "✅ Great news — your exception queue is clear! No open tasks in the Freight Booking Exceptions Planner right now.\n\nI'll continue monitoring the admin@ inbox for new forwarder exceptions."
+
+    - kind: Question
+      id: askFollowUp
+      property: Topic.FollowUpAction
+      interruptionPolicy:
+        allowInterruption: true
+      prompt:
+        text: "What would you like to do next?"
+      entity:
+        displayName: Follow Up Action
+      choices:
+        - value: high_priority
+          synonyms:
+            - high priority
+            - urgent
+            - show high priority
+            - "1"
+        - value: aged
+          synonyms:
+            - aged
+            - overdue
+            - what's old
+            - show aged
+            - "2"
+        - value: lookup
+          synonyms:
+            - lookup
+            - find task
+            - search
+            - find booking
+            - "3"
+        - value: done
+          synonyms:
+            - done
+            - nothing
+            - that's all
+            - "4"
+
+    - kind: ConditionGroup
+      id: routeFollowUp
+      conditions:
+        - id: toHighPriority
+          condition: =Topic.FollowUpAction = "high_priority"
+          actions:
+            - kind: BeginDialog
+              id: goHighPriority
+              dialogId: ExceptionSummary
+
+        - id: toAged
+          condition: =Topic.FollowUpAction = "aged"
+          actions:
+            - kind: BeginDialog
+              id: goAged
+              dialogId: ExceptionSummary
+
+        - id: toLookup
+          condition: =Topic.FollowUpAction = "lookup"
+          actions:
+            - kind: BeginDialog
+              id: goLookup
+              dialogId: TaskLookup
+
+      elseActions:
+        - kind: SendActivity
+          id: closeBriefing
+          activity:
+            text:
+              - "Got it. Good luck with the shift! I'm here whenever you need me."
