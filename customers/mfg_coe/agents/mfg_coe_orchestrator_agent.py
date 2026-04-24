@@ -31,6 +31,7 @@ Actions:
 import json
 import logging
 import os
+import re
 import subprocess
 from datetime import datetime
 from typing import Dict, Any, List
@@ -492,7 +493,7 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         skill_comment = skill_result.get("comment", "")
         steps_taken.append({"step": "skills_identified", "result": skill_result})
 
-        # Step 3: Log solution summary + skill requirements back to GitHub
+        # Step 3: Log architecture + skill requirements to GitHub
         skills_display = ", ".join(required_skills) if required_skills else "dynamics_crm, copilot_studio"
         summary = (
             f"## 🏗️ Architecture Design Complete\n\n"
@@ -507,22 +508,156 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         self.pm.perform(action="assign_work", issue_number=issue_number, persona="developer",
                         context="Architecture complete — ready for Developer agent to scaffold.")
 
-        next_steps = [
-            "Developer Agent to scaffold implementation",
-            "Outcome Validator will run before issue closes",
-            "Bill to review outcome definition and confirm KPI targets",
-        ]
+        # Step 4: EXECUTE — actually build the artifact
+        build_result = self._execute_build(
+            issue_number=issue_number,
+            title=title,
+            body=body,
+            labels=labels,
+            required_skills=required_skills,
+            arch_data=arch_data,
+        )
+        steps_taken.append({"step": "artifact_built", "result": build_result})
+
+        artifact_path = build_result.get("artifact_path", "")
+        artifact_preview = build_result.get("content_preview", "")[:400]
+        committed = build_result.get("committed", False)
+        agent_used = build_result.get("agent_used", "developer")
+        build_error = build_result.get("error", "")
+
+        if build_error:
+            # Build failed — escalate to Bill with error details
+            error_comment = (
+                f"## ⚠️ Build Step Failed — Needs Bill\n\n"
+                f"The {agent_used} agent encountered an error while building the artifact:\n\n"
+                f"```\n{build_error}\n```\n\n"
+                f"**Please review and provide direction.** The architecture design is complete (see above).\n\n"
+                f"_Agent: {agent_used} | Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
+            )
+            _gh(["issue", "comment", str(issue_number), "--repo", REPO, "--body", error_comment])
+            _gh(["issue", "edit", str(issue_number), "--repo", REPO, "--add-label", "needs-bill"])
+            return json.dumps({
+                "issue_number": issue_number,
+                "title": title,
+                "pipeline_steps": steps_taken,
+                "current_stage": "tech-solution",
+                "status": "needs_bill",
+                "question": f"Build step failed: {build_error}",
+            }, indent=2)
+
+        # Step 5: Post artifact for Bill's review
+        commit_note = f"✅ Committed to `{artifact_path}`" if committed else f"📄 Artifact at `{artifact_path}` (commit pending)"
+        review_comment = (
+            f"## 🏗️ Artifact Built — Needs Your Review\n\n"
+            f"The **{agent_used}** agent has produced an artifact for this issue.\n\n"
+            f"**{commit_note}**\n\n"
+            f"**Preview:**\n```\n{artifact_preview}\n```\n\n"
+            f"**To approve and close:** Comment `/approve` or `/push`\n"
+            f"**To request changes:** Comment with your feedback and the agent will iterate\n\n"
+            f"---\n_Agent: {agent_used} | Run ID: GHA_{os.environ.get('GITHUB_RUN_ID', 'local')}_"
+        )
+        _gh(["issue", "comment", str(issue_number), "--repo", REPO, "--body", review_comment])
+        _gh(["issue", "edit", str(issue_number), "--repo", REPO, "--add-label", "needs-bill"])
 
         return json.dumps({
             "issue_number": issue_number,
             "title": title,
             "pipeline_steps": steps_taken,
             "current_stage": "tech-solution",
-            "assigned_to": "developer",
-            "next_steps": next_steps,
-            "status": "pipeline_advanced",
-            "summary": f"Pipeline advanced for #{issue_number}. Outcome defined, use case documented, architecture designed. Assigned to Developer.",
+            "assigned_to": agent_used,
+            "artifact_path": artifact_path,
+            "committed": committed,
+            "status": "needs_bill_review",
+            "question": f"Artifact built at `{artifact_path}`. Please review and comment `/approve` to close, or provide feedback to iterate.",
         }, indent=2)
+
+    def _execute_build(self, issue_number: int, title: str, body: str,
+                       labels: list, required_skills: list, arch_data: dict) -> dict:
+        """
+        Step 4: Actually build the artifact.
+        Detects task type (knowledge vs code), calls the right agent,
+        writes the file, and commits + pushes via git.
+        """
+        title_lower = title.lower()
+
+        # Classify task type
+        knowledge_keywords = ["sop", "gap", "use case", "top 10", "guide", "document",
+                               "analysis", "context card", "knowledge", "survey", "research"]
+        code_keywords = ["agent", "runner", "builder", "scaffold", "implement",
+                         "quick demo", "coe runner", "build agent"]
+
+        is_knowledge = any(kw in title_lower for kw in knowledge_keywords)
+        is_code = any(kw in title_lower for kw in code_keywords) or \
+                  any(s in (required_skills or []) for s in ["azure_functions", "azure_ai"])
+
+        # Knowledge takes precedence unless it's clearly code
+        task_type = "code" if is_code and not is_knowledge else "knowledge"
+
+        try:
+            if task_type == "knowledge":
+                result_raw = self.sme.perform(
+                    action="execute_issue",
+                    issue_title=title,
+                    issue_body=body,
+                )
+            else:
+                result_raw = self.developer.perform(
+                    action="execute_issue",
+                    issue_title=title,
+                    issue_body=body,
+                )
+
+            result = json.loads(result_raw)
+
+            if "error" in result:
+                return {"error": result["error"], "agent_used": task_type}
+
+            artifact_path = result.get("output_path", "")
+            abs_path = result.get("abs_path", "")
+            agent_used = result.get("agent", task_type)
+            content_preview = result.get("content_preview", "")
+
+            # Git commit + push
+            committed = False
+            if abs_path and os.path.exists(abs_path):
+                repo_root = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
+                try:
+                    subprocess.run(["git", "config", "user.email", "agents@bots-in-blazers.fun"],
+                                   cwd=repo_root, capture_output=True)
+                    subprocess.run(["git", "config", "user.name", "CoE Agent Team"],
+                                   cwd=repo_root, capture_output=True)
+                    subprocess.run(["git", "add", abs_path],
+                                   cwd=repo_root, capture_output=True)
+                    commit_result = subprocess.run(
+                        ["git", "commit", "-m",
+                         f"feat: CoE agent artifact for #{issue_number} — {title[:60]}\n\n"
+                         f"Co-authored-by: CoE Agent Team <agents@bots-in-blazers.fun>\n"
+                         f"Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"],
+                        cwd=repo_root, capture_output=True, text=True,
+                    )
+                    if commit_result.returncode == 0:
+                        push_result = subprocess.run(["git", "push"],
+                                                     cwd=repo_root, capture_output=True, text=True)
+                        committed = push_result.returncode == 0
+                        logger.info("Git push result: %s", push_result.stdout + push_result.stderr)
+                    else:
+                        logger.warning("Git commit returned %d: %s",
+                                       commit_result.returncode, commit_result.stderr)
+                except Exception as e:
+                    logger.warning("Git operations failed: %s", e)
+
+            return {
+                "artifact_path": artifact_path,
+                "abs_path": abs_path,
+                "content_preview": content_preview,
+                "agent_used": agent_used,
+                "task_type": task_type,
+                "committed": committed,
+            }
+
+        except Exception as e:
+            logger.error("_execute_build failed: %s", e)
+            return {"error": str(e), "agent_used": task_type}
 
     # ── CoE Status ────────────────────────────────────────────────
 

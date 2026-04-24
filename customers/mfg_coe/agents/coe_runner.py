@@ -376,6 +376,14 @@ def action_process_issue(issue_number: int) -> None:
         _set_issue_label(issue_number, ["done"], ["agent-task"])
         _close_issue(issue_number)
 
+    elif status == "needs_bill_review":
+        # Orchestrator already posted the full review comment — just set labels
+        artifact_path = result.get("artifact_path", "")
+        committed = result.get("committed", False)
+        log.info("Issue #%d has artifact at '%s' (committed=%s), waiting for Bill review",
+                 issue_number, artifact_path, committed)
+        _set_issue_label(issue_number, ["needs-bill"], ["agent-task"])
+
     elif status == "pipeline_advanced":
         stage = result.get("current_stage", "unknown")
         assigned_to = result.get("assigned_to", "")

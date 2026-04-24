@@ -181,6 +181,7 @@ class MfgCoEDeveloperAgent(BasicAgent):
             "get_agent_pattern":        self._get_agent_pattern,
             "recommend_skill":          self._recommend_skill,
             "list_skills":              self._list_skills,
+            "execute_issue":            self._execute_issue,
         }
         handler = handlers.get(action)
         if not handler:
@@ -580,4 +581,56 @@ test.describe('{scenario_name}', () => {{
             "count": len(skills_list),
             "summary": f"{len(skills_list)} developer skill areas defined in the CoE.",
             "skills": skills_list,
+        }, indent=2)
+
+    def _execute_issue(self, **kwargs) -> str:
+        """
+        Execute a code task from a GitHub issue.
+        Scaffolds the agent/tool described in the issue body, writes the file,
+        and returns the artifact path + content for commit and PR creation.
+        """
+        issue_title = kwargs.get("issue_title", "")
+        issue_body = kwargs.get("issue_body", "")
+
+        # Parse agent name from title
+        clean = issue_title
+        for ch in "[]()🤖📋🔍# ":
+            clean = clean.replace(ch, " ")
+        words = [w for w in clean.split() if w.lower() not in ("agent", "build", "sop", "gap", "coe", "se")]
+        agent_name = "".join(w.title() for w in words[:4]) or "CoEAgent"
+
+        # Extract actions from issue body (look for numbered steps or action lists)
+        actions = ["execute", "get_status", "health_check"]
+        for line in issue_body.splitlines():
+            line = line.strip()
+            if line.startswith(("- ", "* ")) and any(kw in line.lower() for kw in ["action", "implement", "run", "process", "generate", "fetch"]):
+                action_candidate = line.lstrip("- *").split("—")[0].strip().lower().replace(" ", "_")[:40]
+                if action_candidate and action_candidate not in actions:
+                    actions.append(action_candidate)
+        actions = actions[:6]  # cap at 6 actions
+
+        # Scaffold the agent
+        result_raw = self._scaffold_agent(
+            agent_name=agent_name,
+            agent_description=issue_body[:200].replace("\n", " "),
+            actions=actions,
+            customer="mfg_coe",
+            environment="master_ce_mfg",
+            context=issue_body[:500],
+        )
+        result = json.loads(result_raw)
+
+        # Compute relative path for commit
+        abs_file = result.get("file", "")
+        repo_root = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
+        rel_path = os.path.relpath(abs_file, repo_root).replace("\\", "/") if abs_file else ""
+
+        return json.dumps({
+            "status": "artifact_written",
+            "output_path": rel_path,
+            "abs_path": abs_file,
+            "agent_name": agent_name,
+            "actions": actions,
+            "agent": "developer",
+            "next_steps": result.get("next_steps", []),
         }, indent=2)
