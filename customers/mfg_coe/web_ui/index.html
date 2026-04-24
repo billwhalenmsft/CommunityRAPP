@@ -739,6 +739,31 @@
     .kpi::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent2), var(--accent)); opacity: 0.5; }
     .kpi-value { font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; background: linear-gradient(135deg, var(--text), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
+    /* ── SE Resources / Knowledge Hub ───────────────────────────────────── */
+    .se-res-tabs { display: flex; gap: 6px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+    .se-res-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text2); transition: all .15s; border-radius: 0; margin-bottom: -1px; }
+    .se-res-tab:hover { color: var(--text); border-bottom-color: var(--border); }
+    .se-res-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .se-practice-panel { display: none; }
+    .se-practice-panel.active { display: block; }
+    .se-link-list { display: flex; flex-direction: column; gap: 10px; }
+    .se-link-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px; border-radius: 6px; transition: background .12s; }
+    .se-link-item:hover { background: var(--bg3); }
+    .se-link-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .se-link { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; }
+    .se-link:hover { text-decoration: underline; }
+    .se-link-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .se-link-add button { background: none; border: 1px dashed var(--border); color: var(--text2); border-radius: 6px; padding: 4px 12px; font-size: 11px; cursor: pointer; transition: all .12s; }
+    .se-link-add button:hover { border-color: var(--accent2); color: var(--accent2); }
+    .pipeline-issue-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .pipeline-issue-row:last-child { border-bottom: none; }
+    .pipeline-issue-row a { color: var(--text); text-decoration: none; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .pipeline-issue-row a:hover { color: var(--accent); }
+    .pipeline-label { font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 700; white-space: nowrap; }
+    .pipeline-label.needs-bill { background: rgba(210,153,34,.15); color: var(--yellow); }
+    .pipeline-label.in-progress { background: rgba(88,166,255,.12); color: var(--accent); }
+    .pipeline-label.agent-task { background: rgba(63,185,80,.12); color: var(--green); }
+
   </style>
 </head>
 <body>
@@ -806,6 +831,7 @@
     <div class="nav-item" onclick="showView('chat')"><span class="icon">🚀</span> Start Something</div>
     <div class="nav-item" onclick="showView('sops')"><span class="icon">📄</span> SOPs & Docs</div>
     <div class="nav-item" onclick="showView('knowledge')"><span class="icon">🧠</span> Knowledge Base</div>
+    <div class="nav-item" onclick="showView('se-resources')"><span class="icon">📚</span> SE Resources</div>
     <div class="nav-item" onclick="showView('environments')"><span class="icon">🌐</span> D365 Environments</div>
     <div class="nav-item" onclick="showView('achievements')"><span class="icon">🏆</span> Achievements</div>
     <div class="nav-item" onclick="showView('quick-capture')"><span class="icon">📱</span> Quick Capture</div>
@@ -1139,6 +1165,87 @@
     <div class="view" id="view-wrapup">
       <div class="page-header"><h1>📊 Daily Wrap-Up</h1></div>
       <div id="wrapup-list"><p style="color:var(--text2)">⏳ Loading wrap-ups...</p></div>
+    </div>
+
+    <!-- SE RESOURCES / KNOWLEDGE HUB -->
+    <div class="view" id="view-se-resources">
+      <div class="page-header" style="margin-bottom:14px">
+        <h1>📚 SE Resources</h1>
+        <p>Central hub for Manufacturing SEs — links, demo assets, and resources organized by practice area.</p>
+      </div>
+
+      <!-- Practice Area Tabs -->
+      <div class="se-res-tabs" id="se-res-tab-bar">
+        <button class="se-res-tab active" onclick="switchPracticeTab('discrete', this)">🏭 Discrete Mfg</button>
+        <button class="se-res-tab" onclick="switchPracticeTab('process', this)">⚗️ Process Mfg</button>
+        <button class="se-res-tab" onclick="switchPracticeTab('mobility', this)">🚗 Mobility</button>
+      </div>
+
+      <!-- ── Discrete Mfg ── -->
+      <div class="se-practice-panel active" id="panel-discrete">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="card">
+            <div class="card-title">🔗 SE Resource Links</div>
+            <div id="res-links-discrete" class="se-link-list">
+              <div class="se-link-item"><span class="se-link-icon">📖</span><div><a href="https://microsoft.sharepoint.com/sites/mfg-discrete" target="_blank" class="se-link">Discrete Mfg SharePoint ↗</a><div class="se-link-meta">Team site, assets, decks</div></div></div>
+              <div class="se-link-item"><span class="se-link-icon">🔁</span><div><a href="https://loop.microsoft.com" target="_blank" class="se-link">Loop Workspace ↗</a><div class="se-link-meta">Shared notes &amp; planning boards</div></div></div>
+              <div class="se-link-item"><span class="se-link-icon">💬</span><div><a href="https://teams.microsoft.com/l/team/19%3amfg-discrete-se" target="_blank" class="se-link">Teams: Discrete SE Channel ↗</a><div class="se-link-meta">Daily discussions, announcements</div></div></div>
+              <div class="se-link-item"><span class="se-link-icon">📊</span><div><a href="https://aka.ms/mfg-se-deck" target="_blank" class="se-link">SE Pitch Deck (latest) ↗</a><div class="se-link-meta">Customer-facing slide deck</div></div></div>
+              <div class="se-link-item"><span class="se-link-icon">🎓</span><div><a href="https://learn.microsoft.com/en-us/dynamics365/supply-chain/" target="_blank" class="se-link">D365 SCM Docs ↗</a><div class="se-link-meta">Microsoft Learn — Supply Chain</div></div></div>
+              <div class="se-link-item se-link-add"><button onclick="promptAddLink('discrete')">+ Add resource link</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🎬 Demo Assets</div>
+            <div class="se-link-list">
+              <div class="se-link-item"><span class="se-link-icon">🌐</span><div><a href="https://orgecbce8ef.crm.dynamics.com" target="_blank" class="se-link">Master CE Mfg Org ↗</a><div class="se-link-meta">Primary demo D365 environment</div></div></div>
+              <div class="se-link-item"><span class="se-link-icon">📋</span><div><a href="https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/tree/main/customers/mfg_coe" target="_blank" class="se-link">CoE Agent Repo ↗</a><div class="se-link-meta">All agent code + demo configs</div></div></div>
+              <div class="se-link-item"><span class="se-link-icon">🤖</span><div><a href="https://copilotstudio.microsoft.com" target="_blank" class="se-link">Copilot Studio ↗</a><div class="se-link-meta">Published CoE agents</div></div></div>
+              <div class="se-link-item"><span class="se-link-icon">📄</span><div><a href="https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/tree/main/customers/mfg_coe/knowledge_base" target="_blank" class="se-link">D365 Context Cards ↗</a><div class="se-link-meta">Environment reference docs for agents</div></div></div>
+              <div class="se-link-item"><span class="se-link-icon">🗒️</span><div><a href="#" onclick="showView('sops')" class="se-link">SOPs Library →</a><div class="se-link-meta">Agent-generated SOPs</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CoE Pipeline Status -->
+        <div class="card">
+          <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
+            <span>⚡ CoE Pipeline Status</span>
+            <a href="https://github.com/billwhalenmsft/CommunityRAPP-BillWhalen/issues?q=is%3Aopen+label%3Amfg-coe" target="_blank" style="font-size:11px;color:var(--accent);font-weight:400;text-decoration:none">View all on GitHub ↗</a>
+          </div>
+          <div id="pipeline-status-discrete">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px">
+              <div class="kpi" style="padding:10px 12px"><div class="kpi-value" style="font-size:20px" id="ps-open">—</div><div class="kpi-label">Open</div></div>
+              <div class="kpi" style="padding:10px 12px"><div class="kpi-value" style="font-size:20px;color:var(--yellow)" id="ps-needs-bill">—</div><div class="kpi-label">Needs You</div></div>
+              <div class="kpi" style="padding:10px 12px"><div class="kpi-value" style="font-size:20px;color:var(--accent)" id="ps-in-progress">—</div><div class="kpi-label">In Progress</div></div>
+              <div class="kpi" style="padding:10px 12px"><div class="kpi-value" style="font-size:20px;color:var(--green)" id="ps-done">—</div><div class="kpi-label">Done (7d)</div></div>
+            </div>
+            <div id="pipeline-issues-list" style="max-height:260px;overflow-y:auto">
+              <p style="color:var(--text2);font-size:12px">⏳ Loading pipeline...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Process Mfg (coming soon) ── -->
+      <div class="se-practice-panel" id="panel-process">
+        <div class="card" style="text-align:center;padding:40px">
+          <div style="font-size:48px;margin-bottom:16px">⚗️</div>
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:8px">Process Manufacturing</h2>
+          <p style="color:var(--text2);font-size:13px;max-width:400px;margin:0 auto 20px">This practice area is on the CoE roadmap. Resources, demo assets, and agents will appear here as they're built.</p>
+          <button class="chat-btn" onclick="showView('chat')">💡 Submit a resource idea</button>
+        </div>
+      </div>
+
+      <!-- ── Mobility (coming soon) ── -->
+      <div class="se-practice-panel" id="panel-mobility">
+        <div class="card" style="text-align:center;padding:40px">
+          <div style="font-size:48px;margin-bottom:16px">🚗</div>
+          <h2 style="font-size:18px;font-weight:700;margin-bottom:8px">Mobility</h2>
+          <p style="color:var(--text2);font-size:13px;max-width:400px;margin:0 auto 20px">This practice area is on the CoE roadmap. Resources, demo assets, and agents will appear here as they're built.</p>
+          <button class="chat-btn" onclick="showView('chat')">💡 Submit a resource idea</button>
+        </div>
+      </div>
     </div>
 
     <!-- D365 ENVIRONMENTS -->
@@ -1612,6 +1719,7 @@ function showView(name) {
   if (name === 'knowledge') renderKnowledge();
   if (name === 'library') renderLibrary();
   if (name === 'chat') renderChatStarters();
+  if (name === 'se-resources') renderSeResources();
   if (name === 'achievements') renderAchievements();
   if (name === 'quick-capture') { validateQcForm(); resetQcForm(); }
 }
@@ -2327,6 +2435,102 @@ async function triggerInventoryRun() {
   });
   if (r.ok) { st.textContent = '✅ Issue created — agents will process on next run_backlog'; }
   else { st.textContent = '❌ Failed — check PAT permissions'; }
+}
+
+// ── SE Resources / Knowledge Hub ─────────────────────────────────────────────
+function switchPracticeTab(tab, btn) {
+  document.querySelectorAll('.se-res-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.se-practice-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + tab)?.classList.add('active');
+  if (tab === 'discrete') loadPipelineStatus();
+}
+
+async function renderSeResources() {
+  await loadPipelineStatus();
+}
+
+async function loadPipelineStatus() {
+  const el = document.getElementById('pipeline-issues-list');
+  if (!el) return;
+  el.innerHTML = '<p style="color:var(--text2);font-size:12px">⏳ Loading pipeline...</p>';
+
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (CFG.pat) headers['Authorization'] = `token ${CFG.pat}`;
+
+  let issues = [];
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=mfg-coe&state=open&per_page=50`,
+      { headers }
+    );
+    if (r.ok) issues = await r.json();
+  } catch { /* offline */ }
+
+  let needsBillCount = 0, inProgressCount = 0;
+  let closedCount = '—';
+
+  // Try to get recent closed count
+  try {
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const rc = await fetch(
+      `https://api.github.com/repos/${CFG.repo}/issues?labels=mfg-coe&state=closed&since=${since}&per_page=50`,
+      { headers }
+    );
+    if (rc.ok) { const cl = await rc.json(); closedCount = cl.length; }
+  } catch { /* ignore */ }
+
+  document.getElementById('ps-open').textContent = issues.length;
+  document.getElementById('ps-done').textContent = closedCount;
+
+  if (!issues.length) {
+    el.innerHTML = '<p style="color:var(--text2);font-size:12px;padding:8px">No open CoE issues. Everything is up to date!</p>';
+    document.getElementById('ps-needs-bill').textContent = '0';
+    document.getElementById('ps-in-progress').textContent = '0';
+    return;
+  }
+
+  el.innerHTML = '';
+  issues.forEach(issue => {
+    const labels = (issue.labels || []).map(l => l.name);
+    const needsBill = labels.includes('needs-bill');
+    const inProg = labels.includes('in-progress');
+    if (needsBill) needsBillCount++;
+    if (inProg) inProgressCount++;
+
+    const labelHtml = needsBill
+      ? '<span class="pipeline-label needs-bill">🔔 Needs You</span>'
+      : inProg
+        ? '<span class="pipeline-label in-progress">⚡ In Progress</span>'
+        : labels.includes('agent-task') ? '<span class="pipeline-label agent-task">🤖 Agent Task</span>' : '';
+
+    const row = document.createElement('div');
+    row.className = 'pipeline-issue-row';
+    row.innerHTML = `
+      <span style="color:var(--text2);font-size:10px;white-space:nowrap">#${issue.number}</span>
+      <a href="${issue.html_url}" target="_blank">${escHtml(issue.title)}</a>
+      ${labelHtml}
+    `;
+    el.appendChild(row);
+  });
+
+  document.getElementById('ps-needs-bill').textContent = needsBillCount;
+  document.getElementById('ps-in-progress').textContent = inProgressCount;
+}
+
+function promptAddLink(practice) {
+  const url = prompt('Resource URL:');
+  if (!url) return;
+  const label = prompt('Display label:', url);
+  if (!label) return;
+  const desc = prompt('Short description (optional):', '') || '';
+  const list = document.getElementById('res-links-' + practice);
+  if (!list) return;
+  const addBtn = list.querySelector('.se-link-add');
+  const item = document.createElement('div');
+  item.className = 'se-link-item';
+  item.innerHTML = `<span class="se-link-icon">🔗</span><div><a href="${escHtml(url)}" target="_blank" class="se-link">${escHtml(label)} ↗</a><div class="se-link-meta">${escHtml(desc)}</div></div>`;
+  list.insertBefore(item, addBtn);
 }
 
 // ── Quick Submit (floating button) ───────────────────────────────────────────
