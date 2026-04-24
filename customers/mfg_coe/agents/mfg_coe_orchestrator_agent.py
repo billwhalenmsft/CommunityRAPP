@@ -50,6 +50,11 @@ from customers.mfg_coe.agents.mfg_coe_content_strategist_agent import MfgCoECont
 from customers.mfg_coe.agents.mfg_coe_data_analyst_agent import MfgCoEDataAnalystAgent
 from customers.mfg_coe.agents.mfg_coe_security_reviewer_agent import MfgCoESecurityReviewerAgent
 from customers.mfg_coe.agents.mfg_coe_qa_engineer_agent import MfgCoEQAEngineerAgent
+from customers.mfg_coe.agents.mfg_coe_devops_pm_agent import MfgCoEDevOpsPMAgent
+from customers.mfg_coe.agents.mfg_coe_d365_dev_agent import MfgCoED365DevAgent
+from customers.mfg_coe.agents.mfg_coe_pp_dev_agent import MfgCoEPPDevAgent
+from customers.mfg_coe.agents.mfg_coe_ai_specialist_agent import MfgCoEAISpecialistAgent
+from customers.mfg_coe.agents.mfg_coe_analytics_dev_agent import MfgCoEAnalyticsDevAgent
 from customers.mfg_coe.agents.context_card_loader import load_all_context_cards
 
 logging.basicConfig(level=logging.INFO)
@@ -220,6 +225,12 @@ class MfgCoEOrchestratorAgent(BasicAgent):
         self.sme = MfgCoESMEAgent()
         self.developer = MfgCoEDeveloperAgent()
         self.architect = MfgCoEArchitectAgent()
+        # DevOps specialist team
+        self.devops_pm = MfgCoEDevOpsPMAgent()
+        self.d365_dev = MfgCoED365DevAgent()
+        self.pp_dev = MfgCoEPPDevAgent()
+        self.ai_specialist = MfgCoEAISpecialistAgent()
+        self.analytics_dev = MfgCoEAnalyticsDevAgent()
         self.customer_persona = MfgCoECustomerPersonaAgent()
         self.outcome_framer = MfgCoEOutcomeFramerAgent()
         self.outcome_validator = MfgCoEOutcomeValidatorAgent()
@@ -574,90 +585,160 @@ class MfgCoEOrchestratorAgent(BasicAgent):
     def _execute_build(self, issue_number: int, title: str, body: str,
                        labels: list, required_skills: list, arch_data: dict) -> dict:
         """
-        Step 4: Actually build the artifact.
-        Detects task type (knowledge vs code), calls the right agent,
-        writes the file, and commits + pushes via git.
+        Step 4: Build artifacts via the DevOps PM specialist team.
+        DevOps PM scopes the issue → identifies disciplines → orchestrator calls
+        each specialist in dependency order, passing prior artifacts as context.
+        Knowledge tasks (SME) run first if detected, then code specialists.
         """
-        title_lower = title.lower()
-
-        # Classify task type
-        knowledge_keywords = ["sop", "gap", "use case", "top 10", "guide", "document",
-                               "analysis", "context card", "knowledge", "survey", "research"]
-        code_keywords = ["agent", "runner", "builder", "scaffold", "implement",
-                         "quick demo", "coe runner", "build agent"]
-
-        is_knowledge = any(kw in title_lower for kw in knowledge_keywords)
-        is_code = any(kw in title_lower for kw in code_keywords) or \
-                  any(s in (required_skills or []) for s in ["azure_functions", "azure_ai"])
-
-        # Knowledge takes precedence unless it's clearly code
-        task_type = "code" if is_code and not is_knowledge else "knowledge"
+        # Map specialist keys → agent instances
+        specialist_agents = {
+            "python_dev": self.developer,
+            "d365_dev": self.d365_dev,
+            "pp_dev": self.pp_dev,
+            "ai_specialist": self.ai_specialist,
+            "analytics_dev": self.analytics_dev,
+        }
 
         try:
-            if task_type == "knowledge":
+            # ── DevOps PM: scope the issue ────────────────────────────────
+            scope_raw = self.devops_pm.perform(
+                action="scope_issue",
+                issue_title=title,
+                issue_body=body,
+                issue_number=issue_number,
+            )
+            scope = json.loads(scope_raw)
+            disciplines = scope.get("disciplines", [])
+            deliverables = scope.get("deliverables", [])
+            project_plan_path = scope.get("project_plan_path", "")
+            logger.info("DevOps PM scoped #%d: %s", issue_number, disciplines)
+
+            # Check if this is a knowledge-only task (SME handles it)
+            title_lower = title.lower()
+            knowledge_keywords = ["sop", "gap", "use case", "top 10", "guide", "document",
+                                   "analysis", "context card", "knowledge", "survey", "research"]
+            is_knowledge_only = (
+                any(kw in title_lower for kw in knowledge_keywords)
+                and not disciplines  # no specialist disciplines detected
+            )
+            if is_knowledge_only:
+                disciplines = []  # fall through to SME path below
+
+            all_artifacts = []
+            prior_artifacts: dict = {}
+            all_abs_paths = []
+
+            if project_plan_path:
+                # Include project plan path for commit
+                abs_plan = os.path.normpath(
+                    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", project_plan_path)
+                )
+                if os.path.exists(abs_plan):
+                    all_abs_paths.append(abs_plan)
+                    all_artifacts.append(project_plan_path)
+
+            if disciplines:
+                # ── Call each specialist in dependency order ───────────────
+                for deliverable in deliverables:
+                    disc = deliverable["discipline"]
+                    agent = specialist_agents.get(disc)
+                    if not agent:
+                        logger.warning("No agent for discipline %s — skipping", disc)
+                        continue
+
+                    logger.info("Calling %s specialist for deliverable %s",
+                                disc, deliverable["deliverable_id"])
+                    result_raw = agent.perform(
+                        action="execute_issue",
+                        issue_title=title,
+                        issue_body=body,
+                        prior_artifacts=prior_artifacts,
+                    )
+                    result = json.loads(result_raw)
+
+                    if "error" in result:
+                        logger.warning("Specialist %s returned error: %s", disc, result["error"])
+                        continue
+
+                    abs_path = result.get("abs_path", "")
+                    rel_path = result.get("output_path", "")
+                    if abs_path and os.path.exists(abs_path):
+                        all_abs_paths.append(abs_path)
+                    if rel_path:
+                        all_artifacts.append(rel_path)
+
+                    # Pass this specialist's output to subsequent specialists
+                    prior_artifacts[disc] = result.get("content_preview", "")
+
+            else:
+                # Knowledge task — SME handles it
                 result_raw = self.sme.perform(
                     action="execute_issue",
                     issue_title=title,
                     issue_body=body,
                 )
-            else:
-                result_raw = self.developer.perform(
-                    action="execute_issue",
-                    issue_title=title,
-                    issue_body=body,
-                )
+                result = json.loads(result_raw)
+                if "error" not in result:
+                    abs_path = result.get("abs_path", "")
+                    rel_path = result.get("output_path", "")
+                    if abs_path and os.path.exists(abs_path):
+                        all_abs_paths.append(abs_path)
+                    if rel_path:
+                        all_artifacts.append(rel_path)
+                    prior_artifacts["sme"] = result.get("content_preview", "")
 
-            result = json.loads(result_raw)
+            if not all_artifacts:
+                return {"error": "No specialists produced artifacts", "disciplines": disciplines}
 
-            if "error" in result:
-                return {"error": result["error"], "agent_used": task_type}
-
-            artifact_path = result.get("output_path", "")
-            abs_path = result.get("abs_path", "")
-            agent_used = result.get("agent", task_type)
-            content_preview = result.get("content_preview", "")
-
-            # Git commit + push
+            # ── Git commit all artifacts ──────────────────────────────────
             committed = False
-            if abs_path and os.path.exists(abs_path):
-                repo_root = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
-                try:
-                    subprocess.run(["git", "config", "user.email", "agents@bots-in-blazers.fun"],
-                                   cwd=repo_root, capture_output=True)
-                    subprocess.run(["git", "config", "user.name", "CoE Agent Team"],
-                                   cwd=repo_root, capture_output=True)
-                    subprocess.run(["git", "add", abs_path],
-                                   cwd=repo_root, capture_output=True)
-                    commit_result = subprocess.run(
-                        ["git", "commit", "-m",
-                         f"feat: CoE agent artifact for #{issue_number} — {title[:60]}\n\n"
-                         f"Co-authored-by: CoE Agent Team <agents@bots-in-blazers.fun>\n"
-                         f"Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"],
-                        cwd=repo_root, capture_output=True, text=True,
-                    )
-                    if commit_result.returncode == 0:
-                        push_result = subprocess.run(["git", "push"],
-                                                     cwd=repo_root, capture_output=True, text=True)
-                        committed = push_result.returncode == 0
-                        logger.info("Git push result: %s", push_result.stdout + push_result.stderr)
-                    else:
-                        logger.warning("Git commit returned %d: %s",
-                                       commit_result.returncode, commit_result.stderr)
-                except Exception as e:
-                    logger.warning("Git operations failed: %s", e)
+            repo_root = os.path.normpath(
+                os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
+            try:
+                subprocess.run(["git", "config", "user.email", "agents@bots-in-blazers.fun"],
+                               cwd=repo_root, capture_output=True)
+                subprocess.run(["git", "config", "user.name", "CoE Agent Team"],
+                               cwd=repo_root, capture_output=True)
+                for abs_path in all_abs_paths:
+                    subprocess.run(["git", "add", abs_path], cwd=repo_root, capture_output=True)
+
+                disc_list = ", ".join(disciplines) if disciplines else "sme"
+                commit_result = subprocess.run(
+                    ["git", "commit", "-m",
+                     f"feat: CoE DevOps team artifacts for #{issue_number} — {title[:55]}\n\n"
+                     f"Disciplines: {disc_list}\n"
+                     f"Artifacts: {', '.join(all_artifacts[:3])}\n\n"
+                     f"Co-authored-by: CoE Agent Team <agents@bots-in-blazers.fun>\n"
+                     f"Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"],
+                    cwd=repo_root, capture_output=True, text=True,
+                )
+                if commit_result.returncode == 0:
+                    push_result = subprocess.run(["git", "push"],
+                                                 cwd=repo_root, capture_output=True, text=True)
+                    committed = push_result.returncode == 0
+                    logger.info("Git push: %s", push_result.stdout + push_result.stderr)
+                else:
+                    logger.warning("Git commit failed: %s", commit_result.stderr)
+            except Exception as e:
+                logger.warning("Git operations failed: %s", e)
+
+            primary_path = all_artifacts[0] if all_artifacts else ""
+            preview = list(prior_artifacts.values())[0][:300] if prior_artifacts else ""
 
             return {
-                "artifact_path": artifact_path,
-                "abs_path": abs_path,
-                "content_preview": content_preview,
-                "agent_used": agent_used,
-                "task_type": task_type,
+                "artifact_path": primary_path,
+                "all_artifacts": all_artifacts,
+                "disciplines": disciplines,
+                "project_plan_path": project_plan_path,
+                "content_preview": preview,
+                "agent_used": "devops_team",
+                "task_type": "specialist_build",
                 "committed": committed,
             }
 
         except Exception as e:
             logger.error("_execute_build failed: %s", e)
-            return {"error": str(e), "agent_used": task_type}
+            return {"error": str(e), "agent_used": "devops_pm"}
 
     # ── CoE Status ────────────────────────────────────────────────
 
